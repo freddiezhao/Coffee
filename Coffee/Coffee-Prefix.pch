@@ -1,0 +1,43 @@
+//
+//  Coffee-Prefix.pch
+//  Coffee
+//
+//  Created by 杭州轨物科技有限公司 on 2018/6/23.
+//  Copyright © 2018年 杭州轨物科技有限公司. All rights reserved.
+//
+
+#ifndef Coffee_Prefix_pch
+#define Coffee_Prefix_pch
+
+#ifdef __OBJC__
+#import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h>
+#import "Masonry.h"
+#import "UIColor+ColorChange.h"
+#import "RDVTabBarController.h"
+#import "UIButton+Common.h"
+#import "BaseViewController.h"
+#import "NetWork.h"
+#endif
+// Include any system framework and library headers here that should be included in all compilation units.
+// You will also need to set the Prefix Header build setting of one or more of your targets to reference this file.
+#define ScreenWidth                         [[UIScreen mainScreen] bounds].size.width
+#define ScreenHeight                        [[UIScreen mainScreen] bounds].size.height
+
+#define IS_IPHONE (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone)
+
+#define IS_PAD (UI_USER_INTERFACE_IDIOM()== UIUserInterfaceIdiomPad)
+
+#define LocalString(x)      NSLocalizedString(x, nil)
+
+#define kKeyWindow [UIApplication sharedApplication].keyWindow
+
+#define kDevice_Is_iPhoneX ([UIScreen instancesRespondToSelector:@selector(currentMode)] ? CGSizeEqualToSize(CGSizeMake(1125, 2436), [[UIScreen mainScreen] currentMode].size) : NO)
+
+#define kSafeArea_Bottom (kDevice_Is_iPhoneX? 34: 0)
+
+#define yColor_back @"D8DADD"
+
+#endif /* Coffee_Prefix_pch */
+
+

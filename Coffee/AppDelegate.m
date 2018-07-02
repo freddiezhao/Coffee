@@ -7,6 +7,8 @@
 //
 
 #import "AppDelegate.h"
+#import "MainViewController.h"
+#import "ESP_NetUtil.h"
 
 @interface AppDelegate ()
 
@@ -16,7 +18,17 @@
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    // Override point for customization after application launch.
+    //[NSThread sleepForTimeInterval:2.0];
+    
+    self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
+    self.window.backgroundColor = [UIColor whiteColor];
+    
+    MainViewController *mainVC = [[MainViewController alloc] init];
+    self.window.rootViewController = mainVC;
+    
+    [self.window makeKeyAndVisible];
+    
+    [ESP_NetUtil tryOpenNetworkPermission];
     return YES;
 }
 
@@ -30,6 +42,10 @@
 - (void)applicationDidEnterBackground:(UIApplication *)application {
     // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
     // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
+    if (application.backgroundTimeRemaining > 10)
+    {
+        NSLog(@"ESPAppDelegate: some thread goto background, remained: %f seconds", application.backgroundTimeRemaining);
+    }
 }
 
 
