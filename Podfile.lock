@@ -1,4 +1,7 @@
 PODS:
+  - Charts (3.0.5):
+    - Charts/Core (= 3.0.5)
+  - Charts/Core (3.0.5)
   - CocoaAsyncSocket (7.6.2)
   - IQKeyboardManager (5.0.7)
   - Masonry (1.1.0)
@@ -7,6 +10,7 @@ PODS:
   - SVProgressHUD (2.2.2)
 
 DEPENDENCIES:
+  - Charts
   - CocoaAsyncSocket
   - IQKeyboardManager
   - Masonry
@@ -15,6 +19,7 @@ DEPENDENCIES:
   - SVProgressHUD
 
 SPEC CHECKSUMS:
+  Charts: 45cdc985b764c838b35ee47eb1365d15735f6d1a
   CocoaAsyncSocket: 3541e024f48c54b251638ef72d51dd42808de932
   IQKeyboardManager: 0bfa4607d39924116b5c0c8b55b5d789288b5cba
   Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
@@ -22,6 +27,6 @@ SPEC CHECKSUMS:
   MJRefresh: 5f8552bc25ca8751c010f621c1098dbdaacbccd6
   SVProgressHUD: 59b2d3dabacbd051576d21d32293ca7228dc18b0
 
-PODFILE CHECKSUM: 0210a4f710159ec796da6178819d55acbd631062
+PODFILE CHECKSUM: 3b67f540afc236b8dba6b4e90bd276673f066c93
 
 COCOAPODS: 1.3.1

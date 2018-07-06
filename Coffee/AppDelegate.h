@@ -11,6 +11,8 @@
 
 @property (strong, nonatomic) UIWindow *window;
 
+///@brife 是否允许转向
+@property (nonatomic, assign) UIInterfaceOrientation interfaceOrientation;
 
 @end
 

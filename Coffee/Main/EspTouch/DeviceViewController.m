@@ -62,6 +62,7 @@ NSString *const CellNibName_device = @"DeviceTableViewCell";
     _macIpArray = [NSMutableArray array];
     _ipArray = [NSMutableArray array];
     _devieceTable = [self devieceTable];
+    _timer = [self timer];
 }
 
 - (void)viewWillAppear:(BOOL)animated{
@@ -128,6 +129,14 @@ NSString *const CellNibName_device = @"DeviceTableViewCell";
     return _devieceTable;
 }
 
+- (NSTimer *)timer{
+    if(!_timer){
+        _timer = [NSTimer scheduledTimerWithTimeInterval:3 target:self selector:@selector(broadcast) userInfo:nil repeats:YES];
+        [_timer setFireDate:[NSDate distantFuture]];
+    }
+    return _timer;
+}
+
 #pragma mark - udp
 - (GCDAsyncUdpSocket *)udpSocket{
     if (!_udpSocket) {
@@ -155,9 +164,8 @@ NSString *const CellNibName_device = @"DeviceTableViewCell";
         return;
     }
     
-    [self broadcast];
     isConnect = NO;
-    _timer = [NSTimer scheduledTimerWithTimeInterval:3 target:self selector:@selector(broadcast) userInfo:nil repeats:YES];
+    [_timer setFireDate:[NSDate date]];
 }
 
 - (void)broadcast{
@@ -196,22 +204,34 @@ NSString *const CellNibName_device = @"DeviceTableViewCell";
         getnameinfo((struct sockaddr *)&sa, salen, host, sizeof(host), NULL, 0, NI_NUMERICHOST);
         // Convert C string to NSString:
         NSString *ipAddress = [[NSString alloc] initWithBytes:host length:strlen(host) encoding:NSUTF8StringEncoding];
-        [_ipArray addObject:ipAddress];
-        NSLog(@"strAddr = %@", ipAddress);
         
+        //避免重复显示同一个设备
+        int isContain = 0;
+        for (NSString *address in _ipArray) {
+            if ([ipAddress isEqualToString:address]) {
+                isContain = 1;
+                break;
+            }
+        }
+        if (!isContain) {
+            [_ipArray addObject:ipAddress];
+            
+            NSLog(@"strAddr = %@", ipAddress);
+            
+            NSString *msg = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+            NSLog(@"%@",msg);
+            [_macIpArray addObject:[msg substringWithRange:NSMakeRange(0, 8)]];
+            
+            NSArray *msgArray = [msg componentsSeparatedByString:@"|"];
+            NSData *msgData = [msgArray.lastObject dataUsingEncoding:NSUTF8StringEncoding];
+            NSError *error;
+            NSDictionary *dataDict = [NSJSONSerialization JSONObjectWithData:msgData options:NSJSONReadingMutableContainers error:&error];
+            NSLog(@"%@",dataDict);
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [_devieceTable reloadData];
+            });
+        }
         
-        NSString *msg = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-        NSLog(@"%@",msg);
-        [_macIpArray addObject:[msg substringWithRange:NSMakeRange(0, 8)]];
-        
-        NSArray *msgArray = [msg componentsSeparatedByString:@"|"];
-        NSData *msgData = [msgArray.lastObject dataUsingEncoding:NSUTF8StringEncoding];
-        NSError *error;
-        NSDictionary *dataDict = [NSJSONSerialization JSONObjectWithData:msgData options:NSJSONReadingMutableContainers error:&error];
-        NSLog(@"%@",dataDict);
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [_devieceTable reloadData];
-        });
     }
 }
 
@@ -333,15 +353,17 @@ NSString *const CellNibName_device = @"DeviceTableViewCell";
     if (indexPath.section == 1) {
         NSError *error = nil;
         [[NetWork shareNetWork] connectToHost:[_ipArray objectAtIndex:indexPath.row] onPort:16888 error:&error];
-        //[[NetWork shareNetWork] connectToHost:@"169.254.91.100" onPort:16888 error:&error];
+        
         
         if (error) {
             NSLog(@"tcp连接错误:%@",error);
         }
     }else if (indexPath.section == 0){
-        NSArray *array = [[NSArray alloc] initWithObjects:[NSNumber numberWithUnsignedInteger:0x68],[NSNumber numberWithUnsignedInteger:0x00],[NSNumber numberWithUnsignedInteger:0x00],[NSNumber numberWithUnsignedInteger:0x00],[NSNumber numberWithUnsignedInteger:0x01],[NSNumber numberWithUnsignedInteger:0x00],[NSNumber numberWithUnsignedInteger:0x69],[NSNumber numberWithUnsignedInteger:0x16],[NSNumber numberWithUnsignedInteger:0x0D],[NSNumber numberWithUnsignedInteger:0x0A], nil];
+        NSError *error = nil;
+        [[NetWork shareNetWork] connectToHost:@"192.168.1.125" onPort:16888 error:&error];
+        //NSArray *array = [[NSArray alloc] initWithObjects:[NSNumber numberWithUnsignedInteger:0x68],[NSNumber numberWithUnsignedInteger:0x00],[NSNumber numberWithUnsignedInteger:0x00],[NSNumber numberWithUnsignedInteger:0x00],[NSNumber numberWithUnsignedInteger:0x01],[NSNumber numberWithUnsignedInteger:0x00],[NSNumber numberWithUnsignedInteger:0x69],[NSNumber numberWithUnsignedInteger:0x16],[NSNumber numberWithUnsignedInteger:0x0D],[NSNumber numberWithUnsignedInteger:0x0A], nil];
         
-        [[NetWork shareNetWork] send:[array mutableCopy] withTag:101];
+        //[[NetWork shareNetWork] send:[array mutableCopy] withTag:101];
     }
 }
 

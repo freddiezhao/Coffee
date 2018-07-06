@@ -7,8 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		16AA2DE902E2501D12B8E1E4 /* libPods-Coffee.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7EF5635EC618EE1CD77009C6 /* libPods-Coffee.a */; };
+		258879339880B16366F53ED6 /* Pods_Coffee.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27C3888E1688495B0D5D73D6 /* Pods_Coffee.framework */; };
 		BB1C156620E1E8AD006D7053 /* UIButton+Common.m in Sources */ = {isa = PBXBuildFile; fileRef = BB1C156420E1E8AD006D7053 /* UIButton+Common.m */; };
+		BB26AFB220EDC846008AE330 /* 数据.json in Resources */ = {isa = PBXBuildFile; fileRef = BB26AFB120EDC846008AE330 /* 数据.json */; };
+		BB3811FA20EA1C3C00F0B2B7 /* BakeCurveViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB3811F920EA1C3C00F0B2B7 /* BakeCurveViewController.m */; };
+		BB69CA7320ECBB490032F126 /* NSObject+Common.m in Sources */ = {isa = PBXBuildFile; fileRef = BB69CA7220ECBB490032F126 /* NSObject+Common.m */; };
 		BB6A784620E32A4D00EE3E2E /* DeviceTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BB6A784420E32A4D00EE3E2E /* DeviceTableViewCell.m */; };
 		BB6A784720E32A4D00EE3E2E /* DeviceTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = BB6A784520E32A4D00EE3E2E /* DeviceTableViewCell.xib */; };
 		BB6A784B20E36E7200EE3E2E /* BaseViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB6A784A20E36E7200EE3E2E /* BaseViewController.m */; };
@@ -98,11 +101,16 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		27C3888E1688495B0D5D73D6 /* Pods_Coffee.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Coffee.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		720E238F8A2AE22A51FFC2D2 /* Pods-Coffee.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Coffee.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Coffee/Pods-Coffee.debug.xcconfig"; sourceTree = "<group>"; };
 		7BA3FAAB66A327260F196ABB /* Pods-Coffee.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Coffee.release.xcconfig"; path = "Pods/Target Support Files/Pods-Coffee/Pods-Coffee.release.xcconfig"; sourceTree = "<group>"; };
-		7EF5635EC618EE1CD77009C6 /* libPods-Coffee.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Coffee.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		BB1C156420E1E8AD006D7053 /* UIButton+Common.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIButton+Common.m"; sourceTree = "<group>"; };
 		BB1C156520E1E8AD006D7053 /* UIButton+Common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIButton+Common.h"; sourceTree = "<group>"; };
+		BB26AFB120EDC846008AE330 /* 数据.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "数据.json"; sourceTree = "<group>"; };
+		BB3811F820EA1C3C00F0B2B7 /* BakeCurveViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BakeCurveViewController.h; sourceTree = "<group>"; };
+		BB3811F920EA1C3C00F0B2B7 /* BakeCurveViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BakeCurveViewController.m; sourceTree = "<group>"; };
+		BB69CA7120ECBB490032F126 /* NSObject+Common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+Common.h"; sourceTree = "<group>"; };
+		BB69CA7220ECBB490032F126 /* NSObject+Common.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+Common.m"; sourceTree = "<group>"; };
 		BB6A784320E32A4D00EE3E2E /* DeviceTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DeviceTableViewCell.h; sourceTree = "<group>"; };
 		BB6A784420E32A4D00EE3E2E /* DeviceTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DeviceTableViewCell.m; sourceTree = "<group>"; };
 		BB6A784520E32A4D00EE3E2E /* DeviceTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = DeviceTableViewCell.xib; sourceTree = "<group>"; };
@@ -220,7 +228,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				16AA2DE902E2501D12B8E1E4 /* libPods-Coffee.a in Frameworks */,
+				258879339880B16366F53ED6 /* Pods_Coffee.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -244,9 +252,17 @@
 		383EC9357D9B009D0BE53003 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				7EF5635EC618EE1CD77009C6 /* libPods-Coffee.a */,
+				27C3888E1688495B0D5D73D6 /* Pods_Coffee.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		BB26AFB020EDC846008AE330 /* SourceFile */ = {
+			isa = PBXGroup;
+			children = (
+				BB26AFB120EDC846008AE330 /* 数据.json */,
+			);
+			path = SourceFile;
 			sourceTree = "<group>";
 		};
 		BB6A784820E36E6800EE3E2E /* Base */ = {
@@ -385,6 +401,8 @@
 			isa = PBXGroup;
 			children = (
 				BB8AA4D420DFBFA400610316 /* TableView+Touch */,
+				BB69CA7120ECBB490032F126 /* NSObject+Common.h */,
+				BB69CA7220ECBB490032F126 /* NSObject+Common.m */,
 				BB8AA4E620DFD18D00610316 /* UIColor+ColorChange.h */,
 				BB8AA4E720DFD18D00610316 /* UIColor+ColorChange.m */,
 				BB1C156520E1E8AD006D7053 /* UIButton+Common.h */,
@@ -459,6 +477,7 @@
 				BB8F7BDD20DA513B00BE5CFC /* Info.plist */,
 				BB8F7BDE20DA513B00BE5CFC /* main.m */,
 				BB8AA49720DE42C600610316 /* Coffee-Prefix.pch */,
+				BB26AFB020EDC846008AE330 /* SourceFile */,
 			);
 			path = Coffee;
 			sourceTree = "<group>";
@@ -510,6 +529,8 @@
 			children = (
 				BB8AA49820DE475200610316 /* BakeViewController.h */,
 				BB8AA49920DE475200610316 /* BakeViewController.m */,
+				BB3811F820EA1C3C00F0B2B7 /* BakeCurveViewController.h */,
+				BB3811F920EA1C3C00F0B2B7 /* BakeCurveViewController.m */,
 			);
 			path = Bake;
 			sourceTree = "<group>";
@@ -637,6 +658,7 @@
 				BB8AA48A20DE3F5300610316 /* ic_navbar_mine_selected@3x.png in Resources */,
 				BB8AA24C20DE3F5200610316 /* ic_navbar_mine.png in Resources */,
 				BB8AA30A20DE3F5300610316 /* ic_navbar_mine_selected@2x.png in Resources */,
+				BB26AFB220EDC846008AE330 /* 数据.json in Resources */,
 				BB6A784720E32A4D00EE3E2E /* DeviceTableViewCell.xib in Resources */,
 				BB8AA21F20DE3F5200610316 /* ic_navbar_bake_selected.png in Resources */,
 				BB8AA47820DE3F5300610316 /* ic_navbar_bake@3x.png in Resources */,
@@ -692,9 +714,24 @@
 			files = (
 			);
 			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-Coffee/Pods-Coffee-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/Charts/Charts.framework",
+				"${BUILT_PRODUCTS_DIR}/CocoaAsyncSocket/CocoaAsyncSocket.framework",
+				"${BUILT_PRODUCTS_DIR}/IQKeyboardManager/IQKeyboardManager.framework",
+				"${BUILT_PRODUCTS_DIR}/MBProgressHUD/MBProgressHUD.framework",
+				"${BUILT_PRODUCTS_DIR}/MJRefresh/MJRefresh.framework",
+				"${BUILT_PRODUCTS_DIR}/Masonry/Masonry.framework",
+				"${BUILT_PRODUCTS_DIR}/SVProgressHUD/SVProgressHUD.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Charts.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CocoaAsyncSocket.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/IQKeyboardManager.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MBProgressHUD.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MJRefresh.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Masonry.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SVProgressHUD.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -746,6 +783,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BB3811FA20EA1C3C00F0B2B7 /* BakeCurveViewController.m in Sources */,
 				BB8AA4E820DFD18D00610316 /* UIColor+ColorChange.m in Sources */,
 				BB6A784B20E36E7200EE3E2E /* BaseViewController.m in Sources */,
 				BB8AA4E420DFCA1C00610316 /* PasswordTableViewCell.m in Sources */,
@@ -773,6 +811,7 @@
 				BB8AA4CB20DFB9CA00610316 /* ESP_CRC8.m in Sources */,
 				BB8F7BD120DA513B00BE5CFC /* AppDelegate.m in Sources */,
 				BBFE861220E62FDF005C6CE5 /* DeviceSelectView.m in Sources */,
+				BB69CA7320ECBB490032F126 /* NSObject+Common.m in Sources */,
 				BB8AA4D720DFBFA400610316 /* TouchTableView.m in Sources */,
 				BB8AA4CD20DFB9CA00610316 /* ESPUDPSocketClient.m in Sources */,
 				BB8AA4CE20DFB9CA00610316 /* ESPTouchTaskParameter.m in Sources */,

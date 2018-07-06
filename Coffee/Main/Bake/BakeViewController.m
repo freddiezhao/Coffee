@@ -8,8 +8,7 @@
 
 #import "BakeViewController.h"
 #import "DeviceViewController.h"
-
-
+#import "BakeCurveViewController.h"
 @interface BakeViewController ()
 
 @property (nonatomic,strong) UIButton *connectBtn;
@@ -29,7 +28,7 @@
     
     UIButton *testBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     testBtn.frame = CGRectMake(100, 400, 200, 80);
-    [testBtn setTitle:@"test" forState:UIControlStateNormal];
+    [testBtn setTitle:@"下一页" forState:UIControlStateNormal];
     [testBtn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
     [testBtn addTarget:self action:@selector(test) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:testBtn];
@@ -46,9 +45,8 @@
 }
 
 - (void)test{
-    NSArray *array = [[NSArray alloc] initWithObjects:[NSNumber numberWithUnsignedInteger:0x68],[NSNumber numberWithUnsignedInteger:0x00],[NSNumber numberWithUnsignedInteger:0x00],[NSNumber numberWithUnsignedInteger:0x00],[NSNumber numberWithUnsignedInteger:0x01],[NSNumber numberWithUnsignedInteger:0x00],[NSNumber numberWithUnsignedInteger:0x69],[NSNumber numberWithUnsignedInteger:0x16],[NSNumber numberWithUnsignedInteger:0x0D],[NSNumber numberWithUnsignedInteger:0x0A], nil];
-    
-    [[NetWork shareNetWork] send:[array mutableCopy] withTag:101];
+    BakeCurveViewController *bakeCurveVC = [[BakeCurveViewController alloc] init];
+    [self presentViewController:bakeCurveVC animated:YES completion:nil];
 }
 
 - (void)connectMachine{
