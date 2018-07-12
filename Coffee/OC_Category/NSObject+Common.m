@@ -54,4 +54,13 @@
     return [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:nil];
 }
 
+- (UInt8)getCS:(NSArray *)data{
+    UInt8 csTemp = 0x00;
+    for (int i = 0; i < [data count]; i++)
+    {
+        csTemp += [data[i] unsignedCharValue];
+    }
+    return csTemp;
+}
+
 @end

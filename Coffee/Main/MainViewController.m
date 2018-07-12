@@ -20,22 +20,26 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    UIViewController *firstVC = [[UIViewController alloc] init];
-    UINavigationController *NAV1 = [[UINavigationController alloc] initWithRootViewController:firstVC];
+    BakeViewController *BakeVC = [[BakeViewController alloc] init];
+    UINavigationController *NAV1 = [[UINavigationController alloc] initWithRootViewController:BakeVC];
+    
     
     UIViewController *secondVC = [[UIViewController alloc] init];
     UINavigationController *NAV2 = [[UINavigationController alloc] initWithRootViewController:secondVC];
     
-    BakeViewController *BakeVC = [[BakeViewController alloc] init];
-    UINavigationController *NAV3 = [[UINavigationController alloc] initWithRootViewController:BakeVC];
+    UIViewController *thirdVC = [[UIViewController alloc] init];
+    UINavigationController *NAV3 = [[UINavigationController alloc] initWithRootViewController:thirdVC];
     
     UIViewController *fourthVc = [[UIViewController alloc] init];
     UINavigationController *NAV4 = [[UINavigationController alloc] initWithRootViewController:fourthVc];
     
-    [self setViewControllers:@[NAV1,NAV2,NAV3,NAV4]];
+    UIViewController *fifthVc = [[UIViewController alloc] init];
+    UINavigationController *NAV5 = [[UINavigationController alloc] initWithRootViewController:fifthVc];
+    
+    [self setViewControllers:@[NAV1,NAV2,NAV3,NAV4,NAV5]];
     
     [self customizeTabBarForController];
-    self.selectedIndex = 2;
+    self.selectedIndex = 0;
     self.delegate = self;
     
     //self.view = self.view;
@@ -47,8 +51,8 @@
 }
 
 - (void)customizeTabBarForController{
-    NSArray *tabBarItemImages = @[@"ic_navbar_bean",@"ic_navbar_cup",@"ic_navbar_bake",@"ic_navbar_mine"];
-    NSArray *tabBarItemSelectImages = @[@"ic_navbar_bean_selected",@"ic_navbar_cup_selected",@"ic_navbar_bake_selected",@"ic_navbar_mine_selected"];
+    NSArray *tabBarItemImages = @[@"ic_navbar_bake",@"ic_mine_history_line",@"ic_navbar_bean",@"ic_navbar_cup",@"ic_navbar_mine"];
+    NSArray *tabBarItemSelectImages = @[@"ic_navbar_bake_selected",@"ic_mine_history_line",@"ic_navbar_bean_selected",@"ic_navbar_cup_selected",@"ic_navbar_mine_selected"];
     
     NSInteger index = 0;
     for (RDVTabBarItem *item in self.tabBar.items) {
@@ -59,11 +63,7 @@
         index++;
     }
     
-    if (ScreenHeight < 700) {
-        [self.tabBar setHeight:44.f + kSafeArea_Bottom];
-    }else{
-        [self.tabBar setHeight:60.f + kSafeArea_Bottom];
-    }
+    [self.tabBar setHeight:tabbarHeight + kSafeArea_Bottom];
     
     self.tabBar.translucent = YES;
     

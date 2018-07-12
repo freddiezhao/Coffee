@@ -18,4 +18,6 @@
 
 + (NSDictionary *)readLocalFileWithName:(NSString *)name;
 
+- (UInt8)getCS:(NSArray *)data;
+
 @end

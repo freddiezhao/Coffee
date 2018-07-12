@@ -19,6 +19,7 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     //[NSThread sleepForTimeInterval:2.0];
+    [self customizeInterface];
     
     self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
     self.window.backgroundColor = [UIColor whiteColor];
@@ -74,6 +75,17 @@
     
 }
 
-
+- (void)customizeInterface {
+    UINavigationBar *navigationBarAppearance = [UINavigationBar appearance];
+    [navigationBarAppearance setBarTintColor:[UIColor colorWithHexString:@"996640"]];
+    //[navigationBarAppearance setTintColor:[UIColor whiteColor]];//返回按钮的箭头颜色
+    //[[UIBarButtonItem appearance] setBackButtonTitlePositionAdjustment:UIOffsetMake(0, -60) forBarMetrics:UIBarMetricsDefault];
+    NSDictionary *textAttributes = @{
+                                     NSFontAttributeName: [UIFont systemFontOfSize:17.f],
+                                     NSForegroundColorAttributeName: [UIColor whiteColor],
+                                     };
+    [navigationBarAppearance setTitleTextAttributes:textAttributes];
+    [navigationBarAppearance setTranslucent:NO];
+}
 
 @end

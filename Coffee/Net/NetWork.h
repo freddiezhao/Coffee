@@ -13,6 +13,9 @@ typedef enum{
     fire,
     cool,
     getTemp,
+    getTempCount,
+    getCountTemp,
+    getTimer,
     otherMsgType
 }MsgType68;
 
@@ -22,6 +25,13 @@ typedef enum{
     commandFrame,
     otherFrameType
 }FrameType68;
+
+///@接收到的温度帧数量和查询温度帧数量
+static int recvCount = 0;
+static int sendCount = 0;
+
+///@读取数据数量版本
+static NSInteger tempCountVer = -1;
 
 @interface NetWork : NSObject <GCDAsyncSocketDelegate>
 
@@ -43,6 +53,14 @@ typedef enum{
 ///@brief 温度数据
 @property (nonatomic, strong) NSArray *tempData;
 
+///@brief 豆温数据
+@property (nonatomic, strong) NSMutableArray *yVals_Out;
+@property (nonatomic, strong) NSMutableArray *yVals_In;
+@property (nonatomic, strong) NSMutableArray *yVals_Bean;
+@property (nonatomic, strong) NSMutableArray *yVals_Environment;
+@property (nonatomic, strong) NSMutableArray *yVals_Diff;
+@property (nonatomic, assign) UInt8 frameCount;
+
 ///@brief 单例模式
 + (instancetype)shareNetWork;
 
@@ -52,5 +70,5 @@ typedef enum{
 ///@brief 连接
 - (BOOL)connectToHost:(NSString*)host onPort:(uint16_t)port error:(NSError **)errPtr;
 
-- (UInt8)getCS:(NSArray *)data;
+- (void)inquireTimer;
 @end

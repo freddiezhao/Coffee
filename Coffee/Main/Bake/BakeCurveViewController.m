@@ -16,10 +16,6 @@
 
 @property (nonatomic, strong) NetWork *myNet;
 
-///@brief 豆温数据
-@property (nonatomic, strong) NSMutableArray *yVals;
-@property (nonatomic, strong) NSMutableArray *yVals_diff;
-
 @property (nonatomic, strong) NSTimer *myTimer;
 @end
 
@@ -28,10 +24,12 @@
     BOOL isFullScreen;
     double leftAxisMax;
 }
-static int num = 1;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    //强制亮屏
+    [[UIApplication sharedApplication] setIdleTimerDisabled:YES];
     
     UIButton *testBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     testBtn.frame = CGRectMake(0, 0, 200, 50);
@@ -39,7 +37,7 @@ static int num = 1;
     [testBtn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
     [testBtn addTarget:self action:@selector(test) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:testBtn];
-    
+        
     _myNet = [NetWork shareNetWork];
     
     _chartView = [self chartView];
@@ -54,10 +52,14 @@ static int num = 1;
 
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(gotCountTempSucc) name:@"gotCountTempSucc" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tcpDisconnect) name:@"tcpDisconnect" object:nil];
 }
 
 - (void)viewWillDisappear:(BOOL)animated{
     [super viewWillDisappear:animated];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"gotCountTempSucc" object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"tcpDisconnect" object:nil];
 }
 
 - (void)dealloc{
@@ -80,6 +82,7 @@ static int num = 1;
         [_chartView setScaleEnabled:YES];//缩放
         [_chartView setScaleYEnabled:NO];
         
+        
         _chartView.drawGridBackgroundEnabled = NO;//网格线
         _chartView.pinchZoomEnabled = YES;
         //_chartView.doubleTapToZoomEnabled = NO;//取消双击缩放
@@ -88,7 +91,6 @@ static int num = 1;
         
         _chartView.backgroundColor = [UIColor colorWithWhite:204/255.f alpha:1.f];
         
-        [_chartView setVisibleXRangeWithMinXRange:1 maxXRange:UI_IS_IPHONE5?3:4];
         
         //_chartView.legend.enabled = NO;//不显示图例说明
         ChartLegend *l = _chartView.legend;
@@ -105,14 +107,15 @@ static int num = 1;
         xAxis.labelTextColor = UIColor.whiteColor;
         xAxis.drawGridLinesEnabled = NO;
         xAxis.drawAxisLineEnabled = NO;
+        //xAxis.axisRange = 30;
         //xAxis.granularityEnabled = YES;
         //xAxis.granularity = 10.0;
-        //xAxis.axisMinimum = 25;
+        
         
         ChartYAxis *leftAxis = _chartView.leftAxis;
         leftAxis.labelTextColor = [UIColor colorWithRed:51/255.f green:181/255.f blue:229/255.f alpha:1.f];
-        leftAxis.axisMaximum = 600 - 0.5;
-        leftAxisMax = 600 - 0.5;
+        leftAxis.axisMaximum = 50 - 0.5;
+        leftAxisMax = 50 - 0.5;
         leftAxis.axisMinimum = 0.0;
         leftAxis.drawGridLinesEnabled = YES;
         //leftAxis.gridLineDashLengths = @[@5.f,@5.f];//虚线
@@ -121,7 +124,7 @@ static int num = 1;
         
         ChartYAxis *rightAxis = _chartView.rightAxis;
         rightAxis.labelTextColor = UIColor.redColor;
-        rightAxis.axisMaximum = 4.0;
+        rightAxis.axisMaximum = 10.0;
         rightAxis.axisMinimum = 0;
         rightAxis.drawGridLinesEnabled = NO;
         rightAxis.granularityEnabled = NO;
@@ -135,7 +138,7 @@ static int num = 1;
 
 - (NSTimer *)myTimer{
     if (!_myTimer) {
-        _myTimer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(getTemp) userInfo:nil repeats:YES];
+        _myTimer = [NSTimer scheduledTimerWithTimeInterval:0.6 target:self selector:@selector(getTemp) userInfo:nil repeats:YES];
     }
     return _myTimer;
 }
@@ -160,69 +163,88 @@ static int num = 1;
 #pragma mark - actions
 - (void)test{
     //[self dismissViewControllerAnimated:YES completion:nil];
-    //[self setDataValue: num];
-    //_myTimer = [self myTimer];
+    //[self setDataValue:nil];
+    _myTimer = [self myTimer];
+//    NSMutableArray *getTemp = [[NSMutableArray alloc ] init];
+//    [getTemp addObject:[NSNumber numberWithUnsignedChar:0x68]];
+//    [getTemp addObject:[NSNumber numberWithUnsignedChar:0x01]];
+//    [getTemp addObject:[NSNumber numberWithUnsignedChar:0x00]];
+//    [getTemp addObject:[NSNumber numberWithUnsignedChar:0x00]];
+//    [getTemp addObject:[NSNumber numberWithUnsignedChar:0x02]];
+//    [getTemp addObject:[NSNumber numberWithUnsignedChar:0x10]];
+//    [getTemp addObject:[NSNumber numberWithUnsignedChar:0x02]];
+//    [getTemp addObject:[NSNumber numberWithUnsignedChar:[_myNet getCS:getTemp]]];
+//    [getTemp addObject:[NSNumber numberWithUnsignedChar:0x16]];
+//    [getTemp addObject:[NSNumber numberWithUnsignedChar:0x0D]];
+//    [getTemp addObject:[NSNumber numberWithUnsignedChar:0x0A]];
+//    [_myNet send:getTemp withTag:102];
+}
+
+- (void)getTemp{
     NSMutableArray *getTemp = [[NSMutableArray alloc ] init];
     [getTemp addObject:[NSNumber numberWithUnsignedChar:0x68]];
     [getTemp addObject:[NSNumber numberWithUnsignedChar:0x00]];
-    [getTemp addObject:[NSNumber numberWithUnsignedChar:0x00]];
+    [getTemp addObject:[NSNumber numberWithUnsignedChar:_myNet.frameCount]];
     [getTemp addObject:[NSNumber numberWithUnsignedChar:0x00]];
     [getTemp addObject:[NSNumber numberWithUnsignedChar:0x01]];
     [getTemp addObject:[NSNumber numberWithUnsignedChar:0x02]];
-    [getTemp addObject:[NSNumber numberWithUnsignedChar:[_myNet getCS:getTemp]]];
+    [getTemp addObject:[NSNumber numberWithUnsignedChar:[NSObject getCS:getTemp]]];
     [getTemp addObject:[NSNumber numberWithUnsignedChar:0x16]];
     [getTemp addObject:[NSNumber numberWithUnsignedChar:0x0D]];
     [getTemp addObject:[NSNumber numberWithUnsignedChar:0x0A]];
-    [_myNet send:getTemp withTag:102];
+    
+    _myNet.frameCount++;
+    
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        [_myNet send:getTemp withTag:102];
+        [_myNet.mySocket readDataWithTimeout:-1 tag:2];
+    });
 }
 
-- (void)setDataValue:(NSArray *)data
+- (void)setDataValue:(NSArray *)dataArray
 {
-    if (!_yVals) {
-        _yVals = [[NSMutableArray alloc] init];
-    }
-    if (!_yVals_diff) {
-        _yVals_diff = [[NSMutableArray alloc] init];
-    }
-    
-    double tempOut = ([data[6] intValue] * 256 + [data[7] intValue]) / 10.0;
-    double tempIn = ([data[8] intValue] * 256 + [data[9] intValue]) / 10.0;
-    double tempBean = ([data[10] intValue] * 256 + [data[11] intValue]) / 10.0;
-    double tempEnvironment = ([data[12] intValue] * 256 + [data[13] intValue]) / 10.0;
     
     
-    NSLog(@"%f,%f,%f,%f",tempOut,tempIn,tempBean,tempEnvironment);
-    
-    [_yVals addObject:[[ChartDataEntry alloc] initWithX:[_yVals count] y:tempOut]];
-
 //    NSDictionary *tempDic = [NSObject readLocalFileWithName:@"数据"];
 //    NSArray *beanTemp = tempDic[@"temp2"];
+//    NSMutableArray *yVals = [NSMutableArray array];
 //    for (int i = 0, j = 0; i < [beanTemp count]; i++) {
-//        [_yVals addObject:[[ChartDataEntry alloc] initWithX:i y:[beanTemp[i] doubleValue]]];
-//
+//        [yVals addObject:[[ChartDataEntry alloc] initWithX:i y:[beanTemp[i] doubleValue]]];
+
 //        if (i != 0) {
 //            [_yVals_diff addObject:[[ChartDataEntry alloc] initWithX:i y:([beanTemp[i] doubleValue] - [beanTemp[i-1] doubleValue])]];
 //        }
-//
-////        j = i * 10;
-////        if (j != 0 && j < [beanTemp count]) {
-////            [_yVals_diff addObject:[[ChartDataEntry alloc] initWithX:j y:([beanTemp[j] doubleValue] - [beanTemp[j-10] doubleValue])/10]];
-////        }
+
+//        j = i * 10;
+//        if (j != 0 && j < [beanTemp count]) {
+//            [_yVals_diff addObject:[[ChartDataEntry alloc] initWithX:j y:([beanTemp[j] doubleValue] - [beanTemp[j-10] doubleValue])/10]];
+//        }
 //    }
     
-    LineChartDataSet *set1 = nil, *set2 = nil;
+    LineChartDataSet *set1 = nil, *set2 = nil, *set3 = nil, *set4 = nil;
     
     if (_chartView.data.dataSetCount > 0)
     {
         set1 = (LineChartDataSet *)_chartView.data.dataSets[0];
-        set1.values = _yVals;
+        set1.values = _myNet.yVals_Out;
         
         //set2 = (LineChartDataSet *)_chartView.data.dataSets[1];
-        //set2.values = _yVals_diff;
+        //set2.values = _myNet.yVals_In;
         
-        //实时调整y轴最大值
-        if (tempOut > leftAxisMax) {
-            _chartView.leftAxis.axisMaximum = tempOut + 30;
+        set3 = (LineChartDataSet *)_chartView.data.dataSets[1];
+        set3.values = _myNet.yVals_Bean;
+        
+       // set4 = (LineChartDataSet *)_chartView.data.dataSets[3];
+       // set4.values = _myNet.yVals_Environment;
+        
+//        //实时调整y轴最大值
+//        if (tempOut > leftAxisMax) {
+//            _chartView.leftAxis.axisMaximum = tempOut + 30;
+//        }
+        
+        if (_myNet.yVals_Out.count > 150) {
+            _chartView.xAxis.axisRange = 15;
+            [_chartView setVisibleXRangeWithMinXRange:0.5 maxXRange:UI_IS_IPHONE5?4:5];
         }
         
         [_chartView.data notifyDataChanged];
@@ -230,7 +252,8 @@ static int num = 1;
     }
     else
     {
-        set1 = [[LineChartDataSet alloc] initWithValues:_yVals label:LocalString(@"豆温")];
+        set1 = [[LineChartDataSet alloc] initWithValues:_myNet.yVals_Out label:LocalString(@"进风温")];
+        //set1 = [[LineChartDataSet alloc] initWithValues:— label:LocalString(@"进风温")];
         set1.axisDependency = AxisDependencyLeft;
         [set1 setColor:[UIColor colorWithRed:51/255.f green:181/255.f blue:229/255.f alpha:1.f]];
         [set1 setCircleColor:UIColor.whiteColor];
@@ -245,8 +268,8 @@ static int num = 1;
         set1.highlightEnabled = NO;//选中拐点,是否开启高亮效果(显示十字线)
         //set1.mode = LineChartModeCubicBezier;
         
-        set2 = [[LineChartDataSet alloc] initWithValues:_yVals_diff label:LocalString(@"豆温差")];
-        set2.axisDependency = AxisDependencyRight;
+        set2 = [[LineChartDataSet alloc] initWithValues:_myNet.yVals_In label:LocalString(@"出风温")];
+        set2.axisDependency = AxisDependencyLeft;
         [set2 setColor:[UIColor colorWithRed:229/255.f green:181/255.f blue:51/255.f alpha:1.f]];
         [set2 setCircleColor:UIColor.whiteColor];
         set2.lineWidth = 2.0;
@@ -259,15 +282,48 @@ static int num = 1;
         //set1.cubicIntensity = 1;//曲线弧度
         set2.highlightEnabled = NO;//选中拐点,是否开启高亮效果(显示十字线)
         
+        set3 = [[LineChartDataSet alloc] initWithValues:_myNet.yVals_Bean label:LocalString(@"豆温")];
+        set3.axisDependency = AxisDependencyLeft;
+        [set3 setColor:[UIColor greenColor]];
+        [set3 setCircleColor:UIColor.whiteColor];
+        set3.lineWidth = 2.0;
+        set3.circleRadius = 0.0;
+        set3.fillAlpha = 65/255.0;
+        set3.fillColor = [UIColor colorWithRed:229/255.f green:181/255.f blue:51/255.f alpha:1.f];
+        set3.highlightColor = [UIColor colorWithRed:244/255.f green:117/255.f blue:117/255.f alpha:1.f];
+        set3.drawCircleHoleEnabled = NO;
+        set3.drawValuesEnabled = NO;//是否在拐点处显示数据
+        //set1.cubicIntensity = 1;//曲线弧度
+        set3.highlightEnabled = NO;//选中拐点,是否开启高亮效果(显示十字线)
+        
+        set4 = [[LineChartDataSet alloc] initWithValues:_myNet.yVals_Environment label:LocalString(@"环境温")];
+        set4.axisDependency = AxisDependencyLeft;
+        [set4 setColor:[UIColor yellowColor]];
+        [set4 setCircleColor:UIColor.whiteColor];
+        set4.lineWidth = 2.0;
+        set4.circleRadius = 0.0;
+        set4.fillAlpha = 65/255.0;
+        set4.fillColor = [UIColor colorWithRed:229/255.f green:181/255.f blue:51/255.f alpha:1.f];
+        set4.highlightColor = [UIColor colorWithRed:244/255.f green:117/255.f blue:117/255.f alpha:1.f];
+        set4.drawCircleHoleEnabled = NO;
+        set4.drawValuesEnabled = NO;//是否在拐点处显示数据
+        //set1.cubicIntensity = 1;//曲线弧度
+        set4.highlightEnabled = NO;//选中拐点,是否开启高亮效果(显示十字线)
         
         NSMutableArray *dataSets = [[NSMutableArray alloc] init];
         [dataSets addObject:set1];
         //[dataSets addObject:set2];
+        [dataSets addObject:set3];
+        //[dataSets addObject:set4];
         
         LineChartData *data = [[LineChartData alloc] initWithDataSets:dataSets];
         [data setValueTextColor:UIColor.whiteColor];
         [data setValueFont:[UIFont systemFontOfSize:9.f]];
         
+        _chartView.xAxis.axisRange = 15;
+        [_chartView setVisibleXRangeWithMinXRange:0.5 maxXRange:UI_IS_IPHONE5?4:5];
+
+        _chartView.xAxis.labelCount = 6;
         _chartView.data = data;
     }
 }
@@ -317,4 +373,11 @@ static int num = 1;
     }
 }
 
+- (void)gotCountTempSucc{
+    [_myTimer setFireDate:[NSDate date]];
+}
+
+- (void)tcpDisconnect{
+    [_myTimer setFireDate:[NSDate distantFuture]];
+}
 @end

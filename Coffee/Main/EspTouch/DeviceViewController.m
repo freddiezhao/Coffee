@@ -354,7 +354,6 @@ NSString *const CellNibName_device = @"DeviceTableViewCell";
         NSError *error = nil;
         [[NetWork shareNetWork] connectToHost:[_ipArray objectAtIndex:indexPath.row] onPort:16888 error:&error];
         
-        
         if (error) {
             NSLog(@"tcp连接错误:%@",error);
         }
