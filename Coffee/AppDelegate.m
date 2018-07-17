@@ -77,7 +77,7 @@
 
 - (void)customizeInterface {
     UINavigationBar *navigationBarAppearance = [UINavigationBar appearance];
-    [navigationBarAppearance setBarTintColor:[UIColor colorWithHexString:@"996640"]];
+    [navigationBarAppearance setBarTintColor:[UIColor colorWithHexString:yColor_common]];
     //[navigationBarAppearance setTintColor:[UIColor whiteColor]];//返回按钮的箭头颜色
     //[[UIBarButtonItem appearance] setBackButtonTitlePositionAdjustment:UIOffsetMake(0, -60) forBarMetrics:UIBarMetricsDefault];
     NSDictionary *textAttributes = @{

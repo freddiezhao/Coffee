@@ -42,8 +42,12 @@
 #define kSafeArea_Bottom (kDevice_Is_iPhoneX? 34: 0)
 
 #define yColor_back @"D8DADD"
+#define yColor_common @"996640"
 #define tabbarHeight ScreenHeight < 700 ? 44.f : 60.f
 #define buttonHeight 44
+#define cellHeight 44
+#define viewWidth self.contentView.frame.size.width
+#define viewHeight self.contentView.frame.size.height
 
 #endif /* Coffee_Prefix_pch */
 

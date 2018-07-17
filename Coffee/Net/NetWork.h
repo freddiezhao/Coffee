@@ -31,9 +31,12 @@ static int recvCount = 0;
 static int sendCount = 0;
 
 ///@读取数据数量版本
-static NSInteger tempCountVer = -1;
+static NSInteger tempCountVer = 1000;
 
 @interface NetWork : NSObject <GCDAsyncSocketDelegate>
+
+@property (nonatomic, strong) dispatch_queue_t queue;
+@property (nonatomic, strong) dispatch_semaphore_t signal;
 
 ///@brief Wi-Fi信息
 @property (nonatomic, strong) NSString *ssid;
@@ -51,6 +54,7 @@ static NSInteger tempCountVer = -1;
 @property (nonatomic, assign) FrameType68 frame68Type;
 
 ///@brief 温度数据
+@property (nonatomic, strong) NSTimer *myTimer;
 @property (nonatomic, strong) NSArray *tempData;
 
 ///@brief 豆温数据
@@ -71,4 +75,5 @@ static NSInteger tempCountVer = -1;
 - (BOOL)connectToHost:(NSString*)host onPort:(uint16_t)port error:(NSError **)errPtr;
 
 - (void)inquireTimer;
+- (void)bakeFire;
 @end

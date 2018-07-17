@@ -16,7 +16,6 @@
 
 @property (nonatomic, strong) NetWork *myNet;
 
-@property (nonatomic, strong) NSTimer *myTimer;
 @end
 
 @implementation BakeCurveViewController
@@ -52,14 +51,10 @@
 
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(gotCountTempSucc) name:@"gotCountTempSucc" object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tcpDisconnect) name:@"tcpDisconnect" object:nil];
 }
 
 - (void)viewWillDisappear:(BOOL)animated{
     [super viewWillDisappear:animated];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"gotCountTempSucc" object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"tcpDisconnect" object:nil];
 }
 
 - (void)dealloc{
@@ -136,12 +131,7 @@
     return _chartView;
 }
 
-- (NSTimer *)myTimer{
-    if (!_myTimer) {
-        _myTimer = [NSTimer scheduledTimerWithTimeInterval:0.6 target:self selector:@selector(getTemp) userInfo:nil repeats:YES];
-    }
-    return _myTimer;
-}
+
 
 - (void)uiMasonry{
     
@@ -164,7 +154,6 @@
 - (void)test{
     //[self dismissViewControllerAnimated:YES completion:nil];
     //[self setDataValue:nil];
-    _myTimer = [self myTimer];
 //    NSMutableArray *getTemp = [[NSMutableArray alloc ] init];
 //    [getTemp addObject:[NSNumber numberWithUnsignedChar:0x68]];
 //    [getTemp addObject:[NSNumber numberWithUnsignedChar:0x01]];
@@ -178,27 +167,6 @@
 //    [getTemp addObject:[NSNumber numberWithUnsignedChar:0x0D]];
 //    [getTemp addObject:[NSNumber numberWithUnsignedChar:0x0A]];
 //    [_myNet send:getTemp withTag:102];
-}
-
-- (void)getTemp{
-    NSMutableArray *getTemp = [[NSMutableArray alloc ] init];
-    [getTemp addObject:[NSNumber numberWithUnsignedChar:0x68]];
-    [getTemp addObject:[NSNumber numberWithUnsignedChar:0x00]];
-    [getTemp addObject:[NSNumber numberWithUnsignedChar:_myNet.frameCount]];
-    [getTemp addObject:[NSNumber numberWithUnsignedChar:0x00]];
-    [getTemp addObject:[NSNumber numberWithUnsignedChar:0x01]];
-    [getTemp addObject:[NSNumber numberWithUnsignedChar:0x02]];
-    [getTemp addObject:[NSNumber numberWithUnsignedChar:[NSObject getCS:getTemp]]];
-    [getTemp addObject:[NSNumber numberWithUnsignedChar:0x16]];
-    [getTemp addObject:[NSNumber numberWithUnsignedChar:0x0D]];
-    [getTemp addObject:[NSNumber numberWithUnsignedChar:0x0A]];
-    
-    _myNet.frameCount++;
-    
-    dispatch_async(dispatch_get_global_queue(0, 0), ^{
-        [_myNet send:getTemp withTag:102];
-        [_myNet.mySocket readDataWithTimeout:-1 tag:2];
-    });
 }
 
 - (void)setDataValue:(NSArray *)dataArray
@@ -373,11 +341,4 @@
     }
 }
 
-- (void)gotCountTempSucc{
-    [_myTimer setFireDate:[NSDate date]];
-}
-
-- (void)tcpDisconnect{
-    [_myTimer setFireDate:[NSDate distantFuture]];
-}
 @end

@@ -12,6 +12,9 @@
 ///@brife 可判断的数据帧类型数量
 #define LEN 6
 
+///@brife 一次最大读取温度
+#define maxTempCount 20
+
 static NetWork *_netWork = nil;
 static NSInteger gotTempCount = 0;
 
@@ -62,16 +65,33 @@ static NSInteger gotTempCount = 0;
             _yVals_Diff = [[NSMutableArray alloc] init];
         }
         _frameCount = 0;
+        _myTimer = [self myTimer];
+        _queue = dispatch_queue_create("com.thingcom.queue", DISPATCH_QUEUE_SERIAL);
+        if (!_signal) {
+            _signal = dispatch_semaphore_create(0);
+        }
     }
     return self;
+}
+
+#pragma mark - Lazy load
+- (NSTimer *)myTimer{
+    if (!_myTimer) {
+        _myTimer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(getTemp) userInfo:nil repeats:YES];
+        [_myTimer setFireDate:[NSDate distantFuture]];
+    }
+    return _myTimer;
 }
 
 #pragma mark - Tcp Delegate
 - (void)socket:(GCDAsyncSocket *)sock didConnectToHost:(NSString *)host port:(uint16_t)port
 {
     NSLog(@"连接成功");
+    _frameCount = 0;
     [self inquireTimer];
     
+    [_mySocket readDataWithTimeout:-1 tag:1];
+    [_mySocket readDataWithTimeout:-1 tag:1];
     [_mySocket readDataWithTimeout:-1 tag:1];
 }
 
@@ -81,7 +101,7 @@ static NSInteger gotTempCount = 0;
     dispatch_async(dispatch_get_main_queue(), ^{
         [NSObject showHudTipStr:LocalString(@"连接已断开")];
     });
-    
+    [_myTimer setFireDate:[NSDate distantFuture]];
 }
 
 - (void)socket:(GCDAsyncSocket *)sock didReadData:(NSData *)data withTag:(long)tag
@@ -89,6 +109,11 @@ static NSInteger gotTempCount = 0;
     NSLog(@"接收到消息%@",data);
     NSLog(@"socket成功收到帧, tag: %ld", tag);
     [self checkOutFrame:data];
+}
+
+- (void)socket:(GCDAsyncSocket *)sock didWriteDataWithTag:(long)tag{
+    _frameCount++;
+    //NSLog(@"发送了一条帧");
 }
 
 #pragma mark - Actions
@@ -120,10 +145,14 @@ static NSInteger gotTempCount = 0;
             if (tag == 100) {
                 //fire
                 [self.mySocket writeData:sendData withTimeout:-1 tag:1];
+                [_mySocket readDataWithTimeout:-1 tag:1];
             }else if(tag == 101){
                 [self.mySocket writeData:sendData withTimeout:-1 tag:1];
-            }
-            else if(tag == 102){
+                [_mySocket readDataWithTimeout:-1 tag:1];
+            }else if (tag == 102){
+                [self.mySocket writeData:sendData withTimeout:-1 tag:1];
+                [_mySocket readDataWithTimeout:-1 tag:1];
+            }else if(tag == 103){
                 [self.mySocket writeData:sendData withTimeout:-1 tag:2];
                 if (sendCount - recvCount == 4) {
                     NSLog(@"两秒没回信息，断开连接");
@@ -134,13 +163,15 @@ static NSInteger gotTempCount = 0;
                     if (![_mySocket isDisconnected]) {
                         NSLog(@"主动断开");
                         [_mySocket disconnect];
-                        [[NSNotificationCenter defaultCenter] postNotificationName:@"tcpDisconnect" object:nil userInfo:nil];
                     }
                 }
                 sendCount++;
+            }else if (tag == 104){
+                [self.mySocket writeData:sendData withTimeout:-1 tag:1];
+                [_mySocket readDataWithTimeout:-1 tag:1];
             }
             
-            [NSThread sleepForTimeInterval:0.5];
+            [NSThread sleepForTimeInterval:1];
             
         }
         else
@@ -161,7 +192,7 @@ static NSInteger gotTempCount = 0;
     NSMutableArray *getTimer = [[NSMutableArray alloc ] init];
     [getTimer addObject:[NSNumber numberWithUnsignedChar:0x68]];
     [getTimer addObject:[NSNumber numberWithUnsignedChar:0x00]];
-    [getTimer addObject:[NSNumber numberWithUnsignedChar:0x00]];
+    [getTimer addObject:[NSNumber numberWithUnsignedChar:_frameCount]];
     [getTimer addObject:[NSNumber numberWithUnsignedChar:0x00]];
     [getTimer addObject:[NSNumber numberWithUnsignedChar:0x01]];
     [getTimer addObject:[NSNumber numberWithUnsignedChar:0x10]];
@@ -169,7 +200,7 @@ static NSInteger gotTempCount = 0;
     [getTimer addObject:[NSNumber numberWithUnsignedChar:0x16]];
     [getTimer addObject:[NSNumber numberWithUnsignedChar:0x0D]];
     [getTimer addObject:[NSNumber numberWithUnsignedChar:0x0A]];
-    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+    dispatch_async(_queue, ^{
         [self send:getTimer withTag:100];
     });
 }
@@ -179,7 +210,7 @@ static NSInteger gotTempCount = 0;
     NSMutableArray *getTimer = [[NSMutableArray alloc ] init];
     [getTimer addObject:[NSNumber numberWithUnsignedChar:0x68]];
     [getTimer addObject:[NSNumber numberWithUnsignedChar:0x00]];
-    [getTimer addObject:[NSNumber numberWithUnsignedChar:0x00]];
+    [getTimer addObject:[NSNumber numberWithUnsignedChar:_frameCount]];
     [getTimer addObject:[NSNumber numberWithUnsignedChar:0x00]];
     [getTimer addObject:[NSNumber numberWithUnsignedChar:0x01]];
     [getTimer addObject:[NSNumber numberWithUnsignedChar:0x04]];
@@ -187,56 +218,116 @@ static NSInteger gotTempCount = 0;
     [getTimer addObject:[NSNumber numberWithUnsignedChar:0x16]];
     [getTimer addObject:[NSNumber numberWithUnsignedChar:0x0D]];
     [getTimer addObject:[NSNumber numberWithUnsignedChar:0x0A]];
-    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+    dispatch_async(_queue, ^{
         [self send:getTimer withTag:101];
     });
 }
 
 //查询count量的数据
-- (void)inquireTempWithCount:(UInt8)count startPosition:(UInt8)start{
+- (void)inquireTempWithCount:(UInt8)count startPosition:(int)start{
+    UInt8 highStart = start / 256;
+    UInt8 lowStart = start % 256;
     NSMutableArray *getTimer = [[NSMutableArray alloc ] init];
     [getTimer addObject:[NSNumber numberWithUnsignedChar:0x68]];
     [getTimer addObject:[NSNumber numberWithUnsignedChar:0x00]];
+    [getTimer addObject:[NSNumber numberWithUnsignedChar:_frameCount]];
     [getTimer addObject:[NSNumber numberWithUnsignedChar:0x00]];
-    [getTimer addObject:[NSNumber numberWithUnsignedChar:0x00]];
-    [getTimer addObject:[NSNumber numberWithUnsignedChar:0x03]];
+    [getTimer addObject:[NSNumber numberWithUnsignedChar:0x04]];
     [getTimer addObject:[NSNumber numberWithUnsignedChar:0x05]];
-    [getTimer addObject:[NSNumber numberWithUnsignedChar:start]];
+    [getTimer addObject:[NSNumber numberWithUnsignedChar:highStart]];
+    [getTimer addObject:[NSNumber numberWithUnsignedChar:lowStart]];
     [getTimer addObject:[NSNumber numberWithUnsignedChar:count]];
     [getTimer addObject:[NSNumber numberWithUnsignedChar:[NSObject getCS:getTimer]]];
     [getTimer addObject:[NSNumber numberWithUnsignedChar:0x16]];
     [getTimer addObject:[NSNumber numberWithUnsignedChar:0x0D]];
     [getTimer addObject:[NSNumber numberWithUnsignedChar:0x0A]];
-    dispatch_async(dispatch_get_global_queue(0, 0), ^{
-        [self send:getTimer withTag:101];
+    dispatch_async(_queue, ^{
+        [self send:getTimer withTag:102];
     });
 }
 
 //先判断之前是否有温度数据，然后多次查询获得所有需要的温度数据
 - (void)inquireNeedTempWithLoop:(NSInteger)count tempVersion:(NSInteger)ver{
+    dispatch_time_t time = dispatch_time(DISPATCH_TIME_NOW, 1.5 * 1000 * 1000 * 1000);
+    
     if (ver != tempCountVer) {
         [_yVals_Out removeAllObjects];
         [_yVals_In removeAllObjects];
         [_yVals_Bean removeAllObjects];
         [_yVals_Environment removeAllObjects];
         
-        for (int i = 0; i < count; i += 126) {
-            if (i + 126 < count) {
-                [self inquireTempWithCount:0x7e startPosition:i];
-            }else if (i != count){
-                [self inquireTempWithCount:count - i startPosition:i];
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            for (int i = 0; i < count; i += maxTempCount) {
+                if (i + maxTempCount < count) {
+                    [self inquireTempWithCount:maxTempCount startPosition:i];
+                }else if (i != count){
+                    [self inquireTempWithCount:count - i startPosition:i];
+                }
+                sendCount++;
+                if (dispatch_semaphore_wait(_signal, DISPATCH_TIME_FOREVER) != 0) {
+                    if (sendCount - recvCount >= 3) {
+                        if (![_mySocket isDisconnected]) {
+                            NSLog(@"主动断开");
+                            [_mySocket disconnect];
+                        }
+                    }
+                    i -= maxTempCount;
+                }
+                
             }
-        }
+        });
         tempCountVer = ver;
     }else{
-        for (int i = (int)[_yVals_Out count]; i < count; i += 126) {
-            if (i + 126 < count) {
-                [self inquireTempWithCount:0x7e startPosition:i];
-            }else if (i != count){
-                [self inquireTempWithCount:count - i startPosition:i];
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            for (int i = (int)[_yVals_Out count]; i < count; i += maxTempCount) {
+                if (i + maxTempCount < count) {
+                    [self inquireTempWithCount:maxTempCount startPosition:i];
+                }else if (i != count){
+                    [self inquireTempWithCount:count - i startPosition:i];
+                }
+                if (dispatch_semaphore_wait(_signal, time) != 0) {
+                    i -= maxTempCount;
+                }
             }
-        }
+        });
+        
     }
+}
+
+- (void)getTemp{
+    NSMutableArray *getTemp = [[NSMutableArray alloc ] init];
+    [getTemp addObject:[NSNumber numberWithUnsignedChar:0x68]];
+    [getTemp addObject:[NSNumber numberWithUnsignedChar:0x00]];
+    [getTemp addObject:[NSNumber numberWithUnsignedChar:_frameCount]];
+    [getTemp addObject:[NSNumber numberWithUnsignedChar:0x00]];
+    [getTemp addObject:[NSNumber numberWithUnsignedChar:0x01]];
+    [getTemp addObject:[NSNumber numberWithUnsignedChar:0x02]];
+    [getTemp addObject:[NSNumber numberWithUnsignedChar:[NSObject getCS:getTemp]]];
+    [getTemp addObject:[NSNumber numberWithUnsignedChar:0x16]];
+    [getTemp addObject:[NSNumber numberWithUnsignedChar:0x0D]];
+    [getTemp addObject:[NSNumber numberWithUnsignedChar:0x0A]];
+    
+    dispatch_async(_queue, ^{
+        [self send:getTemp withTag:103];
+        [_mySocket readDataWithTimeout:-1 tag:2];
+    });
+}
+
+- (void)bakeFire{
+    NSMutableArray *bakeFire = [[NSMutableArray alloc ] init];
+    [bakeFire addObject:[NSNumber numberWithUnsignedChar:0x68]];
+    [bakeFire addObject:[NSNumber numberWithUnsignedChar:0x00]];
+    [bakeFire addObject:[NSNumber numberWithUnsignedChar:_frameCount]];
+    [bakeFire addObject:[NSNumber numberWithUnsignedChar:0x00]];
+    [bakeFire addObject:[NSNumber numberWithUnsignedChar:0x01]];
+    [bakeFire addObject:[NSNumber numberWithUnsignedChar:0x00]];
+    [bakeFire addObject:[NSNumber numberWithUnsignedChar:[NSObject getCS:bakeFire]]];
+    [bakeFire addObject:[NSNumber numberWithUnsignedChar:0x16]];
+    [bakeFire addObject:[NSNumber numberWithUnsignedChar:0x0D]];
+    [bakeFire addObject:[NSNumber numberWithUnsignedChar:0x0A]];
+    dispatch_async(_queue, ^{
+        [self send:bakeFire withTag:104];
+    });
 }
 
 #pragma mark - Frame68 接收处理
@@ -244,6 +335,7 @@ static NSInteger gotTempCount = 0;
     //把读到的数据复制一份
     NSData *recvBuffer = [NSData dataWithData:data];
     NSUInteger recvLen = [recvBuffer length];
+    //NSLog(@"%lu",(unsigned long)recvLen);
     UInt8 *recv = (UInt8 *)[recvBuffer bytes];
     if (recvLen > 1000) {
         return;
@@ -317,9 +409,9 @@ static NSInteger gotTempCount = 0;
                 recvCount++;
                 NSLog(@"%d",sendCount);
                 NSLog(@"%d",recvCount);
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [NSObject showHudTipStr:[NSString stringWithFormat:@"%d,%d",sendCount,recvCount] withTime:0.5];
-                });
+//                dispatch_async(dispatch_get_main_queue(), ^{
+//                    [NSObject showHudTipStr:[NSString stringWithFormat:@"%d,%d",sendCount,recvCount] withTime:0.5];
+//                });
                 
                 if (sendCount != recvCount) {
                     //丢了一帧，重新开始相同计数，连续丢两条才断连
@@ -332,7 +424,7 @@ static NSInteger gotTempCount = 0;
             }else if (self.msg68Type == getCountTemp){
                 
                 NSInteger size = [_recivedData68[3] unsignedIntegerValue] * 256 + [_recivedData68[4] unsignedIntegerValue];
-                for (int i = 0; i < size; i++) {
+                for (int i = 0; i < (size - 1)/8; i++) {
                     double tempOut = ([data[6 + i * 8] intValue] * 256 + [data[7 + i * 8] intValue]) / 10.0;
                     double tempIn = ([data[8 + i * 8] intValue] * 256 + [data[9 + i * 8] intValue]) / 10.0;
                     double tempBean = ([data[10 + i * 8] intValue] * 256 + [data[11 + i * 8] intValue]) / 10.0;
@@ -345,8 +437,13 @@ static NSInteger gotTempCount = 0;
                     [_yVals_Environment addObject:[[ChartDataEntry alloc] initWithX:[_yVals_Environment count] y:tempEnvironment]];
                 }
                 
-                //无法判断是否全部温度读完了
-                //[[NSNotificationCenter defaultCenter] postNotificationName:@"gotCountTempSucc" object:nil userInfo:nil];
+                sendCount = 0;
+                gotTempCount -= maxTempCount;
+                if (gotTempCount <= 0) {
+                    [_myTimer setFireDate:[NSDate date]];
+                }
+                dispatch_semaphore_signal(_signal);
+                
             }else if (self.msg68Type == getTimer){
                 switch ([_recivedData68[6] unsignedIntegerValue]) {
                         //暂停计时的时候无法进入曲线页面
@@ -356,6 +453,9 @@ static NSInteger gotTempCount = 0;
                         break;
                         
                     case 2:
+                        [_myTimer setFireDate:[NSDate date]];
+                        break;
+                        
                     default:
                         break;
                 }

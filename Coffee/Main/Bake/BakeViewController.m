@@ -9,10 +9,17 @@
 #import "BakeViewController.h"
 #import "DeviceViewController.h"
 #import "BakeCurveViewController.h"
-@interface BakeViewController ()
+#import "AddBeanTableViewCell.h"
+
+NSString *const kCellIdentifier_addBean = @"cellID_addBean";
+
+@interface BakeViewController () <UITableViewDelegate,UITableViewDataSource>
 
 @property (nonatomic, strong) UIButton *bakeCurveBtn;
+
 @property (nonatomic, strong) UIButton *addBeanBtn;
+@property (nonatomic, strong) UIView *addBeanView;
+@property (nonatomic, strong) UITableView *addBeanTable;
 
 @property (nonatomic, strong) UIView *beanTempView;
 @property (nonatomic, strong) UILabel *beanTempLabel;
@@ -20,12 +27,23 @@
 @property (nonatomic, strong) UILabel *status;
 
 @property (nonatomic, strong) UIView *inTempView;
+@property (nonatomic, strong) UILabel *inTempLabel;
+
 @property (nonatomic, strong) UIView *outTempView;
+@property (nonatomic, strong) UILabel *outTempLabel;
+
 @property (nonatomic, strong) UIView *environTempView;
+@property (nonatomic, strong) UILabel *environTempLabel;
 
 @property (nonatomic, strong) UIView *line1;
 @property (nonatomic, strong) UIView *line2;
 @property (nonatomic, strong) UIView *line3;
+
+@property (nonatomic, strong) UIButton *leftPopBtn;
+@property (nonatomic, strong) UIView *leftControlView;
+
+@property (nonatomic, strong) UIButton *rightPopBtn;
+@property (nonatomic, strong) UIView *rightControlView;
 
 @end
 
@@ -49,6 +67,9 @@
     _bakeCurveBtn = [self bakeCurveBtn];
     _addBeanBtn = [self addBeanBtn];
     _line1 = [self line1];
+    _leftPopBtn = [self leftPopBtn];
+    _rightPopBtn = [self rightPopBtn];
+    _addBeanView = [self addBeanView];
     [self uiMasonry];
     
 }
@@ -57,6 +78,9 @@
     [super viewDidAppear:animated];
     _line2 = [self line2];
     _line3 = [self line3];
+    _leftControlView = [self leftControlView];
+    _rightControlView = [self rightControlView];
+    [self.view bringSubviewToFront:_addBeanView];
 }
 
 - (void)viewWillAppear:(BOOL)animated{
@@ -81,8 +105,23 @@
         beanLabel.text = LocalString(@"豆温");
         beanLabel.font = [UIFont systemFontOfSize:20.0];
         [_beanTempView addSubview:beanLabel];
-        
+        _beanTempLabel = [[UILabel alloc] init];
+        _beanTempLabel.text = @"105℃";
+        _beanTempLabel.textAlignment = NSTextAlignmentCenter;
+        [_beanTempView addSubview:_beanTempLabel];
+        _beanTempRateLabel = [[UILabel alloc] init];
+        _beanTempRateLabel.text = @"5.39℃/min";
+        _beanTempRateLabel.textAlignment = NSTextAlignmentCenter;
+        _beanTempRateLabel.textColor = [UIColor colorWithHexString:yColor_common];
+        [_beanTempView addSubview:_beanTempRateLabel];
         UIView *line = [[UIView alloc] init];
+        [line setBackgroundColor:[UIColor blackColor]];
+        [_beanTempView addSubview:line];
+        _status = [[UILabel alloc] init];
+        _status.text = @"电源已开启";
+        _status.textAlignment = NSTextAlignmentCenter;
+        _status.textColor = [UIColor redColor];
+        [_beanTempView addSubview:_status];
         
         [beanImage mas_makeConstraints:^(MASConstraintMaker *make) {
             make.size.mas_equalTo(CGSizeMake(40, 40));
@@ -93,6 +132,26 @@
             make.size.mas_equalTo(CGSizeMake(80, 40));
             make.left.equalTo(_beanTempView.mas_centerX).offset(5);
             make.centerY.equalTo(beanImage.mas_centerY);
+        }];
+        [_beanTempLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.size.mas_equalTo(CGSizeMake(120, 30));
+            make.centerX.equalTo(_beanTempView.mas_centerX);
+            make.top.equalTo(beanLabel.mas_bottom);
+        }];
+        [_beanTempRateLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.size.mas_equalTo(CGSizeMake(120, 30));
+            make.centerX.equalTo(_beanTempView.mas_centerX);
+            make.top.equalTo(_beanTempLabel.mas_bottom);
+        }];
+        [line mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.size.mas_equalTo(CGSizeMake(90 * 1.73, 1));
+            make.centerX.equalTo(_beanTempView.mas_centerX);
+            make.centerY.equalTo(_beanTempView.mas_centerY).offset(30);
+        }];
+        [_status mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.size.mas_equalTo(CGSizeMake(120, 30));
+            make.centerX.equalTo(_beanTempView.mas_centerX);
+            make.top.equalTo(line.mas_bottom).offset(5);
         }];
         
         [self.view addSubview:_beanTempView];
@@ -109,6 +168,36 @@
         _inTempView.layer.borderWidth = 1;
         _inTempView.layer.borderColor = [[UIColor blackColor] CGColor];
         
+        UIImageView *inImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"ic_bake_baking_inwind"]];
+        [_inTempView addSubview:inImage];
+        UILabel *inLabel = [[UILabel alloc] init];
+        inLabel.text = LocalString(@"入风温");
+        inLabel.font = [UIFont systemFontOfSize:13.0];
+        [_inTempView addSubview:inLabel];
+        _inTempLabel = [[UILabel alloc] init];
+        _inTempLabel.text = @"105℃";
+        _inTempLabel.textAlignment = NSTextAlignmentCenter;
+        _inTempLabel.font = [UIFont systemFontOfSize:13.0];
+        [_inTempView addSubview:_inTempLabel];
+        
+        [inImage mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.size.mas_equalTo(CGSizeMake(30, 30));
+            make.right.equalTo(_inTempView.mas_centerX);
+            make.top.equalTo(_inTempView.mas_top).offset(20);
+        }];
+        
+        [inLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.size.mas_equalTo(CGSizeMake(60, 30));
+            make.left.equalTo(_inTempView.mas_centerX);
+            make.centerY.equalTo(inImage.mas_centerY);
+        }];
+        
+        [_inTempLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.size.mas_equalTo(CGSizeMake(80, 30));
+            make.top.equalTo(inLabel.mas_bottom);
+            make.centerX.equalTo(_inTempView.mas_centerX);
+        }];
+        
         [self.view addSubview:_inTempView];
     }
     return _inTempView;
@@ -123,6 +212,36 @@
         _outTempView.layer.borderWidth = 1;
         _outTempView.layer.borderColor = [[UIColor blackColor] CGColor];
         
+        UIImageView *outImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"ic_bake_baking_outwind"]];
+        [_outTempView addSubview:outImage];
+        UILabel *outLabel = [[UILabel alloc] init];
+        outLabel.text = LocalString(@"出风温");
+        outLabel.font = [UIFont systemFontOfSize:13.0];
+        [_outTempView addSubview:outLabel];
+        _outTempLabel = [[UILabel alloc] init];
+        _outTempLabel.text = @"25℃";
+        _outTempLabel.textAlignment = NSTextAlignmentCenter;
+        _outTempLabel.font = [UIFont systemFontOfSize:13.0];
+        [_outTempView addSubview:_outTempLabel];
+        
+        [outImage mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.size.mas_equalTo(CGSizeMake(30, 30));
+            make.right.equalTo(_outTempView.mas_centerX);
+            make.top.equalTo(_outTempView.mas_top).offset(20);
+        }];
+        
+        [outLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.size.mas_equalTo(CGSizeMake(60, 30));
+            make.left.equalTo(_outTempView.mas_centerX);
+            make.centerY.equalTo(outImage.mas_centerY);
+        }];
+        
+        [_outTempLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.size.mas_equalTo(CGSizeMake(80, 30));
+            make.top.equalTo(outLabel.mas_bottom);
+            make.centerX.equalTo(_outTempView.mas_centerX);
+        }];
+        
         [self.view addSubview:_outTempView];
     }
     return _outTempView;
@@ -136,6 +255,36 @@
         _environTempView.layer.masksToBounds = YES;
         _environTempView.layer.borderWidth = 1;
         _environTempView.layer.borderColor = [[UIColor blackColor] CGColor];
+        
+        UIImageView *environImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"ic_baked"]];
+        [_environTempView addSubview:environImage];
+        UILabel *environLabel = [[UILabel alloc] init];
+        environLabel.text = LocalString(@"环境温");
+        environLabel.font = [UIFont systemFontOfSize:13.0];
+        [_environTempView addSubview:environLabel];
+        _environTempLabel = [[UILabel alloc] init];
+        _environTempLabel.text = @"25℃";
+        _environTempLabel.textAlignment = NSTextAlignmentCenter;
+        _environTempLabel.font = [UIFont systemFontOfSize:13.0];
+        [_environTempView addSubview:_environTempLabel];
+        
+        [environImage mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.size.mas_equalTo(CGSizeMake(30, 30));
+            make.right.equalTo(_environTempView.mas_centerX);
+            make.top.equalTo(_environTempView.mas_top).offset(20);
+        }];
+        
+        [environLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.size.mas_equalTo(CGSizeMake(60, 30));
+            make.left.equalTo(_environTempView.mas_centerX);
+            make.centerY.equalTo(environImage.mas_centerY);
+        }];
+        
+        [_environTempLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.size.mas_equalTo(CGSizeMake(80, 30));
+            make.top.equalTo(environLabel.mas_bottom);
+            make.centerX.equalTo(_environTempView.mas_centerX);
+        }];
         
         [self.view addSubview:_environTempView];
     }
@@ -229,7 +378,7 @@
         [_bakeCurveBtn setTitle:LocalString(@"烘焙曲线") forState:UIControlStateNormal];
         [_bakeCurveBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
         [_bakeCurveBtn setButtonStyleWithColor:[UIColor clearColor] Width:1.0 cornerRadius:buttonHeight * 0.1];
-        [_bakeCurveBtn setBackgroundColor:[UIColor colorWithHexString:@"996640"]];
+        [_bakeCurveBtn setBackgroundColor:[UIColor colorWithHexString:yColor_common]];
         [_bakeCurveBtn addTarget:self action:@selector(goBakeCurveViewController) forControlEvents:UIControlEventTouchUpInside];
         [self.view addSubview:_bakeCurveBtn];
     }
@@ -242,11 +391,177 @@
         [_addBeanBtn setTitle:LocalString(@"添加咖啡豆") forState:UIControlStateNormal];
         [_addBeanBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
         [_addBeanBtn setButtonStyleWithColor:[UIColor clearColor] Width:1.0 cornerRadius:buttonHeight * 0.3];
-        [_addBeanBtn setBackgroundColor:[UIColor colorWithHexString:@"996640"]];
+        [_addBeanBtn setBackgroundColor:[UIColor colorWithHexString:yColor_common]];
         [_addBeanBtn addTarget:self action:@selector(addCoffeeBean) forControlEvents:UIControlEventTouchUpInside];
         [self.view addSubview:_addBeanBtn];
     }
     return _addBeanBtn;
+}
+
+- (UIView *)addBeanView{
+    if (!_addBeanView) {
+        _addBeanView = [[UIView alloc] init];
+        _addBeanView.frame = CGRectMake(0, 0, ScreenWidth * 0.8, ScreenHeight * 0.5);
+        _addBeanView.backgroundColor = [UIColor whiteColor];
+        //_addBeanView.alpha = 0.8;
+        _addBeanView.center = self.view.center;
+        [self.view addSubview:_addBeanView];
+        [self.view bringSubviewToFront:_addBeanView];
+        
+        _addBeanTable = ({
+            UITableView *tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, cellHeight + 1, ScreenWidth * 0.8, ScreenHeight * 0.5 - cellHeight * 3 - 1) style:UITableViewStylePlain];
+            tableView.backgroundColor = [UIColor whiteColor];
+            tableView.dataSource = self;
+            tableView.delegate = self;
+            //tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+            [tableView registerClass:[AddBeanTableViewCell class] forCellReuseIdentifier:kCellIdentifier_addBean];
+            [self.addBeanView addSubview:tableView];
+            tableView.estimatedRowHeight = 0;
+            tableView.estimatedSectionHeaderHeight = 0;
+            tableView.estimatedSectionFooterHeight = 0;
+            //tableView.scrollEnabled = NO;
+            if ([tableView respondsToSelector:@selector(setSeparatorInset:)]) {
+                [tableView setSeparatorInset:UIEdgeInsetsZero];
+            }
+            if ([tableView respondsToSelector:@selector(setLayoutMargins:)])  {
+                [tableView setLayoutMargins:UIEdgeInsetsZero];
+            }
+            tableView;
+        });
+        
+        UIImageView *addBeanImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"ic_baked"]];
+        [_addBeanView addSubview:addBeanImage];
+        
+        UILabel *addBeanLabel = [[UILabel alloc] init];
+        addBeanLabel.text = LocalString(@"准备烘焙");
+        addBeanLabel.font = [UIFont systemFontOfSize:17.0];
+        addBeanLabel.textColor = [UIColor blackColor];
+        [_addBeanView addSubview:addBeanLabel];
+        
+        UIView *separatorView1 = [[UIView alloc] init];
+        separatorView1.backgroundColor = [UIColor colorWithHexString:yColor_back];
+        separatorView1.frame = CGRectMake(0, cellHeight, _addBeanView.bounds.size.width, 1);
+        [_addBeanView addSubview:separatorView1];
+        
+        UIView *separatorView2 = [[UIView alloc] init];
+        separatorView2.backgroundColor = [UIColor colorWithHexString:yColor_back];
+        separatorView2.frame = CGRectMake(0, ScreenHeight * 0.5 - cellHeight * 2, _addBeanView.bounds.size.width, 1);
+        [_addBeanView addSubview:separatorView2];
+        
+        UIButton *confirmBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        [confirmBtn setTitle:LocalString(@"确定") forState:UIControlStateNormal];
+        [confirmBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+        [confirmBtn setButtonStyleWithColor:[UIColor clearColor] Width:1.0 cornerRadius:buttonHeight * 0.1];
+        [confirmBtn setBackgroundColor:[UIColor colorWithHexString:yColor_common]];
+        [confirmBtn addTarget:self action:@selector(addBeanConfirm) forControlEvents:UIControlEventTouchUpInside];
+        [self.addBeanView addSubview:confirmBtn];
+        
+        UIButton *cancelBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        [cancelBtn setTitle:LocalString(@"取消") forState:UIControlStateNormal];
+        [cancelBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+        [cancelBtn setButtonStyleWithColor:[UIColor clearColor] Width:1.0 cornerRadius:buttonHeight * 0.1];
+        [cancelBtn setBackgroundColor:[UIColor colorWithHexString:yColor_common]];
+        [cancelBtn addTarget:self action:@selector(addBeanCancel) forControlEvents:UIControlEventTouchUpInside];
+        [self.addBeanView addSubview:cancelBtn];
+        
+        [addBeanImage mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.size.mas_equalTo(CGSizeMake(30, 30));
+            make.left.equalTo(_addBeanView.mas_left).offset((cellHeight - 30)/2);
+            make.top.equalTo(_addBeanView.mas_top).offset((cellHeight - 30)/2);
+        }];
+        [addBeanLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.size.mas_equalTo(CGSizeMake(80, 30));
+            make.left.equalTo(addBeanImage.mas_right).offset((cellHeight - 30)/2);
+            make.top.equalTo(_addBeanView.mas_top).offset((cellHeight - 30)/2);
+        }];
+        [confirmBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.size.mas_equalTo(CGSizeMake(ScreenWidth * 0.2, 36));
+            make.bottom.equalTo(_addBeanView.mas_bottom).offset(-5);
+            make.centerX.equalTo(_addBeanView.mas_centerX).offset(ScreenWidth * 0.2);
+        }];
+        [cancelBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.size.mas_equalTo(CGSizeMake(ScreenWidth * 0.2, 36));
+            make.bottom.equalTo(_addBeanView.mas_bottom).offset(-5);
+            make.centerX.equalTo(_addBeanView.mas_centerX).offset(-ScreenWidth * 0.2);
+        }];
+    }
+    return _addBeanView;
+}
+
+- (UIButton *)leftPopBtn{
+    if (!_leftPopBtn) {
+        _leftPopBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        [_leftPopBtn setImage:[UIImage imageNamed:@"ic_leftpop"] forState:UIControlStateNormal];
+        [_leftPopBtn addTarget:self action:@selector(popLeftControlView) forControlEvents:UIControlEventTouchUpInside];
+        [self.view addSubview:_leftPopBtn];
+    }
+    return _leftPopBtn;
+}
+
+- (UIView *)leftControlView{
+    if (!_leftControlView) {
+        _leftControlView = [[UIView alloc] initWithFrame:CGRectMake(-80, 30, 80, 450)];
+        _leftControlView.tag = 1000;
+        _leftControlView.backgroundColor = [UIColor whiteColor];
+        [self.view addSubview:_leftControlView];
+        [self.view bringSubviewToFront:_leftControlView];
+        
+        UIButton *power = [[UIButton alloc] init];
+        power = [UIButton buttonWithType:UIButtonTypeCustom];
+        [power setTitle:LocalString(@"电源") forState:UIControlStateNormal];
+        [power setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+        [power setButtonStyleWithColor:[UIColor clearColor] Width:1.0 cornerRadius:buttonHeight * 0.5];
+        [power setBackgroundColor:[UIColor redColor]];
+        [power addTarget:self action:@selector(setPower) forControlEvents:UIControlEventTouchUpInside];
+        [_leftControlView addSubview:power];
+        
+        UIButton *fire = [[UIButton alloc] init];
+        fire = [UIButton buttonWithType:UIButtonTypeCustom];
+        [fire setTitle:LocalString(@"点火") forState:UIControlStateNormal];
+        [fire setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+        [fire setButtonStyleWithColor:[UIColor clearColor] Width:1.0 cornerRadius:buttonHeight * 0.5];
+        [fire setBackgroundColor:[UIColor redColor]];
+        [fire addTarget:self action:@selector(setFire) forControlEvents:UIControlEventTouchUpInside];
+        [_leftControlView addSubview:fire];
+        
+        
+        [power mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.size.mas_equalTo(CGSizeMake(buttonHeight, buttonHeight));
+            make.centerX.equalTo(_leftControlView.mas_centerX);
+            make.top.equalTo(_leftControlView.mas_top).offset(5);
+        }];
+        [fire mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.size.mas_equalTo(CGSizeMake(buttonHeight, buttonHeight));
+            make.centerX.equalTo(_leftControlView.mas_centerX);
+            make.top.equalTo(power.mas_bottom).offset(5);
+        }];
+        
+    }
+    return _leftControlView;
+}
+
+- (UIButton *)rightPopBtn{
+    if (!_rightPopBtn) {
+        _rightPopBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        [_rightPopBtn setImage:[UIImage imageNamed:@"ic_leftpop"] forState:UIControlStateNormal];
+        [_rightPopBtn addTarget:self action:@selector(popRightControlView) forControlEvents:UIControlEventTouchUpInside];
+        CGAffineTransform transform = CGAffineTransformMakeRotation(180 * M_PI / 180.0);
+        [_rightPopBtn setTransform:transform];
+
+        [self.view addSubview:_rightPopBtn];
+    }
+    return _rightPopBtn;
+}
+
+- (UIView *)rightControlView{
+    if (!_rightControlView) {
+        _rightControlView = [[UIView alloc] initWithFrame:CGRectMake(ScreenWidth, 30, 80, 450)];
+        _rightControlView.tag = 1000;
+        _rightControlView.backgroundColor = [UIColor whiteColor];
+        [self.view addSubview:_rightControlView];
+        [self.view bringSubviewToFront:_rightControlView];
+    }
+    return _rightControlView;
 }
 
 - (void)uiMasonry{
@@ -291,6 +606,18 @@
         make.bottom.equalTo(_bakeCurveBtn.mas_top).offset(-20);
         make.right.equalTo(_bakeCurveBtn.mas_right);
     }];
+    
+    [_leftPopBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.size.mas_equalTo(CGSizeMake(30, 30));
+        make.left.equalTo(self.view.mas_left);
+        make.centerY.equalTo(self.view.mas_centerY).offset(-ScreenHeight * 1/6);
+    }];
+    
+    [_rightPopBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.size.mas_equalTo(CGSizeMake(30, 30));
+        make.right.equalTo(self.view.mas_right);
+        make.centerY.equalTo(self.view.mas_centerY).offset(-ScreenHeight * 1/6);
+    }];
 }
 
 #pragma mark - Actions
@@ -306,6 +633,78 @@
 - (void)connectMachine{
     DeviceViewController *deviceVC = [[DeviceViewController alloc] init];
     [self.navigationController pushViewController:deviceVC animated:YES];
+}
+
+- (void)popLeftControlView{
+    if (_leftControlView.tag == 1000) {
+        [UIView animateWithDuration:0.5 animations:^{
+            _leftControlView.frame = CGRectMake(30, 30, 80, 450);
+            CGAffineTransform transform = CGAffineTransformMakeRotation(180 * M_PI / 180.0);
+            [_leftPopBtn setTransform:transform];
+        }];
+        _leftControlView.tag = 1001;
+    }else if (_leftControlView.tag == 1001){
+        [UIView animateWithDuration:0.5 animations:^{
+            _leftControlView.frame = CGRectMake(-80, 30, 80, 450);
+            CGAffineTransform transform = CGAffineTransformMakeRotation(0 * M_PI / 180.0);
+            [_leftPopBtn setTransform:transform];
+        }];
+        _leftControlView.tag = 1000;
+    }
+    
+}
+
+- (void)popRightControlView{
+    if (_rightControlView.tag == 1000) {
+        [UIView animateWithDuration:0.5 animations:^{
+            _rightControlView.frame = CGRectMake(ScreenWidth - 80 - 30, 30, 80, 450);
+            CGAffineTransform transform = CGAffineTransformMakeRotation(0 * M_PI / 180.0);
+            [_rightPopBtn setTransform:transform];
+        }];
+        _rightControlView.tag = 1001;
+    }else if (_rightControlView.tag == 1001){
+        [UIView animateWithDuration:0.5 animations:^{
+            _rightControlView.frame = CGRectMake(ScreenWidth, 30, 80, 450);
+            CGAffineTransform transform = CGAffineTransformMakeRotation(180 * M_PI / 180.0);
+            [_rightPopBtn setTransform:transform];
+        }];
+        _rightControlView.tag = 1000;
+    }
+}
+
+- (void)setPower{
+    
+}
+
+- (void)setFire{
+    [[NetWork shareNetWork] bakeFire];
+}
+
+- (void)addBeanConfirm{
+    
+}
+
+- (void)addBeanCancel{
+    
+}
+
+#pragma mark - UITableView Delegate
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView{
+    return 1;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
+    return 5;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
+    AddBeanTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:kCellIdentifier_addBean];
+    if (cell == nil) {
+        cell = [[AddBeanTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kCellIdentifier_addBean];
+    }
+    cell.numLabel.text = [NSString stringWithFormat:@"%ld",(long)indexPath.row];
+    cell.beanName.text = LocalString(@"样品豆");
+    return cell;
 }
 
 
