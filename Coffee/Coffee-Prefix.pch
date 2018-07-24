@@ -19,6 +19,7 @@
 #import "UIButton+Common.h"
 #import "BaseViewController.h"
 #import "NetWork.h"
+#import "DataBase.h"
 #endif
 // Include any system framework and library headers here that should be included in all compilation units.
 // You will also need to set the Prefix Header build setting of one or more of your targets to reference this file.
@@ -44,10 +45,11 @@
 #define yColor_back @"D8DADD"
 #define yColor_common @"996640"
 #define tabbarHeight ScreenHeight < 700 ? 44.f : 60.f
-#define buttonHeight 44
 #define cellHeight 44
 #define viewWidth self.contentView.frame.size.width
 #define viewHeight self.contentView.frame.size.height
+#define select 100001
+#define unselect 100000
 
 #endif /* Coffee_Prefix_pch */
 

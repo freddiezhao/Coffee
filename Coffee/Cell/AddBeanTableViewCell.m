@@ -17,7 +17,7 @@
         if (!_numLabel) {
             _numLabel = [[UILabel alloc] init];
             _numLabel.textColor = [UIColor blackColor];
-            _numLabel.font = [UIFont systemFontOfSize:17.0];
+            _numLabel.font = [UIFont systemFontOfSize:13.0];
             [self.contentView addSubview:_numLabel];
             [_numLabel mas_makeConstraints:^(MASConstraintMaker *make) {
                 make.size.mas_equalTo(CGSizeMake(20, 30));
@@ -38,7 +38,7 @@
         if (!_beanName) {
             _beanName = [[UILabel alloc] init];
             _beanName.textColor = [UIColor blackColor];
-            _beanName.font = [UIFont systemFontOfSize:17.0];
+            _beanName.font = [UIFont systemFontOfSize:13.0];
             _beanName.frame = CGRectMake(0, 0, 100, viewHeight - 30);
             _beanName.center = self.center;
             [self.contentView addSubview:_beanName];
@@ -46,6 +46,7 @@
         if (!_weightTF) {
             _weightTF = [[UITextField alloc] init];
             _weightTF.text = @"10g";
+            _weightTF.font = [UIFont systemFontOfSize:13.f];
             [self.contentView addSubview:_weightTF];
             [_weightTF mas_makeConstraints:^(MASConstraintMaker *make) {
                 make.size.mas_equalTo(CGSizeMake(80, viewHeight - 10));
@@ -69,7 +70,7 @@
 }
 
 - (void)deleteCell{
-    
+    self.delBlock();
 }
 
 @end

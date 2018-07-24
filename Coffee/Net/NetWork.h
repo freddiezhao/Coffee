@@ -15,7 +15,8 @@ typedef enum{
     getTemp,
     getTempCount,
     getCountTemp,
-    getTimer,
+    getTimerStatus,
+    getTimerValue,
     otherMsgType
 }MsgType68;
 
@@ -64,6 +65,9 @@ static NSInteger tempCountVer = 1000;
 @property (nonatomic, strong) NSMutableArray *yVals_Environment;
 @property (nonatomic, strong) NSMutableArray *yVals_Diff;
 @property (nonatomic, assign) UInt8 frameCount;
+
+///@brief 计时器数据
+@property (nonatomic, assign) NSInteger timerValue;
 
 ///@brief 单例模式
 + (instancetype)shareNetWork;

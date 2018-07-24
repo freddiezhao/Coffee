@@ -10,16 +10,23 @@
 #import "DeviceViewController.h"
 #import "BakeCurveViewController.h"
 #import "AddBeanTableViewCell.h"
+#import "BeanModel.h"
+
+#define buttonHeight 44
 
 NSString *const kCellIdentifier_addBean = @"cellID_addBean";
 
 @interface BakeViewController () <UITableViewDelegate,UITableViewDataSource>
+
+@property (nonatomic, strong) NetWork *myNet;
 
 @property (nonatomic, strong) UIButton *bakeCurveBtn;
 
 @property (nonatomic, strong) UIButton *addBeanBtn;
 @property (nonatomic, strong) UIView *addBeanView;
 @property (nonatomic, strong) UITableView *addBeanTable;
+@property (nonatomic, strong) NSMutableArray *beanArray;
+@property (nonatomic, strong) UIView *bottomView;
 
 @property (nonatomic, strong) UIView *beanTempView;
 @property (nonatomic, strong) UILabel *beanTempLabel;
@@ -72,6 +79,8 @@ NSString *const kCellIdentifier_addBean = @"cellID_addBean";
     _addBeanView = [self addBeanView];
     [self uiMasonry];
     
+    _myNet = [NetWork shareNetWork];
+    [_myNet addObserver:self forKeyPath:@"tempData" options:NSKeyValueObservingOptionNew context:nil];
 }
 
 - (void)viewDidAppear:(BOOL)animated{
@@ -89,6 +98,13 @@ NSString *const kCellIdentifier_addBean = @"cellID_addBean";
 }
 
 #pragma mark - Lazy Load
+- (NSMutableArray *)beanArray{
+    if (!_beanArray) {
+        _beanArray = [[NSMutableArray alloc] init];
+        
+    }
+    return _beanArray;
+}
 - (UIView *)beanTempView{
     if (!_beanTempView) {
         _beanTempView = [[UIView alloc] init];
@@ -392,7 +408,8 @@ NSString *const kCellIdentifier_addBean = @"cellID_addBean";
         [_addBeanBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
         [_addBeanBtn setButtonStyleWithColor:[UIColor clearColor] Width:1.0 cornerRadius:buttonHeight * 0.3];
         [_addBeanBtn setBackgroundColor:[UIColor colorWithHexString:yColor_common]];
-        [_addBeanBtn addTarget:self action:@selector(addCoffeeBean) forControlEvents:UIControlEventTouchUpInside];
+        [_addBeanBtn addTarget:self action:@selector(addCoffeeBean:) forControlEvents:UIControlEventTouchUpInside];
+        _addBeanBtn.tag = unselect;
         [self.view addSubview:_addBeanBtn];
     }
     return _addBeanBtn;
@@ -401,15 +418,14 @@ NSString *const kCellIdentifier_addBean = @"cellID_addBean";
 - (UIView *)addBeanView{
     if (!_addBeanView) {
         _addBeanView = [[UIView alloc] init];
-        _addBeanView.frame = CGRectMake(0, 0, ScreenWidth * 0.8, ScreenHeight * 0.5);
         _addBeanView.backgroundColor = [UIColor whiteColor];
-        //_addBeanView.alpha = 0.8;
-        _addBeanView.center = self.view.center;
+        _addBeanView.frame = CGRectMake(0, 0, ScreenWidth * 0.8, ScreenHeight * 0.5);
         [self.view addSubview:_addBeanView];
+        _addBeanView.hidden = YES;
         [self.view bringSubviewToFront:_addBeanView];
         
         _addBeanTable = ({
-            UITableView *tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, cellHeight + 1, ScreenWidth * 0.8, ScreenHeight * 0.5 - cellHeight * 3 - 1) style:UITableViewStylePlain];
+            UITableView *tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, cellHeight + 1, ScreenWidth * 0.8, ScreenHeight * 0.5 - cellHeight * 2) style:UITableViewStylePlain];
             tableView.backgroundColor = [UIColor whiteColor];
             tableView.dataSource = self;
             tableView.delegate = self;
@@ -434,9 +450,17 @@ NSString *const kCellIdentifier_addBean = @"cellID_addBean";
         
         UILabel *addBeanLabel = [[UILabel alloc] init];
         addBeanLabel.text = LocalString(@"准备烘焙");
-        addBeanLabel.font = [UIFont systemFontOfSize:17.0];
+        addBeanLabel.font = [UIFont systemFontOfSize:13.0];
         addBeanLabel.textColor = [UIColor blackColor];
         [_addBeanView addSubview:addBeanLabel];
+        
+        UIButton *addCell = [UIButton buttonWithType:UIButtonTypeCustom];
+        [addCell setTitle:LocalString(@"添加") forState:UIControlStateNormal];
+        [addCell setTitleColor:[UIColor colorWithHexString:yColor_common] forState:UIControlStateNormal];
+        [addCell setBackgroundColor:[UIColor whiteColor]];
+        addCell.titleLabel.font = [UIFont systemFontOfSize:17.f];
+        [addCell addTarget:self action:@selector(addCell) forControlEvents:UIControlEventTouchUpInside];
+        [_addBeanView addSubview:addCell];
         
         UIView *separatorView1 = [[UIView alloc] init];
         separatorView1.backgroundColor = [UIColor colorWithHexString:yColor_back];
@@ -445,25 +469,32 @@ NSString *const kCellIdentifier_addBean = @"cellID_addBean";
         
         UIView *separatorView2 = [[UIView alloc] init];
         separatorView2.backgroundColor = [UIColor colorWithHexString:yColor_back];
-        separatorView2.frame = CGRectMake(0, ScreenHeight * 0.5 - cellHeight * 2, _addBeanView.bounds.size.width, 1);
+        separatorView2.frame = CGRectMake(0, ScreenHeight * 0.5 - cellHeight, _addBeanView.bounds.size.width, 1);
         [_addBeanView addSubview:separatorView2];
         
-        UIButton *confirmBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        [confirmBtn setTitle:LocalString(@"确定") forState:UIControlStateNormal];
-        [confirmBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-        [confirmBtn setButtonStyleWithColor:[UIColor clearColor] Width:1.0 cornerRadius:buttonHeight * 0.1];
-        [confirmBtn setBackgroundColor:[UIColor colorWithHexString:yColor_common]];
-        [confirmBtn addTarget:self action:@selector(addBeanConfirm) forControlEvents:UIControlEventTouchUpInside];
-        [self.addBeanView addSubview:confirmBtn];
+        UIView *separatorView3 = [[UIView alloc] init];
+        separatorView3.backgroundColor = [UIColor colorWithHexString:yColor_back];
+        separatorView3.frame = CGRectMake(0, ScreenHeight * 0.5, _addBeanView.bounds.size.width, 1);
+        [_addBeanView addSubview:separatorView3];
         
-        UIButton *cancelBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        [cancelBtn setTitle:LocalString(@"取消") forState:UIControlStateNormal];
-        [cancelBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-        [cancelBtn setButtonStyleWithColor:[UIColor clearColor] Width:1.0 cornerRadius:buttonHeight * 0.1];
-        [cancelBtn setBackgroundColor:[UIColor colorWithHexString:yColor_common]];
-        [cancelBtn addTarget:self action:@selector(addBeanCancel) forControlEvents:UIControlEventTouchUpInside];
-        [self.addBeanView addSubview:cancelBtn];
+        UILabel *addcurveLabel = [[UILabel alloc] init];
+        addcurveLabel.text = LocalString(@"启用参考曲线");
+        addcurveLabel.font = [UIFont systemFontOfSize:13.0];
+        addcurveLabel.textColor = [UIColor blackColor];
+        addcurveLabel.textAlignment = NSTextAlignmentCenter;
+        [_addBeanView addSubview:addcurveLabel];
         
+        UIButton *addcurveBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        [addcurveBtn setImage:[UIImage imageNamed:@"untick"] forState:UIControlStateNormal];
+        [addcurveBtn addTarget:self action:@selector(addCurve:) forControlEvents:UIControlEventTouchUpInside];
+        addcurveBtn.tag = unselect;
+        [_addBeanView addSubview:addcurveBtn];
+        
+        [_addBeanView mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.size.mas_equalTo(CGSizeMake(ScreenWidth * 0.8, ScreenHeight * 0.5));
+            make.centerX.equalTo(self.view.mas_centerX);
+            make.top.equalTo(self.view.mas_top).offset(100.0 / 667 * ScreenHeight);
+        }];
         [addBeanImage mas_makeConstraints:^(MASConstraintMaker *make) {
             make.size.mas_equalTo(CGSizeMake(30, 30));
             make.left.equalTo(_addBeanView.mas_left).offset((cellHeight - 30)/2);
@@ -474,16 +505,68 @@ NSString *const kCellIdentifier_addBean = @"cellID_addBean";
             make.left.equalTo(addBeanImage.mas_right).offset((cellHeight - 30)/2);
             make.top.equalTo(_addBeanView.mas_top).offset((cellHeight - 30)/2);
         }];
-        [confirmBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.size.mas_equalTo(CGSizeMake(ScreenWidth * 0.2, 36));
-            make.bottom.equalTo(_addBeanView.mas_bottom).offset(-5);
-            make.centerX.equalTo(_addBeanView.mas_centerX).offset(ScreenWidth * 0.2);
+        [addCell mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.size.mas_equalTo(CGSizeMake(80, 30));
+            make.right.equalTo(_addBeanView.mas_right).offset(-5);
+            make.top.equalTo(_addBeanView.mas_top).offset((cellHeight - 30)/2);
         }];
-        [cancelBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.size.mas_equalTo(CGSizeMake(ScreenWidth * 0.2, 36));
-            make.bottom.equalTo(_addBeanView.mas_bottom).offset(-5);
-            make.centerX.equalTo(_addBeanView.mas_centerX).offset(-ScreenWidth * 0.2);
+        [addcurveLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.size.mas_equalTo(CGSizeMake(100, cellHeight));
+            make.top.equalTo(separatorView2.mas_bottom);
+            make.centerX.equalTo(_addBeanView.mas_centerX);
         }];
+        [addcurveBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.size.mas_equalTo(CGSizeMake(20, 20));
+            make.centerY.equalTo(addcurveLabel.mas_centerY);
+            make.right.equalTo(addcurveLabel.mas_left);
+        }];
+        
+        _bottomView = [[UIView alloc] init];
+        _bottomView.frame = CGRectMake(ScreenWidth * 0.1, 100.0 / 667 * ScreenHeight + ScreenHeight * 0.5 - cellHeight, ScreenWidth * 0.8, cellHeight * 2);
+        _bottomView.backgroundColor = [UIColor whiteColor];
+        _bottomView.hidden = YES;
+        [self.view addSubview:_bottomView];
+        
+        UILabel *curveLabel = [[UILabel alloc] init];
+        curveLabel.frame = CGRectMake(ScreenWidth * 0.2, 4, ScreenWidth * 0.2, 36);
+        curveLabel.text = LocalString(@"选择曲线:");
+        curveLabel.font = [UIFont systemFontOfSize:17.f];
+        curveLabel.textColor = [UIColor blackColor];
+        curveLabel.textAlignment = NSTextAlignmentCenter;
+        [_bottomView addSubview:curveLabel];
+        
+        UIButton *curveBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        curveBtn.frame = CGRectMake(ScreenWidth * 0.4, 4, ScreenWidth * 0.2, 36);
+        [curveBtn setTitle:LocalString(@"曲线") forState:UIControlStateNormal];
+        [curveBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+        [curveBtn setButtonStyleWithColor:[UIColor clearColor] Width:1.0 cornerRadius:buttonHeight * 0.1];
+        [curveBtn setBackgroundColor:[UIColor colorWithHexString:yColor_common]];
+        [curveBtn addTarget:self action:@selector(getCurve) forControlEvents:UIControlEventTouchUpInside];
+        [_bottomView addSubview:curveBtn];
+        
+        UIView *separatorView4 = [[UIView alloc] init];
+        separatorView4.backgroundColor = [UIColor colorWithHexString:yColor_back];
+        separatorView4.frame = CGRectMake(0, cellHeight, _addBeanView.bounds.size.width, 1);
+        [_bottomView addSubview:separatorView4];
+
+        
+        UIButton *confirmBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        confirmBtn.frame = CGRectMake(ScreenWidth * 0.1, 48, ScreenWidth * 0.2, 36);
+        [confirmBtn setTitle:LocalString(@"确定") forState:UIControlStateNormal];
+        [confirmBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+        [confirmBtn setButtonStyleWithColor:[UIColor clearColor] Width:1.0 cornerRadius:buttonHeight * 0.1];
+        [confirmBtn setBackgroundColor:[UIColor colorWithHexString:yColor_common]];
+        [confirmBtn addTarget:self action:@selector(addBeanConfirm) forControlEvents:UIControlEventTouchUpInside];
+        [self.bottomView addSubview:confirmBtn];
+        
+        UIButton *cancelBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        cancelBtn.frame = CGRectMake(ScreenWidth * 0.5, 48, ScreenWidth * 0.2, 36);
+        [cancelBtn setTitle:LocalString(@"取消") forState:UIControlStateNormal];
+        [cancelBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+        [cancelBtn setButtonStyleWithColor:[UIColor clearColor] Width:1.0 cornerRadius:buttonHeight * 0.1];
+        [cancelBtn setBackgroundColor:[UIColor colorWithHexString:yColor_common]];
+        [cancelBtn addTarget:self action:@selector(addBeanCancel) forControlEvents:UIControlEventTouchUpInside];
+        [self.bottomView addSubview:cancelBtn];
     }
     return _addBeanView;
 }
@@ -501,7 +584,7 @@ NSString *const kCellIdentifier_addBean = @"cellID_addBean";
 - (UIView *)leftControlView{
     if (!_leftControlView) {
         _leftControlView = [[UIView alloc] initWithFrame:CGRectMake(-80, 30, 80, 450)];
-        _leftControlView.tag = 1000;
+        _leftControlView.tag = unselect;
         _leftControlView.backgroundColor = [UIColor whiteColor];
         [self.view addSubview:_leftControlView];
         [self.view bringSubviewToFront:_leftControlView];
@@ -556,7 +639,7 @@ NSString *const kCellIdentifier_addBean = @"cellID_addBean";
 - (UIView *)rightControlView{
     if (!_rightControlView) {
         _rightControlView = [[UIView alloc] initWithFrame:CGRectMake(ScreenWidth, 30, 80, 450)];
-        _rightControlView.tag = 1000;
+        _rightControlView.tag = unselect;
         _rightControlView.backgroundColor = [UIColor whiteColor];
         [self.view addSubview:_rightControlView];
         [self.view bringSubviewToFront:_rightControlView];
@@ -621,8 +704,16 @@ NSString *const kCellIdentifier_addBean = @"cellID_addBean";
 }
 
 #pragma mark - Actions
-- (void)addCoffeeBean{
-    
+- (void)addCoffeeBean:(UIButton *)sender{
+    if (sender.tag == unselect) {
+        _addBeanView.hidden = NO;
+        _bottomView.hidden = NO;
+        sender.tag = select;
+    }else{
+        _addBeanView.hidden = YES;
+        _bottomView.hidden = YES;
+        sender.tag = unselect;
+    }
 }
 
 - (void)goBakeCurveViewController{
@@ -636,39 +727,39 @@ NSString *const kCellIdentifier_addBean = @"cellID_addBean";
 }
 
 - (void)popLeftControlView{
-    if (_leftControlView.tag == 1000) {
+    if (_leftControlView.tag == unselect) {
         [UIView animateWithDuration:0.5 animations:^{
             _leftControlView.frame = CGRectMake(30, 30, 80, 450);
             CGAffineTransform transform = CGAffineTransformMakeRotation(180 * M_PI / 180.0);
             [_leftPopBtn setTransform:transform];
         }];
-        _leftControlView.tag = 1001;
-    }else if (_leftControlView.tag == 1001){
+        _leftControlView.tag = select;
+    }else if (_leftControlView.tag == select){
         [UIView animateWithDuration:0.5 animations:^{
             _leftControlView.frame = CGRectMake(-80, 30, 80, 450);
             CGAffineTransform transform = CGAffineTransformMakeRotation(0 * M_PI / 180.0);
             [_leftPopBtn setTransform:transform];
         }];
-        _leftControlView.tag = 1000;
+        _leftControlView.tag = unselect;
     }
     
 }
 
 - (void)popRightControlView{
-    if (_rightControlView.tag == 1000) {
+    if (_rightControlView.tag == unselect) {
         [UIView animateWithDuration:0.5 animations:^{
             _rightControlView.frame = CGRectMake(ScreenWidth - 80 - 30, 30, 80, 450);
             CGAffineTransform transform = CGAffineTransformMakeRotation(0 * M_PI / 180.0);
             [_rightPopBtn setTransform:transform];
         }];
-        _rightControlView.tag = 1001;
-    }else if (_rightControlView.tag == 1001){
+        _rightControlView.tag = select;
+    }else if (_rightControlView.tag == select){
         [UIView animateWithDuration:0.5 animations:^{
             _rightControlView.frame = CGRectMake(ScreenWidth, 30, 80, 450);
             CGAffineTransform transform = CGAffineTransformMakeRotation(180 * M_PI / 180.0);
             [_rightPopBtn setTransform:transform];
         }];
-        _rightControlView.tag = 1000;
+        _rightControlView.tag = unselect;
     }
 }
 
@@ -681,20 +772,54 @@ NSString *const kCellIdentifier_addBean = @"cellID_addBean";
 }
 
 - (void)addBeanConfirm{
-    
+    _addBeanView.hidden = YES;
+    _bottomView.hidden = YES;
+    _addBeanBtn.tag = unselect;
 }
 
 - (void)addBeanCancel{
+    _addBeanView.hidden = YES;
+    _bottomView.hidden = YES;
+    _addBeanBtn.tag = unselect;
+}
+
+- (void)addCurve:(UIButton *)sender{
+    if (sender.tag == unselect) {
+        [sender setImage:[UIImage imageNamed:@"tick"] forState:UIControlStateNormal];
+        [UIView animateWithDuration:0.5 animations:^{
+            _bottomView.frame = CGRectMake(ScreenWidth * 0.1, 100.0 / 667 * ScreenHeight + ScreenHeight * 0.5 , ScreenWidth * 0.8, cellHeight * 2);
+        }];
+        sender.tag = select;
+    }else if (sender.tag == select){
+        [sender setImage:[UIImage imageNamed:@"untick"] forState:UIControlStateNormal];
+        [UIView animateWithDuration:0.5 animations:^{
+            _bottomView.frame = CGRectMake(ScreenWidth * 0.1, 100.0 / 667 * ScreenHeight + ScreenHeight * 0.5 - cellHeight, ScreenWidth * 0.8, cellHeight * 2);
+
+        }];
+        sender.tag = unselect;
+    }
+}
+
+- (void)getCurve{
     
 }
 
 #pragma mark - UITableView Delegate
+- (void)addCell{
+    _beanArray = [self beanArray];
+    BeanModel *bean = [[BeanModel alloc] init];
+    bean.beanName = LocalString(@"样品豆");
+    bean.weight = @"10g";
+    [_beanArray addObject:bean];
+    [_addBeanTable reloadData];
+}
+
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView{
     return 1;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
-    return 5;
+    return _beanArray.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -702,10 +827,31 @@ NSString *const kCellIdentifier_addBean = @"cellID_addBean";
     if (cell == nil) {
         cell = [[AddBeanTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kCellIdentifier_addBean];
     }
+    BeanModel *cellModel = _beanArray[indexPath.row];
     cell.numLabel.text = [NSString stringWithFormat:@"%ld",(long)indexPath.row];
-    cell.beanName.text = LocalString(@"样品豆");
+    cell.beanName.text = cellModel.beanName;
+    cell.delBlock = ^{
+        [_beanArray removeObjectAtIndex:indexPath.row];
+        [tableView reloadData];
+    };
     return cell;
 }
 
+#pragma mark - kvo
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context{
+    if ([keyPath isEqualToString:@"tempData"] && object == _myNet) {
+        NSMutableArray *data = [_myNet.recivedData68 copy];
+        double tempOut = ([data[6] intValue] * 256 + [data[7] intValue]) / 10.0;
+        double tempIn = ([data[8] intValue] * 256 + [data[9] intValue]) / 10.0;
+        double tempBean = ([data[10] intValue] * 256 + [data[11] intValue]) / 10.0;
+        double tempEnvironment = ([data[12] intValue] * 256 + [data[13] intValue]) / 10.0;
+        
+       // _beanTempRateLabel.text = [NSString stringWithFormat:@"%f℃/min",tempOut];
+        _beanTempLabel.text = [NSString stringWithFormat:@"%f℃",tempBean];
+        _inTempLabel.text = [NSString stringWithFormat:@"%f℃",tempIn];
+        _outTempLabel.text = [NSString stringWithFormat:@"%f℃",tempOut];
+        _environTempLabel.text = [NSString stringWithFormat:@"%f℃",tempEnvironment];
+    }
+}
 
 @end

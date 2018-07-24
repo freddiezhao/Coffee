@@ -10,6 +10,8 @@
 #import "RDVTabBarController.h"
 #import "RDVTabBarItem.h"
 #import "BakeViewController.h"
+#import "CurveViewController.h"
+#import "MineViewController.h"
 
 @interface MainViewController ()<RDVTabBarControllerDelegate>
 
@@ -24,8 +26,8 @@
     UINavigationController *NAV1 = [[UINavigationController alloc] initWithRootViewController:BakeVC];
     
     
-    UIViewController *secondVC = [[UIViewController alloc] init];
-    UINavigationController *NAV2 = [[UINavigationController alloc] initWithRootViewController:secondVC];
+    CurveViewController *curveVC = [[CurveViewController alloc] init];
+    UINavigationController *NAV2 = [[UINavigationController alloc] initWithRootViewController:curveVC];
     
     UIViewController *thirdVC = [[UIViewController alloc] init];
     UINavigationController *NAV3 = [[UINavigationController alloc] initWithRootViewController:thirdVC];
@@ -33,8 +35,8 @@
     UIViewController *fourthVc = [[UIViewController alloc] init];
     UINavigationController *NAV4 = [[UINavigationController alloc] initWithRootViewController:fourthVc];
     
-    UIViewController *fifthVc = [[UIViewController alloc] init];
-    UINavigationController *NAV5 = [[UINavigationController alloc] initWithRootViewController:fifthVc];
+    MineViewController *mineVC = [[MineViewController alloc] init];
+    UINavigationController *NAV5 = [[UINavigationController alloc] initWithRootViewController:mineVC];
     
     [self setViewControllers:@[NAV1,NAV2,NAV3,NAV4,NAV5]];
     

@@ -10,7 +10,15 @@
 		258879339880B16366F53ED6 /* Pods_Coffee.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27C3888E1688495B0D5D73D6 /* Pods_Coffee.framework */; };
 		BB1C156620E1E8AD006D7053 /* UIButton+Common.m in Sources */ = {isa = PBXBuildFile; fileRef = BB1C156420E1E8AD006D7053 /* UIButton+Common.m */; };
 		BB26AFB220EDC846008AE330 /* 数据.json in Resources */ = {isa = PBXBuildFile; fileRef = BB26AFB120EDC846008AE330 /* 数据.json */; };
+		BB2912022106BA65001B9448 /* UsernameViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB2912012106BA65001B9448 /* UsernameViewController.m */; };
+		BB29120C2106CCE1001B9448 /* PasswordViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB2912082106CCE1001B9448 /* PasswordViewController.m */; };
+		BB29120D2106CCE1001B9448 /* PasswordTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB2912092106CCE1001B9448 /* PasswordTableViewController.m */; };
+		BB29120E2106CCE1001B9448 /* Password.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BB29120A2106CCE1001B9448 /* Password.storyboard */; };
+		BB2912122106D8D5001B9448 /* GeneralViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB2912112106D8D5001B9448 /* GeneralViewController.m */; };
+		BB2912152106FB43001B9448 /* SubtitileCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BB2912142106FB43001B9448 /* SubtitileCell.m */; };
+		BB29121821071B1E001B9448 /* SettingModel.m in Sources */ = {isa = PBXBuildFile; fileRef = BB29121721071B1E001B9448 /* SettingModel.m */; };
 		BB3811FA20EA1C3C00F0B2B7 /* BakeCurveViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB3811F920EA1C3C00F0B2B7 /* BakeCurveViewController.m */; };
+		BB4C906E2105C4200023EE9B /* DataBase.m in Sources */ = {isa = PBXBuildFile; fileRef = BB4C906D2105C4200023EE9B /* DataBase.m */; };
 		BB52778220F845C100D020DD /* ic_leftpop@1x.png in Resources */ = {isa = PBXBuildFile; fileRef = BB52777F20F845C000D020DD /* ic_leftpop@1x.png */; };
 		BB52778320F845C100D020DD /* ic_leftpop@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = BB52778020F845C000D020DD /* ic_leftpop@2x.png */; };
 		BB52778420F845C100D020DD /* ic_leftpop@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = BB52778120F845C000D020DD /* ic_leftpop@3x.png */; };
@@ -20,6 +28,8 @@
 		BB65C25420FD8F0400BB684E /* untick@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = BB65C24E20FD8F0400BB684E /* untick@3x.png */; };
 		BB65C25520FD8F0400BB684E /* tick@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = BB65C24F20FD8F0400BB684E /* tick@3x.png */; };
 		BB65C25620FD8F0400BB684E /* untick@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = BB65C25020FD8F0400BB684E /* untick@2x.png */; };
+		BB65C25920FDF00000BB684E /* BeanModel.m in Sources */ = {isa = PBXBuildFile; fileRef = BB65C25820FDF00000BB684E /* BeanModel.m */; };
+		BB65C25D20FE129200BB684E /* CurveViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB65C25C20FE129200BB684E /* CurveViewController.m */; };
 		BB69CA7320ECBB490032F126 /* NSObject+Common.m in Sources */ = {isa = PBXBuildFile; fileRef = BB69CA7220ECBB490032F126 /* NSObject+Common.m */; };
 		BB6A555E20FCCA3D0013C3C1 /* AddBeanTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BB6A555D20FCCA3D0013C3C1 /* AddBeanTableViewCell.m */; };
 		BB6A556020FCCD8E0013C3C1 /* ic_bake_dialog_delete@1x.png in Resources */ = {isa = PBXBuildFile; fileRef = BB6A555F20FCCD8E0013C3C1 /* ic_bake_dialog_delete@1x.png */; };
@@ -28,6 +38,10 @@
 		BB6A784620E32A4D00EE3E2E /* DeviceTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BB6A784420E32A4D00EE3E2E /* DeviceTableViewCell.m */; };
 		BB6A784720E32A4D00EE3E2E /* DeviceTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = BB6A784520E32A4D00EE3E2E /* DeviceTableViewCell.xib */; };
 		BB6A784B20E36E7200EE3E2E /* BaseViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB6A784A20E36E7200EE3E2E /* BaseViewController.m */; };
+		BB6AD21721007D15008C8763 /* MineViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB6AD21621007D15008C8763 /* MineViewController.m */; };
+		BB6AD21E2100B706008C8763 /* AccountViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB6AD21D2100B706008C8763 /* AccountViewController.m */; };
+		BB6AD2212100C058008C8763 /* LlabelRlabelCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BB6AD2202100C058008C8763 /* LlabelRlabelCell.m */; };
+		BB6AD2252100C182008C8763 /* LlabelRImageCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BB6AD2242100C182008C8763 /* LlabelRImageCell.m */; };
 		BB712ABD20E47F49005FF10F /* NetWork.m in Sources */ = {isa = PBXBuildFile; fileRef = BB712ABC20E47F49005FF10F /* NetWork.m */; };
 		BB8AA20B20DE3F5200610316 /* ic_navbar_bean.png in Resources */ = {isa = PBXBuildFile; fileRef = BB8A9F7A20DE3F5100610316 /* ic_navbar_bean.png */; };
 		BB8AA21F20DE3F5200610316 /* ic_navbar_bake_selected.png in Resources */ = {isa = PBXBuildFile; fileRef = BB8A9F8E20DE3F5100610316 /* ic_navbar_bake_selected.png */; };
@@ -91,6 +105,7 @@
 		BB94EAA120DB8CE700370A95 /* RDVTabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB94EA9E20DB8CE700370A95 /* RDVTabBarController.m */; };
 		BB94EAA220DB8CE700370A95 /* RDVTabBarItem.m in Sources */ = {isa = PBXBuildFile; fileRef = BB94EA9F20DB8CE700370A95 /* RDVTabBarItem.m */; };
 		BB94EAA520DBA9C800370A95 /* MainViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB94EAA420DBA9C800370A95 /* MainViewController.m */; };
+		BBC4AB862103347100F49BDC /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = BBC4AB852103347100F49BDC /* libsqlite3.tbd */; };
 		BBC695F020F5B31A006628E0 /* ic_mine_history_line@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = BBC695EF20F5B31A006628E0 /* ic_mine_history_line@2x.png */; };
 		BBC695F220F5B334006628E0 /* ic_mine_history_line.png in Resources */ = {isa = PBXBuildFile; fileRef = BBC695F120F5B334006628E0 /* ic_mine_history_line.png */; };
 		BBED09AE20F7354200D6010A /* ic_bake_bean.png in Resources */ = {isa = PBXBuildFile; fileRef = BBED09AA20F7354200D6010A /* ic_bake_bean.png */; };
@@ -130,17 +145,37 @@
 		BB1C156420E1E8AD006D7053 /* UIButton+Common.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIButton+Common.m"; sourceTree = "<group>"; };
 		BB1C156520E1E8AD006D7053 /* UIButton+Common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIButton+Common.h"; sourceTree = "<group>"; };
 		BB26AFB120EDC846008AE330 /* 数据.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "数据.json"; sourceTree = "<group>"; };
+		BB2912002106BA65001B9448 /* UsernameViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UsernameViewController.h; sourceTree = "<group>"; };
+		BB2912012106BA65001B9448 /* UsernameViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UsernameViewController.m; sourceTree = "<group>"; };
+		BB2912072106CCE1001B9448 /* PasswordTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PasswordTableViewController.h; sourceTree = "<group>"; };
+		BB2912082106CCE1001B9448 /* PasswordViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PasswordViewController.m; sourceTree = "<group>"; };
+		BB2912092106CCE1001B9448 /* PasswordTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PasswordTableViewController.m; sourceTree = "<group>"; };
+		BB29120A2106CCE1001B9448 /* Password.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Password.storyboard; sourceTree = "<group>"; };
+		BB29120B2106CCE1001B9448 /* PasswordViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PasswordViewController.h; sourceTree = "<group>"; };
+		BB2912102106D8D5001B9448 /* GeneralViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GeneralViewController.h; sourceTree = "<group>"; };
+		BB2912112106D8D5001B9448 /* GeneralViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GeneralViewController.m; sourceTree = "<group>"; };
+		BB2912132106FB43001B9448 /* SubtitileCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SubtitileCell.h; sourceTree = "<group>"; };
+		BB2912142106FB43001B9448 /* SubtitileCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SubtitileCell.m; sourceTree = "<group>"; };
+		BB29121621071B1E001B9448 /* SettingModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SettingModel.h; sourceTree = "<group>"; };
+		BB29121721071B1E001B9448 /* SettingModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SettingModel.m; sourceTree = "<group>"; };
 		BB3811F820EA1C3C00F0B2B7 /* BakeCurveViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BakeCurveViewController.h; sourceTree = "<group>"; };
 		BB3811F920EA1C3C00F0B2B7 /* BakeCurveViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BakeCurveViewController.m; sourceTree = "<group>"; };
+		BB4C906C2105C4200023EE9B /* DataBase.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DataBase.h; sourceTree = "<group>"; };
+		BB4C906D2105C4200023EE9B /* DataBase.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DataBase.m; sourceTree = "<group>"; };
 		BB52777F20F845C000D020DD /* ic_leftpop@1x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ic_leftpop@1x.png"; sourceTree = "<group>"; };
 		BB52778020F845C000D020DD /* ic_leftpop@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ic_leftpop@2x.png"; sourceTree = "<group>"; };
 		BB52778120F845C000D020DD /* ic_leftpop@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ic_leftpop@3x.png"; sourceTree = "<group>"; };
+		BB5E91A120FEDA3400416EE2 /* WMPageController.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = WMPageController.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BB65C24B20FD8F0300BB684E /* tick@1x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tick@1x.png"; sourceTree = "<group>"; };
 		BB65C24C20FD8F0300BB684E /* tick@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tick@2x.png"; sourceTree = "<group>"; };
 		BB65C24D20FD8F0400BB684E /* untick@1x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "untick@1x.png"; sourceTree = "<group>"; };
 		BB65C24E20FD8F0400BB684E /* untick@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "untick@3x.png"; sourceTree = "<group>"; };
 		BB65C24F20FD8F0400BB684E /* tick@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tick@3x.png"; sourceTree = "<group>"; };
 		BB65C25020FD8F0400BB684E /* untick@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "untick@2x.png"; sourceTree = "<group>"; };
+		BB65C25720FDF00000BB684E /* BeanModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeanModel.h; sourceTree = "<group>"; };
+		BB65C25820FDF00000BB684E /* BeanModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeanModel.m; sourceTree = "<group>"; };
+		BB65C25B20FE129200BB684E /* CurveViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CurveViewController.h; sourceTree = "<group>"; };
+		BB65C25C20FE129200BB684E /* CurveViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CurveViewController.m; sourceTree = "<group>"; };
 		BB69CA7120ECBB490032F126 /* NSObject+Common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+Common.h"; sourceTree = "<group>"; };
 		BB69CA7220ECBB490032F126 /* NSObject+Common.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+Common.m"; sourceTree = "<group>"; };
 		BB6A555C20FCCA3D0013C3C1 /* AddBeanTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AddBeanTableViewCell.h; sourceTree = "<group>"; };
@@ -153,6 +188,14 @@
 		BB6A784520E32A4D00EE3E2E /* DeviceTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = DeviceTableViewCell.xib; sourceTree = "<group>"; };
 		BB6A784920E36E7200EE3E2E /* BaseViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BaseViewController.h; sourceTree = "<group>"; };
 		BB6A784A20E36E7200EE3E2E /* BaseViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BaseViewController.m; sourceTree = "<group>"; };
+		BB6AD21521007D15008C8763 /* MineViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MineViewController.h; sourceTree = "<group>"; };
+		BB6AD21621007D15008C8763 /* MineViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MineViewController.m; sourceTree = "<group>"; };
+		BB6AD21C2100B706008C8763 /* AccountViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AccountViewController.h; sourceTree = "<group>"; };
+		BB6AD21D2100B706008C8763 /* AccountViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AccountViewController.m; sourceTree = "<group>"; };
+		BB6AD21F2100C058008C8763 /* LlabelRlabelCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LlabelRlabelCell.h; sourceTree = "<group>"; };
+		BB6AD2202100C058008C8763 /* LlabelRlabelCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LlabelRlabelCell.m; sourceTree = "<group>"; };
+		BB6AD2232100C182008C8763 /* LlabelRImageCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LlabelRImageCell.h; sourceTree = "<group>"; };
+		BB6AD2242100C182008C8763 /* LlabelRImageCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LlabelRImageCell.m; sourceTree = "<group>"; };
 		BB712ABB20E47F49005FF10F /* NetWork.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NetWork.h; sourceTree = "<group>"; };
 		BB712ABC20E47F49005FF10F /* NetWork.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NetWork.m; sourceTree = "<group>"; };
 		BB8A9F7A20DE3F5100610316 /* ic_navbar_bean.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ic_navbar_bean.png; sourceTree = "<group>"; };
@@ -252,6 +295,7 @@
 		BB94EA9F20DB8CE700370A95 /* RDVTabBarItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RDVTabBarItem.m; sourceTree = "<group>"; };
 		BB94EAA320DBA9C800370A95 /* MainViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MainViewController.h; sourceTree = "<group>"; };
 		BB94EAA420DBA9C800370A95 /* MainViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MainViewController.m; sourceTree = "<group>"; };
+		BBC4AB852103347100F49BDC /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
 		BBC695EF20F5B31A006628E0 /* ic_mine_history_line@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ic_mine_history_line@2x.png"; sourceTree = "<group>"; };
 		BBC695F120F5B334006628E0 /* ic_mine_history_line.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ic_mine_history_line.png; sourceTree = "<group>"; };
 		BBED09AA20F7354200D6010A /* ic_bake_bean.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ic_bake_bean.png; sourceTree = "<group>"; };
@@ -275,6 +319,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BBC4AB862103347100F49BDC /* libsqlite3.tbd in Frameworks */,
 				258879339880B16366F53ED6 /* Pods_Coffee.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -299,6 +344,8 @@
 		383EC9357D9B009D0BE53003 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				BBC4AB852103347100F49BDC /* libsqlite3.tbd */,
+				BB5E91A120FEDA3400416EE2 /* WMPageController.framework */,
 				27C3888E1688495B0D5D73D6 /* Pods_Coffee.framework */,
 			);
 			name = Frameworks;
@@ -312,6 +359,49 @@
 			path = SourceFile;
 			sourceTree = "<group>";
 		};
+		BB2912062106CC89001B9448 /* Account */ = {
+			isa = PBXGroup;
+			children = (
+				BB6AD21C2100B706008C8763 /* AccountViewController.h */,
+				BB6AD21D2100B706008C8763 /* AccountViewController.m */,
+				BB2912002106BA65001B9448 /* UsernameViewController.h */,
+				BB2912012106BA65001B9448 /* UsernameViewController.m */,
+				BB29120A2106CCE1001B9448 /* Password.storyboard */,
+				BB2912072106CCE1001B9448 /* PasswordTableViewController.h */,
+				BB2912092106CCE1001B9448 /* PasswordTableViewController.m */,
+				BB29120B2106CCE1001B9448 /* PasswordViewController.h */,
+				BB2912082106CCE1001B9448 /* PasswordViewController.m */,
+			);
+			path = Account;
+			sourceTree = "<group>";
+		};
+		BB29120F2106D8B1001B9448 /* General */ = {
+			isa = PBXGroup;
+			children = (
+				BB2912102106D8D5001B9448 /* GeneralViewController.h */,
+				BB2912112106D8D5001B9448 /* GeneralViewController.m */,
+			);
+			path = General;
+			sourceTree = "<group>";
+		};
+		BB4C906B2105C4010023EE9B /* DataBase */ = {
+			isa = PBXGroup;
+			children = (
+				BB4C906C2105C4200023EE9B /* DataBase.h */,
+				BB4C906D2105C4200023EE9B /* DataBase.m */,
+			);
+			path = DataBase;
+			sourceTree = "<group>";
+		};
+		BB65C25A20FE120200BB684E /* Curve */ = {
+			isa = PBXGroup;
+			children = (
+				BB65C25B20FE129200BB684E /* CurveViewController.h */,
+				BB65C25C20FE129200BB684E /* CurveViewController.m */,
+			);
+			path = Curve;
+			sourceTree = "<group>";
+		};
 		BB6A784820E36E6800EE3E2E /* Base */ = {
 			isa = PBXGroup;
 			children = (
@@ -319,6 +409,28 @@
 				BB6A784A20E36E7200EE3E2E /* BaseViewController.m */,
 			);
 			path = Base;
+			sourceTree = "<group>";
+		};
+		BB6AD20C21007BCE008C8763 /* Mine */ = {
+			isa = PBXGroup;
+			children = (
+				BB6AD21521007D15008C8763 /* MineViewController.h */,
+				BB6AD21621007D15008C8763 /* MineViewController.m */,
+				BB2912062106CC89001B9448 /* Account */,
+				BB29120F2106D8B1001B9448 /* General */,
+			);
+			path = Mine;
+			sourceTree = "<group>";
+		};
+		BB6AD2222100C09B008C8763 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				BB65C25720FDF00000BB684E /* BeanModel.h */,
+				BB65C25820FDF00000BB684E /* BeanModel.m */,
+				BB29121621071B1E001B9448 /* SettingModel.h */,
+				BB29121721071B1E001B9448 /* SettingModel.m */,
+			);
+			path = Model;
 			sourceTree = "<group>";
 		};
 		BB712ABA20E47F36005FF10F /* Net */ = {
@@ -503,6 +615,12 @@
 				BB6A784520E32A4D00EE3E2E /* DeviceTableViewCell.xib */,
 				BB6A555C20FCCA3D0013C3C1 /* AddBeanTableViewCell.h */,
 				BB6A555D20FCCA3D0013C3C1 /* AddBeanTableViewCell.m */,
+				BB6AD21F2100C058008C8763 /* LlabelRlabelCell.h */,
+				BB6AD2202100C058008C8763 /* LlabelRlabelCell.m */,
+				BB6AD2232100C182008C8763 /* LlabelRImageCell.h */,
+				BB6AD2242100C182008C8763 /* LlabelRImageCell.m */,
+				BB2912132106FB43001B9448 /* SubtitileCell.h */,
+				BB2912142106FB43001B9448 /* SubtitileCell.m */,
 			);
 			path = Cell;
 			sourceTree = "<group>";
@@ -532,12 +650,14 @@
 		BB8F7BCE20DA513B00BE5CFC /* Coffee */ = {
 			isa = PBXGroup;
 			children = (
+				BB4C906B2105C4010023EE9B /* DataBase */,
 				BB712ABA20E47F36005FF10F /* Net */,
 				BB6A784820E36E6800EE3E2E /* Base */,
 				BB8AA4D320DFBFA400610316 /* OC_Category */,
 				BB8A9F7720DE3F5100610316 /* Image */,
 				BB8AA4A620DFB9C900610316 /* EspTouch */,
 				BB94EA9920DB8CE700370A95 /* RDVTabbarController */,
+				BB6AD2222100C09B008C8763 /* Model */,
 				BB8AA4D820DFC23300610316 /* Cell */,
 				BB8F7C0120DA51A600BE5CFC /* Main */,
 				BB8F7BCF20DA513B00BE5CFC /* AppDelegate.h */,
@@ -575,6 +695,8 @@
 			isa = PBXGroup;
 			children = (
 				BBC31F9A20E713730011360E /* Bake */,
+				BB65C25A20FE120200BB684E /* Curve */,
+				BB6AD20C21007BCE008C8763 /* Mine */,
 				BB8AA49B20DFAFA500610316 /* EspTouch */,
 				BB94EAA320DBA9C800370A95 /* MainViewController.h */,
 				BB94EAA420DBA9C800370A95 /* MainViewController.m */,
@@ -769,6 +891,7 @@
 				BB8AA2D520DE3F5300610316 /* ic_navbar_mine@2x.png in Resources */,
 				BB8AA43020DE3F5300610316 /* ic_navbar_bean@3x.png in Resources */,
 				BBED09B120F7354200D6010A /* ic_bake_baking_inwind.png in Resources */,
+				BB29120E2106CCE1001B9448 /* Password.storyboard in Resources */,
 				BB8AA4E020DFC96A00610316 /* SSIDTableViewCell.xib in Resources */,
 				BBED09B820F7355E00D6010A /* ic_bake_bean@2x.png in Resources */,
 				BB65C25320FD8F0400BB684E /* untick@1x.png in Resources */,
@@ -810,21 +933,25 @@
 				"${SRCROOT}/Pods/Target Support Files/Pods-Coffee/Pods-Coffee-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/Charts/Charts.framework",
 				"${BUILT_PRODUCTS_DIR}/CocoaAsyncSocket/CocoaAsyncSocket.framework",
+				"${BUILT_PRODUCTS_DIR}/FMDB/FMDB.framework",
 				"${BUILT_PRODUCTS_DIR}/IQKeyboardManager/IQKeyboardManager.framework",
 				"${BUILT_PRODUCTS_DIR}/MBProgressHUD/MBProgressHUD.framework",
 				"${BUILT_PRODUCTS_DIR}/MJRefresh/MJRefresh.framework",
 				"${BUILT_PRODUCTS_DIR}/Masonry/Masonry.framework",
 				"${BUILT_PRODUCTS_DIR}/SVProgressHUD/SVProgressHUD.framework",
+				"${BUILT_PRODUCTS_DIR}/WMPageController/WMPageController.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Charts.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CocoaAsyncSocket.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FMDB.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/IQKeyboardManager.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MBProgressHUD.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MJRefresh.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Masonry.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SVProgressHUD.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/WMPageController.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -876,6 +1003,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BB6AD2252100C182008C8763 /* LlabelRImageCell.m in Sources */,
 				BB3811FA20EA1C3C00F0B2B7 /* BakeCurveViewController.m in Sources */,
 				BB8AA4E820DFD18D00610316 /* UIColor+ColorChange.m in Sources */,
 				BB6A784B20E36E7200EE3E2E /* BaseViewController.m in Sources */,
@@ -883,27 +1011,39 @@
 				BB8AA4DF20DFC96A00610316 /* SSIDTableViewCell.m in Sources */,
 				BB6A784620E32A4D00EE3E2E /* DeviceTableViewCell.m in Sources */,
 				BB8AA4C720DFB9CA00610316 /* ESP_NetUtil.m in Sources */,
+				BB6AD21721007D15008C8763 /* MineViewController.m in Sources */,
 				BB8AA49E20DFAFC600610316 /* DeviceViewController.m in Sources */,
+				BB6AD2212100C058008C8763 /* LlabelRlabelCell.m in Sources */,
 				BB8AA49A20DE475200610316 /* BakeViewController.m in Sources */,
 				BB8AA4C920DFB9CA00610316 /* ESP_WifiUtil.m in Sources */,
 				BB94EAA220DB8CE700370A95 /* RDVTabBarItem.m in Sources */,
+				BB6AD21E2100B706008C8763 /* AccountViewController.m in Sources */,
+				BB29120C2106CCE1001B9448 /* PasswordViewController.m in Sources */,
+				BB65C25920FDF00000BB684E /* BeanModel.m in Sources */,
 				BB8AA4D120DFB9CA00610316 /* ESPTouchTask.m in Sources */,
 				BBFE861820E63027005C6CE5 /* DeviceConnectView.m in Sources */,
+				BB65C25D20FE129200BB684E /* CurveViewController.m in Sources */,
 				BB6A555E20FCCA3D0013C3C1 /* AddBeanTableViewCell.m in Sources */,
 				BB8AA4CF20DFB9CA00610316 /* ESPDataCode.m in Sources */,
 				BB1C156620E1E8AD006D7053 /* UIButton+Common.m in Sources */,
+				BB2912022106BA65001B9448 /* UsernameViewController.m in Sources */,
+				BB29121821071B1E001B9448 /* SettingModel.m in Sources */,
+				BB4C906E2105C4200023EE9B /* DataBase.m in Sources */,
 				BB8AA4C820DFB9CA00610316 /* ESP_ByteUtil.m in Sources */,
 				BBFE861520E62FF3005C6CE5 /* DeviceConfirmView.m in Sources */,
 				BB94EAA520DBA9C800370A95 /* MainViewController.m in Sources */,
 				BB712ABD20E47F49005FF10F /* NetWork.m in Sources */,
 				BB94EAA120DB8CE700370A95 /* RDVTabBarController.m in Sources */,
 				BB8AA4A520DFB25900610316 /* EspViewController.m in Sources */,
+				BB2912122106D8D5001B9448 /* GeneralViewController.m in Sources */,
 				BB8AA4C520DFB9CA00610316 /* ESPGuideCode.m in Sources */,
 				BB8F7BDF20DA513B00BE5CFC /* main.m in Sources */,
 				BB8AA4D220DFB9CA00610316 /* ESPDatumCode.m in Sources */,
+				BB2912152106FB43001B9448 /* SubtitileCell.m in Sources */,
 				BB8AA4C620DFB9CA00610316 /* ESPTouchResult.m in Sources */,
 				BB8AA4CB20DFB9CA00610316 /* ESP_CRC8.m in Sources */,
 				BB8F7BD120DA513B00BE5CFC /* AppDelegate.m in Sources */,
+				BB29120D2106CCE1001B9448 /* PasswordTableViewController.m in Sources */,
 				BBFE861220E62FDF005C6CE5 /* DeviceSelectView.m in Sources */,
 				BB69CA7320ECBB490032F126 /* NSObject+Common.m in Sources */,
 				BB8AA4D720DFBFA400610316 /* TouchTableView.m in Sources */,
@@ -1081,10 +1221,12 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Coffee/Coffee-Prefix.pch";
 				INFOPLIST_FILE = Coffee/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.thingcom.Coffee;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
+				USER_HEADER_SEARCH_PATHS = "$(PODS_ROOT)/FMDB/**";
 			};
 			name = Debug;
 		};
@@ -1098,10 +1240,12 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Coffee/Coffee-Prefix.pch";
 				INFOPLIST_FILE = Coffee/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.thingcom.Coffee;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
+				USER_HEADER_SEARCH_PATHS = "$(PODS_ROOT)/FMDB/**";
 			};
 			name = Release;
 		};

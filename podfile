@@ -8,5 +8,7 @@ pod 'IQKeyboardManager'
 pod 'MJRefresh'
 pod 'CocoaAsyncSocket'
 pod 'Charts'
+pod 'WMPageController','~> 2.4.0'
+pod 'FMDB'
 end
 

@@ -10,7 +10,7 @@
 #import <Charts/Charts-Swift.h>
 
 ///@brife 可判断的数据帧类型数量
-#define LEN 6
+#define LEN 7
 
 ///@brife 一次最大读取温度
 #define maxTempCount 20
@@ -167,6 +167,9 @@ static NSInteger gotTempCount = 0;
                 }
                 sendCount++;
             }else if (tag == 104){
+                [self.mySocket writeData:sendData withTimeout:-1 tag:1];
+                [_mySocket readDataWithTimeout:-1 tag:1];
+            }else if (tag == 105){
                 [self.mySocket writeData:sendData withTimeout:-1 tag:1];
                 [_mySocket readDataWithTimeout:-1 tag:1];
             }
@@ -330,6 +333,23 @@ static NSInteger gotTempCount = 0;
     });
 }
 
+- (void)getTime{
+    NSMutableArray *bakeFire = [[NSMutableArray alloc ] init];
+    [bakeFire addObject:[NSNumber numberWithUnsignedChar:0x68]];
+    [bakeFire addObject:[NSNumber numberWithUnsignedChar:0x00]];
+    [bakeFire addObject:[NSNumber numberWithUnsignedChar:_frameCount]];
+    [bakeFire addObject:[NSNumber numberWithUnsignedChar:0x00]];
+    [bakeFire addObject:[NSNumber numberWithUnsignedChar:0x01]];
+    [bakeFire addObject:[NSNumber numberWithUnsignedChar:0x11]];
+    [bakeFire addObject:[NSNumber numberWithUnsignedChar:[NSObject getCS:bakeFire]]];
+    [bakeFire addObject:[NSNumber numberWithUnsignedChar:0x16]];
+    [bakeFire addObject:[NSNumber numberWithUnsignedChar:0x0D]];
+    [bakeFire addObject:[NSNumber numberWithUnsignedChar:0x0A]];
+    dispatch_async(_queue, ^{
+        [self send:bakeFire withTag:105];
+    });
+}
+
 #pragma mark - Frame68 接收处理
 - (void)checkOutFrame:(NSData *)data{
     //把读到的数据复制一份
@@ -444,7 +464,7 @@ static NSInteger gotTempCount = 0;
                 }
                 dispatch_semaphore_signal(_signal);
                 
-            }else if (self.msg68Type == getTimer){
+            }else if (self.msg68Type == getTimerStatus){
                 switch ([_recivedData68[6] unsignedIntegerValue]) {
                         //暂停计时的时候无法进入曲线页面
                     case 0:
@@ -459,6 +479,9 @@ static NSInteger gotTempCount = 0;
                     default:
                         break;
                 }
+            }else if (self.msg68Type == getTimerValue){
+                NSInteger value = [_recivedData68[6] unsignedIntegerValue] * 256 + [_recivedData68[7] unsignedIntegerValue];
+                [self setTimerValue:value];
             }
         }
         
@@ -499,7 +522,7 @@ static NSInteger gotTempCount = 0;
     unsigned char dataType;
     
     unsigned char type[LEN] = {
-      0x00,0x01,0x02,0x04,0x05,0x10
+      0x00,0x01,0x02,0x04,0x05,0x10,0x11
     };
     
     dataType = [data[5] unsignedIntegerValue];
@@ -531,7 +554,11 @@ static NSInteger gotTempCount = 0;
                     break;
                     
                 case 5:
-                    returnVal = getTimer;
+                    returnVal = getTimerStatus;
+                    break;
+                    
+                case 6:
+                    returnVal = getTimerValue;
                     break;
                     
                 default:

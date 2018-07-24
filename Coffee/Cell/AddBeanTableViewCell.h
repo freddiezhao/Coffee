@@ -8,12 +8,15 @@
 
 #import <UIKit/UIKit.h>
 
-@interface AddBeanTableViewCell : UITableViewCell
+typedef void(^deleteBlock)(void);
+
+@interface AddBeanTableViewCell : UITableViewCell <UITextFieldDelegate>
 
 @property (nonatomic, strong) UILabel *numLabel;
 @property (nonatomic, strong) UIImageView *image;
 @property (nonatomic, strong) UILabel *beanName;
 @property (nonatomic, strong) UITextField *weightTF;
 @property (nonatomic, strong) UIButton *deleteBtn;
+@property (nonatomic, copy) deleteBlock delBlock;
 
 @end
