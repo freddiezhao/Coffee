@@ -7,6 +7,7 @@
 //
 
 #import "CurveViewController.h"
+#import "BakeReportController.h"
 
 @interface CurveViewController () <UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate>
 
@@ -21,7 +22,12 @@
     [super viewDidLoad];
     [self.view setBackgroundColor:[UIColor colorWithHexString:yColor_back]];
     
-    
+    UIButton *rightButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    rightButton.frame = CGRectMake(0, 0, 30, 30);
+    [rightButton setImage:[UIImage imageNamed:@"ic_details"] forState:UIControlStateNormal];
+    [rightButton addTarget:self action:@selector(next) forControlEvents:UIControlEventTouchUpInside];
+    UIBarButtonItem *rightBarButton = [[UIBarButtonItem alloc] initWithCustomView:rightButton];
+    self.navigationItem.rightBarButtonItem = rightBarButton;
 }
 
 - (void)viewDidLayoutSubviews
@@ -142,6 +148,12 @@
 - (NSString *)pageController:(WMPageController *)pageController titleAtIndex:(NSInteger)index {
     
     return self.titleData[index];
+}
+
+#pragma mark - Actions
+- (void)next{
+    BakeReportController *reportVC = [[BakeReportController alloc] init];
+    [self.navigationController pushViewController:reportVC animated:YES];
 }
 
 @end

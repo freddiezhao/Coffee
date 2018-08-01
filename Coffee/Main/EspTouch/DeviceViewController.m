@@ -13,6 +13,8 @@
 #import "TouchTableView.h"
 #import "DeviceTableViewCell.h"
 #import "MJRefresh.h"
+#import "DeviceModel.h"
+#import "FMDB.h"
 
 #import <SystemConfiguration/CaptiveNetwork.h>
 
@@ -41,6 +43,9 @@ NSString *const CellNibName_device = @"DeviceTableViewCell";
 ///@brief ip数组
 @property (nonatomic, strong) NSMutableArray *ipArray;
 
+///@brief 本地所有设备数组
+@property (nonatomic, strong) NSMutableArray *deviceArray;
+
 @end
 
 @implementation DeviceViewController
@@ -53,6 +58,9 @@ NSString *const CellNibName_device = @"DeviceTableViewCell";
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    [self queryDevices];
+    
+    
     UIButton *rightButton = [UIButton buttonWithType:UIButtonTypeCustom];
     rightButton.frame = CGRectMake(0, 0, 30, 30);
     [rightButton setImage:[UIImage imageNamed:@"ic_details"] forState:UIControlStateNormal];
@@ -63,6 +71,12 @@ NSString *const CellNibName_device = @"DeviceTableViewCell";
     _ipArray = [NSMutableArray array];
     _devieceTable = [self devieceTable];
     _timer = [self timer];
+    
+    if (!_deviceArray && !_ipArray && !_macIpArray) {
+        _devieceTable.hidden = YES;
+    }else{
+        _devieceTable.hidden = NO;
+    }
 }
 
 - (void)viewWillAppear:(BOOL)animated{
@@ -94,6 +108,7 @@ NSString *const CellNibName_device = @"DeviceTableViewCell";
             tableView.backgroundColor = [UIColor clearColor];
             tableView.dataSource = self;
             tableView.delegate = self;
+            tableView.hidden = YES;
             tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
             [tableView registerClass:[DeviceTableViewCell class] forCellReuseIdentifier:CellIdentifier_device];
             [tableView registerNib:[UINib nibWithNibName:CellNibName_device bundle:nil] forCellReuseIdentifier:CellIdentifier_device];
@@ -190,7 +205,7 @@ NSString *const CellNibName_device = @"DeviceTableViewCell";
 - (void)udpSocket:(GCDAsyncUdpSocket *)sock didReceiveData:(NSData *)data fromAddress:(NSData *)address withFilterContext:(id)filterContext{
     NSLog(@"UDP接收数据……………………………………………………");
     [self.devieceTable.mj_header endRefreshing];
-    isConnect = YES;
+    isConnect = YES;//停止发送udp
     if (1) {
         /**
          *获取IP地址
@@ -205,6 +220,8 @@ NSString *const CellNibName_device = @"DeviceTableViewCell";
         // Convert C string to NSString:
         NSString *ipAddress = [[NSString alloc] initWithBytes:host length:strlen(host) encoding:NSUTF8StringEncoding];
         
+        NSString *msgg = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+        NSLog(@"%@",msgg);
         //避免重复显示同一个设备
         int isContain = 0;
         for (NSString *address in _ipArray) {
@@ -222,11 +239,32 @@ NSString *const CellNibName_device = @"DeviceTableViewCell";
             NSLog(@"%@",msg);
             [_macIpArray addObject:[msg substringWithRange:NSMakeRange(0, 8)]];
             
-            NSArray *msgArray = [msg componentsSeparatedByString:@"|"];
-            NSData *msgData = [msgArray.lastObject dataUsingEncoding:NSUTF8StringEncoding];
-            NSError *error;
-            NSDictionary *dataDict = [NSJSONSerialization JSONObjectWithData:msgData options:NSJSONReadingMutableContainers error:&error];
-            NSLog(@"%@",dataDict);
+            //判断本地是否已经存储过，如果有则将_deviceArray中的该设备删除，如果没有则存储该设备
+            int isNewDevice = 1;
+            for (int i = 0; i < _deviceArray.count; i++) {
+                DeviceModel *device = _deviceArray[i];
+                if ([[msg substringWithRange:NSMakeRange(0, 8)] isEqualToString:device.deviceMac]) {
+                    [_deviceArray removeObjectAtIndex:i];
+                    isNewDevice = 0;
+                }
+            }
+            if (isNewDevice) {
+                [[DataBase shareDataBase].queueDB inDatabase:^(FMDatabase * _Nonnull db) {
+                    BOOL result = [db executeUpdate:@"INSERT INTO device (mac,deviceName) VALUES (?,?)",[msg substringWithRange:NSMakeRange(0, 8)],[msg substringWithRange:NSMakeRange(0, 8)]];
+                    if (result) {
+                        NSLog(@"插入新设备到device成功");
+                    }else{
+                        NSLog(@"插入新设备到device失败");
+                    }
+                }];
+            }
+            
+//            NSArray *msgArray = [msg componentsSeparatedByString:@"|"];
+//            NSData *msgData = [msgArray.lastObject dataUsingEncoding:NSUTF8StringEncoding];
+//            NSError *error;
+//            NSDictionary *dataDict = [NSJSONSerialization JSONObjectWithData:msgData options:NSJSONReadingMutableContainers error:&error];
+//            NSLog(@"%@",dataDict);
+            
             dispatch_async(dispatch_get_main_queue(), ^{
                 [_devieceTable reloadData];
             });
@@ -306,7 +344,7 @@ NSString *const CellNibName_device = @"DeviceTableViewCell";
 
 #pragma mark - uitableview
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView{
-    return 2;
+    return 3;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
@@ -318,6 +356,9 @@ NSString *const CellNibName_device = @"DeviceTableViewCell";
         case 1:
             return _macIpArray.count;
             //return 1;
+            
+        case 3:
+            return _deviceArray.count;
             
         default:
             return 0;
@@ -337,12 +378,20 @@ NSString *const CellNibName_device = @"DeviceTableViewCell";
         
         cell.deviceLabel.text = [_macIpArray objectAtIndex:indexPath.row];
         return cell;
-    }else{
+    }else if (indexPath.section == 0){
         DeviceTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_device];
         if (cell == nil) {
             cell = [[[NSBundle mainBundle] loadNibNamed:CellNibName_device owner:self options:nil] lastObject];
         }
         cell.deviceLabel.text = @"";
+        return cell;
+    }else{
+        DeviceTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_device];
+        if (cell == nil) {
+            cell = [[[NSBundle mainBundle] loadNibNamed:CellNibName_device owner:self options:nil] lastObject];
+        }
+        DeviceModel *device = _deviceArray[indexPath.row];
+        cell.deviceLabel.text = device.deviceName;
         return cell;
     }
     
@@ -372,8 +421,10 @@ NSString *const CellNibName_device = @"DeviceTableViewCell";
     headerTitle.font = [UIFont systemFontOfSize:14.f];
     if (section == 0) {
         headerTitle.text = LocalString(@"已连接设备");
+    }else if (section == 1){
+        headerTitle.text = LocalString(@"在线设备");
     }else{
-        headerTitle.text = LocalString(@"所有设备");
+        headerTitle.text = LocalString(@"离线设备");
     }
     [headerView addSubview:headerTitle];
     
@@ -397,6 +448,11 @@ NSString *const CellNibName_device = @"DeviceTableViewCell";
     };
     [self.navigationController pushViewController:EspVC animated:YES];
     
+}
+
+#pragma mark - Data Source
+- (void)queryDevices{
+    _deviceArray = [[DataBase shareDataBase] queryAllDevice];
 }
 
 @end

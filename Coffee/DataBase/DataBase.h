@@ -7,20 +7,33 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "SettingModel.h"
 
 @class FMDatabaseQueue;
+@class SettingModel;
+@class ReportModel;
+@class BeanModel;
+@class EventModel;
 
 @interface DataBase : NSObject
 ///@brief User Information
 @property (nonatomic, strong) NSString *userName;
+@property (nonatomic, strong) NSNumber *userId;
+
+@property (nonatomic, strong) NSString *deviceName;
 ///@brief Settings
-@property (nonatomic, strong) SettingModel *settings;
+@property (nonatomic, strong) SettingModel *setting;
+@property (nonatomic, strong) BeanModel *bean;
 
 @property (nonatomic, strong) FMDatabaseQueue *queueDB;
 
 
 + (instancetype)shareDataBase;
 
-- (SettingModel *)selectSetting;
+///@brief query action
+- (ReportModel *)queryReport:(NSNumber *)curveId;
+- (NSArray *)queryReportRelaBean:(NSNumber *)curveId;
+- (BeanModel *)queryBean:(NSNumber *)beanId;
+- (NSArray *)queryEvent:(NSNumber *)curveId;
+- (NSMutableArray *)queryAllDevice;
+
 @end

@@ -15,6 +15,7 @@ typedef enum{
     getTemp,
     getTempCount,
     getCountTemp,
+    getPowerStatus,
     getTimerStatus,
     getTimerValue,
     otherMsgType
@@ -54,8 +55,11 @@ static NSInteger tempCountVer = 1000;
 ///@brief 帧类型
 @property (nonatomic, assign) FrameType68 frame68Type;
 
-///@brief 温度数据
+///@brief 计时器和计时总数
 @property (nonatomic, strong) NSTimer *myTimer;
+///@brief 计时器数据,app中所有计时都以秒为单位
+@property (nonatomic, assign) int timerValue;
+///@brief 用于kvo
 @property (nonatomic, strong) NSArray *tempData;
 
 ///@brief 豆温数据
@@ -66,8 +70,7 @@ static NSInteger tempCountVer = 1000;
 @property (nonatomic, strong) NSMutableArray *yVals_Diff;
 @property (nonatomic, assign) UInt8 frameCount;
 
-///@brief 计时器数据
-@property (nonatomic, assign) NSInteger timerValue;
+
 
 ///@brief 单例模式
 + (instancetype)shareNetWork;

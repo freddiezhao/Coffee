@@ -9,6 +9,9 @@
 #import "BakeCurveViewController.h"
 #import "AppDelegate.h"
 #import <Charts/Charts-Swift.h>
+#import "FMDB.h"
+#import "BeanModel.h"
+#import "EventModel.h"
 
 #define buttonHeight 30
 
@@ -16,16 +19,15 @@
 
 @property (nonatomic, strong) LineChartView *chartView;
 
+///@brief UI Component
 @property (nonatomic, strong) UILabel *bakeTime;
 @property (nonatomic, strong) UILabel *developRate;
 @property (nonatomic, strong) UILabel *developTime;
-
 @property (nonatomic, strong) UILabel *beanTempLabel;
 @property (nonatomic, strong) UILabel *inTempLabel;
 @property (nonatomic, strong) UILabel *outTempLabel;
 @property (nonatomic, strong) UILabel *environTempLabel;
 @property (nonatomic, strong) UILabel *beanTempRateLabel;
-
 @property (nonatomic, strong) UIButton *leftPopBtn;
 @property (nonatomic, strong) UIView *leftControlView;
 @property (nonatomic, strong) UIButton *rightPopBtn;
@@ -33,11 +35,14 @@
 
 @property (nonatomic, strong) NetWork *myNet;
 
+@property (nonatomic, strong) NSArray *eventArray;
+
 @end
 
 @implementation BakeCurveViewController
 {
     double leftAxisMax;
+    NSInteger curveId;
 }
 
 - (void)viewDidLoad {
@@ -65,6 +70,7 @@
     
     [_myNet addObserver:self forKeyPath:@"tempData" options:NSKeyValueObservingOptionNew context:nil];
     [_myNet addObserver:self forKeyPath:@"timerValue" options:NSKeyValueObservingOptionNew context:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(bakeCompelete) name:@"bakeCompelete" object:nil];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -78,10 +84,13 @@
 
 - (void)viewWillDisappear:(BOOL)animated{
     [super viewWillDisappear:animated];
+    [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
 }
 
 - (void)dealloc{
     [_myNet removeObserver:self forKeyPath:@"tempData"];
+    [_myNet removeObserver:self forKeyPath:@"timerValue"];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"bakeCompelete" object:nil];
 }
 
 #pragma mark - lazy load
@@ -802,6 +811,85 @@
         long second = _myNet.timerValue % 60;
         _bakeTime.text = [NSString stringWithFormat:@"%@ %ld:%ld",LocalString(@"已烘焙时间:"),minute,second];
     }
+}
+
+- (void)bakeCompelete{
+    //ToDo 弹框
+    
+    //如果烘焙时间不再增加的话使用下行代码
+    [_myNet removeObserver:self forKeyPath:@"timerValue"];
+    [_myNet removeObserver:self forKeyPath:@"timeData"];
+    
+    DataBase *myDB = [DataBase shareDataBase];
+    
+    //曲线名字
+    NSString *curveName = @"";
+    if (_beanArray.count > 2) {
+        curveName = [NSString stringWithFormat:@"拼配豆(%@)",myDB.deviceName];
+    }else if (_beanArray.count == 1){
+        BeanModel *bean = _beanArray[0];
+        curveName = [NSString stringWithFormat:@"%@(%@)",bean.beanName,myDB.deviceName];
+    }
+    
+    //生豆重量
+    NSUInteger totolWeight = 0;
+    if (_beanArray) {
+        for (BeanModel *bean in _beanArray) {
+            totolWeight += bean.weight;
+        }
+    }
+    
+    //曲线数据
+    NSString *curveValueJson;
+    if (_myNet.yVals_Out && _myNet.yVals_In && _myNet.yVals_Bean && _myNet.yVals_Environment && _myNet.yVals_Diff) {
+        NSArray *outTArray = [_myNet.yVals_Out copy];
+        NSArray *inTArray = [_myNet.yVals_In copy];
+        NSArray *beanTArray = [_myNet.yVals_Bean copy];
+        NSArray *enTArray = [_myNet.yVals_Environment copy];
+        NSArray *diffTArray = [_myNet.yVals_Diff copy];
+        
+        NSDictionary *curveValueDic = @{@"out":outTArray,@"in":inTArray,@"bean":beanTArray,@"environment":enTArray,@"diff":diffTArray};
+        NSData *curveData = [NSJSONSerialization dataWithJSONObject:curveValueDic options:NSJSONWritingPrettyPrinted error:nil];
+        curveValueJson = [[NSString alloc] initWithData:curveData encoding:NSUTF8StringEncoding];
+    }
+    
+    //添加报告并更新数据的事务
+    [myDB.queueDB inTransaction:^(FMDatabase * _Nonnull db, BOOL * _Nonnull rollback) {
+        BOOL result = [db executeUpdate:@"INSERT INTO curveInfo (curveName,date,deviceName,rawBeanWeight,bakeBeanWeight,light,bakeTime,developTime,developRate,bakerName,curveValue) VALUES (?,?,?,?,?,?,?,?,?,?,?)",curveName,[NSDate localStringFromUTCDate:[NSDate date]],myDB.deviceName,totolWeight,@0,@0,_myNet.timerValue,[_developTime.text integerValue],_developRate.text,myDB.userName,curveValueJson];
+        //test
+        //BOOL result = [db executeUpdate:@"INSERT INTO curveInfo (curveName,date,deviceName,rawBeanWeight,bakeBeanWeight,light,bakeTime,developTime,developRate,bakerName,curveValue) VALUES (?,?,?,?,?,?,?,?,?,?,?)",@"",[NSDate localStringFromUTCDate:[NSDate date]],@"",@0,@0,@0,@0,@0,@"",@"",@""];
+        if (!result) {
+            *rollback = YES;
+            return;
+        }
+        
+        FMResultSet *set = [db executeQuery:@"SELECT last_insert_rowid() FROM curveInfo"];
+        while ([set next]) {
+            curveId = [set intForColumnIndex:0];
+        }
+        NSLog(@"%ld",(long)curveId);
+        [set close];
+        
+        //插入曲线事件关联
+        for (int i = 0; i < _eventArray.count; i++) {
+            EventModel *event = _eventArray[i];
+            result = [db executeUpdate:@"INSERT INTO curve_event (curveId,eventId,eventTime,eventBeanTemp) VALUES (?,?,?,?)",curveId,event.eventId,event.eventTime,event.eventBeanTemp];
+            if (!result) {
+                *rollback = YES;
+                return;
+            }
+        }
+        
+        //插入曲线生豆关联
+        for (int i = 0; i < _beanArray.count; i++) {
+            BeanModel *bean = _beanArray[i];
+            result = [db executeUpdate:@"INSERT INTO bean_curve (beanId,curveId,beanWeight) VALUES (?,?,?)",bean.beanId,[NSNumber numberWithInteger:curveId],bean.weight];
+            if (!result) {
+                *rollback = YES;
+                return;
+            }
+        }
+    }];
 }
 
 @end

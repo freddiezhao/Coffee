@@ -27,7 +27,7 @@
         }
         if (!_rightLabel) {
             _rightLabel = [[UILabel alloc] init];
-            _rightLabel.textColor = [UIColor blackColor];
+            _rightLabel.textColor = [UIColor darkGrayColor];
             _rightLabel.font = [UIFont systemFontOfSize:17.0];
             _rightLabel.textAlignment = NSTextAlignmentRight;
             [self.contentView addSubview:_rightLabel];

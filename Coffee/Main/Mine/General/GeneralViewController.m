@@ -9,6 +9,9 @@
 #import "GeneralViewController.h"
 #import "LlabelRlabelCell.h"
 #import "SubtitileCell.h"
+#import "FastEventViewController.h"
+#import "CurveColorViewController.h"
+#import "SettingModel.h"
 
 NSString *const CellIdentifier_GeneralSub = @"CellID_GeneralSub";
 NSString *const CellIdentifier_GeneralLR = @"CellID_GeneralLR";
@@ -16,7 +19,7 @@ NSString *const CellIdentifier_GeneralLR = @"CellID_GeneralLR";
 @interface GeneralViewController () <UITableViewDelegate, UITableViewDataSource>
 
 @property (nonatomic, strong) UITableView *generalTable;
-@property (nonatomic, strong) SettingModel *settingModel;
+@property (nonatomic, strong) DataBase *myData;
 
 @end
 
@@ -25,13 +28,13 @@ NSString *const CellIdentifier_GeneralLR = @"CellID_GeneralLR";
 - (void)viewDidLoad {
     [super viewDidLoad];
     _generalTable = [self generalTable];
+    _myData = [DataBase shareDataBase];
 }
 
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
     [self.rdv_tabBarController setTabBarHidden:YES animated:YES];
     
-    _settingModel = [[DataBase shareDataBase] selectSetting];
 }
 
 #pragma mark - Lazyload
@@ -101,18 +104,34 @@ NSString *const CellIdentifier_GeneralLR = @"CellID_GeneralLR";
         
         LlabelRlabelCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_GeneralLR];
         cell.leftLabel.font = [UIFont systemFontOfSize:15.0];
+        cell.rightLabel.font = [UIFont systemFontOfSize:15.f];
         if (cell == nil) {
             cell = [[LlabelRlabelCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier_GeneralLR];
         }
         
         if (indexPath.row == 0) {
             cell.leftLabel.text = LocalString(@"重量单位");
+            if (!_myData.setting.weightUnit) {
+                cell.rightLabel.text = @"g";
+            }else{
+                cell.rightLabel.text = _myData.setting.weightUnit;
+            }
             return cell;
         }else if (indexPath.row == 1){
             cell.leftLabel.text = LocalString(@"温度单位");
+            if (!_myData.setting.tempUnit) {
+                cell.rightLabel.text = @"℃";
+            }else{
+                cell.rightLabel.text = _myData.setting.tempUnit;
+            }
             return cell;
         }else{
             cell.leftLabel.text = LocalString(@"烘焙色度参考标准");
+            if (!_myData.setting.bakeChromaReferStandard) {
+                cell.rightLabel.text = @"argon";
+            }else{
+                cell.rightLabel.text = _myData.setting.bakeChromaReferStandard;
+            }
             return cell;
         }
         
@@ -120,28 +139,50 @@ NSString *const CellIdentifier_GeneralLR = @"CellID_GeneralLR";
         
         LlabelRlabelCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_GeneralLR];
         cell.leftLabel.font = [UIFont systemFontOfSize:15.0];
+        cell.rightLabel.font = [UIFont systemFontOfSize:15.f];
         if (cell == nil) {
             cell = [[LlabelRlabelCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier_GeneralLR];
         }
         if (indexPath.row == 0) {
             cell.leftLabel.text = LocalString(@"时间轴");
+            if (!_myData.setting.timeAxis) {
+                cell.rightLabel.text = @"10分钟";
+            }else{
+                cell.rightLabel.text = _myData.setting.timeAxis;
+            }
             return cell;
         }else{
             cell.leftLabel.text = LocalString(@"温度轴");
+            if (!_myData.setting.tempAxis) {
+                cell.rightLabel.text = @"300℃";
+            }else{
+                cell.rightLabel.text = _myData.setting.tempAxis;
+            }
             return cell;
         }
     }else if (indexPath.section == 3){
         
         LlabelRlabelCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_GeneralLR];
         cell.leftLabel.font = [UIFont systemFontOfSize:15.0];
+        cell.rightLabel.font = [UIFont systemFontOfSize:15.f];
         if (cell == nil) {
             cell = [[LlabelRlabelCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier_GeneralLR];
         }
         if (indexPath.row == 0) {
             cell.leftLabel.text = LocalString(@"温度曲线平滑");
+            if (!_myData.setting.tempCurveSmooth) {
+                cell.rightLabel.text = @"5";
+            }else{
+                cell.rightLabel.text = _myData.setting.tempCurveSmooth;
+            }
             return cell;
         }else if (indexPath.row == 1){
             cell.leftLabel.text = LocalString(@"升温率平滑");
+            if (!_myData.setting.tempRateSmooth) {
+                cell.rightLabel.text = @"6";
+            }else{
+                cell.rightLabel.text = _myData.setting.tempRateSmooth;
+            }
             return cell;
         }else{
             cell.leftLabel.text = LocalString(@"曲线颜色");
@@ -152,10 +193,16 @@ NSString *const CellIdentifier_GeneralLR = @"CellID_GeneralLR";
         
         LlabelRlabelCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_GeneralLR];
         cell.leftLabel.font = [UIFont systemFontOfSize:15.0];
+        cell.rightLabel.font = [UIFont systemFontOfSize:15.f];
         if (cell == nil) {
             cell = [[LlabelRlabelCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier_GeneralLR];
         }
         cell.leftLabel.text = LocalString(@"语言");
+        if (!_myData.setting.language) {
+            cell.rightLabel.text = @"中文";
+        }else{
+            cell.rightLabel.text = _myData.setting.language;
+        }
         return cell;
     }
 }
@@ -163,7 +210,11 @@ NSString *const CellIdentifier_GeneralLR = @"CellID_GeneralLR";
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     if (indexPath.section == 0) {
-        
+        FastEventViewController *eventVC = [[FastEventViewController alloc] init];
+        [self.navigationController pushViewController:eventVC animated:YES];
+    }else if (indexPath.section == 3 && indexPath.row == 2){
+        CurveColorViewController *ccVC = [[CurveColorViewController alloc] init];
+        [self.navigationController pushViewController:ccVC animated:YES];
     }
 }
 

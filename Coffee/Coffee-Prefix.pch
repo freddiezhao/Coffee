@@ -17,6 +17,7 @@
 #import "NSObject+Common.h"
 #import "RDVTabBarController.h"
 #import "UIButton+Common.h"
+#import "NSDate+Common.h"
 #import "BaseViewController.h"
 #import "NetWork.h"
 #import "DataBase.h"
@@ -44,6 +45,7 @@
 
 #define yColor_back @"D8DADD"
 #define yColor_common @"996640"
+#define yColor_BtnBG @"4778CC"
 #define tabbarHeight ScreenHeight < 700 ? 44.f : 60.f
 #define cellHeight 44
 #define viewWidth self.contentView.frame.size.width

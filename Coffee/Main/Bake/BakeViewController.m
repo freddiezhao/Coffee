@@ -651,7 +651,7 @@ NSString *const kCellIdentifier_addBean = @"cellID_addBean";
     [_beanTempView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.size.mas_equalTo(CGSizeMake(180, 180));
         make.centerX.equalTo(self.view.mas_centerX);
-        make.top.equalTo(self.view.mas_top).offset(30);
+        make.top.equalTo(self.view.mas_top).offset(30.0 / 667 * ScreenHeight);
     }];
     
     [_inTempView mas_makeConstraints:^(MASConstraintMaker *make) {

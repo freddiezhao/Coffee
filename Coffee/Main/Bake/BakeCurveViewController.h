@@ -10,4 +10,6 @@
 
 @interface BakeCurveViewController : BaseViewController
 
+@property (nonatomic, strong) NSArray *beanArray;
+
 @end

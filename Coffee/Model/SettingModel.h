@@ -10,14 +10,14 @@
 
 @interface SettingModel : NSObject
 
-@property (nonatomic, strong) NSArray  *events;
+@property (nonatomic, strong) NSMutableArray *events;
 @property (nonatomic, strong) NSString *weightUnit;
 @property (nonatomic, strong) NSString *tempUnit;
 @property (nonatomic, strong) NSString *bakeChromaReferStandard;
 @property (nonatomic, strong) NSString *timeAxis;
 @property (nonatomic, strong) NSString *tempAxis;
-@property (nonatomic, strong) NSNumber *tempCurveSmooth;
-@property (nonatomic, strong) NSNumber *tempRateSmooth;
+@property (nonatomic, strong) NSString *tempCurveSmooth;
+@property (nonatomic, strong) NSString *tempRateSmooth;
 @property (nonatomic, strong) NSString *curveColorJson;
 @property (nonatomic, strong) NSString *language;
 

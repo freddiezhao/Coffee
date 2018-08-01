@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		258879339880B16366F53ED6 /* Pods_Coffee.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27C3888E1688495B0D5D73D6 /* Pods_Coffee.framework */; };
 		BB1C156620E1E8AD006D7053 /* UIButton+Common.m in Sources */ = {isa = PBXBuildFile; fileRef = BB1C156420E1E8AD006D7053 /* UIButton+Common.m */; };
+		BB23E563210964C20074C61B /* FeedbackViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB23E562210964C20074C61B /* FeedbackViewController.m */; };
 		BB26AFB220EDC846008AE330 /* 数据.json in Resources */ = {isa = PBXBuildFile; fileRef = BB26AFB120EDC846008AE330 /* 数据.json */; };
 		BB2912022106BA65001B9448 /* UsernameViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB2912012106BA65001B9448 /* UsernameViewController.m */; };
 		BB29120C2106CCE1001B9448 /* PasswordViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB2912082106CCE1001B9448 /* PasswordViewController.m */; };
@@ -22,6 +23,17 @@
 		BB52778220F845C100D020DD /* ic_leftpop@1x.png in Resources */ = {isa = PBXBuildFile; fileRef = BB52777F20F845C000D020DD /* ic_leftpop@1x.png */; };
 		BB52778320F845C100D020DD /* ic_leftpop@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = BB52778020F845C000D020DD /* ic_leftpop@2x.png */; };
 		BB52778420F845C100D020DD /* ic_leftpop@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = BB52778120F845C000D020DD /* ic_leftpop@3x.png */; };
+		BB593FA9210F172D007ECB1D /* NSDate+Common.m in Sources */ = {isa = PBXBuildFile; fileRef = BB593FA8210F172D007ECB1D /* NSDate+Common.m */; };
+		BB593FAC210F324C007ECB1D /* EventModel.m in Sources */ = {isa = PBXBuildFile; fileRef = BB593FAB210F324C007ECB1D /* EventModel.m */; };
+		BB5A3BF1211193180030ACA5 /* DeviceModel.m in Sources */ = {isa = PBXBuildFile; fileRef = BB5A3BF0211193180030ACA5 /* DeviceModel.m */; };
+		BB61D757210D619E0068A0A6 /* BakeReportController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB61D756210D619E0068A0A6 /* BakeReportController.m */; };
+		BB61D75A210DC31C0068A0A6 /* ReportModel.m in Sources */ = {isa = PBXBuildFile; fileRef = BB61D759210DC31C0068A0A6 /* ReportModel.m */; };
+		BB635D1F210862E8005F42D6 /* FastEventViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB635D1E210862E8005F42D6 /* FastEventViewController.m */; };
+		BB635D21210868AF005F42D6 /* ic_quick_event_add@1x.png in Resources */ = {isa = PBXBuildFile; fileRef = BB635D20210868AF005F42D6 /* ic_quick_event_add@1x.png */; };
+		BB635D23210868DF005F42D6 /* ic_quick_event_add@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = BB635D22210868DF005F42D6 /* ic_quick_event_add@2x.png */; };
+		BB635D25210868EF005F42D6 /* ic_quick_event_add@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = BB635D24210868EF005F42D6 /* ic_quick_event_add@3x.png */; };
+		BB635D282108781C005F42D6 /* CurveColorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB635D272108781C005F42D6 /* CurveColorViewController.m */; };
+		BB635D2B2108794B005F42D6 /* CurveColorCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BB635D2A2108794B005F42D6 /* CurveColorCell.m */; };
 		BB65C25120FD8F0400BB684E /* tick@1x.png in Resources */ = {isa = PBXBuildFile; fileRef = BB65C24B20FD8F0300BB684E /* tick@1x.png */; };
 		BB65C25220FD8F0400BB684E /* tick@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = BB65C24C20FD8F0300BB684E /* tick@2x.png */; };
 		BB65C25320FD8F0400BB684E /* untick@1x.png in Resources */ = {isa = PBXBuildFile; fileRef = BB65C24D20FD8F0400BB684E /* untick@1x.png */; };
@@ -144,6 +156,8 @@
 		7BA3FAAB66A327260F196ABB /* Pods-Coffee.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Coffee.release.xcconfig"; path = "Pods/Target Support Files/Pods-Coffee/Pods-Coffee.release.xcconfig"; sourceTree = "<group>"; };
 		BB1C156420E1E8AD006D7053 /* UIButton+Common.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIButton+Common.m"; sourceTree = "<group>"; };
 		BB1C156520E1E8AD006D7053 /* UIButton+Common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIButton+Common.h"; sourceTree = "<group>"; };
+		BB23E561210964C20074C61B /* FeedbackViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FeedbackViewController.h; sourceTree = "<group>"; };
+		BB23E562210964C20074C61B /* FeedbackViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FeedbackViewController.m; sourceTree = "<group>"; };
 		BB26AFB120EDC846008AE330 /* 数据.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "数据.json"; sourceTree = "<group>"; };
 		BB2912002106BA65001B9448 /* UsernameViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UsernameViewController.h; sourceTree = "<group>"; };
 		BB2912012106BA65001B9448 /* UsernameViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UsernameViewController.m; sourceTree = "<group>"; };
@@ -165,7 +179,26 @@
 		BB52777F20F845C000D020DD /* ic_leftpop@1x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ic_leftpop@1x.png"; sourceTree = "<group>"; };
 		BB52778020F845C000D020DD /* ic_leftpop@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ic_leftpop@2x.png"; sourceTree = "<group>"; };
 		BB52778120F845C000D020DD /* ic_leftpop@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ic_leftpop@3x.png"; sourceTree = "<group>"; };
+		BB593FA7210F172D007ECB1D /* NSDate+Common.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSDate+Common.h"; sourceTree = "<group>"; };
+		BB593FA8210F172D007ECB1D /* NSDate+Common.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSDate+Common.m"; sourceTree = "<group>"; };
+		BB593FAA210F324C007ECB1D /* EventModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EventModel.h; sourceTree = "<group>"; };
+		BB593FAB210F324C007ECB1D /* EventModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EventModel.m; sourceTree = "<group>"; };
+		BB5A3BEF211193180030ACA5 /* DeviceModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DeviceModel.h; sourceTree = "<group>"; };
+		BB5A3BF0211193180030ACA5 /* DeviceModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DeviceModel.m; sourceTree = "<group>"; };
 		BB5E91A120FEDA3400416EE2 /* WMPageController.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = WMPageController.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		BB61D755210D619E0068A0A6 /* BakeReportController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BakeReportController.h; sourceTree = "<group>"; };
+		BB61D756210D619E0068A0A6 /* BakeReportController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BakeReportController.m; sourceTree = "<group>"; };
+		BB61D758210DC31C0068A0A6 /* ReportModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ReportModel.h; sourceTree = "<group>"; };
+		BB61D759210DC31C0068A0A6 /* ReportModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ReportModel.m; sourceTree = "<group>"; };
+		BB635D1D210862E8005F42D6 /* FastEventViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FastEventViewController.h; sourceTree = "<group>"; };
+		BB635D1E210862E8005F42D6 /* FastEventViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FastEventViewController.m; sourceTree = "<group>"; };
+		BB635D20210868AF005F42D6 /* ic_quick_event_add@1x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ic_quick_event_add@1x.png"; sourceTree = "<group>"; };
+		BB635D22210868DF005F42D6 /* ic_quick_event_add@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ic_quick_event_add@2x.png"; sourceTree = "<group>"; };
+		BB635D24210868EF005F42D6 /* ic_quick_event_add@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ic_quick_event_add@3x.png"; sourceTree = "<group>"; };
+		BB635D262108781C005F42D6 /* CurveColorViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CurveColorViewController.h; sourceTree = "<group>"; };
+		BB635D272108781C005F42D6 /* CurveColorViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CurveColorViewController.m; sourceTree = "<group>"; };
+		BB635D292108794B005F42D6 /* CurveColorCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CurveColorCell.h; sourceTree = "<group>"; };
+		BB635D2A2108794B005F42D6 /* CurveColorCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CurveColorCell.m; sourceTree = "<group>"; };
 		BB65C24B20FD8F0300BB684E /* tick@1x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tick@1x.png"; sourceTree = "<group>"; };
 		BB65C24C20FD8F0300BB684E /* tick@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tick@2x.png"; sourceTree = "<group>"; };
 		BB65C24D20FD8F0400BB684E /* untick@1x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "untick@1x.png"; sourceTree = "<group>"; };
@@ -380,6 +413,10 @@
 			children = (
 				BB2912102106D8D5001B9448 /* GeneralViewController.h */,
 				BB2912112106D8D5001B9448 /* GeneralViewController.m */,
+				BB635D1D210862E8005F42D6 /* FastEventViewController.h */,
+				BB635D1E210862E8005F42D6 /* FastEventViewController.m */,
+				BB635D262108781C005F42D6 /* CurveColorViewController.h */,
+				BB635D272108781C005F42D6 /* CurveColorViewController.m */,
 			);
 			path = General;
 			sourceTree = "<group>";
@@ -398,6 +435,8 @@
 			children = (
 				BB65C25B20FE129200BB684E /* CurveViewController.h */,
 				BB65C25C20FE129200BB684E /* CurveViewController.m */,
+				BB61D755210D619E0068A0A6 /* BakeReportController.h */,
+				BB61D756210D619E0068A0A6 /* BakeReportController.m */,
 			);
 			path = Curve;
 			sourceTree = "<group>";
@@ -416,6 +455,8 @@
 			children = (
 				BB6AD21521007D15008C8763 /* MineViewController.h */,
 				BB6AD21621007D15008C8763 /* MineViewController.m */,
+				BB23E561210964C20074C61B /* FeedbackViewController.h */,
+				BB23E562210964C20074C61B /* FeedbackViewController.m */,
 				BB2912062106CC89001B9448 /* Account */,
 				BB29120F2106D8B1001B9448 /* General */,
 			);
@@ -429,6 +470,12 @@
 				BB65C25820FDF00000BB684E /* BeanModel.m */,
 				BB29121621071B1E001B9448 /* SettingModel.h */,
 				BB29121721071B1E001B9448 /* SettingModel.m */,
+				BB61D758210DC31C0068A0A6 /* ReportModel.h */,
+				BB61D759210DC31C0068A0A6 /* ReportModel.m */,
+				BB593FAA210F324C007ECB1D /* EventModel.h */,
+				BB593FAB210F324C007ECB1D /* EventModel.m */,
+				BB5A3BEF211193180030ACA5 /* DeviceModel.h */,
+				BB5A3BF0211193180030ACA5 /* DeviceModel.m */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -454,16 +501,17 @@
 				BB52777F20F845C000D020DD /* ic_leftpop@1x.png */,
 				BB52778020F845C000D020DD /* ic_leftpop@2x.png */,
 				BB52778120F845C000D020DD /* ic_leftpop@3x.png */,
-				BB8A9F7820DE3F5100610316 /* drawable-xhdpi */,
-				BB8AA00220DE3F5100610316 /* drawable-xxhdpi */,
-				BB8AA1A120DE3F5200610316 /* drawable-xxxhdpi */,
+				BB8A9F7820DE3F5100610316 /* @1x */,
+				BB8AA00220DE3F5100610316 /* @2x */,
+				BB8AA1A120DE3F5200610316 /* @3x */,
 			);
 			path = Image;
 			sourceTree = "<group>";
 		};
-		BB8A9F7820DE3F5100610316 /* drawable-xhdpi */ = {
+		BB8A9F7820DE3F5100610316 /* @1x */ = {
 			isa = PBXGroup;
 			children = (
+				BB635D20210868AF005F42D6 /* ic_quick_event_add@1x.png */,
 				BB6A555F20FCCD8E0013C3C1 /* ic_bake_dialog_delete@1x.png */,
 				BBED09AD20F7354200D6010A /* ic_bake_baking_inwind.png */,
 				BBED09AC20F7354200D6010A /* ic_bake_baking_outwind.png */,
@@ -480,12 +528,13 @@
 				BB8A9FF020DE3F5100610316 /* ic_navbar_mine_selected.png */,
 				BB8A9FBB20DE3F5100610316 /* ic_navbar_mine.png */,
 			);
-			path = "drawable-xhdpi";
+			path = "@1x";
 			sourceTree = "<group>";
 		};
-		BB8AA00220DE3F5100610316 /* drawable-xxhdpi */ = {
+		BB8AA00220DE3F5100610316 /* @2x */ = {
 			isa = PBXGroup;
 			children = (
+				BB635D22210868DF005F42D6 /* ic_quick_event_add@2x.png */,
 				BB6A556120FCCDA90013C3C1 /* ic_bake_dialog_delete@2x.png */,
 				BBED09B220F7355E00D6010A /* ic_bake_baking_inwind@2x.png */,
 				BBED09B320F7355E00D6010A /* ic_bake_baking_outwind@2x.png */,
@@ -504,12 +553,13 @@
 				BB8AA07A20DE3F5200610316 /* ic_navbar_mine_selected@2x.png */,
 				BB8AA04520DE3F5200610316 /* ic_navbar_mine@2x.png */,
 			);
-			path = "drawable-xxhdpi";
+			path = "@2x";
 			sourceTree = "<group>";
 		};
-		BB8AA1A120DE3F5200610316 /* drawable-xxxhdpi */ = {
+		BB8AA1A120DE3F5200610316 /* @3x */ = {
 			isa = PBXGroup;
 			children = (
+				BB635D24210868EF005F42D6 /* ic_quick_event_add@3x.png */,
 				BB6A556320FCCDC30013C3C1 /* ic_bake_dialog_delete@3x.png */,
 				BB8AA1B420DE3F5200610316 /* ic_navbar_bake_selected@3x.png */,
 				BB8AA1EB20DE3F5200610316 /* ic_navbar_bake@3x.png */,
@@ -520,7 +570,7 @@
 				BB8AA1FD20DE3F5200610316 /* ic_navbar_mine_selected@3x.png */,
 				BB8AA1D320DE3F5200610316 /* ic_navbar_mine@3x.png */,
 			);
-			path = "drawable-xxxhdpi";
+			path = "@3x";
 			sourceTree = "<group>";
 		};
 		BB8AA49B20DFAFA500610316 /* EspTouch */ = {
@@ -584,6 +634,8 @@
 				BB8AA4D420DFBFA400610316 /* TableView+Touch */,
 				BB69CA7120ECBB490032F126 /* NSObject+Common.h */,
 				BB69CA7220ECBB490032F126 /* NSObject+Common.m */,
+				BB593FA7210F172D007ECB1D /* NSDate+Common.h */,
+				BB593FA8210F172D007ECB1D /* NSDate+Common.m */,
 				BB8AA4E620DFD18D00610316 /* UIColor+ColorChange.h */,
 				BB8AA4E720DFD18D00610316 /* UIColor+ColorChange.m */,
 				BB1C156520E1E8AD006D7053 /* UIButton+Common.h */,
@@ -621,6 +673,8 @@
 				BB6AD2242100C182008C8763 /* LlabelRImageCell.m */,
 				BB2912132106FB43001B9448 /* SubtitileCell.h */,
 				BB2912142106FB43001B9448 /* SubtitileCell.m */,
+				BB635D292108794B005F42D6 /* CurveColorCell.h */,
+				BB635D2A2108794B005F42D6 /* CurveColorCell.m */,
 			);
 			path = Cell;
 			sourceTree = "<group>";
@@ -892,6 +946,7 @@
 				BB8AA43020DE3F5300610316 /* ic_navbar_bean@3x.png in Resources */,
 				BBED09B120F7354200D6010A /* ic_bake_baking_inwind.png in Resources */,
 				BB29120E2106CCE1001B9448 /* Password.storyboard in Resources */,
+				BB635D25210868EF005F42D6 /* ic_quick_event_add@3x.png in Resources */,
 				BB8AA4E020DFC96A00610316 /* SSIDTableViewCell.xib in Resources */,
 				BBED09B820F7355E00D6010A /* ic_bake_bean@2x.png in Resources */,
 				BB65C25320FD8F0400BB684E /* untick@1x.png in Resources */,
@@ -900,9 +955,11 @@
 				BB65C25120FD8F0400BB684E /* tick@1x.png in Resources */,
 				BB8AA4E520DFCA1C00610316 /* PasswordTableViewCell.xib in Resources */,
 				BB8AA2BD20DE3F5300610316 /* ic_navbar_cup_selected@2x.png in Resources */,
+				BB635D21210868AF005F42D6 /* ic_quick_event_add@1x.png in Resources */,
 				BB8F7BD720DA513B00BE5CFC /* Main.storyboard in Resources */,
 				BB65C25620FD8F0400BB684E /* untick@2x.png in Resources */,
 				BB8AA23420DE3F5200610316 /* ic_navbar_cup_selected.png in Resources */,
+				BB635D23210868DF005F42D6 /* ic_quick_event_add@2x.png in Resources */,
 				BBED09B020F7354200D6010A /* ic_bake_baking_outwind.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1005,6 +1062,7 @@
 			files = (
 				BB6AD2252100C182008C8763 /* LlabelRImageCell.m in Sources */,
 				BB3811FA20EA1C3C00F0B2B7 /* BakeCurveViewController.m in Sources */,
+				BB593FA9210F172D007ECB1D /* NSDate+Common.m in Sources */,
 				BB8AA4E820DFD18D00610316 /* UIColor+ColorChange.m in Sources */,
 				BB6A784B20E36E7200EE3E2E /* BaseViewController.m in Sources */,
 				BB8AA4E420DFCA1C00610316 /* PasswordTableViewCell.m in Sources */,
@@ -1019,6 +1077,7 @@
 				BB94EAA220DB8CE700370A95 /* RDVTabBarItem.m in Sources */,
 				BB6AD21E2100B706008C8763 /* AccountViewController.m in Sources */,
 				BB29120C2106CCE1001B9448 /* PasswordViewController.m in Sources */,
+				BB635D2B2108794B005F42D6 /* CurveColorCell.m in Sources */,
 				BB65C25920FDF00000BB684E /* BeanModel.m in Sources */,
 				BB8AA4D120DFB9CA00610316 /* ESPTouchTask.m in Sources */,
 				BBFE861820E63027005C6CE5 /* DeviceConnectView.m in Sources */,
@@ -1031,23 +1090,30 @@
 				BB4C906E2105C4200023EE9B /* DataBase.m in Sources */,
 				BB8AA4C820DFB9CA00610316 /* ESP_ByteUtil.m in Sources */,
 				BBFE861520E62FF3005C6CE5 /* DeviceConfirmView.m in Sources */,
+				BB593FAC210F324C007ECB1D /* EventModel.m in Sources */,
 				BB94EAA520DBA9C800370A95 /* MainViewController.m in Sources */,
 				BB712ABD20E47F49005FF10F /* NetWork.m in Sources */,
 				BB94EAA120DB8CE700370A95 /* RDVTabBarController.m in Sources */,
 				BB8AA4A520DFB25900610316 /* EspViewController.m in Sources */,
 				BB2912122106D8D5001B9448 /* GeneralViewController.m in Sources */,
 				BB8AA4C520DFB9CA00610316 /* ESPGuideCode.m in Sources */,
+				BB23E563210964C20074C61B /* FeedbackViewController.m in Sources */,
 				BB8F7BDF20DA513B00BE5CFC /* main.m in Sources */,
+				BB61D75A210DC31C0068A0A6 /* ReportModel.m in Sources */,
 				BB8AA4D220DFB9CA00610316 /* ESPDatumCode.m in Sources */,
 				BB2912152106FB43001B9448 /* SubtitileCell.m in Sources */,
 				BB8AA4C620DFB9CA00610316 /* ESPTouchResult.m in Sources */,
 				BB8AA4CB20DFB9CA00610316 /* ESP_CRC8.m in Sources */,
 				BB8F7BD120DA513B00BE5CFC /* AppDelegate.m in Sources */,
+				BB635D282108781C005F42D6 /* CurveColorViewController.m in Sources */,
+				BB635D1F210862E8005F42D6 /* FastEventViewController.m in Sources */,
 				BB29120D2106CCE1001B9448 /* PasswordTableViewController.m in Sources */,
 				BBFE861220E62FDF005C6CE5 /* DeviceSelectView.m in Sources */,
 				BB69CA7320ECBB490032F126 /* NSObject+Common.m in Sources */,
+				BB61D757210D619E0068A0A6 /* BakeReportController.m in Sources */,
 				BB8AA4D720DFBFA400610316 /* TouchTableView.m in Sources */,
 				BB8AA4CD20DFB9CA00610316 /* ESPUDPSocketClient.m in Sources */,
+				BB5A3BF1211193180030ACA5 /* DeviceModel.m in Sources */,
 				BB8AA4CE20DFB9CA00610316 /* ESPTouchTaskParameter.m in Sources */,
 				BB8AA4CC20DFB9CA00610316 /* ESPUDPSocketServer.m in Sources */,
 				BB8AA4D020DFB9CA00610316 /* ESPAES.m in Sources */,

@@ -10,7 +10,7 @@
 #import <Charts/Charts-Swift.h>
 
 ///@brife 可判断的数据帧类型数量
-#define LEN 7
+#define LEN 8
 
 ///@brife 一次最大读取温度
 #define maxTempCount 20
@@ -172,6 +172,10 @@ static NSInteger gotTempCount = 0;
             }else if (tag == 105){
                 [self.mySocket writeData:sendData withTimeout:-1 tag:1];
                 [_mySocket readDataWithTimeout:-1 tag:1];
+            }else if (tag == 106){
+                //power
+                [self.mySocket writeData:sendData withTimeout:-1 tag:1];
+                [_mySocket readDataWithTimeout:-1 tag:1];
             }
             
             [NSThread sleepForTimeInterval:1];
@@ -298,6 +302,7 @@ static NSInteger gotTempCount = 0;
 }
 
 - (void)getTemp{
+    _timerValue++;
     NSMutableArray *getTemp = [[NSMutableArray alloc ] init];
     [getTemp addObject:[NSNumber numberWithUnsignedChar:0x68]];
     [getTemp addObject:[NSNumber numberWithUnsignedChar:0x00]];
@@ -347,6 +352,23 @@ static NSInteger gotTempCount = 0;
     [bakeFire addObject:[NSNumber numberWithUnsignedChar:0x0A]];
     dispatch_async(_queue, ^{
         [self send:bakeFire withTag:105];
+    });
+}
+
+- (void)getPowerStatus{
+    NSMutableArray *bakeFire = [[NSMutableArray alloc ] init];
+    [bakeFire addObject:[NSNumber numberWithUnsignedChar:0x68]];
+    [bakeFire addObject:[NSNumber numberWithUnsignedChar:0x00]];
+    [bakeFire addObject:[NSNumber numberWithUnsignedChar:_frameCount]];
+    [bakeFire addObject:[NSNumber numberWithUnsignedChar:0x00]];
+    [bakeFire addObject:[NSNumber numberWithUnsignedChar:0x01]];
+    [bakeFire addObject:[NSNumber numberWithUnsignedChar:0x06]];
+    [bakeFire addObject:[NSNumber numberWithUnsignedChar:[NSObject getCS:bakeFire]]];
+    [bakeFire addObject:[NSNumber numberWithUnsignedChar:0x16]];
+    [bakeFire addObject:[NSNumber numberWithUnsignedChar:0x0D]];
+    [bakeFire addObject:[NSNumber numberWithUnsignedChar:0x0A]];
+    dispatch_async(_queue, ^{
+        [self send:bakeFire withTag:106];
     });
 }
 
@@ -480,8 +502,29 @@ static NSInteger gotTempCount = 0;
                         break;
                 }
             }else if (self.msg68Type == getTimerValue){
-                NSInteger value = [_recivedData68[6] unsignedIntegerValue] * 256 + [_recivedData68[7] unsignedIntegerValue];
-                [self setTimerValue:value];
+                
+                int value = [_recivedData68[6] intValue] * 256 + [_recivedData68[7] intValue];
+                _timerValue = value;
+                
+            }else if (self.msg68Type == getPowerStatus){
+                //查询电源状态结果
+            }
+        }else if (self.frame68Type == commandFrame){
+            if (self.msg68Type == getTimerStatus) {
+                if ([_recivedData68[6] unsignedIntegerValue] == 0) {
+                    [_myTimer setFireDate:[NSDate distantFuture]];
+                    [_yVals_In removeAllObjects];
+                    [_yVals_Out removeAllObjects];
+                    [_yVals_Bean removeAllObjects];
+                    [_yVals_Environment removeAllObjects];
+                    _timerValue = 0;
+                    [_myTimer setFireDate:[NSDate date]];
+                }else if ([_recivedData68[6] unsignedIntegerValue] == 1){
+                    //烘焙结束，保存数据生成报告
+                    [[NSNotificationCenter defaultCenter] postNotificationName:@"bakeCompelete" object:nil userInfo:nil];
+                }
+            }else if (self.msg68Type == getPowerStatus){
+                //电源开启或关闭
             }
         }
         
@@ -522,7 +565,7 @@ static NSInteger gotTempCount = 0;
     unsigned char dataType;
     
     unsigned char type[LEN] = {
-      0x00,0x01,0x02,0x04,0x05,0x10,0x11
+      0x00,0x01,0x02,0x04,0x05,0x06,0x10,0x11
     };
     
     dataType = [data[5] unsignedIntegerValue];
@@ -554,10 +597,14 @@ static NSInteger gotTempCount = 0;
                     break;
                     
                 case 5:
-                    returnVal = getTimerStatus;
+                    returnVal = getPowerStatus;
                     break;
                     
                 case 6:
+                    returnVal = getTimerStatus;
+                    break;
+                    
+                case 7:
                     returnVal = getTimerValue;
                     break;
                     
@@ -575,7 +622,7 @@ static NSInteger gotTempCount = 0;
     unsigned char dataType;
     
     unsigned char type[3] = {
-        0x80,0x81,0x01
+        0x80,0x81,0x11
     };
     
     dataType = [data[1] unsignedIntegerValue];
