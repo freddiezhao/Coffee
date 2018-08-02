@@ -210,8 +210,8 @@ static DataBase *_dataBase = nil;
     NSMutableArray *deviceArray = [[NSMutableArray alloc] init];
     [_queueDB inDatabase:^(FMDatabase * _Nonnull db) {
         FMResultSet *set = [db executeQuery:@"SELECT * FROM device"];
-        DeviceModel *device = [[DeviceModel alloc] init];
         while ([set next]) {
+            DeviceModel *device = [[DeviceModel alloc] init];
             device.deviceId = [set intForColumn:@"id"];
             device.deviceMac = [set stringForColumn:@"mac"];
             device.deviceName = [set stringForColumn:@"deviceName"];

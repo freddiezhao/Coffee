@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import <CocoaAsyncSocket/GCDAsyncSocket.h>
+@class DeviceModel;
 
 typedef enum{
     fire,
@@ -40,6 +41,8 @@ static NSInteger tempCountVer = 1000;
 @property (nonatomic, strong) dispatch_queue_t queue;
 @property (nonatomic, strong) dispatch_semaphore_t signal;
 
+///@brief 连接上的设备
+@property (nonatomic, strong) DeviceModel *connectedDevice;
 ///@brief Wi-Fi信息
 @property (nonatomic, strong) NSString *ssid;
 @property (nonatomic, strong) NSString *bssid;

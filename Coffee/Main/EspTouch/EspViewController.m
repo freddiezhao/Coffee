@@ -36,7 +36,8 @@ NSString *const CellNibName_password = @"PasswordTableViewCell";
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    //[self.view setBackgroundColor:[UIColor colorWithHexString:yColor_back]];
+    self.navigationItem.title = LocalString(@"添加设备");
+    
     [self setSsidPasswordTable];
     _nextBtn = [self nextBtn];
     [self uiMasonry];
@@ -52,9 +53,10 @@ NSString *const CellNibName_password = @"PasswordTableViewCell";
 - (UIButton *)nextBtn{
     if (!_nextBtn) {
         self.nextBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        [_nextBtn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+        [_nextBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
         [_nextBtn setTitle:LocalString(@"下一步") forState:UIControlStateNormal];
-        [_nextBtn setBackgroundColor:[UIColor colorWithHexString:@"99664D"]];
+        [_nextBtn.titleLabel setFont:[UIFont fontWithName:@"PingFangSC-Medium" size:16]];
+        [_nextBtn setBackgroundColor:[UIColor colorWithRed:71/255.0 green:120/255.0 blue:204/255.0 alpha:0.4]];
         [_nextBtn setButtonStyle1];
         [_nextBtn addTarget:self action:@selector(goNextView) forControlEvents:UIControlEventTouchUpInside];
         [self.view addSubview:_nextBtn];
@@ -71,9 +73,9 @@ NSString *const CellNibName_password = @"PasswordTableViewCell";
     }];
     
     [_nextBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.size.mas_equalTo(CGSizeMake(ScreenWidth * 0.4, 44));
+        make.size.mas_equalTo(CGSizeMake(345.f / WScale, 50.f / HScale));
         make.centerX.equalTo(self.view.mas_centerX);
-        make.top.equalTo(_ssidPasswordTable.mas_bottom).offset(10);
+        make.top.equalTo(_ssidPasswordTable.mas_bottom).offset(20 / HScale);
     }];
 }
 
@@ -140,14 +142,27 @@ NSString *const CellNibName_password = @"PasswordTableViewCell";
         if (cell == nil) {
             cell = [[[NSBundle mainBundle] loadNibNamed:CellNibName_ssid owner:self options:nil] lastObject];
         }
-        cell.ssidLabel.text = _ssid;
+        if (_ssid) {
+            cell.ssidLabel.text = _ssid;
+            cell.ssidLabel.tintColor = [UIColor blackColor];
+        }
         return cell;
     }else{
         PasswordTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_password];
         if (cell == nil) {
             cell = [[[NSBundle mainBundle] loadNibNamed:CellNibName_password owner:self options:nil] lastObject];
         }
+        [cell.passwordTF addTarget:self action:@selector(passwordTFTextChange:) forControlEvents:UIControlEventValueChanged];
         return cell;
+    }
+}
+
+#pragma mark - passwordTF value change
+- (void)passwordTFTextChange:(UITextField *)sender{
+    if ([sender.text isEqualToString:@""] && _ssid) {
+        [_nextBtn setBackgroundColor:[UIColor colorWithRed:71/255.0 green:120/255.0 blue:204/255.0 alpha:1]];
+    }else{
+        [_nextBtn setBackgroundColor:[UIColor colorWithRed:71/255.0 green:120/255.0 blue:204/255.0 alpha:0.4]];
     }
 }
 

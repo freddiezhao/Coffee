@@ -77,15 +77,19 @@
 
 - (void)customizeInterface {
     UINavigationBar *navigationBarAppearance = [UINavigationBar appearance];
-    [navigationBarAppearance setBarTintColor:[UIColor colorWithHexString:yColor_common]];
-    //[navigationBarAppearance setTintColor:[UIColor whiteColor]];//返回按钮的箭头颜色
+    [navigationBarAppearance setBarTintColor:[UIColor colorWithRed:255/255.0 green:255/255.0 blue:255/255.0 alpha:1]];
+    navigationBarAppearance.barStyle = UIStatusBarStyleDefault;
+    [navigationBarAppearance setTintColor:[UIColor blackColor]];//返回按钮的箭头颜色
     //[[UIBarButtonItem appearance] setBackButtonTitlePositionAdjustment:UIOffsetMake(0, -60) forBarMetrics:UIBarMetricsDefault];
     NSDictionary *textAttributes = @{
-                                     NSFontAttributeName: [UIFont systemFontOfSize:17.f],
-                                     NSForegroundColorAttributeName: [UIColor whiteColor],
+                                     NSFontAttributeName: [UIFont fontWithName:@"PingFangSC-Medium" size:16],
+                                     NSForegroundColorAttributeName: [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1],
                                      };
     [navigationBarAppearance setTitleTextAttributes:textAttributes];
     [navigationBarAppearance setTranslucent:NO];
+    
+    //去掉透明后导航栏下边的黑边
+    [navigationBarAppearance setShadowImage:[[UIImage alloc] init]];
 }
 
 @end

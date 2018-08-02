@@ -34,15 +34,13 @@ NSString *const CellNibName_device = @"DeviceTableViewCell";
 
 @property (nonatomic, strong) GCDAsyncUdpSocket *udpSocket;
 @property (nonatomic, strong) NSTimer *timer;
+@property (nonatomic, strong) NSLock *lock;
 
 @property (nonatomic, strong) UITableView *devieceTable;
+@property (nonatomic, strong) UIView *noDeviceView;
 
-///@brief mac地址数组
-@property (nonatomic, strong) NSMutableArray *macIpArray;
-
-///@brief ip数组
-@property (nonatomic, strong) NSMutableArray *ipArray;
-
+///@brief 当前设备
+@property (nonatomic, strong) NSMutableArray *onlineDeviceArray;
 ///@brief 本地所有设备数组
 @property (nonatomic, strong) NSMutableArray *deviceArray;
 
@@ -60,6 +58,7 @@ NSString *const CellNibName_device = @"DeviceTableViewCell";
     
     [self queryDevices];
     
+    self.navigationItem.title = LocalString(@"我的设备");
     
     UIButton *rightButton = [UIButton buttonWithType:UIButtonTypeCustom];
     rightButton.frame = CGRectMake(0, 0, 30, 30);
@@ -67,15 +66,19 @@ NSString *const CellNibName_device = @"DeviceTableViewCell";
     [rightButton addTarget:self action:@selector(goEsp) forControlEvents:UIControlEventTouchUpInside];
     UIBarButtonItem *rightBarButton = [[UIBarButtonItem alloc] initWithCustomView:rightButton];
     self.navigationItem.rightBarButtonItem = rightBarButton;
-    _macIpArray = [NSMutableArray array];
-    _ipArray = [NSMutableArray array];
+    
+    _onlineDeviceArray = [NSMutableArray array];
+    _noDeviceView = [self noDeviceView];
     _devieceTable = [self devieceTable];
     _timer = [self timer];
+    _lock = [self lock];
     
-    if (!_deviceArray && !_ipArray && !_macIpArray) {
+    if (!_deviceArray && !_onlineDeviceArray) {
         _devieceTable.hidden = YES;
+        _noDeviceView.hidden = NO;
     }else{
         _devieceTable.hidden = NO;
+        _noDeviceView.hidden = YES;
     }
 }
 
@@ -135,13 +138,50 @@ NSString *const CellNibName_device = @"DeviceTableViewCell";
             header.lastUpdatedTimeLabel.font = [UIFont systemFontOfSize:14];
             
             // Set textColor
-            header.stateLabel.textColor = [UIColor yellowColor];
-            header.lastUpdatedTimeLabel.textColor = [UIColor yellowColor];
+            header.stateLabel.textColor = [UIColor lightGrayColor];
+            header.lastUpdatedTimeLabel.textColor = [UIColor lightGrayColor];
             tableView.mj_header = header;
             tableView;
         });
     }
     return _devieceTable;
+}
+
+- (UIView *)noDeviceView{
+    if (!_noDeviceView) {
+        _noDeviceView = [[UIView alloc] init];
+        _noDeviceView.frame = CGRectMake(0, 0, ScreenWidth, ScreenHeight);
+        _noDeviceView.backgroundColor = [UIColor colorWithRed:250/255.0 green:250/255.0 blue:250/255.0 alpha:1];
+        [self.view addSubview:_noDeviceView];
+        
+        UILabel *label = [[UILabel alloc] init];
+        label.text = LocalString(@"快添加您的第一个设备吧～");
+        label.font = [UIFont fontWithName:@"PingFangSC-Regular" size:14];
+        label.textColor = [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1];
+        [_noDeviceView addSubview:label];
+        
+        UIButton *addBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        [addBtn setTitle:LocalString(@"添加设备") forState:UIControlStateNormal];
+        [addBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+        [addBtn.titleLabel setFont:[UIFont fontWithName:@"PingFangSC-Medium" size:16]];
+        [addBtn setButtonStyleWithColor:[UIColor clearColor] Width:1.0 cornerRadius:buttonHeight * 0.5];
+        [addBtn setBackgroundColor:[UIColor colorWithRed:71/255.0 green:120/255.0 blue:204/255.0 alpha:1]];
+        [addBtn addTarget:self action:@selector(goEsp) forControlEvents:UIControlEventTouchUpInside];
+        [_noDeviceView addSubview:addBtn];
+        
+        [label mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.size.mas_equalTo(CGSizeMake(168.f / WScale, 20.f / HScale));
+            make.centerX.equalTo(_noDeviceView.mas_centerX);
+            make.top.equalTo(_noDeviceView.mas_top).offset(334.f / HScale);
+        }];
+        
+        [addBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.size.mas_equalTo(CGSizeMake(345.f / WScale, 50.f / HScale));
+            make.centerX.equalTo(_noDeviceView.mas_centerX);
+            make.top.equalTo(_noDeviceView.mas_top).offset(374.f / HScale);
+        }];
+    }
+    return _noDeviceView;
 }
 
 - (NSTimer *)timer{
@@ -150,6 +190,13 @@ NSString *const CellNibName_device = @"DeviceTableViewCell";
         [_timer setFireDate:[NSDate distantFuture]];
     }
     return _timer;
+}
+
+-(NSLock *)lock{
+    if (!_lock) {
+        _lock = [[NSLock alloc] init];
+    }
+    return _lock;
 }
 
 #pragma mark - udp
@@ -203,6 +250,7 @@ NSString *const CellNibName_device = @"DeviceTableViewCell";
 }
 
 - (void)udpSocket:(GCDAsyncUdpSocket *)sock didReceiveData:(NSData *)data fromAddress:(NSData *)address withFilterContext:(id)filterContext{
+    [_lock lock];
     NSLog(@"UDP接收数据……………………………………………………");
     [self.devieceTable.mj_header endRefreshing];
     isConnect = YES;//停止发送udp
@@ -220,32 +268,32 @@ NSString *const CellNibName_device = @"DeviceTableViewCell";
         // Convert C string to NSString:
         NSString *ipAddress = [[NSString alloc] initWithBytes:host length:strlen(host) encoding:NSUTF8StringEncoding];
         
-        NSString *msgg = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-        NSLog(@"%@",msgg);
         //避免重复显示同一个设备
         int isContain = 0;
-        for (NSString *address in _ipArray) {
-            if ([ipAddress isEqualToString:address]) {
+        for (DeviceModel *device in _deviceArray) {
+            if ([ipAddress isEqualToString:device.ipAddress]) {
                 isContain = 1;
                 break;
             }
         }
         if (!isContain) {
-            [_ipArray addObject:ipAddress];
-            
+            DeviceModel *dModel = [[DeviceModel alloc] init];
+            dModel.ipAddress = ipAddress;
             NSLog(@"strAddr = %@", ipAddress);
             
             NSString *msg = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
             NSLog(@"%@",msg);
-            [_macIpArray addObject:[msg substringWithRange:NSMakeRange(0, 8)]];
+            dModel.deviceMac = [msg substringWithRange:NSMakeRange(0, 8)];
             
             //判断本地是否已经存储过，如果有则将_deviceArray中的该设备删除，如果没有则存储该设备
             int isNewDevice = 1;
             for (int i = 0; i < _deviceArray.count; i++) {
                 DeviceModel *device = _deviceArray[i];
                 if ([[msg substringWithRange:NSMakeRange(0, 8)] isEqualToString:device.deviceMac]) {
+                    dModel.deviceName = device.deviceName;
                     [_deviceArray removeObjectAtIndex:i];
                     isNewDevice = 0;
+                    break;
                 }
             }
             if (isNewDevice) {
@@ -265,12 +313,14 @@ NSString *const CellNibName_device = @"DeviceTableViewCell";
 //            NSDictionary *dataDict = [NSJSONSerialization JSONObjectWithData:msgData options:NSJSONReadingMutableContainers error:&error];
 //            NSLog(@"%@",dataDict);
             
+            [_onlineDeviceArray addObject:dModel];
             dispatch_async(dispatch_get_main_queue(), ^{
                 [_devieceTable reloadData];
             });
         }
         
     }
+    [_lock unlock];
 }
 
 
@@ -351,13 +401,13 @@ NSString *const CellNibName_device = @"DeviceTableViewCell";
 {
     switch (section) {
         case 0:
-            return 1;
+            return [NetWork shareNetWork].connectedDevice?1:0;
             
         case 1:
-            return _macIpArray.count;
+            return _onlineDeviceArray.count;
             //return 1;
             
-        case 3:
+        case 2:
             return _deviceArray.count;
             
         default:
@@ -376,14 +426,27 @@ NSString *const CellNibName_device = @"DeviceTableViewCell";
             cell = [[[NSBundle mainBundle] loadNibNamed:CellNibName_device owner:self options:nil] lastObject];
         }
         
-        cell.deviceLabel.text = [_macIpArray objectAtIndex:indexPath.row];
+        DeviceModel *dModel = _onlineDeviceArray[indexPath.row];
+        if (!dModel.deviceName) {
+            cell.deviceLabel.text = dModel.deviceMac;
+        }else{
+            cell.deviceLabel.text = dModel.deviceName;
+        }
+        
         return cell;
     }else if (indexPath.section == 0){
         DeviceTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_device];
         if (cell == nil) {
             cell = [[[NSBundle mainBundle] loadNibNamed:CellNibName_device owner:self options:nil] lastObject];
         }
-        cell.deviceLabel.text = @"";
+        NetWork *net = [NetWork shareNetWork];
+        
+        if (!net.connectedDevice.deviceName) {
+            cell.deviceLabel.text = net.connectedDevice.deviceMac;
+        }else{
+            cell.deviceLabel.text = net.connectedDevice.deviceName;
+        }
+        
         return cell;
     }else{
         DeviceTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_device];
@@ -400,12 +463,21 @@ NSString *const CellNibName_device = @"DeviceTableViewCell";
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     if (indexPath.section == 1) {
+        
         NSError *error = nil;
-        [[NetWork shareNetWork] connectToHost:[_ipArray objectAtIndex:indexPath.row] onPort:16888 error:&error];
+        DeviceModel *dModel = _onlineDeviceArray[indexPath.row];
+        NetWork *net = [NetWork shareNetWork];
+        [net connectToHost:dModel.ipAddress onPort:16888 error:&error];
         
         if (error) {
             NSLog(@"tcp连接错误:%@",error);
+        }else{
+            net.connectedDevice = dModel;
+            [_onlineDeviceArray removeObject:dModel];
+            [tableView reloadData];
+            [self.navigationController popViewControllerAnimated:YES];
         }
+        
     }else if (indexPath.section == 0){
         NSError *error = nil;
         [[NetWork shareNetWork] connectToHost:@"192.168.1.125" onPort:16888 error:&error];
@@ -453,6 +525,14 @@ NSString *const CellNibName_device = @"DeviceTableViewCell";
 #pragma mark - Data Source
 - (void)queryDevices{
     _deviceArray = [[DataBase shareDataBase] queryAllDevice];
+    if ([NetWork shareNetWork].connectedDevice) {
+        for (DeviceModel *device in _deviceArray) {
+            if ([device.deviceMac isEqualToString:[NetWork shareNetWork].connectedDevice.deviceMac]) {
+                [_deviceArray removeObject:device];
+                break;
+            }
+        }
+    }
 }
 
 @end

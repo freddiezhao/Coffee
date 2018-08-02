@@ -13,5 +13,6 @@
 @property (nonatomic) NSInteger deviceId;
 @property (nonatomic, strong) NSString *deviceMac;
 @property (nonatomic, strong) NSString *deviceName;
+@property (nonatomic, strong) NSString *ipAddress;
 
 @end

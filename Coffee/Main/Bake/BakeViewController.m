@@ -58,6 +58,7 @@ NSString *const kCellIdentifier_addBean = @"cellID_addBean";
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
     self.navigationItem.title = LocalString(@"烘焙");
     
     UIButton *rightButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -847,10 +848,13 @@ NSString *const kCellIdentifier_addBean = @"cellID_addBean";
         double tempEnvironment = ([data[12] intValue] * 256 + [data[13] intValue]) / 10.0;
         
        // _beanTempRateLabel.text = [NSString stringWithFormat:@"%f℃/min",tempOut];
-        _beanTempLabel.text = [NSString stringWithFormat:@"%f℃",tempBean];
-        _inTempLabel.text = [NSString stringWithFormat:@"%f℃",tempIn];
-        _outTempLabel.text = [NSString stringWithFormat:@"%f℃",tempOut];
-        _environTempLabel.text = [NSString stringWithFormat:@"%f℃",tempEnvironment];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            _beanTempLabel.text = [NSString stringWithFormat:@"%f℃",tempBean];
+            _inTempLabel.text = [NSString stringWithFormat:@"%f℃",tempIn];
+            _outTempLabel.text = [NSString stringWithFormat:@"%f℃",tempOut];
+            _environTempLabel.text = [NSString stringWithFormat:@"%f℃",tempEnvironment];
+        });
+        
     }
 }
 
