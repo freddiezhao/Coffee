@@ -50,7 +50,7 @@
 #define HScale (667.f / ScreenHeight)
 #define WScale (375.f / ScreenWidth)
 #define cellHeight 44
-#define buttonHeight (50.f / HScale)
+#define yButtonHeight (50.f / HScale)
 #define viewWidth self.contentView.frame.size.width
 #define viewHeight self.contentView.frame.size.height
 #define select 100001

@@ -82,6 +82,7 @@ NSString *const kCellIdentifier_addBean = @"cellID_addBean";
     
     _myNet = [NetWork shareNetWork];
     [_myNet addObserver:self forKeyPath:@"tempData" options:NSKeyValueObservingOptionNew context:nil];
+    
 }
 
 - (void)viewDidAppear:(BOOL)animated{
@@ -810,7 +811,7 @@ NSString *const kCellIdentifier_addBean = @"cellID_addBean";
     _beanArray = [self beanArray];
     BeanModel *bean = [[BeanModel alloc] init];
     bean.beanName = LocalString(@"样品豆");
-    bean.weight = @"10g";
+    bean.weight = 10;
     [_beanArray addObject:bean];
     [_addBeanTable reloadData];
 }

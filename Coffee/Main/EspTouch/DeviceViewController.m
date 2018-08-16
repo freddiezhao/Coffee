@@ -55,7 +55,8 @@ NSString *const CellNibName_device = @"DeviceTableViewCell";
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
+    [self.view setBackgroundColor:[UIColor colorWithRed:250/255.0 green:250/255.0 blue:250/255.0 alpha:1]];
+
     [self queryDevices];
     
     self.navigationItem.title = LocalString(@"我的设备");
@@ -73,7 +74,7 @@ NSString *const CellNibName_device = @"DeviceTableViewCell";
     _timer = [self timer];
     _lock = [self lock];
     
-    if (!_deviceArray && !_onlineDeviceArray) {
+    if (!_deviceArray.count && !_onlineDeviceArray.count) {
         _devieceTable.hidden = YES;
         _noDeviceView.hidden = NO;
     }else{
@@ -164,7 +165,7 @@ NSString *const CellNibName_device = @"DeviceTableViewCell";
         [addBtn setTitle:LocalString(@"添加设备") forState:UIControlStateNormal];
         [addBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
         [addBtn.titleLabel setFont:[UIFont fontWithName:@"PingFangSC-Medium" size:16]];
-        [addBtn setButtonStyleWithColor:[UIColor clearColor] Width:1.0 cornerRadius:buttonHeight * 0.5];
+        [addBtn setButtonStyleWithColor:[UIColor clearColor] Width:1.0 cornerRadius:yButtonHeight * 0.5];
         [addBtn setBackgroundColor:[UIColor colorWithRed:71/255.0 green:120/255.0 blue:204/255.0 alpha:1]];
         [addBtn addTarget:self action:@selector(goEsp) forControlEvents:UIControlEventTouchUpInside];
         [_noDeviceView addSubview:addBtn];
@@ -270,7 +271,7 @@ NSString *const CellNibName_device = @"DeviceTableViewCell";
         
         //避免重复显示同一个设备
         int isContain = 0;
-        for (DeviceModel *device in _deviceArray) {
+        for (DeviceModel *device in _onlineDeviceArray) {
             if ([ipAddress isEqualToString:device.ipAddress]) {
                 isContain = 1;
                 break;
@@ -462,11 +463,11 @@ NSString *const CellNibName_device = @"DeviceTableViewCell";
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    NetWork *net = [NetWork shareNetWork];
     if (indexPath.section == 1) {
         
         NSError *error = nil;
         DeviceModel *dModel = _onlineDeviceArray[indexPath.row];
-        NetWork *net = [NetWork shareNetWork];
         [net connectToHost:dModel.ipAddress onPort:16888 error:&error];
         
         if (error) {
@@ -479,11 +480,14 @@ NSString *const CellNibName_device = @"DeviceTableViewCell";
         }
         
     }else if (indexPath.section == 0){
-        NSError *error = nil;
-        [[NetWork shareNetWork] connectToHost:@"192.168.1.125" onPort:16888 error:&error];
-        //NSArray *array = [[NSArray alloc] initWithObjects:[NSNumber numberWithUnsignedInteger:0x68],[NSNumber numberWithUnsignedInteger:0x00],[NSNumber numberWithUnsignedInteger:0x00],[NSNumber numberWithUnsignedInteger:0x00],[NSNumber numberWithUnsignedInteger:0x01],[NSNumber numberWithUnsignedInteger:0x00],[NSNumber numberWithUnsignedInteger:0x69],[NSNumber numberWithUnsignedInteger:0x16],[NSNumber numberWithUnsignedInteger:0x0D],[NSNumber numberWithUnsignedInteger:0x0A], nil];
-        
-        //[[NetWork shareNetWork] send:[array mutableCopy] withTag:101];
+        if (!net.mySocket.isDisconnected) {
+            [net.mySocket disconnect];
+            net.connectedDevice = nil;
+            [_devieceTable reloadData];
+        }else{
+            net.connectedDevice = nil;
+            [_devieceTable reloadData];
+        }
     }
 }
 

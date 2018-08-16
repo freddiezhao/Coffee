@@ -36,6 +36,8 @@ NSString *const CellNibName_password = @"PasswordTableViewCell";
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    [self.view setBackgroundColor:[UIColor colorWithRed:250/255.0 green:250/255.0 blue:250/255.0 alpha:1]];
+
     self.navigationItem.title = LocalString(@"添加设备");
     
     [self setSsidPasswordTable];
@@ -58,6 +60,7 @@ NSString *const CellNibName_password = @"PasswordTableViewCell";
         [_nextBtn.titleLabel setFont:[UIFont fontWithName:@"PingFangSC-Medium" size:16]];
         [_nextBtn setBackgroundColor:[UIColor colorWithRed:71/255.0 green:120/255.0 blue:204/255.0 alpha:0.4]];
         [_nextBtn setButtonStyle1];
+        //_nextBtn.enabled = NO;
         [_nextBtn addTarget:self action:@selector(goNextView) forControlEvents:UIControlEventTouchUpInside];
         [self.view addSubview:_nextBtn];
     }
@@ -161,8 +164,10 @@ NSString *const CellNibName_password = @"PasswordTableViewCell";
 - (void)passwordTFTextChange:(UITextField *)sender{
     if ([sender.text isEqualToString:@""] && _ssid) {
         [_nextBtn setBackgroundColor:[UIColor colorWithRed:71/255.0 green:120/255.0 blue:204/255.0 alpha:1]];
+        _nextBtn.enabled = YES;
     }else{
         [_nextBtn setBackgroundColor:[UIColor colorWithRed:71/255.0 green:120/255.0 blue:204/255.0 alpha:0.4]];
+        _nextBtn.enabled = NO;
     }
 }
 

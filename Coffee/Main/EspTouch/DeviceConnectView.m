@@ -14,6 +14,7 @@
 #import "ESP_NetUtil.h"
 #import "ESPTouchDelegate.h"
 #import "ESPAES.h"
+#import "YAlertViewController.h"
 
 @interface EspTouchDelegateImpl : NSObject<ESPTouchDelegate>
 
@@ -50,7 +51,10 @@
 @interface DeviceConnectView ()
 
 @property (nonatomic, strong) NSCondition *condition;
+
+@property (nonatomic, strong) UIImageView *image;
 @property (nonatomic, strong) UIActivityIndicatorView *spinner;
+@property (nonatomic, strong) UIButton *cancelBtn;
 
 @property (nonatomic, strong) EspTouchDelegateImpl *espTouchDelegate;
 @property (atomic, strong) ESPTouchTask *esptouchTask;
@@ -61,27 +65,111 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    [self.view setBackgroundColor:[UIColor colorWithRed:250/255.0 green:250/255.0 blue:250/255.0 alpha:1]];
+
+    self.navigationItem.title = LocalString(@"搜索并连接设备");
+    
     self.condition = [[NSCondition alloc] init];
     self.espTouchDelegate = [[EspTouchDelegateImpl alloc] init];
     _spinner = [self spinner];
-    [self startEsptouchConnect];
+    _image =[self image];
+    _cancelBtn = [self cancelBtn];
+    //[self startEsptouchConnect];
+    //[self fail];
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
+- (void)viewWillAppear:(BOOL)animated{
+    [super viewWillAppear:animated];
+    //去掉返回键的文字
+    self.navigationController.navigationBar.topItem.title = @"";
 }
 
 #pragma mark - lazy load
 - (UIActivityIndicatorView *)spinner{
     if (!_spinner) {
-        _spinner = [[UIActivityIndicatorView alloc] initWithFrame:CGRectMake(0, 0, 50, 50)];
-        _spinner.center = CGPointMake(100.0, 100.0);
+        _spinner = [[UIActivityIndicatorView alloc] init];
         [_spinner setActivityIndicatorViewStyle:UIActivityIndicatorViewStyleGray];
-        [_spinner setHidesWhenStopped:YES];
-        [_spinner setColor:[UIColor blueColor]];
+        [_spinner setHidesWhenStopped:NO];
+        //[_spinner setColor:[UIColor blueColor]];
         [self.view addSubview:_spinner];
+        [_spinner mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.size.mas_equalTo(CGSizeMake(15 / WScale, 15 / HScale));
+            make.top.equalTo(self.view.mas_top).offset(337 / HScale);
+            make.left.equalTo(self.view.mas_left).offset(128.5 / WScale);
+        }];
+        
+        UILabel *tipLabel = [[UILabel alloc] init];
+        tipLabel.text = LocalString(@"正在搜索设备...");
+        tipLabel.font = [UIFont fontWithName:@"PingFangSC-Regular" size:14];
+        tipLabel.textColor = [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1];
+        [self.view addSubview:tipLabel];
+        [tipLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.size.mas_equalTo(CGSizeMake(100 / WScale, 20 / HScale));
+            make.centerY.equalTo(self.spinner.mas_centerY);
+            make.left.equalTo(_spinner.mas_right).offset(8 / WScale);
+        }];
     }
     return _spinner;
+}
+
+- (UIImageView *)image{
+    if (!_image) {
+        _image = [[UIImageView alloc] init];
+        _image.image = [UIImage imageNamed:@""];
+        [self.view addSubview:_image];
+        
+        [_image mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.size.mas_equalTo(CGSizeMake(225 / WScale, 150 / HScale));
+            make.centerX.equalTo(self.view.mas_centerX);
+            make.top.equalTo(self.view.mas_top).offset(82 / HScale);
+        }];
+        
+        UILabel *tipLabel1 = [[UILabel alloc] init];
+        tipLabel1.text = LocalString(@"请将手机和烘焙机的距离保持在5米以内");
+        tipLabel1.font = [UIFont fontWithName:@"PingFangSC-Regular" size:14];
+        tipLabel1.textColor = [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1];
+        tipLabel1.textAlignment = NSTextAlignmentCenter;
+        [self.view addSubview:tipLabel1];
+        
+        UILabel *tipLabel2 = [[UILabel alloc] init];
+        tipLabel2.text = LocalString(@"连接过程中请不要操作烘焙机");
+        tipLabel2.font = [UIFont fontWithName:@"PingFangSC-Regular" size:14];
+        tipLabel2.textColor = [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1];
+        tipLabel2.textAlignment = NSTextAlignmentCenter;
+        [self.view addSubview:tipLabel2];
+        
+        [tipLabel1 mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.size.mas_equalTo(CGSizeMake(ScreenWidth, 20 / HScale));
+            make.centerX.equalTo(self.view.mas_centerX);
+            make.top.equalTo(self.image.mas_bottom).offset(18 / HScale);
+        }];
+        [tipLabel2 mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.size.mas_equalTo(CGSizeMake(ScreenWidth, 20 / HScale));
+            make.centerX.equalTo(self.view.mas_centerX);
+            make.top.equalTo(tipLabel1.mas_bottom).offset(8 / HScale);
+        }];
+    }
+    return _image;
+}
+
+- (UIButton *)cancelBtn{
+    if (!_cancelBtn) {
+        _cancelBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        [_cancelBtn setTitleColor:[UIColor colorWithRed:71/255.0 green:120/255.0 blue:204/255.0 alpha:1] forState:UIControlStateNormal];
+        [_cancelBtn setTitle:LocalString(@"取消") forState:UIControlStateNormal];
+        [_cancelBtn.titleLabel setFont:[UIFont fontWithName:@"PingFangSC-Medium" size:16]];
+        [_cancelBtn setBackgroundColor:[UIColor colorWithRed:255/255.0 green:255/255.0 blue:255/255.0 alpha:0.8]];
+        [_cancelBtn setButtonStyleWithColor:[UIColor colorWithRed:71/255.0 green:120/255.0 blue:204/255.0 alpha:1] Width:1.5 cornerRadius:18.f / HScale];
+        [_cancelBtn addTarget:self action:@selector(cancel) forControlEvents:UIControlEventTouchUpInside];
+        [self.view addSubview:_cancelBtn];
+
+        [_cancelBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.size.mas_equalTo(CGSizeMake(92.f / WScale, 36.f / HScale));
+            make.centerX.equalTo(self.view.mas_centerX);
+            make.bottom.equalTo(self.view.mas_bottom).offset(-40 / HScale);
+        }];
+    }
+    return _cancelBtn;
 }
 
 #pragma mark - start Esptouch
@@ -129,25 +217,25 @@
                      [mutableStr appendString:[NSString stringWithFormat:@"\nthere's %lu more result(s) without showing\n",(unsigned long)([esptouchResultArray count] - count)]];
                      }
                      **/
-                    //[[[UIAlertView alloc]initWithTitle:@"Execute Result" message:mutableStr delegate:nil cancelButtonTitle:@"I know" otherButtonTitles:nil]show];
-                    UIAlertController *alert = [UIAlertController alertControllerWithTitle:LocalString(@"Execute Result") message:LocalString(@"Esptouch success") preferredStyle:UIAlertControllerStyleAlert];
-                    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:LocalString(@"I know") style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
-                        [self.navigationController popToViewController:[self.navigationController.viewControllers objectAtIndex:1] animated:YES];
-                        NSLog(@"action = %@",action);
-                    }];
-                    [alert addAction:cancelAction];
-                    [self presentViewController:alert animated:YES completion:nil];
+//                    UIAlertController *alert = [UIAlertController alertControllerWithTitle:LocalString(@"Execute Result") message:LocalString(@"Esptouch success") preferredStyle:UIAlertControllerStyleAlert];
+//                    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:LocalString(@"I know") style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+//                        [self.navigationController popToViewController:[self.navigationController.viewControllers objectAtIndex:1] animated:YES];
+//                        NSLog(@"action = %@",action);
+//                    }];
+//                    [alert addAction:cancelAction];
+//                    [self presentViewController:alert animated:YES completion:nil];
+                    [NSObject showHudTipStr:LocalString(@"连接成功，请进行设备的选择")];
                 }
                 
                 else
                 {
-                    //[[[UIAlertView alloc]initWithTitle:@"Execute Result" message:@"Esptouch fail" delegate:nil cancelButtonTitle:@"I know" otherButtonTitles:nil]show];
-                    UIAlertController *alert = [UIAlertController alertControllerWithTitle:LocalString(@"Execute Result") message:LocalString(@"Esptouch fail") preferredStyle:UIAlertControllerStyleAlert];
-                    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:LocalString(@"I know") style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
-                        NSLog(@"action = %@",action);
-                    }];
-                    [alert addAction:cancelAction];
-                    [self presentViewController:alert animated:YES completion:nil];
+//                    UIAlertController *alert = [UIAlertController alertControllerWithTitle:LocalString(@"Execute Result") message:LocalString(@"Esptouch fail") preferredStyle:UIAlertControllerStyleAlert];
+//                    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:LocalString(@"I know") style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+//                        NSLog(@"action = %@",action);
+//                    }];
+//                    [alert addAction:cancelAction];
+//                    [self presentViewController:alert animated:YES completion:nil];
+                    [self fail];
                 }
             }
             
@@ -198,7 +286,33 @@
         [self.esptouchTask interrupt];
     }
     [self.condition unlock];
+    [self.navigationController popViewControllerAnimated:YES];
+    [NSObject showHudTipStr:LocalString(@"取消配置，你可以重新选择配置")];
 }
 
-
+- (void)fail{
+    YAlertViewController *alert = [[YAlertViewController alloc] init];
+    alert.lBlock = ^{
+        [self.condition lock];
+        if (self.esptouchTask != nil)
+        {
+            [self.esptouchTask interrupt];
+        }
+        [self.condition unlock];
+        [self.navigationController popViewControllerAnimated:YES];
+        [NSObject showHudTipStr:LocalString(@"取消配置，你可以重新选择配置")];
+    };
+    alert.rBlock = ^{
+        [self.condition lock];
+        if (self.esptouchTask != nil)
+        {
+            [self.esptouchTask interrupt];
+        }
+        [self.condition unlock];
+        [self.navigationController popViewControllerAnimated:YES];
+        [NSObject showHudTipStr:LocalString(@"取消配置，你可以重新选择配置")];
+    };
+    alert.modalPresentationStyle = UIModalPresentationOverCurrentContext;
+    [self.navigationController presentViewController:alert animated:NO completion:nil];
+}
 @end

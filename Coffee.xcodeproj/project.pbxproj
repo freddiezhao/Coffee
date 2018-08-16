@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		258879339880B16366F53ED6 /* Pods_Coffee.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27C3888E1688495B0D5D73D6 /* Pods_Coffee.framework */; };
+		BB149F3121215B4C00E5C2BF /* DeviceSelectCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BB149F2F21215B4C00E5C2BF /* DeviceSelectCell.m */; };
 		BB1C156620E1E8AD006D7053 /* UIButton+Common.m in Sources */ = {isa = PBXBuildFile; fileRef = BB1C156420E1E8AD006D7053 /* UIButton+Common.m */; };
 		BB23E563210964C20074C61B /* FeedbackViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB23E562210964C20074C61B /* FeedbackViewController.m */; };
 		BB26AFB220EDC846008AE330 /* 数据.json in Resources */ = {isa = PBXBuildFile; fileRef = BB26AFB120EDC846008AE330 /* 数据.json */; };
@@ -54,6 +55,7 @@
 		BB6AD21E2100B706008C8763 /* AccountViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB6AD21D2100B706008C8763 /* AccountViewController.m */; };
 		BB6AD2212100C058008C8763 /* LlabelRlabelCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BB6AD2202100C058008C8763 /* LlabelRlabelCell.m */; };
 		BB6AD2252100C182008C8763 /* LlabelRImageCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BB6AD2242100C182008C8763 /* LlabelRImageCell.m */; };
+		BB6E0B7E2122D5B0008F20FC /* YAlertViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB6E0B7D2122D5B0008F20FC /* YAlertViewController.m */; };
 		BB712ABD20E47F49005FF10F /* NetWork.m in Sources */ = {isa = PBXBuildFile; fileRef = BB712ABC20E47F49005FF10F /* NetWork.m */; };
 		BB8AA20B20DE3F5200610316 /* ic_navbar_bean.png in Resources */ = {isa = PBXBuildFile; fileRef = BB8A9F7A20DE3F5100610316 /* ic_navbar_bean.png */; };
 		BB8AA21F20DE3F5200610316 /* ic_navbar_bake_selected.png in Resources */ = {isa = PBXBuildFile; fileRef = BB8A9F8E20DE3F5100610316 /* ic_navbar_bake_selected.png */; };
@@ -113,6 +115,11 @@
 		BB8F7BDF20DA513B00BE5CFC /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = BB8F7BDE20DA513B00BE5CFC /* main.m */; };
 		BB8F7BE920DA513C00BE5CFC /* CoffeeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = BB8F7BE820DA513C00BE5CFC /* CoffeeTests.m */; };
 		BB8F7BF420DA513C00BE5CFC /* CoffeeUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = BB8F7BF320DA513C00BE5CFC /* CoffeeUITests.m */; };
+		BB94963F2125504F000A4A59 /* LeftFuncController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB94963E2125504F000A4A59 /* LeftFuncController.m */; };
+		BB94964221256406000A4A59 /* RightFuncController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB94964121256406000A4A59 /* RightFuncController.m */; };
+		BB94964421259285000A4A59 /* ic_cup_dialog_left_selected@1x.png in Resources */ = {isa = PBXBuildFile; fileRef = BB94964321259285000A4A59 /* ic_cup_dialog_left_selected@1x.png */; };
+		BB9496462125928F000A4A59 /* ic_cup_dialog_left_selected@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = BB9496452125928F000A4A59 /* ic_cup_dialog_left_selected@2x.png */; };
+		BB94964821259299000A4A59 /* ic_cup_dialog_left_selected@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = BB94964721259299000A4A59 /* ic_cup_dialog_left_selected@3x.png */; };
 		BB94EAA020DB8CE700370A95 /* RDVTabBar.m in Sources */ = {isa = PBXBuildFile; fileRef = BB94EA9A20DB8CE700370A95 /* RDVTabBar.m */; };
 		BB94EAA120DB8CE700370A95 /* RDVTabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB94EA9E20DB8CE700370A95 /* RDVTabBarController.m */; };
 		BB94EAA220DB8CE700370A95 /* RDVTabBarItem.m in Sources */ = {isa = PBXBuildFile; fileRef = BB94EA9F20DB8CE700370A95 /* RDVTabBarItem.m */; };
@@ -154,6 +161,8 @@
 		27C3888E1688495B0D5D73D6 /* Pods_Coffee.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Coffee.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		720E238F8A2AE22A51FFC2D2 /* Pods-Coffee.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Coffee.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Coffee/Pods-Coffee.debug.xcconfig"; sourceTree = "<group>"; };
 		7BA3FAAB66A327260F196ABB /* Pods-Coffee.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Coffee.release.xcconfig"; path = "Pods/Target Support Files/Pods-Coffee/Pods-Coffee.release.xcconfig"; sourceTree = "<group>"; };
+		BB149F2E21215B4C00E5C2BF /* DeviceSelectCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DeviceSelectCell.h; sourceTree = "<group>"; };
+		BB149F2F21215B4C00E5C2BF /* DeviceSelectCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DeviceSelectCell.m; sourceTree = "<group>"; };
 		BB1C156420E1E8AD006D7053 /* UIButton+Common.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIButton+Common.m"; sourceTree = "<group>"; };
 		BB1C156520E1E8AD006D7053 /* UIButton+Common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIButton+Common.h"; sourceTree = "<group>"; };
 		BB23E561210964C20074C61B /* FeedbackViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FeedbackViewController.h; sourceTree = "<group>"; };
@@ -229,6 +238,8 @@
 		BB6AD2202100C058008C8763 /* LlabelRlabelCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LlabelRlabelCell.m; sourceTree = "<group>"; };
 		BB6AD2232100C182008C8763 /* LlabelRImageCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LlabelRImageCell.h; sourceTree = "<group>"; };
 		BB6AD2242100C182008C8763 /* LlabelRImageCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LlabelRImageCell.m; sourceTree = "<group>"; };
+		BB6E0B7C2122D5B0008F20FC /* YAlertViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YAlertViewController.h; sourceTree = "<group>"; };
+		BB6E0B7D2122D5B0008F20FC /* YAlertViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YAlertViewController.m; sourceTree = "<group>"; };
 		BB712ABB20E47F49005FF10F /* NetWork.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NetWork.h; sourceTree = "<group>"; };
 		BB712ABC20E47F49005FF10F /* NetWork.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NetWork.m; sourceTree = "<group>"; };
 		BB8A9F7A20DE3F5100610316 /* ic_navbar_bean.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ic_navbar_bean.png; sourceTree = "<group>"; };
@@ -320,6 +331,13 @@
 		BB8F7BEF20DA513C00BE5CFC /* CoffeeUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CoffeeUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		BB8F7BF320DA513C00BE5CFC /* CoffeeUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CoffeeUITests.m; sourceTree = "<group>"; };
 		BB8F7BF520DA513C00BE5CFC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		BB94963D2125504F000A4A59 /* LeftFuncController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LeftFuncController.h; sourceTree = "<group>"; };
+		BB94963E2125504F000A4A59 /* LeftFuncController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LeftFuncController.m; sourceTree = "<group>"; };
+		BB94964021256406000A4A59 /* RightFuncController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RightFuncController.h; sourceTree = "<group>"; };
+		BB94964121256406000A4A59 /* RightFuncController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RightFuncController.m; sourceTree = "<group>"; };
+		BB94964321259285000A4A59 /* ic_cup_dialog_left_selected@1x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ic_cup_dialog_left_selected@1x.png"; sourceTree = "<group>"; };
+		BB9496452125928F000A4A59 /* ic_cup_dialog_left_selected@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ic_cup_dialog_left_selected@2x.png"; sourceTree = "<group>"; };
+		BB94964721259299000A4A59 /* ic_cup_dialog_left_selected@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ic_cup_dialog_left_selected@3x.png"; sourceTree = "<group>"; };
 		BB94EA9A20DB8CE700370A95 /* RDVTabBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RDVTabBar.m; sourceTree = "<group>"; };
 		BB94EA9B20DB8CE700370A95 /* RDVTabBarController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RDVTabBarController.h; sourceTree = "<group>"; };
 		BB94EA9C20DB8CE700370A95 /* RDVTabBarItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RDVTabBarItem.h; sourceTree = "<group>"; };
@@ -480,6 +498,15 @@
 			path = Model;
 			sourceTree = "<group>";
 		};
+		BB6E0B782122D49A008F20FC /* View */ = {
+			isa = PBXGroup;
+			children = (
+				BB6E0B7C2122D5B0008F20FC /* YAlertViewController.h */,
+				BB6E0B7D2122D5B0008F20FC /* YAlertViewController.m */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
 		BB712ABA20E47F36005FF10F /* Net */ = {
 			isa = PBXGroup;
 			children = (
@@ -511,6 +538,7 @@
 		BB8A9F7820DE3F5100610316 /* @1x */ = {
 			isa = PBXGroup;
 			children = (
+				BB94964321259285000A4A59 /* ic_cup_dialog_left_selected@1x.png */,
 				BB635D20210868AF005F42D6 /* ic_quick_event_add@1x.png */,
 				BB6A555F20FCCD8E0013C3C1 /* ic_bake_dialog_delete@1x.png */,
 				BBED09AD20F7354200D6010A /* ic_bake_baking_inwind.png */,
@@ -534,6 +562,7 @@
 		BB8AA00220DE3F5100610316 /* @2x */ = {
 			isa = PBXGroup;
 			children = (
+				BB9496452125928F000A4A59 /* ic_cup_dialog_left_selected@2x.png */,
 				BB635D22210868DF005F42D6 /* ic_quick_event_add@2x.png */,
 				BB6A556120FCCDA90013C3C1 /* ic_bake_dialog_delete@2x.png */,
 				BBED09B220F7355E00D6010A /* ic_bake_baking_inwind@2x.png */,
@@ -559,6 +588,7 @@
 		BB8AA1A120DE3F5200610316 /* @3x */ = {
 			isa = PBXGroup;
 			children = (
+				BB94964721259299000A4A59 /* ic_cup_dialog_left_selected@3x.png */,
 				BB635D24210868EF005F42D6 /* ic_quick_event_add@3x.png */,
 				BB6A556320FCCDC30013C3C1 /* ic_bake_dialog_delete@3x.png */,
 				BB8AA1B420DE3F5200610316 /* ic_navbar_bake_selected@3x.png */,
@@ -665,6 +695,8 @@
 				BB6A784320E32A4D00EE3E2E /* DeviceTableViewCell.h */,
 				BB6A784420E32A4D00EE3E2E /* DeviceTableViewCell.m */,
 				BB6A784520E32A4D00EE3E2E /* DeviceTableViewCell.xib */,
+				BB149F2E21215B4C00E5C2BF /* DeviceSelectCell.h */,
+				BB149F2F21215B4C00E5C2BF /* DeviceSelectCell.m */,
 				BB6A555C20FCCA3D0013C3C1 /* AddBeanTableViewCell.h */,
 				BB6A555D20FCCA3D0013C3C1 /* AddBeanTableViewCell.m */,
 				BB6AD21F2100C058008C8763 /* LlabelRlabelCell.h */,
@@ -713,6 +745,7 @@
 				BB94EA9920DB8CE700370A95 /* RDVTabbarController */,
 				BB6AD2222100C09B008C8763 /* Model */,
 				BB8AA4D820DFC23300610316 /* Cell */,
+				BB6E0B782122D49A008F20FC /* View */,
 				BB8F7C0120DA51A600BE5CFC /* Main */,
 				BB8F7BCF20DA513B00BE5CFC /* AppDelegate.h */,
 				BB8F7BD020DA513B00BE5CFC /* AppDelegate.m */,
@@ -778,6 +811,10 @@
 				BB8AA49920DE475200610316 /* BakeViewController.m */,
 				BB3811F820EA1C3C00F0B2B7 /* BakeCurveViewController.h */,
 				BB3811F920EA1C3C00F0B2B7 /* BakeCurveViewController.m */,
+				BB94963D2125504F000A4A59 /* LeftFuncController.h */,
+				BB94963E2125504F000A4A59 /* LeftFuncController.m */,
+				BB94964021256406000A4A59 /* RightFuncController.h */,
+				BB94964121256406000A4A59 /* RightFuncController.m */,
 			);
 			path = Bake;
 			sourceTree = "<group>";
@@ -904,7 +941,9 @@
 				BB6A556220FCCDA90013C3C1 /* ic_bake_dialog_delete@2x.png in Resources */,
 				BB8AA4A020DFB18B00610316 /* ic_details.png in Resources */,
 				BB8AA45020DE3F5300610316 /* ic_navbar_cup_selected@3x.png in Resources */,
+				BB9496462125928F000A4A59 /* ic_cup_dialog_left_selected@2x.png in Resources */,
 				BB8AA48A20DE3F5300610316 /* ic_navbar_mine_selected@3x.png in Resources */,
+				BB94964821259299000A4A59 /* ic_cup_dialog_left_selected@3x.png in Resources */,
 				BB52778420F845C100D020DD /* ic_leftpop@3x.png in Resources */,
 				BB8AA24C20DE3F5200610316 /* ic_navbar_mine.png in Resources */,
 				BB8AA30A20DE3F5300610316 /* ic_navbar_mine_selected@2x.png in Resources */,
@@ -946,6 +985,7 @@
 				BB8AA43020DE3F5300610316 /* ic_navbar_bean@3x.png in Resources */,
 				BBED09B120F7354200D6010A /* ic_bake_baking_inwind.png in Resources */,
 				BB29120E2106CCE1001B9448 /* Password.storyboard in Resources */,
+				BB94964421259285000A4A59 /* ic_cup_dialog_left_selected@1x.png in Resources */,
 				BB635D25210868EF005F42D6 /* ic_quick_event_add@3x.png in Resources */,
 				BB8AA4E020DFC96A00610316 /* SSIDTableViewCell.xib in Resources */,
 				BBED09B820F7355E00D6010A /* ic_bake_bean@2x.png in Resources */,
@@ -1069,6 +1109,7 @@
 				BB8AA4DF20DFC96A00610316 /* SSIDTableViewCell.m in Sources */,
 				BB6A784620E32A4D00EE3E2E /* DeviceTableViewCell.m in Sources */,
 				BB8AA4C720DFB9CA00610316 /* ESP_NetUtil.m in Sources */,
+				BB149F3121215B4C00E5C2BF /* DeviceSelectCell.m in Sources */,
 				BB6AD21721007D15008C8763 /* MineViewController.m in Sources */,
 				BB8AA49E20DFAFC600610316 /* DeviceViewController.m in Sources */,
 				BB6AD2212100C058008C8763 /* LlabelRlabelCell.m in Sources */,
@@ -1087,11 +1128,13 @@
 				BB1C156620E1E8AD006D7053 /* UIButton+Common.m in Sources */,
 				BB2912022106BA65001B9448 /* UsernameViewController.m in Sources */,
 				BB29121821071B1E001B9448 /* SettingModel.m in Sources */,
+				BB6E0B7E2122D5B0008F20FC /* YAlertViewController.m in Sources */,
 				BB4C906E2105C4200023EE9B /* DataBase.m in Sources */,
 				BB8AA4C820DFB9CA00610316 /* ESP_ByteUtil.m in Sources */,
 				BBFE861520E62FF3005C6CE5 /* DeviceConfirmView.m in Sources */,
 				BB593FAC210F324C007ECB1D /* EventModel.m in Sources */,
 				BB94EAA520DBA9C800370A95 /* MainViewController.m in Sources */,
+				BB94963F2125504F000A4A59 /* LeftFuncController.m in Sources */,
 				BB712ABD20E47F49005FF10F /* NetWork.m in Sources */,
 				BB94EAA120DB8CE700370A95 /* RDVTabBarController.m in Sources */,
 				BB8AA4A520DFB25900610316 /* EspViewController.m in Sources */,
@@ -1099,6 +1142,7 @@
 				BB8AA4C520DFB9CA00610316 /* ESPGuideCode.m in Sources */,
 				BB23E563210964C20074C61B /* FeedbackViewController.m in Sources */,
 				BB8F7BDF20DA513B00BE5CFC /* main.m in Sources */,
+				BB94964221256406000A4A59 /* RightFuncController.m in Sources */,
 				BB61D75A210DC31C0068A0A6 /* ReportModel.m in Sources */,
 				BB8AA4D220DFB9CA00610316 /* ESPDatumCode.m in Sources */,
 				BB2912152106FB43001B9448 /* SubtitileCell.m in Sources */,

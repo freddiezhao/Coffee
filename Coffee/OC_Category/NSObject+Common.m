@@ -14,10 +14,15 @@
     if (tipStr && tipStr.length > 0) {
         MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:kKeyWindow animated:YES];
         hud.mode = MBProgressHUDModeText;
-        hud.label.font = [UIFont boldSystemFontOfSize:15.0];
+        hud.label.font = [UIFont fontWithName:@"PingFangSC-Regular" size:15];
+        hud.label.textColor = [UIColor colorWithRed:255/255.0 green:255/255.0 blue:255/255.0 alpha:1];
         hud.label.text = tipStr;
-        hud.margin = 15.f;
+        hud.margin = 10.f;
+        hud.minSize = CGSizeMake(225 / WScale, 41 / HScale);
+        hud.bezelView.layer.cornerRadius = 20.5f;
+        [hud setOffset:CGPointMake(0, (ScreenHeight / 2 - 141) / HScale)];
         hud.removeFromSuperViewOnHide = YES;
+        hud.bezelView.backgroundColor = [UIColor colorWithRed:0/255.0 green:0/255.0 blue:0/255.0 alpha:0.8];
         [hud hideAnimated:YES afterDelay:1.0];
     }
 }

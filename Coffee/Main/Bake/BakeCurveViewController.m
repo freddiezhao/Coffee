@@ -12,6 +12,8 @@
 #import "FMDB.h"
 #import "BeanModel.h"
 #import "EventModel.h"
+#import "LeftFuncController.h"
+#import "RightFuncController.h"
 
 #define buttonHeight 30
 
@@ -29,9 +31,8 @@
 @property (nonatomic, strong) UILabel *environTempLabel;
 @property (nonatomic, strong) UILabel *beanTempRateLabel;
 @property (nonatomic, strong) UIButton *leftPopBtn;
-@property (nonatomic, strong) UIView *leftControlView;
 @property (nonatomic, strong) UIButton *rightPopBtn;
-@property (nonatomic, strong) UIView *rightControlView;
+@property (nonatomic, strong) UIButton *backBtn;
 
 @property (nonatomic, strong) NetWork *myNet;
 
@@ -64,18 +65,14 @@
     _beanTempRateLabel = [self beanTempRateLabel];
     _leftPopBtn = [self leftPopBtn];
     _rightPopBtn = [self rightPopBtn];
+    _backBtn = [self backBtn];
     [self uiMasonry];
-    _leftControlView = [self leftControlView];
-    _rightControlView = [self rightControlView];
     
     [_myNet addObserver:self forKeyPath:@"tempData" options:NSKeyValueObservingOptionNew context:nil];
     [_myNet addObserver:self forKeyPath:@"timerValue" options:NSKeyValueObservingOptionNew context:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(bakeCompelete) name:@"bakeCompelete" object:nil];
-}
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+    
+    [self setDataValue:nil];
 }
 
 - (void)viewWillAppear:(BOOL)animated{
@@ -97,44 +94,43 @@
 - (LineChartView *)chartView{
     if (!_chartView) {
         _chartView = [[LineChartView alloc] init];
-        _chartView.frame = CGRectMake(60, 70, ScreenHeight - 120, ScreenWidth - 70 - 30);
+        _chartView.frame = CGRectMake(45/HScale, 87/WScale, ScreenHeight - 87/HScale, ScreenWidth - 100/WScale);
         [self.view addSubview:_chartView];
         
         UILabel *leftLabel = [[UILabel alloc] init];
-        leftLabel.font = [UIFont systemFontOfSize:13.f];
-        leftLabel.text = LocalString(@"温度(℃)");
+        leftLabel.text = LocalString(@"(℃)");
+        leftLabel.font = [UIFont fontWithName:@"PingFangSC-Light" size:12];
+        leftLabel.textColor = [UIColor colorWithRed:184/255.0 green:190/255.0 blue:204/255.0 alpha:1];
         leftLabel.textAlignment = NSTextAlignmentCenter;
-        CGAffineTransform transform = CGAffineTransformMakeRotation(-90 * M_PI / 180.0);
-        [leftLabel setTransform:transform];
         [self.view addSubview:leftLabel];
-        
+
         UILabel *rightLabel = [[UILabel alloc] init];
-        rightLabel.font = [UIFont systemFontOfSize:13.f];
-        rightLabel.text = LocalString(@"升温速率(℃)");
+        rightLabel.text = LocalString(@"(℃/min)");
+        rightLabel.font = [UIFont fontWithName:@"PingFangSC-Light" size:12];
+        rightLabel.textColor = [UIColor colorWithRed:184/255.0 green:190/255.0 blue:204/255.0 alpha:1];
         rightLabel.textAlignment = NSTextAlignmentCenter;
-        CGAffineTransform transform1 = CGAffineTransformMakeRotation(-90 * M_PI / 180.0);
-        [rightLabel setTransform:transform1];
         [self.view addSubview:rightLabel];
-        
+
         UILabel *bottomLabel = [[UILabel alloc] init];
-        bottomLabel.font = [UIFont systemFontOfSize:13.f];
-        bottomLabel.text = LocalString(@"时间(min)");
+        bottomLabel.font = [UIFont fontWithName:@"PingFangSC-Light" size:12];
+        bottomLabel.textColor = [UIColor colorWithRed:184/255.0 green:190/255.0 blue:204/255.0 alpha:1];
+        bottomLabel.text = LocalString(@"(min)");
         [self.view addSubview:bottomLabel];
-        
+
         [leftLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.size.mas_equalTo(CGSizeMake(100, 30));
-            make.right.equalTo(_chartView.mas_left).offset(35);
-            make.centerY.equalTo(_chartView.mas_centerY);
+            make.size.mas_equalTo(CGSizeMake(22/HScale, 15/WScale));
+            make.left.equalTo(_chartView.mas_left);
+            make.bottom.equalTo(_chartView.mas_top).offset(3);
         }];
         [rightLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.size.mas_equalTo(CGSizeMake(100, 30));
-            make.left.equalTo(_chartView.mas_right).offset(-35);
-            make.centerY.equalTo(_chartView.mas_centerY);
+            make.size.mas_equalTo(CGSizeMake(47/HScale, 12/WScale));
+            make.right.equalTo(_chartView.mas_right);
+            make.bottom.equalTo(_chartView.mas_top).offset(3);
         }];
         [bottomLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.size.mas_equalTo(CGSizeMake(100, 30));
-            make.top.equalTo(_chartView.mas_bottom);
-            make.centerX.equalTo(_chartView.mas_centerX);
+            make.size.mas_equalTo(CGSizeMake(29/HScale, 12/WScale));
+            make.left.equalTo(_chartView.mas_right).offset(-15/HScale);
+            make.bottom.equalTo(_chartView.mas_bottom);
         }];
         
         _chartView.noDataText = LocalString(@"暂无数据");
@@ -153,7 +149,7 @@
         //_chartView.dragDecelerationEnabled = NO;//拖拽后是否有惯性效果
         //_chartView.dragDecelerationFrictionCoef = 0;//拖拽后惯性效果的摩擦系数(0~1)，数值越小，惯性越不明显
         
-        _chartView.backgroundColor = [UIColor colorWithWhite:204/255.f alpha:1.f];
+        _chartView.backgroundColor = [UIColor clearColor];
         
         
         //_chartView.legend.enabled = NO;//不显示图例说明
@@ -167,27 +163,33 @@
         l.drawInside = YES;//legend显示在图表里
         
         ChartXAxis *xAxis = _chartView.xAxis;
-        xAxis.labelFont = [UIFont systemFontOfSize:11.f];
-        xAxis.labelTextColor = UIColor.whiteColor;
+        xAxis.labelFont = [UIFont fontWithName:@"Avenir-Light" size:12];
+        xAxis.labelTextColor = [UIColor colorWithRed:184/255.0 green:190/255.0 blue:204/255.0 alpha:1];
         xAxis.drawGridLinesEnabled = NO;
         xAxis.drawAxisLineEnabled = NO;
+        xAxis.labelPosition = XAxisLabelPositionBottom;
         //xAxis.axisRange = 30;
         //xAxis.granularityEnabled = YES;
         //xAxis.granularity = 10.0;
         
         
         ChartYAxis *leftAxis = _chartView.leftAxis;
-        leftAxis.labelTextColor = [UIColor colorWithRed:51/255.f green:181/255.f blue:229/255.f alpha:1.f];
-        leftAxis.axisMaximum = 50 - 0.5;
-        leftAxisMax = 50 - 0.5;
+        leftAxis.labelTextColor = [UIColor colorWithRed:184/255.0 green:190/255.0 blue:204/255.0 alpha:1];
+        leftAxis.labelFont = [UIFont fontWithName:@"Avenir-Light" size:12];
+        leftAxis.axisMaximum = 140 - 0.5;
+        leftAxisMax = 140 - 0.5;
         leftAxis.axisMinimum = 0.0;
+        leftAxis.spaceTop = 30.f;
         leftAxis.drawGridLinesEnabled = YES;
+        leftAxis.gridLineWidth = 0.6f;
+        leftAxis.gridColor = [UIColor colorWithHexString:@"EBEDF0"];
         //leftAxis.gridLineDashLengths = @[@5.f,@5.f];//虚线
         leftAxis.drawZeroLineEnabled = NO;
         leftAxis.granularityEnabled = YES;
         
         ChartYAxis *rightAxis = _chartView.rightAxis;
-        rightAxis.labelTextColor = UIColor.redColor;
+        rightAxis.labelFont = [UIFont fontWithName:@"Avenir-Light" size:12];
+        rightAxis.labelTextColor = [UIColor colorWithRed:184/255.0 green:190/255.0 blue:204/255.0 alpha:1];
         rightAxis.axisMaximum = 10.0;
         rightAxis.axisMinimum = 0;
         rightAxis.drawGridLinesEnabled = NO;
@@ -204,8 +206,9 @@
     if (!_bakeTime) {
         _bakeTime = [[UILabel alloc] init];
         _bakeTime.textAlignment = NSTextAlignmentLeft;
-        _bakeTime.font = [UIFont systemFontOfSize:13.0];
-        _bakeTime.text = @"已烘焙时间: 02:35";
+        _bakeTime.font = [UIFont fontWithName:@"PingFangSC-Light" size:13];
+        _bakeTime.text = @"07:45";
+        _bakeTime.textColor = [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1];
         [self.view addSubview:_bakeTime];
     }
     return _bakeTime;
@@ -214,9 +217,10 @@
 - (UILabel *)developRate{
     if (!_developRate) {
         _developRate = [[UILabel alloc] init];
-        _developRate.textAlignment = NSTextAlignmentCenter;
-        _developRate.font = [UIFont systemFontOfSize:13.0];
-        _developRate.text = @"发展率: 20%";
+        _developRate.textAlignment = NSTextAlignmentLeft;
+        _developRate.font = [UIFont fontWithName:@"PingFangSC-Light" size:13];
+        _developRate.text = @"70.2%";
+        _developRate.textColor = [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1];
         [self.view addSubview:_developRate];
     }
     return _developRate;
@@ -225,9 +229,10 @@
 - (UILabel *)developTime{
     if (!_developTime) {
         _developTime = [[UILabel alloc] init];
-        _developTime.textAlignment = NSTextAlignmentRight;
-        _developTime.font = [UIFont systemFontOfSize:13.0];
-        _developTime.text = @"发展时间: 01:35";
+        _developTime.textAlignment = NSTextAlignmentLeft;
+        _developTime.font = [UIFont fontWithName:@"PingFangSC-Light" size:13];
+        _developTime.text = @"05:40";
+        _developTime.textColor = [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1];
         [self.view addSubview:_developTime];
     }
     return _developTime;
@@ -237,8 +242,9 @@
     if (!_beanTempLabel) {
         _beanTempLabel = [[UILabel alloc] init];
         _beanTempLabel.textAlignment = NSTextAlignmentLeft;
-        _beanTempLabel.font = [UIFont systemFontOfSize:13.0];
-        _beanTempLabel.text = @"豆温:200℃";
+        _beanTempLabel.font = [UIFont fontWithName:@"PingFangSC-Light" size:13];
+        _beanTempLabel.text = @"200.5℃";
+        _beanTempLabel.textColor = [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1];
         [self.view addSubview:_beanTempLabel];
     }
     return _beanTempLabel;
@@ -248,8 +254,9 @@
     if (!_inTempLabel) {
         _inTempLabel = [[UILabel alloc] init];
         _inTempLabel.textAlignment = NSTextAlignmentLeft;
-        _inTempLabel.font = [UIFont systemFontOfSize:13.0];
-        _inTempLabel.text = @"进风温:20℃";
+        _inTempLabel.font = [UIFont fontWithName:@"PingFangSC-Light" size:13];
+        _inTempLabel.text = @"25.3℃";
+        _inTempLabel.textColor = [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1];
         [self.view addSubview:_inTempLabel];
     }
     return _inTempLabel;
@@ -259,8 +266,9 @@
     if (!_outTempLabel) {
         _outTempLabel = [[UILabel alloc] init];
         _outTempLabel.textAlignment = NSTextAlignmentLeft;
-        _outTempLabel.font = [UIFont systemFontOfSize:13.0];
-        _outTempLabel.text = @"出风温:50℃";
+        _outTempLabel.font = [UIFont fontWithName:@"PingFangSC-Light" size:13];
+        _outTempLabel.text = @"212.2℃";
+        _outTempLabel.textColor = [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1];
         [self.view addSubview:_outTempLabel];
     }
     return _outTempLabel;
@@ -270,8 +278,9 @@
     if (!_environTempLabel) {
         _environTempLabel = [[UILabel alloc] init];
         _environTempLabel.textAlignment = NSTextAlignmentLeft;
-        _environTempLabel.font = [UIFont systemFontOfSize:13.0];
-        _environTempLabel.text = @"环境温:240℃";
+        _environTempLabel.font = [UIFont fontWithName:@"PingFangSC-Light" size:13];
+        _environTempLabel.text = @"212.0℃";
+        _environTempLabel.textColor = [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1];
         [self.view addSubview:_environTempLabel];
     }
     return _environTempLabel;
@@ -281,8 +290,9 @@
     if (!_beanTempRateLabel) {
         _beanTempRateLabel = [[UILabel alloc] init];
         _beanTempRateLabel.textAlignment = NSTextAlignmentLeft;
-        _beanTempRateLabel.font = [UIFont systemFontOfSize:13.0];
-        _beanTempRateLabel.text = @"△豆温:5.19℃/min";
+        _beanTempRateLabel.font = [UIFont fontWithName:@"PingFangSC-Light" size:13];
+        _beanTempRateLabel.text = @"-5.4℃/min";
+        _beanTempRateLabel.textColor = [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1];
         [self.view addSubview:_beanTempRateLabel];
     }
     return _beanTempRateLabel;
@@ -298,82 +308,6 @@
     return _leftPopBtn;
 }
 
-- (UIView *)leftControlView{
-    if (!_leftControlView) {
-        _leftControlView = [[UIView alloc] initWithFrame:CGRectMake(-90, 0, 90, ScreenWidth)];
-        _leftControlView.backgroundColor = [UIColor colorWithHexString:yColor_back];
-        _leftControlView.alpha = 0.9;
-        _leftControlView.tag = unselect;
-        [self.view addSubview:_leftControlView];
-        [self.view bringSubviewToFront:_leftControlView];
-        
-        float gap = (ScreenWidth - buttonHeight * 7) / 8;
-        UIButton *power = [[UIButton alloc] initWithFrame:CGRectMake(15, gap, 60, buttonHeight)];
-        [power setTitle:LocalString(@"电源") forState:UIControlStateNormal];
-        [power setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-        [power.titleLabel setFont:[UIFont systemFontOfSize:13.0]];
-        [power setButtonStyleWithColor:[UIColor clearColor] Width:1.0 cornerRadius:buttonHeight * 0.2];
-        [power setBackgroundColor:[UIColor darkGrayColor]];
-        [power addTarget:self action:@selector(setPower) forControlEvents:UIControlEventTouchUpInside];
-        [_leftControlView addSubview:power];
-        
-        UIButton *fire = [[UIButton alloc] initWithFrame:CGRectMake(15, gap * 2 + buttonHeight, 60, buttonHeight)];
-        [fire setTitle:LocalString(@"点火") forState:UIControlStateNormal];
-        [fire setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-        [fire.titleLabel setFont:[UIFont systemFontOfSize:13.0]];
-        [fire setButtonStyleWithColor:[UIColor clearColor] Width:1.0 cornerRadius:buttonHeight * 0.2];
-        [fire setBackgroundColor:[UIColor darkGrayColor]];
-        [fire addTarget:self action:@selector(setPower) forControlEvents:UIControlEventTouchUpInside];
-        [_leftControlView addSubview:fire];
-        
-        UIButton *stir = [[UIButton alloc] initWithFrame:CGRectMake(15, gap * 3 + buttonHeight * 2, 60, buttonHeight)];
-        [stir setTitle:LocalString(@"搅拌") forState:UIControlStateNormal];
-        [stir setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-        [stir.titleLabel setFont:[UIFont systemFontOfSize:13.0]];
-        [stir setButtonStyleWithColor:[UIColor clearColor] Width:1.0 cornerRadius:buttonHeight * 0.2];
-        [stir setBackgroundColor:[UIColor darkGrayColor]];
-        [stir addTarget:self action:@selector(setPower) forControlEvents:UIControlEventTouchUpInside];
-        [_leftControlView addSubview:stir];
-        
-        UIButton *cooling = [[UIButton alloc] initWithFrame:CGRectMake(15, gap * 4 + buttonHeight * 3, 60, buttonHeight)];
-        [cooling setTitle:LocalString(@"冷却") forState:UIControlStateNormal];
-        [cooling setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-        [cooling.titleLabel setFont:[UIFont systemFontOfSize:13.0]];
-        [cooling setButtonStyleWithColor:[UIColor clearColor] Width:1.0 cornerRadius:buttonHeight * 0.2];
-        [cooling setBackgroundColor:[UIColor darkGrayColor]];
-        [cooling addTarget:self action:@selector(setPower) forControlEvents:UIControlEventTouchUpInside];
-        [_leftControlView addSubview:cooling];
-        
-        UIButton *firePower = [[UIButton alloc] initWithFrame:CGRectMake(15, gap * 5 + buttonHeight * 4, 60, buttonHeight)];
-        [firePower setTitle:LocalString(@"火力") forState:UIControlStateNormal];
-        [firePower setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-        [firePower.titleLabel setFont:[UIFont systemFontOfSize:13.0]];
-        [firePower setButtonStyleWithColor:[UIColor clearColor] Width:1.0 cornerRadius:buttonHeight * 0.2];
-        [firePower setBackgroundColor:[UIColor darkGrayColor]];
-        [firePower addTarget:self action:@selector(setPower) forControlEvents:UIControlEventTouchUpInside];
-        [_leftControlView addSubview:firePower];
-        
-        UIButton *windPower = [[UIButton alloc] initWithFrame:CGRectMake(15, gap * 6 + buttonHeight * 5, 60, buttonHeight)];
-        [windPower setTitle:LocalString(@"风力") forState:UIControlStateNormal];
-        [windPower setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-        [windPower.titleLabel setFont:[UIFont systemFontOfSize:13.0]];
-        [windPower setButtonStyleWithColor:[UIColor clearColor] Width:1.0 cornerRadius:buttonHeight * 0.2];
-        [windPower setBackgroundColor:[UIColor darkGrayColor]];
-        [windPower addTarget:self action:@selector(setPower) forControlEvents:UIControlEventTouchUpInside];
-        [_leftControlView addSubview:windPower];
-        
-        UIButton *switchBtn = [[UIButton alloc] initWithFrame:CGRectMake(15, gap * 7 + buttonHeight * 6, 60, buttonHeight)];
-        [switchBtn setTitle:LocalString(@"切换") forState:UIControlStateNormal];
-        [switchBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-        [switchBtn.titleLabel setFont:[UIFont systemFontOfSize:13.0]];
-        [switchBtn setButtonStyleWithColor:[UIColor clearColor] Width:1.0 cornerRadius:buttonHeight * 0.2];
-        [switchBtn setBackgroundColor:[UIColor darkGrayColor]];
-        [switchBtn addTarget:self action:@selector(setPower) forControlEvents:UIControlEventTouchUpInside];
-        [_leftControlView addSubview:switchBtn];
-    }
-    return _leftControlView;
-}
-
 - (UIButton *)rightPopBtn{
     if (!_rightPopBtn) {
         _rightPopBtn = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -386,158 +320,201 @@
     return _rightPopBtn;
 }
 
-- (UIView *)rightControlView{
-    if (!_rightControlView) {
-        _rightControlView = [[UIView alloc] initWithFrame:CGRectMake(ScreenHeight, 0, 90, ScreenWidth)];
-        _rightControlView.backgroundColor = [UIColor colorWithHexString:yColor_back];
-        _rightControlView.alpha = 0.9;
-        _rightControlView.tag = unselect;
-        [self.view addSubview:_rightControlView];
-        [self.view bringSubviewToFront:_rightControlView];
+- (UIButton *)backBtn{
+    if (!_backBtn) {
+        _backBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        _backBtn.frame = CGRectMake(15/WScale,19/HScale,22/WScale,22/HScale);
+        [_backBtn setImage:[UIImage imageNamed:@""] forState:UIControlStateNormal];
+        [_backBtn addTarget:self action:@selector(dismissView) forControlEvents:UIControlEventTouchUpInside];
+        [self.view addSubview:_backBtn];
 
-        float gap = (ScreenWidth - buttonHeight * 10) / 11;
-        UIButton *startBake = [[UIButton alloc] initWithFrame:CGRectMake(15, gap, 60, buttonHeight)];
-        [startBake setTitle:LocalString(@"开始烘焙") forState:UIControlStateNormal];
-        [startBake.titleLabel setFont:[UIFont systemFontOfSize:13.0]];
-        [startBake setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-        [startBake setButtonStyleWithColor:[UIColor clearColor] Width:1.0 cornerRadius:buttonHeight * 0.2];
-        [startBake setBackgroundColor:[UIColor darkGrayColor]];
-        [startBake addTarget:self action:@selector(setPower) forControlEvents:UIControlEventTouchUpInside];
-        [_rightControlView addSubview:startBake];
-        
-        UIButton *dehyOver = [[UIButton alloc] initWithFrame:CGRectMake(15, gap * 2 + buttonHeight * 1, 60, buttonHeight)];
-        [dehyOver setTitle:LocalString(@"脱水结束") forState:UIControlStateNormal];
-        [dehyOver setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-        [dehyOver.titleLabel setFont:[UIFont systemFontOfSize:13.0]];
-        [dehyOver setButtonStyleWithColor:[UIColor clearColor] Width:1.0 cornerRadius:buttonHeight * 0.2];
-        [dehyOver setBackgroundColor:[UIColor darkGrayColor]];
-        [dehyOver addTarget:self action:@selector(setPower) forControlEvents:UIControlEventTouchUpInside];
-        [_rightControlView addSubview:dehyOver];
-        
-        UIButton *firstBurst = [[UIButton alloc] initWithFrame:CGRectMake(15, gap * 3 + buttonHeight * 2, 60, buttonHeight)];
-        [firstBurst setTitle:LocalString(@"一爆开始") forState:UIControlStateNormal];
-        [firstBurst setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-        [firstBurst.titleLabel setFont:[UIFont systemFontOfSize:13.0]];
-        [firstBurst setButtonStyleWithColor:[UIColor clearColor] Width:1.0 cornerRadius:buttonHeight * 0.2];
-        [firstBurst setBackgroundColor:[UIColor darkGrayColor]];
-        [firstBurst addTarget:self action:@selector(setPower) forControlEvents:UIControlEventTouchUpInside];
-        [_rightControlView addSubview:firstBurst];
-        
-        UIButton *firstBurstOver = [[UIButton alloc] initWithFrame:CGRectMake(15, gap * 4 + buttonHeight * 3, 60, buttonHeight)];
-        [firstBurstOver setTitle:LocalString(@"一爆结束") forState:UIControlStateNormal];
-        [firstBurstOver setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-        [firstBurstOver.titleLabel setFont:[UIFont systemFontOfSize:13.0]];
-        [firstBurstOver setButtonStyleWithColor:[UIColor clearColor] Width:1.0 cornerRadius:buttonHeight * 0.2];
-        [firstBurstOver setBackgroundColor:[UIColor darkGrayColor]];
-        [firstBurstOver addTarget:self action:@selector(setPower) forControlEvents:UIControlEventTouchUpInside];
-        [_rightControlView addSubview:firstBurstOver];
-        
-        UIButton *secondBurst = [[UIButton alloc] initWithFrame:CGRectMake(15, gap * 5 + buttonHeight * 4, 60, buttonHeight)];
-        [secondBurst setTitle:LocalString(@"二爆开始") forState:UIControlStateNormal];
-        [secondBurst setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-        [secondBurst.titleLabel setFont:[UIFont systemFontOfSize:13.0]];
-        [secondBurst setButtonStyleWithColor:[UIColor clearColor] Width:1.0 cornerRadius:buttonHeight * 0.2];
-        [secondBurst setBackgroundColor:[UIColor darkGrayColor]];
-        [secondBurst addTarget:self action:@selector(setPower) forControlEvents:UIControlEventTouchUpInside];
-        [_rightControlView addSubview:secondBurst];
-        
-        UIButton *secondBurstOver = [[UIButton alloc] initWithFrame:CGRectMake(15, gap * 6 + buttonHeight * 5, 60, buttonHeight)];
-        [secondBurstOver setTitle:LocalString(@"二爆结束") forState:UIControlStateNormal];
-        [secondBurstOver setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-        [secondBurstOver.titleLabel setFont:[UIFont systemFontOfSize:13.0]];
-        [secondBurstOver setButtonStyleWithColor:[UIColor clearColor] Width:1.0 cornerRadius:buttonHeight * 0.2];
-        [secondBurstOver setBackgroundColor:[UIColor darkGrayColor]];
-        [secondBurstOver addTarget:self action:@selector(setPower) forControlEvents:UIControlEventTouchUpInside];
-        [_rightControlView addSubview:secondBurstOver];
-        
-        UIButton *bakeOver = [[UIButton alloc] initWithFrame:CGRectMake(15, gap * 7 + buttonHeight * 6, 60, buttonHeight)];
-        [bakeOver setTitle:LocalString(@"烘焙结束") forState:UIControlStateNormal];
-        [bakeOver setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-        [bakeOver.titleLabel setFont:[UIFont systemFontOfSize:13.0]];
-        [bakeOver setButtonStyleWithColor:[UIColor clearColor] Width:1.0 cornerRadius:buttonHeight * 0.2];
-        [bakeOver setBackgroundColor:[UIColor darkGrayColor]];
-        [bakeOver addTarget:self action:@selector(setPower) forControlEvents:UIControlEventTouchUpInside];
-        [_rightControlView addSubview:bakeOver];
-        
-        UIButton *fireorwindPower = [[UIButton alloc] initWithFrame:CGRectMake(15, gap * 8 + buttonHeight * 7, 60, buttonHeight)];
-        [fireorwindPower setTitle:LocalString(@"火力/风力") forState:UIControlStateNormal];
-        [fireorwindPower setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-        [fireorwindPower.titleLabel setFont:[UIFont systemFontOfSize:13.0]];
-        [fireorwindPower setButtonStyleWithColor:[UIColor clearColor] Width:1.0 cornerRadius:buttonHeight * 0.2];
-        [fireorwindPower setBackgroundColor:[UIColor darkGrayColor]];
-        [fireorwindPower addTarget:self action:@selector(setPower) forControlEvents:UIControlEventTouchUpInside];
-        [_rightControlView addSubview:fireorwindPower];
-        
-        UIButton *remark = [[UIButton alloc] initWithFrame:CGRectMake(15, gap * 9 + buttonHeight * 8, 60, buttonHeight)];
-        [remark setTitle:LocalString(@"备注记录") forState:UIControlStateNormal];
-        [remark setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-        [remark.titleLabel setFont:[UIFont systemFontOfSize:13.0]];
-        [remark setButtonStyleWithColor:[UIColor clearColor] Width:1.0 cornerRadius:buttonHeight * 0.2];
-        [remark setBackgroundColor:[UIColor darkGrayColor]];
-        [remark addTarget:self action:@selector(setPower) forControlEvents:UIControlEventTouchUpInside];
-        [_rightControlView addSubview:remark];
-        
-        UIButton *back = [[UIButton alloc] initWithFrame:CGRectMake(15, gap * 10 + buttonHeight * 9, 60, buttonHeight)];
-        [back setTitle:LocalString(@"返回") forState:UIControlStateNormal];
-        [back setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-        [back.titleLabel setFont:[UIFont systemFontOfSize:13.0]];
-        [back setButtonStyleWithColor:[UIColor clearColor] Width:1.0 cornerRadius:buttonHeight * 0.2];
-        [back setBackgroundColor:[UIColor darkGrayColor]];
-        [back addTarget:self action:@selector(dismissView) forControlEvents:UIControlEventTouchUpInside];
-        [_rightControlView addSubview:back];
     }
-    return _rightControlView;
+    return _backBtn;
 }
 
 - (void)uiMasonry{
-    [_bakeTime mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.size.mas_equalTo(CGSizeMake((ScreenHeight - 120)/3, 30));
-        make.top.mas_equalTo(self.view.mas_top);
-        make.left.mas_equalTo(_chartView.mas_left);
+    UILabel *bakeTimeL = [[UILabel alloc] init];
+    bakeTimeL.textAlignment = NSTextAlignmentLeft;
+    bakeTimeL.font = [UIFont fontWithName:@"PingFangSC-Light" size:12];
+    bakeTimeL.text = @"烘焙时间";
+    bakeTimeL.textColor = [UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1];
+    [self.view addSubview:bakeTimeL];
+    
+    UILabel *developRateL = [[UILabel alloc] init];
+    developRateL.textAlignment = NSTextAlignmentLeft;
+    developRateL.font = [UIFont fontWithName:@"PingFangSC-Light" size:12];
+    developRateL.text = @"发展率";
+    developRateL.textColor = [UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1];
+    [self.view addSubview:developRateL];
+    
+    UILabel *developTimeL = [[UILabel alloc] init];
+    developTimeL.textAlignment = NSTextAlignmentLeft;
+    developTimeL.font = [UIFont fontWithName:@"PingFangSC-Light" size:12];
+    developTimeL.text = @"发展时间";
+    developTimeL.textColor = [UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1];
+    [self.view addSubview:developTimeL];
+    
+    UILabel *beanTempLabelL = [[UILabel alloc] init];
+    beanTempLabelL.textAlignment = NSTextAlignmentLeft;
+    beanTempLabelL.font = [UIFont fontWithName:@"PingFangSC-Light" size:12];
+    beanTempLabelL.text = @"豆温";
+    beanTempLabelL.textColor = [UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1];
+    [self.view addSubview:beanTempLabelL];
+    
+    UIView *view1 = [[UIView alloc] init];
+    view1.frame = CGRectMake(282/HScale,17/WScale,5/HScale,5/WScale);
+    view1.backgroundColor = [UIColor colorWithRed:71/255.0 green:120/255.0 blue:204/255.0 alpha:1];
+    view1.layer.cornerRadius = 2.5f/WScale;
+    [self.view addSubview:view1];
+    
+    UILabel *inTempLabelL = [[UILabel alloc] init];
+    inTempLabelL.textAlignment = NSTextAlignmentLeft;
+    inTempLabelL.font = [UIFont fontWithName:@"PingFangSC-Light" size:12];
+    inTempLabelL.text = @"进风温";
+    inTempLabelL.textColor = [UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1];
+    [self.view addSubview:inTempLabelL];
+    
+    UIView *view2 = [[UIView alloc] init];
+    view2.frame = CGRectMake(357/HScale,17/WScale,5/HScale,5/WScale);
+    view2.backgroundColor = [UIColor colorWithRed:123/255.0 green:179/255.0 blue:64/255.0 alpha:1];
+    view2.layer.cornerRadius = 2.5f/WScale;
+    [self.view addSubview:view2];
+    
+    UILabel *outTempLabelL = [[UILabel alloc] init];
+    outTempLabelL.textAlignment = NSTextAlignmentLeft;
+    outTempLabelL.font = [UIFont fontWithName:@"PingFangSC-Light" size:12];
+    outTempLabelL.text = @"出风温";
+    outTempLabelL.textColor = [UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1];
+    [self.view addSubview:outTempLabelL];
+    
+    UIView *view3 = [[UIView alloc] init];
+    view3.frame = CGRectMake(432/HScale,17/WScale,5/HScale,5/WScale);
+    view3.backgroundColor = [UIColor colorWithRed:80/255.0 green:227/255.0 blue:194/255.0 alpha:1];
+    view3.layer.cornerRadius = 2.5f/WScale;
+    [self.view addSubview:view3];
+    
+    UILabel *environTempLabelL = [[UILabel alloc] init];
+    environTempLabelL.textAlignment = NSTextAlignmentLeft;
+    environTempLabelL.font = [UIFont fontWithName:@"PingFangSC-Light" size:12];
+    environTempLabelL.text = @"环境温";
+    environTempLabelL.textColor = [UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1];
+    [self.view addSubview:environTempLabelL];
+    
+    UIView *view4 = [[UIView alloc] init];
+    view4.frame = CGRectMake(507/HScale,17/WScale,5/HScale,5/WScale);
+    view4.backgroundColor = [UIColor colorWithRed:245/255.0 green:166/255.0 blue:35/255.0 alpha:1];
+    view4.layer.cornerRadius = 2.5f/WScale;
+    [self.view addSubview:view4];
+    
+    UILabel *beanTempRateLabelL = [[UILabel alloc] init];
+    beanTempRateLabelL.textAlignment = NSTextAlignmentLeft;
+    beanTempRateLabelL.font = [UIFont fontWithName:@"PingFangSC-Light" size:12];
+    beanTempRateLabelL.text = @"升温率";
+    beanTempRateLabelL.textColor = [UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1];
+    [self.view addSubview:beanTempRateLabelL];
+    
+    UIView *view5 = [[UIView alloc] init];
+    view5.frame = CGRectMake(582/HScale,17/WScale,5/HScale,5/WScale);
+    view5.backgroundColor = [UIColor colorWithRed:255/255.0 green:71/255.0 blue:51/255.0 alpha:1];
+    view5.layer.cornerRadius = 2.5f/WScale;
+    [self.view addSubview:view5];
+    
+    [bakeTimeL mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.size.mas_equalTo(CGSizeMake(48/HScale, 13/WScale));
+        make.top.mas_equalTo(self.view.mas_top).offset(13/WScale);
+        make.left.mas_equalTo(self.view.mas_left).offset(47/HScale);
     }];
-    [_developRate mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.size.mas_equalTo(CGSizeMake((ScreenHeight - 120)/3, 30));
-        make.top.mas_equalTo(self.view.mas_top);
-        make.centerX.mas_equalTo(_chartView.mas_centerX);
+    [_bakeTime mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.size.mas_equalTo(CGSizeMake(36/HScale, 13/WScale));
+        make.top.mas_equalTo(bakeTimeL.mas_bottom).offset(8/WScale);
+        make.left.mas_equalTo(self.view.mas_left).offset(47/HScale);
+    }];
+    
+    [developTimeL mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.size.mas_equalTo(CGSizeMake(48/HScale, 13/WScale));
+        make.top.mas_equalTo(self.view.mas_top).offset(13/WScale);
+        make.left.mas_equalTo(bakeTimeL.mas_right).offset(27/HScale);
     }];
     [_developTime mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.size.mas_equalTo(CGSizeMake((ScreenHeight - 120)/3, 30));
-        make.top.mas_equalTo(self.view.mas_top);
-        make.right.mas_equalTo(_chartView.mas_right);
+        make.size.mas_equalTo(CGSizeMake(37/HScale, 13/WScale));
+        make.top.mas_equalTo(developTimeL.mas_bottom).offset(8/WScale);
+        make.left.mas_equalTo(_bakeTime.mas_right).offset(39/HScale);
     }];
+    
+    [developRateL mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.size.mas_equalTo(CGSizeMake(36/HScale, 13/WScale));
+        make.top.mas_equalTo(self.view.mas_top).offset(13/WScale);
+        make.left.mas_equalTo(developTimeL.mas_right).offset(27/HScale);
+    }];
+    [_developRate mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.size.mas_equalTo(CGSizeMake(39/HScale, 13/WScale));
+        make.top.mas_equalTo(developRateL.mas_bottom).offset(8/WScale);
+        make.left.mas_equalTo(_developTime.mas_right).offset(37/HScale);
+    }];
+    
     UIView *separatorView = [[UIView alloc] init];
-    separatorView.backgroundColor = [UIColor greenColor];
+    separatorView.backgroundColor = [UIColor colorWithRed:0/255.0 green:0/255.0 blue:0/255.0 alpha:0.1];
     [self.view addSubview:separatorView];
     
     [separatorView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.size.mas_equalTo(CGSizeMake(ScreenHeight - 120, 10));
-        make.top.mas_equalTo(_bakeTime.mas_bottom);
-        make.centerX.mas_equalTo(self.view.mas_centerX);
+        make.size.mas_equalTo(CGSizeMake(0.5/HScale, 34/WScale));
+        make.top.mas_equalTo(self.view.mas_top).offset(13/WScale);
+        make.left.mas_equalTo(developRateL.mas_right).offset(24/HScale);
+    }];
+    
+    [beanTempLabelL mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.size.mas_equalTo(CGSizeMake(24/HScale, 13/WScale));
+        make.top.mas_equalTo(self.view.mas_top).offset(13/WScale);
+        make.left.mas_equalTo(developRateL.mas_right).offset(56/HScale);
     }];
     [_beanTempLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.size.mas_equalTo(CGSizeMake((ScreenHeight - 120)/5, 30));
-        make.top.mas_equalTo(separatorView.mas_bottom);
-        make.left.mas_equalTo(_chartView.mas_left);
+        make.size.mas_equalTo(CGSizeMake(52/HScale, 13/WScale));
+        make.top.mas_equalTo(beanTempLabelL.mas_bottom).offset(8/WScale);
+        make.left.mas_equalTo(_developRate.mas_right).offset(47/HScale);
+    }];
+    
+    [inTempLabelL mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.size.mas_equalTo(CGSizeMake(36/HScale, 13/WScale));
+        make.top.mas_equalTo(self.view.mas_top).offset(13/WScale);
+        make.left.mas_equalTo(beanTempLabelL.mas_right).offset(51/HScale);
     }];
     [_inTempLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.size.mas_equalTo(CGSizeMake((ScreenHeight - 120)/5, 30));
-        make.top.mas_equalTo(separatorView.mas_bottom);
-        make.left.mas_equalTo(_beanTempLabel.mas_right);
+        make.size.mas_equalTo(CGSizeMake(43/HScale, 13/WScale));
+        make.top.mas_equalTo(inTempLabelL.mas_bottom).offset(8/WScale);
+        make.left.mas_equalTo(_beanTempLabel.mas_right).offset(24/HScale);
+    }];
+    
+    [outTempLabelL mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.size.mas_equalTo(CGSizeMake(36/HScale, 13/WScale));
+        make.top.mas_equalTo(self.view.mas_top).offset(13/WScale);
+        make.left.mas_equalTo(inTempLabelL.mas_right).offset(39/HScale);
     }];
     [_outTempLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.size.mas_equalTo(CGSizeMake((ScreenHeight - 120)/5, 30));
-        make.top.mas_equalTo(separatorView.mas_bottom);
-        make.left.mas_equalTo(_inTempLabel.mas_right);
+        make.size.mas_equalTo(CGSizeMake(49/HScale, 13/WScale));
+        make.top.mas_equalTo(outTempLabelL.mas_bottom).offset(8/WScale);
+        make.left.mas_equalTo(_inTempLabel.mas_right).offset(32/HScale);
+    }];
+    
+    [environTempLabelL mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.size.mas_equalTo(CGSizeMake(36/HScale, 13/WScale));
+        make.top.mas_equalTo(self.view.mas_top).offset(13/WScale);
+        make.left.mas_equalTo(outTempLabelL.mas_right).offset(39/HScale);
     }];
     [_environTempLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.size.mas_equalTo(CGSizeMake((ScreenHeight - 120)/5, 30));
-        make.top.mas_equalTo(separatorView.mas_bottom);
-        make.left.mas_equalTo(_outTempLabel.mas_right);
+        make.size.mas_equalTo(CGSizeMake(49/HScale, 13/WScale));
+        make.top.mas_equalTo(environTempLabelL.mas_bottom).offset(8/WScale);
+        make.left.mas_equalTo(_outTempLabel.mas_right).offset(26/HScale);
+    }];
+    
+    [beanTempRateLabelL mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.size.mas_equalTo(CGSizeMake(36/HScale, 13/WScale));
+        make.top.mas_equalTo(self.view.mas_top).offset(13/WScale);
+        make.left.mas_equalTo(environTempLabelL.mas_right).offset(39/HScale);
     }];
     [_beanTempRateLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.size.mas_equalTo(CGSizeMake((ScreenHeight - 120)/5 + 20, 30));
-        make.top.mas_equalTo(separatorView.mas_bottom);
-        make.left.mas_equalTo(_environTempLabel.mas_right);
+        make.size.mas_equalTo(CGSizeMake(69/HScale, 13/WScale));
+        make.top.mas_equalTo(beanTempRateLabelL.mas_bottom).offset(8/WScale);
+        make.left.mas_equalTo(_environTempLabel.mas_right).offset(26/HScale);
     }];
     
     [_leftPopBtn mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -550,6 +527,37 @@
         make.right.equalTo(self.view.mas_right);
         make.centerY.equalTo(self.view.mas_centerY);
     }];
+    
+    //用来点击隐藏曲线，覆盖在温度文字上面
+    UIButton *beanBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    beanBtn.frame = CGRectMake(272/HScale,0,75/HScale,60/WScale);
+    [beanBtn setBackgroundColor:[UIColor clearColor]];
+    [beanBtn addTarget:self action:@selector(beanCurveAction) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:beanBtn];
+    
+    UIButton *inBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    inBtn.frame = CGRectMake(347/HScale,0,75/HScale,60/WScale);
+    [inBtn setBackgroundColor:[UIColor clearColor]];
+    [inBtn addTarget:self action:@selector(inCurveAction) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:inBtn];
+    
+    UIButton *outBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    outBtn.frame = CGRectMake(422/HScale,0,75/HScale,60/WScale);
+    [outBtn setBackgroundColor:[UIColor clearColor]];
+    [outBtn addTarget:self action:@selector(outCurveAction) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:outBtn];
+    
+    UIButton *environBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    environBtn.frame = CGRectMake(497/HScale,0,75/HScale,60/WScale);
+    [environBtn setBackgroundColor:[UIColor clearColor]];
+    [environBtn addTarget:self action:@selector(environCurveAction) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:environBtn];
+    
+    UIButton *upTempBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    upTempBtn.frame = CGRectMake(572/HScale,0,75/HScale,60/WScale);
+    [upTempBtn setBackgroundColor:[UIColor clearColor]];
+    [upTempBtn addTarget:self action:@selector(upTempCurveAction) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:upTempBtn];
 }
 
 #pragma mark - 设置横屏
@@ -571,40 +579,39 @@
 }
 
 - (void)popLeftControlView{
-    if (_leftControlView.tag == unselect) {
-        [UIView animateWithDuration:0.5 animations:^{
-            _leftControlView.frame = CGRectMake(20, 0, 90, ScreenHeight);
-            CGAffineTransform transform = CGAffineTransformMakeRotation(180 * M_PI / 180.0);
-            [_leftPopBtn setTransform:transform];
-        }];
-        _leftControlView.tag = select;
-    }else if (_leftControlView.tag == select){
-        [UIView animateWithDuration:0.5 animations:^{
-            _leftControlView.frame = CGRectMake(-90, 0, 90, ScreenHeight);
-            CGAffineTransform transform = CGAffineTransformMakeRotation(0 * M_PI / 180.0);
-            [_leftPopBtn setTransform:transform];
-        }];
-        _leftControlView.tag = unselect;
-    }
-    
+    LeftFuncController *lfVC = [[LeftFuncController alloc] init];
+    lfVC.modalPresentationStyle = UIModalPresentationOverCurrentContext;
+    lfVC.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+    [self presentViewController:lfVC animated:YES completion:nil];
+
 }
 
 - (void)popRightControlView{
-    if (_rightControlView.tag == unselect) {
-        [UIView animateWithDuration:0.5 animations:^{
-            _rightControlView.frame = CGRectMake(ScreenWidth - 110, 0, 90, ScreenHeight);
-            CGAffineTransform transform = CGAffineTransformMakeRotation(0 * M_PI / 180.0);
-            [_rightPopBtn setTransform:transform];
-        }];
-        _rightControlView.tag = select;
-    }else if (_rightControlView.tag == select){
-        [UIView animateWithDuration:0.5 animations:^{
-            _rightControlView.frame = CGRectMake(ScreenWidth, 0, 90, ScreenHeight);
-            CGAffineTransform transform = CGAffineTransformMakeRotation(-180 * M_PI / 180.0);
-            [_rightPopBtn setTransform:transform];
-        }];
-        _rightControlView.tag = unselect;
-    }
+    RightFuncController *rfVC = [[RightFuncController alloc] init];
+    rfVC.modalPresentationStyle = UIModalPresentationOverCurrentContext;
+    rfVC.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+    [self presentViewController:rfVC animated:YES completion:nil];
+
+}
+
+- (void)beanCurveAction{
+    NSLog(@"1");
+}
+
+- (void)inCurveAction{
+    NSLog(@"2");
+}
+
+- (void)outCurveAction{
+    NSLog(@"3");
+}
+
+- (void)environCurveAction{
+    NSLog(@"4");
+}
+
+- (void)upTempCurveAction{
+    NSLog(@"5");
 }
 
 - (void)setPower{
@@ -613,7 +620,6 @@
 
 - (void)setDataValue:(NSArray *)dataArray
 {
-    
     NSDictionary *tempDic = [NSObject readLocalFileWithName:@"数据"];
     NSArray *beanTemp = tempDic[@"temp2"];
     NSMutableArray *yVals = [NSMutableArray array];
@@ -662,7 +668,6 @@
     else
     {
         test = [[LineChartDataSet alloc] initWithValues:yVals label:LocalString(@"test")];
-        //set1 = [[LineChartDataSet alloc] initWithValues:— label:LocalString(@"进风温")];
         test.axisDependency = AxisDependencyLeft;
         [test setColor:[UIColor colorWithRed:51/255.f green:181/255.f blue:229/255.f alpha:1.f]];
         [test setCircleColor:UIColor.whiteColor];
@@ -676,15 +681,14 @@
         test.highlightEnabled = NO;//选中拐点,是否开启高亮效果(显示十字线)
         
         set1 = [[LineChartDataSet alloc] initWithValues:_myNet.yVals_Out label:LocalString(@"进风温")];
-        //set1 = [[LineChartDataSet alloc] initWithValues:— label:LocalString(@"进风温")];
         set1.axisDependency = AxisDependencyLeft;
-        [set1 setColor:[UIColor colorWithRed:51/255.f green:181/255.f blue:229/255.f alpha:1.f]];
+        [set1 setColor:[UIColor colorWithRed:123/255.0 green:179/255.0 blue:64/255.0 alpha:1]];
         [set1 setCircleColor:UIColor.whiteColor];
         set1.lineWidth = 2.0;
         set1.circleRadius = 0.0;
         set1.fillAlpha = 65/255.0;
-        set1.fillColor = [UIColor colorWithRed:51/255.f green:181/255.f blue:229/255.f alpha:1.f];
-        set1.highlightColor = [UIColor colorWithRed:244/255.f green:117/255.f blue:117/255.f alpha:1.f];
+        set1.fillColor = [UIColor colorWithRed:123/255.0 green:179/255.0 blue:64/255.0 alpha:1];
+        //set1.highlightColor = [UIColor colorWithRed:244/255.f green:117/255.f blue:117/255.f alpha:1.f];
         set1.drawCircleHoleEnabled = NO;
         set1.drawValuesEnabled = NO;//是否在拐点处显示数据
         //set1.cubicIntensity = 5;//曲线弧度
@@ -693,13 +697,12 @@
         
         set2 = [[LineChartDataSet alloc] initWithValues:_myNet.yVals_In label:LocalString(@"出风温")];
         set2.axisDependency = AxisDependencyLeft;
-        [set2 setColor:[UIColor colorWithRed:229/255.f green:181/255.f blue:51/255.f alpha:1.f]];
+        [set2 setColor:[UIColor colorWithRed:80/255.0 green:227/255.0 blue:194/255.0 alpha:1]];
         [set2 setCircleColor:UIColor.whiteColor];
         set2.lineWidth = 2.0;
         set2.circleRadius = 0.0;
         set2.fillAlpha = 65/255.0;
-        set2.fillColor = [UIColor colorWithRed:229/255.f green:181/255.f blue:51/255.f alpha:1.f];
-        set2.highlightColor = [UIColor colorWithRed:244/255.f green:117/255.f blue:117/255.f alpha:1.f];
+        set2.fillColor = [UIColor colorWithRed:80/255.0 green:227/255.0 blue:194/255.0 alpha:1];
         set2.drawCircleHoleEnabled = NO;
         set2.drawValuesEnabled = NO;//是否在拐点处显示数据
         //set1.cubicIntensity = 1;//曲线弧度
@@ -707,13 +710,12 @@
         
         set3 = [[LineChartDataSet alloc] initWithValues:_myNet.yVals_Bean label:LocalString(@"豆温")];
         set3.axisDependency = AxisDependencyLeft;
-        [set3 setColor:[UIColor greenColor]];
+        [set3 setColor:[UIColor colorWithRed:71/255.0 green:120/255.0 blue:204/255.0 alpha:1]];
         [set3 setCircleColor:UIColor.whiteColor];
         set3.lineWidth = 2.0;
         set3.circleRadius = 0.0;
         set3.fillAlpha = 65/255.0;
-        set3.fillColor = [UIColor colorWithRed:229/255.f green:181/255.f blue:51/255.f alpha:1.f];
-        set3.highlightColor = [UIColor colorWithRed:244/255.f green:117/255.f blue:117/255.f alpha:1.f];
+        set3.fillColor = [UIColor colorWithRed:71/255.0 green:120/255.0 blue:204/255.0 alpha:1];
         set3.drawCircleHoleEnabled = NO;
         set3.drawValuesEnabled = NO;//是否在拐点处显示数据
         //set1.cubicIntensity = 1;//曲线弧度
@@ -721,13 +723,12 @@
         
         set4 = [[LineChartDataSet alloc] initWithValues:_myNet.yVals_Environment label:LocalString(@"环境温")];
         set4.axisDependency = AxisDependencyLeft;
-        [set4 setColor:[UIColor yellowColor]];
+        [set4 setColor:[UIColor colorWithRed:245/255.0 green:166/255.0 blue:35/255.0 alpha:1]];
         [set4 setCircleColor:UIColor.whiteColor];
         set4.lineWidth = 2.0;
         set4.circleRadius = 0.0;
         set4.fillAlpha = 65/255.0;
-        set4.fillColor = [UIColor colorWithRed:229/255.f green:181/255.f blue:51/255.f alpha:1.f];
-        set4.highlightColor = [UIColor colorWithRed:244/255.f green:117/255.f blue:117/255.f alpha:1.f];
+        set4.fillColor = [UIColor colorWithRed:245/255.0 green:166/255.0 blue:35/255.0 alpha:1];
         set4.drawCircleHoleEnabled = NO;
         set4.drawValuesEnabled = NO;//是否在拐点处显示数据
         //set1.cubicIntensity = 1;//曲线弧度
@@ -761,22 +762,6 @@
 
 - (void)chartValueNothingSelected:(ChartViewBase * __nonnull)chartView
 {
-    //点击全屏
-//    if (isFullScreen) {
-//        [UIView animateWithDuration:0.5 animations:^{
-//            _chartView.frame = CGRectMake(ScreenWidth * 0.1, ScreenHeight * 0.15, ScreenWidth * 0.8, ScreenHeight * 0.7);
-//            //_chartView.center = self.view.center;
-//            //NSLog(@"pinggao%f",ScreenHeight);
-//            isFullScreen = NO;
-//        }];
-//    }else{
-//        [UIView animateWithDuration:0.5 animations:^{
-//            _chartView.frame = CGRectMake(0, 0, ScreenWidth, ScreenHeight);
-//            isFullScreen = YES;
-//            [NSObject showHudTipStr:LocalString(@"再次点击页面退出全屏")];
-//        }];
-//    }
-    
     NSLog(@"chartValueNothingSelected");
 }
 
