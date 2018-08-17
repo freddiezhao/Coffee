@@ -14,7 +14,6 @@
 #import "ESP_NetUtil.h"
 #import "ESPTouchDelegate.h"
 #import "ESPAES.h"
-#import "YAlertViewController.h"
 
 @interface EspTouchDelegateImpl : NSObject<ESPTouchDelegate>
 
@@ -22,28 +21,12 @@
 
 @implementation EspTouchDelegateImpl
 
--(void) dismissAlert:(UIAlertView *)alertView
-{
-    [alertView dismissWithClickedButtonIndex:[alertView cancelButtonIndex] animated:YES];
-}
-
--(void) showAlertWithResult: (ESPTouchResult *) result
-{
-    NSString *title = nil;
-    NSString *message = [NSString stringWithFormat:@"%@ is connected to the wifi" , result.bssid];
-    NSTimeInterval dismissSeconds = 3.5;
-    UIAlertView *alertView = [[UIAlertView alloc]initWithTitle:title message:message delegate:nil cancelButtonTitle:nil otherButtonTitles:nil];
-    //UIAlertController *alert = [UIAlertController alertControllerWithTitle:title message:message preferredStyle:UIAlertControllerStyleAlert];
-    [alertView show];
-    [self performSelector:@selector(dismissAlert:) withObject:alertView afterDelay:dismissSeconds];
-}
-
--(void) onEsptouchResultAddedWithResult: (ESPTouchResult *) result
+- (void) onEsptouchResultAddedWithResult: (ESPTouchResult *) result
 {
     NSLog(@"EspTouchDelegateImpl onEsptouchResultAddedWithResult bssid: %@", result.bssid);
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self showAlertWithResult:result];
-    });
+//    dispatch_async(dispatch_get_main_queue(), ^{
+//
+//    });
 }
 
 @end
@@ -217,24 +200,11 @@
                      [mutableStr appendString:[NSString stringWithFormat:@"\nthere's %lu more result(s) without showing\n",(unsigned long)([esptouchResultArray count] - count)]];
                      }
                      **/
-//                    UIAlertController *alert = [UIAlertController alertControllerWithTitle:LocalString(@"Execute Result") message:LocalString(@"Esptouch success") preferredStyle:UIAlertControllerStyleAlert];
-//                    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:LocalString(@"I know") style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
-//                        [self.navigationController popToViewController:[self.navigationController.viewControllers objectAtIndex:1] animated:YES];
-//                        NSLog(@"action = %@",action);
-//                    }];
-//                    [alert addAction:cancelAction];
-//                    [self presentViewController:alert animated:YES completion:nil];
                     [NSObject showHudTipStr:LocalString(@"连接成功，请进行设备的选择")];
                 }
                 
                 else
                 {
-//                    UIAlertController *alert = [UIAlertController alertControllerWithTitle:LocalString(@"Execute Result") message:LocalString(@"Esptouch fail") preferredStyle:UIAlertControllerStyleAlert];
-//                    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:LocalString(@"I know") style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
-//                        NSLog(@"action = %@",action);
-//                    }];
-//                    [alert addAction:cancelAction];
-//                    [self presentViewController:alert animated:YES completion:nil];
                     [self fail];
                 }
             }
@@ -313,6 +283,14 @@
         [NSObject showHudTipStr:LocalString(@"取消配置，你可以重新选择配置")];
     };
     alert.modalPresentationStyle = UIModalPresentationOverCurrentContext;
-    [self.navigationController presentViewController:alert animated:NO completion:nil];
+    [self presentViewController:alert animated:NO completion:^{
+        alert.WScale_alert = WScale;
+        alert.HScale_alert = HScale;
+        [alert showView];
+        alert.titleLabel.text = LocalString(@"添加过程中出现了小问题");
+        alert.messageLabel.text = LocalString(@"配置失败，请检测当前网络。请选择同一个Wi-Fi环境，再试一次吧~");
+        [alert.leftBtn setTitle:LocalString(@"以后再说") forState:UIControlStateNormal];
+        [alert.rightBtn setTitle:LocalString(@"重新添加") forState:UIControlStateNormal];
+    }];
 }
 @end

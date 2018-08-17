@@ -157,7 +157,22 @@
 
 #pragma mark - Actions
 - (void)startBake{
-    
+    YAlertViewController *alert = [[YAlertViewController alloc] init];
+    alert.lBlock = ^{
+    };
+    alert.rBlock = ^{
+    };
+    alert.modalPresentationStyle = UIModalPresentationOverCurrentContext;
+    [self presentViewController:alert animated:NO completion:^{
+        alert.WScale_alert = WScaleT;
+        NSLog(@"%f",alert.WScale_alert);
+        alert.HScale_alert = HScaleT;
+        [alert showView];
+        alert.titleLabel.text = LocalString(@"提示");
+        alert.messageLabel.text = LocalString(@"确认烘焙开始?");
+        [alert.leftBtn setTitle:LocalString(@"取消") forState:UIControlStateNormal];
+        [alert.rightBtn setTitle:LocalString(@"确认") forState:UIControlStateNormal];
+    }];
 }
 
 - (void)dismissVC{

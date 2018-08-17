@@ -8,6 +8,9 @@
 
 #import "NetWork.h"
 #import <Charts/Charts-Swift.h>
+#import "BeanModel.h"
+#import "FMDB.h"
+#import "EventModel.h"
 
 ///@brife 可判断的数据帧类型数量
 #define LEN 8
@@ -17,6 +20,7 @@
 
 static NetWork *_netWork = nil;
 static NSInteger gotTempCount = 0;
+static NSInteger curveId;
 
 @implementation NetWork
 
@@ -654,4 +658,139 @@ static NSInteger gotTempCount = 0;
     return returnVal;
 }
 
+#pragma mark - Global Actions
+- (void)showAlertAction{
+    YAlertViewController *alert = [[YAlertViewController alloc] init];
+    alert.modalPresentationStyle = UIModalPresentationOverCurrentContext;
+    [[self getCurrentVC] presentViewController:alert animated:NO completion:^{
+        if (ScreenWidth > ScreenHeight) {
+            alert.WScale_alert = 667.0 / ScreenWidth;
+            alert.HScale_alert = 375.0 / ScreenHeight;
+        }else{
+            alert.WScale_alert = WScale;
+            alert.HScale_alert = HScale;
+        }
+        [alert showView];
+        alert.titleLabel.text = LocalString(@"提示");
+        alert.messageLabel.text = LocalString(@"烘焙已结束，是否保存该烘焙曲线");
+        [alert.leftBtn setTitle:LocalString(@"取消") forState:UIControlStateNormal];
+        [alert.rightBtn setTitle:LocalString(@"确认") forState:UIControlStateNormal];
+    }];
+}
+
+- (void)bakeCompelete{    
+    //如果烘焙时间不再增加的话使用下行代码
+    [self removeObserver:self forKeyPath:@"timerValue"];
+    [self removeObserver:self forKeyPath:@"timeData"];
+    
+    DataBase *myDB = [DataBase shareDataBase];
+    
+    //曲线名字
+    NSString *curveName = @"";
+    if (_beanArray.count > 2) {
+        curveName = [NSString stringWithFormat:@"拼配豆(%@)",myDB.deviceName];
+    }else if (_beanArray.count == 1){
+        BeanModel *bean = _beanArray[0];
+        curveName = [NSString stringWithFormat:@"%@(%@)",bean.beanName,myDB.deviceName];
+    }
+    
+    //生豆重量
+    NSUInteger totolWeight = 0;
+    if (_beanArray) {
+        for (BeanModel *bean in _beanArray) {
+            totolWeight += bean.weight;
+        }
+    }
+    
+    //曲线数据
+    NSString *curveValueJson;
+    if (self.yVals_Out && self.yVals_In && self.yVals_Bean && self.yVals_Environment && self.yVals_Diff) {
+        NSArray *outTArray = [self.yVals_Out copy];
+        NSArray *inTArray = [self.yVals_In copy];
+        NSArray *beanTArray = [self.yVals_Bean copy];
+        NSArray *enTArray = [self.yVals_Environment copy];
+        NSArray *diffTArray = [self.yVals_Diff copy];
+        
+        NSDictionary *curveValueDic = @{@"out":outTArray,@"in":inTArray,@"bean":beanTArray,@"environment":enTArray,@"diff":diffTArray};
+        NSData *curveData = [NSJSONSerialization dataWithJSONObject:curveValueDic options:NSJSONWritingPrettyPrinted error:nil];
+        curveValueJson = [[NSString alloc] initWithData:curveData encoding:NSUTF8StringEncoding];
+    }
+    
+    //添加报告并更新数据的事务
+    [myDB.queueDB inTransaction:^(FMDatabase * _Nonnull db, BOOL * _Nonnull rollback) {
+        BOOL result = [db executeUpdate:@"INSERT INTO curveInfo (curveName,date,deviceName,rawBeanWeight,bakeBeanWeight,light,bakeTime,developTime,developRate,bakerName,curveValue) VALUES (?,?,?,?,?,?,?,?,?,?,?)",curveName,[NSDate localStringFromUTCDate:[NSDate date]],myDB.deviceName,totolWeight,@0,@0,_timerValue,_developTime,_developRate,myDB.userName,curveValueJson];
+        //test
+        //BOOL result = [db executeUpdate:@"INSERT INTO curveInfo (curveName,date,deviceName,rawBeanWeight,bakeBeanWeight,light,bakeTime,developTime,developRate,bakerName,curveValue) VALUES (?,?,?,?,?,?,?,?,?,?,?)",@"",[NSDate localStringFromUTCDate:[NSDate date]],@"",@0,@0,@0,@0,@0,@"",@"",@""];
+        if (!result) {
+            *rollback = YES;
+            return;
+        }
+        
+        FMResultSet *set = [db executeQuery:@"SELECT last_insert_rowid() FROM curveInfo"];
+        while ([set next]) {
+            curveId = [set intForColumnIndex:0];
+        }
+        NSLog(@"%ld",(long)curveId);
+        [set close];
+        
+        //插入曲线事件关联
+        for (int i = 0; i < _eventArray.count; i++) {
+            EventModel *event = _eventArray[i];
+            result = [db executeUpdate:@"INSERT INTO curve_event (curveId,eventId,eventTime,eventBeanTemp) VALUES (?,?,?,?)",curveId,event.eventId,event.eventTime,event.eventBeanTemp];
+            if (!result) {
+                *rollback = YES;
+                return;
+            }
+        }
+        
+        //插入曲线生豆关联
+        for (int i = 0; i < _beanArray.count; i++) {
+            BeanModel *bean = _beanArray[i];
+            result = [db executeUpdate:@"INSERT INTO bean_curve (beanId,curveId,beanWeight) VALUES (?,?,?)",bean.beanId,[NSNumber numberWithInteger:curveId],bean.weight];
+            if (!result) {
+                *rollback = YES;
+                return;
+            }
+        }
+    }];
+}
+
+//获取当前屏幕显示的viewcontroller
+- (UIViewController *)getCurrentVC
+{
+    UIViewController *rootViewController = [UIApplication sharedApplication].keyWindow.rootViewController;
+    
+    UIViewController *currentVC = [self getCurrentVCFrom:rootViewController];
+    
+    return currentVC;
+}
+
+- (UIViewController *)getCurrentVCFrom:(UIViewController *)rootVC
+{
+    UIViewController *currentVC;
+    
+    if ([rootVC presentedViewController]) {
+        // 视图是被presented出来的
+        
+        rootVC = [rootVC presentedViewController];
+    }
+    
+    if ([rootVC isKindOfClass:[UITabBarController class]]) {
+        // 根视图为UITabBarController
+        
+        currentVC = [self getCurrentVCFrom:[(UITabBarController *)rootVC selectedViewController]];
+        
+    } else if ([rootVC isKindOfClass:[UINavigationController class]]){
+        // 根视图为UINavigationController
+        
+        currentVC = [self getCurrentVCFrom:[(UINavigationController *)rootVC visibleViewController]];
+        
+    } else {
+        // 根视图为非导航类
+        
+        currentVC = rootVC;
+    }
+    
+    return currentVC;
+}
 @end

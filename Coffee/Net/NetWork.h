@@ -60,8 +60,6 @@ static NSInteger tempCountVer = 1000;
 
 ///@brief 计时器和计时总数
 @property (nonatomic, strong) NSTimer *myTimer;
-///@brief 计时器数据,app中所有计时都以秒为单位
-@property (nonatomic, assign) int timerValue;
 ///@brief 用于kvo
 @property (nonatomic, strong) NSArray *tempData;
 
@@ -71,9 +69,20 @@ static NSInteger tempCountVer = 1000;
 @property (nonatomic, strong) NSMutableArray *yVals_Bean;
 @property (nonatomic, strong) NSMutableArray *yVals_Environment;
 @property (nonatomic, strong) NSMutableArray *yVals_Diff;
+
+//曲线页面数据全局化
+///@brief 每次烘焙添加的豆数组
+@property (nonatomic, strong) NSArray *beanArray;
+///@brief 发展时间发展率
+@property (nonatomic) NSInteger developTime;
+@property (nonatomic, strong) NSString *developRate;
+///@brief 计时器数据,app中所有计时都以秒为单位
+@property (nonatomic, assign) int timerValue;
+///@brief 事件数组
+@property (nonatomic, strong) NSArray *eventArray;
+
+///@brief 帧计数器
 @property (nonatomic, assign) UInt8 frameCount;
-
-
 
 ///@brief 单例模式
 + (instancetype)shareNetWork;
