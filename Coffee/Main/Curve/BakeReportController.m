@@ -10,14 +10,18 @@
 #import "BeanModel.h"
 #import "ReportModel.h"
 #import "EventModel.h"
+#import "TouchTableView.h"
+#import "ReportLightCell.h"
+#import "BeanHeaderCell.h"
+#import "BeanInfoCell.h"
 
-@interface BakeReportController () <UIScrollViewDelegate>
+NSString *const CellIdentifier_reportLight = @"CellID_reportLight";
+NSString *const CellIdentifier_reportBeanHeader = @"CellID_reportBeanHeader";
+NSString *const CellIdentifier_reportBeanInfo = @"CellID_reportBeanInfo";
 
-@property (nonatomic, strong) UIScrollView *baseScrollView;
-@property (nonatomic, strong) UIScrollView *firstReport;
-@property (nonatomic, strong) UIScrollView *secondReport;
-@property (nonatomic, strong) UIScrollView *thirdReport;
-@property (nonatomic, strong) UIScrollView *fourthReport;
+@interface BakeReportController () <UITableViewDelegate,UITableViewDataSource>
+
+@property (nonatomic, strong) UITableView *reportTable;
 
 @property (nonatomic, strong) NSArray *beanArray;
 @property (nonatomic, strong) ReportModel *reportModel;
@@ -28,20 +32,15 @@
 @property (nonatomic, strong) NSMutableArray *yVals_Bean;
 @property (nonatomic, strong) NSMutableArray *yVals_Environment;
 @property (nonatomic, strong) NSMutableArray *yVals_Diff;
+
 @end
 
 @implementation BakeReportController
-static int const footHeight = 30;
-static int const maxContentOffSet_Y = 60;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-        
-    _baseScrollView = [self baseScrollView];
-    _firstReport = [self firstReport];
-    _secondReport = [self secondReport];
-    _thirdReport = [self thirdReport];
-    _fourthReport = [self fourthReport];
+    
+    _reportTable = [self reportTable];
 }
 
 - (void)viewWillAppear:(BOOL)animated{
@@ -49,187 +48,164 @@ static int const maxContentOffSet_Y = 60;
     [self.rdv_tabBarController setTabBarHidden:YES animated:YES];
 }
 
-#pragma mark - Lazyload
-- (UIScrollView *)baseScrollView{
-    if (!_baseScrollView) {
-        _baseScrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, ScreenWidth, ScreenHeight)];
-        _baseScrollView.contentSize = CGSizeMake(ScreenWidth, ScreenHeight * 4);
-        _baseScrollView.contentInset = UIEdgeInsetsMake(footHeight, 0, footHeight, 0);
-        
-        _baseScrollView.pagingEnabled = YES;
-        _baseScrollView.showsVerticalScrollIndicator = NO;
-        _baseScrollView.scrollEnabled = NO;
-        
-        [self.view addSubview:_baseScrollView];
+#pragma mark - lazy load
+- (UITableView *)reportTable{
+    if (!_reportTable) {
+        _reportTable = ({
+            TouchTableView *tableView = [[TouchTableView alloc] initWithFrame:CGRectMake(0, 0, ScreenWidth, ScreenHeight) style:UITableViewStylePlain];
+            tableView.backgroundColor = [UIColor clearColor];
+            tableView.dataSource = self;
+            tableView.delegate = self;
+            //tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+            [tableView registerClass:[ReportLightCell class] forCellReuseIdentifier:CellIdentifier_reportLight];
+            [tableView registerClass:[BeanHeaderCell class] forCellReuseIdentifier:CellIdentifier_reportBeanHeader];
+            [tableView registerClass:[BeanInfoCell class] forCellReuseIdentifier:CellIdentifier_reportBeanInfo];
+            [self.view addSubview:tableView];
+            tableView.estimatedRowHeight = 0;
+            tableView.estimatedSectionHeaderHeight = 0;
+            tableView.estimatedSectionFooterHeight = 0;
+            //tableView.scrollEnabled = NO;
+//            if ([tableView respondsToSelector:@selector(setSeparatorInset:)]) {
+//                [tableView setSeparatorInset:UIEdgeInsetsZero];
+//            }
+//            if ([tableView respondsToSelector:@selector(setLayoutMargins:)])  {
+//                [tableView setLayoutMargins:UIEdgeInsetsZero];
+//            }
+            tableView;
+        });
     }
-    return _baseScrollView;
+    return _reportTable;
 }
 
-- (UIScrollView *)firstReport{
-    if (!_firstReport) {
-        _firstReport = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, ScreenWidth, ScreenHeight - 64)];
-        _firstReport.backgroundColor = [UIColor clearColor];
-        _firstReport.contentSize = CGSizeMake(ScreenWidth, ScreenHeight);
-        //_firstReport.contentInset = UIEdgeInsetsMake(footHeight, 0, footHeight, 0);
-        _firstReport.showsVerticalScrollIndicator = NO;
-        _firstReport.tag = 1001;
-        _firstReport.delegate = self;
-        
-        UILabel *headLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, -footHeight, ScreenWidth, footHeight)];
-        headLabel.text = LocalString(@"这是第一页了^_^");
-        headLabel.backgroundColor = [UIColor clearColor];
-        headLabel.textAlignment = NSTextAlignmentCenter;
-        [_firstReport addSubview:headLabel];
-        
-        UILabel *footLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, ScreenHeight, ScreenWidth, footHeight)];
-        footLabel.text = LocalString(@"下拉查看更多");
-        footLabel.backgroundColor = [UIColor clearColor];
-        footLabel.textAlignment = NSTextAlignmentCenter;
-        [_firstReport addSubview:footLabel];
-        
-        [_baseScrollView addSubview:_firstReport];
-        [_baseScrollView bringSubviewToFront:_firstReport];
-        
-        UILabel *test = [[UILabel alloc] initWithFrame:CGRectMake(0, 100, 80, footHeight)];
-        test.text = LocalString(@"1");
-        test.backgroundColor = [UIColor clearColor];
-        test.textAlignment = NSTextAlignmentCenter;
-        [_firstReport addSubview:test];
-    }
-    return _firstReport;
+#pragma mark - uitableview
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView{
+    return 2;
 }
 
-- (UIScrollView *)secondReport{
-    if (!_secondReport) {
-        _secondReport = [[UIScrollView alloc] initWithFrame:CGRectMake(0, ScreenHeight, ScreenWidth, ScreenHeight - 64)];
-        _secondReport.backgroundColor = [UIColor clearColor];
-        _secondReport.contentSize = CGSizeMake(ScreenWidth, ScreenHeight);
-        //_secondReport.contentInset = UIEdgeInsetsMake(footHeight, 0, footHeight, 0);
-        _secondReport.showsVerticalScrollIndicator = NO;
-        _secondReport.tag = 1002;
-        _secondReport.delegate = self;
-        
-        UILabel *headLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, -footHeight, ScreenWidth, footHeight)];
-        headLabel.text = LocalString(@"上拉回到上一页");
-        headLabel.backgroundColor = [UIColor clearColor];
-        headLabel.textAlignment = NSTextAlignmentCenter;
-        [_secondReport addSubview:headLabel];
-        
-        UILabel *footLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, ScreenHeight, ScreenWidth, footHeight)];
-        footLabel.text = LocalString(@"下拉查看更多");
-        footLabel.backgroundColor = [UIColor clearColor];
-        footLabel.textAlignment = NSTextAlignmentCenter;
-        [_secondReport addSubview:footLabel];
-        
-        [_baseScrollView addSubview:_secondReport];
-        [_baseScrollView bringSubviewToFront:_secondReport];
-        
-        UILabel *test = [[UILabel alloc] initWithFrame:CGRectMake(0, 100, 80, footHeight)];
-        test.text = LocalString(@"2");
-        test.backgroundColor = [UIColor clearColor];
-        test.textAlignment = NSTextAlignmentCenter;
-        [_secondReport addSubview:test];
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    switch (section) {
+        case 0:
+            return 1;
+            break;
+            
+        case 1:
+            return 2;
+            break;
+            
+        default:
+            return 0;
+            break;
     }
-    return _secondReport;
-}
-
-- (UIView *)thirdReport{
-    if (!_thirdReport) {
-        _thirdReport = [[UIScrollView alloc] initWithFrame:CGRectMake(0, ScreenHeight * 2, ScreenWidth, ScreenHeight - 64)];
-        _thirdReport.backgroundColor = [UIColor clearColor];
-        _thirdReport.contentSize = CGSizeMake(ScreenWidth, ScreenHeight);
-        //_thirdReport.contentInset = UIEdgeInsetsMake(footHeight, 0, footHeight, 0);
-        _thirdReport.showsVerticalScrollIndicator = NO;
-        _thirdReport.tag = 1003;
-        _thirdReport.delegate = self;
-        
-        UILabel *headLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, -footHeight, ScreenWidth, footHeight)];
-        headLabel.text = LocalString(@"上拉回到上一页");
-        headLabel.backgroundColor = [UIColor clearColor];
-        headLabel.textAlignment = NSTextAlignmentCenter;
-        [_thirdReport addSubview:headLabel];
-        
-        UILabel *footLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, ScreenHeight, ScreenWidth, footHeight)];
-        footLabel.text = LocalString(@"下拉查看更多");
-        footLabel.backgroundColor = [UIColor clearColor];
-        footLabel.textAlignment = NSTextAlignmentCenter;
-        [_thirdReport addSubview:footLabel];
-        
-        [_baseScrollView addSubview:_thirdReport];
-        [_baseScrollView bringSubviewToFront:_thirdReport];
-        
-        UILabel *test = [[UILabel alloc] initWithFrame:CGRectMake(0, 100, 80, footHeight)];
-        test.text = LocalString(@"3");
-        test.backgroundColor = [UIColor clearColor];
-        test.textAlignment = NSTextAlignmentCenter;
-        [_thirdReport addSubview:test];
-    }
-    return _thirdReport;
-}
-
--(UIScrollView *)fourthReport{
-    if (!_fourthReport) {
-        _fourthReport = [[UIScrollView alloc] initWithFrame:CGRectMake(0, ScreenHeight * 3, ScreenWidth, ScreenHeight - 64)];
-        _fourthReport.backgroundColor = [UIColor clearColor];
-        _fourthReport.contentSize = CGSizeMake(ScreenWidth, ScreenHeight);
-        //_fourthReport.contentInset = UIEdgeInsetsMake(footHeight, 0, footHeight, 0);
-        _fourthReport.showsVerticalScrollIndicator = NO;
-        _fourthReport.tag = 1004;
-        _fourthReport.delegate = self;
-        
-        UILabel *headLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, -footHeight, ScreenWidth, footHeight)];
-        headLabel.text = LocalString(@"上拉回到上一页");
-        headLabel.backgroundColor = [UIColor clearColor];
-        headLabel.textAlignment = NSTextAlignmentCenter;
-        [_fourthReport addSubview:headLabel];
-        
-        UILabel *footLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, ScreenHeight * 4, ScreenWidth, footHeight)];
-        footLabel.text = LocalString(@"已经最后一页了");
-        footLabel.backgroundColor = [UIColor clearColor];
-        footLabel.textAlignment = NSTextAlignmentCenter;
-        [_fourthReport addSubview:footLabel];
-        
-        [_baseScrollView addSubview:_fourthReport];
-        [_baseScrollView bringSubviewToFront:_fourthReport];
-    }
-    return _fourthReport;
-}
-
-#pragma mark - UIScrollView Delegate
-- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate{
-    //当前显示区域顶点相对于frame顶点的偏移量
-    CGFloat offsetY = scrollView.contentOffset.y;
-    CGFloat value = scrollView.contentSize.height - ScreenHeight;
-    NSLog(@"%f",value);
-    NSLog(@"%f",offsetY);
     
-    if (offsetY > 0) {
-        if ((offsetY - value - 64) > maxContentOffSet_Y && scrollView.tag != 1004) {
-            [self gotoNextView];
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
+    switch (indexPath.section) {
+        case 0:
+            return 201.f/HScale;
+            break;
+            
+        case 1:
+            {
+                if (indexPath.row == 0) {
+                    return 70.f/HScale;
+                }else{
+                    return 159.f/HScale;
+                }
+                
+            }
+            
+            break;
+            
+        default:
+            return 0;
+            break;
+    }
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
+    if (indexPath.section == 0) {
+        ReportLightCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_reportLight];
+        if (cell == nil) {
+            cell = [[ReportLightCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_reportLight];
+        }
+        cell.lightValue.text = LocalString(@"60");
+        cell.bakeDate.text = LocalString(@"烘焙日期:2018-08-04");
+        cell.deviceName.text = LocalString(@"设备:HB-M6G咖啡烘焙机");
+        return cell;
+    }else if (indexPath.section == 1){
+        if (indexPath.row == 0) {
+            BeanHeaderCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_reportBeanHeader];
+            if (cell == nil) {
+                cell = [[BeanHeaderCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_reportBeanHeader];
+            }
+            cell.beanNameLabel.text = LocalString(@"样品豆、蓝山豆、拿铁豆、越南豆");
+            cell.rawBean.text = LocalString(@"生豆:100.0g");
+            cell.bakedBean.text = LocalString(@"熟豆:22.0g");
+            cell.outWaterRate.text = LocalString(@"脱水率:78.0%");
+            
+            return cell;
+        }else{
+            BeanInfoCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_reportBeanInfo];
+            if (cell == nil) {
+                cell = [[BeanInfoCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_reportBeanInfo];
+            }
+            return cell;
         }
     }else{
-        if ((-offsetY - value) > maxContentOffSet_Y && scrollView.tag != 1001) {
-            [self gotoFrontView];
+        UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"asdf"];
+        if (cell == nil) {
+            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"asdf"];
         }
+        
+        return cell;
     }
     
 }
 
-#pragma mark - Actions
-- (void)gotoNextView{
-    CGPoint contentOffSet = _baseScrollView.contentOffset;
-    
-    contentOffSet.y += ScreenHeight;
-    
-    [_baseScrollView setContentOffset:contentOffSet];
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
-- (void)gotoFrontView{
-    CGPoint contentOffSet = _baseScrollView.contentOffset;
-    
-    contentOffSet.y -= ScreenHeight;
-    
-    [_baseScrollView setContentOffset:contentOffSet];
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
+    switch (section) {
+        case 0:
+            {
+                UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, ScreenWidth, 0.5/HScale)];
+                headerView.layer.backgroundColor = [UIColor colorWithRed:0/255.0 green:0/255.0 blue:0/255.0 alpha:0.1].CGColor;
+                return headerView;
+            }
+            break;
+            
+        case 1:
+            {
+                UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, ScreenWidth, 10/HScale)];
+                headerView.layer.backgroundColor = [UIColor colorWithRed:246/255.0 green:246/255.0 blue:246/255.0 alpha:1].CGColor;
+                return headerView;
+            }
+            break;
+            
+        default:
+            return nil;
+            break;
+    }
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
+    switch (section) {
+        case 0:
+            return 0.5/HScale;
+            break;
+            
+        case 1:
+            return 10/HScale;
+            break;
+            
+        default:
+            return 0.f;
+            break;
+    }
 }
 
 #pragma mark - DataSource
