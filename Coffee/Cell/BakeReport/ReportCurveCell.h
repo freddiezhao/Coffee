@@ -9,8 +9,15 @@
 #import <UIKit/UIKit.h>
 #import <Charts/Charts-Swift.h>
 
-@interface ReportCurveCell : UITableViewCell
+@interface ReportCurveCell : UITableViewCell <ChartViewDelegate>
 
 @property (nonatomic, strong) LineChartView *chartView;
 
+@property (nonatomic, strong) NSMutableArray *yVals_Out;
+@property (nonatomic, strong) NSMutableArray *yVals_In;
+@property (nonatomic, strong) NSMutableArray *yVals_Bean;
+@property (nonatomic, strong) NSMutableArray *yVals_Environment;
+@property (nonatomic, strong) NSMutableArray *yVals_Diff;
+
+- (void)setDataValue;
 @end

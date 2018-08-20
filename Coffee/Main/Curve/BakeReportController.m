@@ -14,10 +14,16 @@
 #import "ReportLightCell.h"
 #import "BeanHeaderCell.h"
 #import "BeanInfoCell.h"
+#import "ReportCurveCell.h"
+#import "CollectInfoCell.h"
+#import "TempPer30sCell.h"
 
 NSString *const CellIdentifier_reportLight = @"CellID_reportLight";
 NSString *const CellIdentifier_reportBeanHeader = @"CellID_reportBeanHeader";
 NSString *const CellIdentifier_reportBeanInfo = @"CellID_reportBeanInfo";
+NSString *const CellIdentifier_reportCurve = @"CellID_reportCurve";
+NSString *const CellIdentifier_collect = @"CellID_collect";
+NSString *const CellIdentifier_TempPer30 = @"CellID_TempPer30";
 
 @interface BakeReportController () <UITableViewDelegate,UITableViewDataSource>
 
@@ -52,7 +58,7 @@ NSString *const CellIdentifier_reportBeanInfo = @"CellID_reportBeanInfo";
 - (UITableView *)reportTable{
     if (!_reportTable) {
         _reportTable = ({
-            TouchTableView *tableView = [[TouchTableView alloc] initWithFrame:CGRectMake(0, 0, ScreenWidth, ScreenHeight) style:UITableViewStylePlain];
+            TouchTableView *tableView = [[TouchTableView alloc] initWithFrame:CGRectMake(0, 0, ScreenWidth, ScreenHeight - 64) style:UITableViewStylePlain];
             tableView.backgroundColor = [UIColor clearColor];
             tableView.dataSource = self;
             tableView.delegate = self;
@@ -60,6 +66,9 @@ NSString *const CellIdentifier_reportBeanInfo = @"CellID_reportBeanInfo";
             [tableView registerClass:[ReportLightCell class] forCellReuseIdentifier:CellIdentifier_reportLight];
             [tableView registerClass:[BeanHeaderCell class] forCellReuseIdentifier:CellIdentifier_reportBeanHeader];
             [tableView registerClass:[BeanInfoCell class] forCellReuseIdentifier:CellIdentifier_reportBeanInfo];
+            [tableView registerClass:[ReportCurveCell class] forCellReuseIdentifier:CellIdentifier_reportCurve];
+            [tableView registerClass:[CollectInfoCell class] forCellReuseIdentifier:CellIdentifier_collect];
+            [tableView registerClass:[TempPer30sCell class] forCellReuseIdentifier:CellIdentifier_TempPer30];
             [self.view addSubview:tableView];
             tableView.estimatedRowHeight = 0;
             tableView.estimatedSectionHeaderHeight = 0;
@@ -79,7 +88,7 @@ NSString *const CellIdentifier_reportBeanInfo = @"CellID_reportBeanInfo";
 
 #pragma mark - uitableview
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView{
-    return 2;
+    return 5;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
@@ -90,6 +99,18 @@ NSString *const CellIdentifier_reportBeanInfo = @"CellID_reportBeanInfo";
             break;
             
         case 1:
+            return 2;
+            break;
+            
+        case 2:
+            return 1;
+            break;
+            
+        case 3:
+            return 1;
+            break;
+            
+        case 4:
             return 2;
             break;
             
@@ -116,6 +137,18 @@ NSString *const CellIdentifier_reportBeanInfo = @"CellID_reportBeanInfo";
                 
             }
             
+            break;
+            
+        case 2:
+            return 202.f/HScale;
+            break;
+            
+        case 3:
+            return 1072.f/HScale;
+            break;
+            
+        case 4:
+            return 2 * 36;
             break;
             
         default:
@@ -153,6 +186,41 @@ NSString *const CellIdentifier_reportBeanInfo = @"CellID_reportBeanInfo";
             }
             return cell;
         }
+    }else if (indexPath.section == 2){
+        ReportCurveCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_reportCurve];
+        if (cell == nil) {
+            cell = [[ReportCurveCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_reportCurve];
+        }
+        [cell setDataValue];
+        return cell;
+    }else if (indexPath.section == 3){
+        CollectInfoCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_collect];
+        if (cell == nil) {
+            cell = [[CollectInfoCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_collect];
+        }
+        
+        return cell;
+    }else if (indexPath.section == 4){
+        TempPer30sCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_TempPer30];
+        if (cell == nil) {
+            cell = [[TempPer30sCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_TempPer30];
+        }
+        if (indexPath.row == 0) {
+            cell.Label1.text = LocalString(@"时间");
+            cell.Label2.text = LocalString(@"豆温(°C)");
+            cell.Label3.text = LocalString(@"进风温(°C)");
+            cell.Label4.text = LocalString(@"出风温(°C)");
+            cell.Label5.text = LocalString(@"环境温(°C)");
+            cell.Label6.text = LocalString(@"升温率(°C/min)");
+        }else{
+            cell.Label1.text = LocalString(@"00:00");
+            cell.Label2.text = LocalString(@"1");
+            cell.Label3.text = LocalString(@"1");
+            cell.Label4.text = LocalString(@"1");
+            cell.Label5.text = LocalString(@"1");
+            cell.Label6.text = LocalString(@"1");
+        }
+        return cell;
     }else{
         UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"asdf"];
         if (cell == nil) {
@@ -179,12 +247,16 @@ NSString *const CellIdentifier_reportBeanInfo = @"CellID_reportBeanInfo";
             break;
             
         case 1:
+        case 2:
+        case 3:
+        case 4:
             {
                 UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, ScreenWidth, 10/HScale)];
                 headerView.layer.backgroundColor = [UIColor colorWithRed:246/255.0 green:246/255.0 blue:246/255.0 alpha:1].CGColor;
                 return headerView;
             }
             break;
+            
             
         default:
             return nil;
@@ -199,6 +271,8 @@ NSString *const CellIdentifier_reportBeanInfo = @"CellID_reportBeanInfo";
             break;
             
         case 1:
+        case 2:
+        case 3:
             return 10/HScale;
             break;
             
