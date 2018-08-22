@@ -13,5 +13,6 @@
 
 @property (nonatomic, strong) ReportModel *reportModel;
 @property (nonatomic, strong) UICollectionView *curveCollectView;
+@property (nonatomic, strong) NSArray *eventArray;
 
 @end

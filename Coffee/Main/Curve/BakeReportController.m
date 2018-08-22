@@ -2,6 +2,8 @@
 //  BakeReportController.m
 //  Coffee
 //
+//如果从后台更新的话把所有数据存到本地数据库，然后再从数据库获取信息显示，也就是所有的信息只从本地sqlite取
+//
 //  Created by 杭州轨物科技有限公司 on 2018/7/29.
 //  Copyright © 2018年 杭州轨物科技有限公司. All rights reserved.
 //
@@ -45,6 +47,7 @@ NSString *const CellIdentifier_TempPer30 = @"CellID_TempPer30";
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    self.navigationItem.title = LocalString(@"烘焙报告");
     
     _reportTable = [self reportTable];
 }
@@ -99,7 +102,7 @@ NSString *const CellIdentifier_TempPer30 = @"CellID_TempPer30";
             break;
             
         case 1:
-            return 2;
+            return 1 + _beanArray.count;
             break;
             
         case 2:
@@ -111,7 +114,7 @@ NSString *const CellIdentifier_TempPer30 = @"CellID_TempPer30";
             break;
             
         case 4:
-            return 2;
+            return _yVals_Bean.count / 30 + 1;
             break;
             
         default:
@@ -148,7 +151,7 @@ NSString *const CellIdentifier_TempPer30 = @"CellID_TempPer30";
             break;
             
         case 4:
-            return 2 * 36;
+            return 36.f/HScale;
             break;
             
         default:
@@ -163,9 +166,21 @@ NSString *const CellIdentifier_TempPer30 = @"CellID_TempPer30";
         if (cell == nil) {
             cell = [[ReportLightCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_reportLight];
         }
-        cell.lightValue.text = LocalString(@"60");
-        cell.bakeDate.text = LocalString(@"烘焙日期:2018-08-04");
-        cell.deviceName.text = LocalString(@"设备:HB-M6G咖啡烘焙机");
+        if (_reportModel.light) {
+            cell.lightValue.text = [NSString stringWithFormat:@"%ld",_reportModel.light];
+        }else{
+            cell.lightValue.text = LocalString(@"?");
+        }
+        if (_reportModel.date) {
+            cell.bakeDate.text = [NSString stringWithFormat:@"%@%@",LocalString(@"烘焙日期:"),[NSDate localStringFromUTCDate:_reportModel.date]];
+        }else{
+            cell.bakeDate.text = LocalString(@"烘焙日期:1970-01-01");
+        }
+        if (_reportModel.deviceName) {
+            cell.deviceName.text = _reportModel.deviceName;
+        }else{
+            cell.deviceName.text = LocalString(@"设备:未知");
+        }
         return cell;
     }else if (indexPath.section == 1){
         if (indexPath.row == 0) {
@@ -173,16 +188,78 @@ NSString *const CellIdentifier_TempPer30 = @"CellID_TempPer30";
             if (cell == nil) {
                 cell = [[BeanHeaderCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_reportBeanHeader];
             }
-            cell.beanNameLabel.text = LocalString(@"样品豆、蓝山豆、拿铁豆、越南豆");
-            cell.rawBean.text = LocalString(@"生豆:100.0g");
-            cell.bakedBean.text = LocalString(@"熟豆:22.0g");
-            cell.outWaterRate.text = LocalString(@"脱水率:78.0%");
-            
+            if (_beanArray.count>0) {
+                NSString *nameString = LocalString(@"");
+                for (BeanModel *model in _beanArray) {
+                    nameString = [nameString stringByAppendingString:[NSString stringWithFormat:@"%@、",model.beanName]];
+                }
+                cell.beanNameLabel.text = [nameString substringToIndex:[nameString length]-1];
+                cell.rawBean.text = [NSString stringWithFormat:@"%@%ld",LocalString(@"生豆:"),_reportModel.rawBeanWeight];
+                cell.bakedBean.text = [NSString stringWithFormat:@"%@%ld",LocalString(@"熟豆:"),_reportModel.bakeBeanWeight];
+                cell.outWaterRate.text = [NSString stringWithFormat:@"%@%@",LocalString(@"脱水率:"),_reportModel.outWaterRate];
+            }else{
+                cell.beanNameLabel.text = LocalString(@"未添加豆种");
+                cell.rawBean.text = LocalString(@"生豆:?");
+                cell.bakedBean.text = LocalString(@"熟豆:?");
+                cell.outWaterRate.text = LocalString(@"脱水率:?");
+            }
             return cell;
         }else{
             BeanInfoCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_reportBeanInfo];
             if (cell == nil) {
                 cell = [[BeanInfoCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_reportBeanInfo];
+            }
+            for (BeanModel *bean in _beanArray) {
+                if (bean.beanName) {
+                    cell.beanName.text = bean.beanName;
+                }else{
+                    cell.beanName.text = LocalString(@"未知");
+                }
+                if (bean.nation) {
+                    cell.nation.text = bean.nation;
+                }else{
+                    cell.nation.text = LocalString(@"未知");
+                }
+                if (bean.area) {
+                    cell.area.text = bean.area;
+                }else{
+                    cell.area.text = LocalString(@"未知");
+                }
+                if (bean.altitude) {
+                    cell.altitude.text = bean.altitude;
+                }else{
+                    cell.altitude.text = LocalString(@"未知");
+                }
+                if (bean.manor) {
+                    cell.manor.text = bean.manor;
+                }else{
+                    cell.manor.text = LocalString(@"未知");
+                }
+                if (bean.beanSpecies) {
+                    cell.beanSpecies.text = bean.beanSpecies;
+                }else{
+                    cell.beanSpecies.text = LocalString(@"未知");
+                }
+                if (bean.grade) {
+                    cell.grade.text = bean.grade;
+                }else{
+                    cell.grade.text = LocalString(@"未知");
+                }
+                if (bean.process) {
+                    cell.process.text = bean.process;
+                }else{
+                    cell.process.text = LocalString(@"未知");
+                }
+                if (bean.water) {
+                    cell.water.text = bean.water;
+                }else{
+                    cell.water.text = LocalString(@"未知");
+                }
+                if (bean.weight) {
+                    cell.weight.text = [NSString stringWithFormat:@"%ld",bean.weight];
+                }else{
+                    cell.weight.text = LocalString(@"未知");
+                }
             }
             return cell;
         }
@@ -191,6 +268,11 @@ NSString *const CellIdentifier_TempPer30 = @"CellID_TempPer30";
         if (cell == nil) {
             cell = [[ReportCurveCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_reportCurve];
         }
+        cell.yVals_In = _yVals_In;
+        cell.yVals_Out = _yVals_Out;
+        cell.yVals_Bean = _yVals_Bean;
+        cell.yVals_Environment = _yVals_Environment;
+        cell.yVals_Diff = _yVals_Diff;
         [cell setDataValue];
         return cell;
     }else if (indexPath.section == 3){
@@ -198,7 +280,8 @@ NSString *const CellIdentifier_TempPer30 = @"CellID_TempPer30";
         if (cell == nil) {
             cell = [[CollectInfoCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_collect];
         }
-        
+        cell.reportModel = _reportModel;
+        cell.eventArray = [_eventArray copy];
         return cell;
     }else if (indexPath.section == 4){
         TempPer30sCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_TempPer30];
@@ -211,14 +294,37 @@ NSString *const CellIdentifier_TempPer30 = @"CellID_TempPer30";
             cell.Label3.text = LocalString(@"进风温(°C)");
             cell.Label4.text = LocalString(@"出风温(°C)");
             cell.Label5.text = LocalString(@"环境温(°C)");
-            cell.Label6.text = LocalString(@"升温率(°C/min)");
+            cell.Label6.text = LocalString(@"升温率\n(°C/min)");
         }else{
-            cell.Label1.text = LocalString(@"00:00");
-            cell.Label2.text = LocalString(@"1");
-            cell.Label3.text = LocalString(@"1");
-            cell.Label4.text = LocalString(@"1");
-            cell.Label5.text = LocalString(@"1");
-            cell.Label6.text = LocalString(@"1");
+            if (indexPath.row * 30 < _yVals_In.count || indexPath.row * 30 < _yVals_Out.count || indexPath.row * 30 < _yVals_Bean.count || indexPath.row * 30 < _yVals_Environment.count || indexPath.row * 30 < _yVals_Diff.count) {
+                cell.Label1.text = [NSString stringWithFormat:@"%ld:%ld",indexPath.row/2,indexPath.row%2*30];
+                if (indexPath.row * 30 < _yVals_In.count) {
+                    cell.Label2.text = _yVals_In[indexPath.row * 30];
+                }else{
+                    cell.Label2.text = @"?";
+                }
+                if (indexPath.row * 30 < _yVals_Out.count) {
+                    cell.Label3.text = _yVals_Out[indexPath.row * 30];
+                }else{
+                    cell.Label3.text = @"?";
+                }
+                if (indexPath.row * 30 < _yVals_Bean.count) {
+                    cell.Label4.text = _yVals_Bean[indexPath.row * 30];
+                }else{
+                    cell.Label4.text = @"?";
+                }
+                if (indexPath.row * 30 < _yVals_Environment.count) {
+                    cell.Label5.text = _yVals_Environment[indexPath.row * 30];
+                }else{
+                    cell.Label5.text = @"?";
+                }
+                if (indexPath.row * 30 < _yVals_Diff.count) {
+                    cell.Label6.text = _yVals_Diff[indexPath.row * 30];
+                }else{
+                    cell.Label6.text = @"?";
+                }
+            }
+            
         }
         return cell;
     }else{
@@ -273,6 +379,7 @@ NSString *const CellIdentifier_TempPer30 = @"CellID_TempPer30";
         case 1:
         case 2:
         case 3:
+        case 4:
             return 10/HScale;
             break;
             

@@ -53,8 +53,11 @@
 }
 
 - (void)customizeTabBarForController{
-    NSArray *tabBarItemImages = @[@"ic_navbar_bake",@"ic_mine_history_line",@"ic_navbar_bean",@"ic_navbar_cup",@"ic_navbar_mine"];
-    NSArray *tabBarItemSelectImages = @[@"ic_navbar_bake_selected",@"ic_mine_history_line",@"ic_navbar_bean_selected",@"ic_navbar_cup_selected",@"ic_navbar_mine_selected"];
+    NSArray *tabBarItemTitle = @[@"烘焙", @"曲线",@"生豆",@"杯测",@"我的"];
+    NSArray *tabBarItemImages = @[@"ic_tabbar_baking_nor",@"ic_tabbar_curve_nor",@"ic_tabbar_bean_nor",@"ic_tabbar_test_nor",@"ic_tabbar_mine_nor"];
+    NSArray *tabBarItemSelectImages = @[@"ic_tabbar_baking_sel",@"ic_tabbar_curve_sel",@"ic_tabbar_bean_sel",@"ic_tabbar_test_sel",@"ic_tabbar_mine_sel"];
+    NSDictionary *tabBarTitleUnselectedDic = @{NSForegroundColorAttributeName:[UIColor colorWithHexString:@"999999"],NSFontAttributeName:[UIFont systemFontOfSize:11]};
+    NSDictionary *tabBarTitleSelectedDic = @{NSForegroundColorAttributeName:[UIColor colorWithHexString:@"4778CC"],NSFontAttributeName:[UIFont systemFontOfSize:11]};
     
     NSInteger index = 0;
     for (RDVTabBarItem *item in self.tabBar.items) {
@@ -62,6 +65,10 @@
         UIImage *selectedImage = [UIImage imageNamed:[tabBarItemSelectImages objectAtIndex:index]];
         UIImage *unselectedImage = [UIImage imageNamed:[tabBarItemImages objectAtIndex:index]];
         [item setFinishedSelectedImage:selectedImage withFinishedUnselectedImage:unselectedImage];
+        
+        item.selectedTitleAttributes = tabBarTitleSelectedDic;
+        item.unselectedTitleAttributes = tabBarTitleUnselectedDic;
+        [item setTitle:[tabBarItemTitle objectAtIndex:index]];
         index++;
     }
     
@@ -69,10 +76,10 @@
     
     self.tabBar.translucent = YES;
     
-    self.tabBar.backgroundView.backgroundColor = [UIColor colorWithRed:245/255.0
-                                                                 green:245/255.0
-                                                                  blue:245/255.0
-                                                                 alpha:0.9];
+    self.tabBar.backgroundView.backgroundColor = [UIColor colorWithRed:252/255.0
+                                                                 green:252/255.0
+                                                                  blue:252/255.0
+                                                                 alpha:1];
 }
 
 -  (BOOL)tabBarController:(RDVTabBarController *)tabBarController shouldSelectViewController:(UIViewController *)viewController{

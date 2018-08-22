@@ -32,7 +32,7 @@
 
 - (UIView *)rightFuncView{
     if (!_rightFuncView) {
-        _rightFuncView = [[UIView alloc] initWithFrame:CGRectMake((ScreenWidth - 224.5) / WScaleT, 0, 224.5 / WScaleT, ScreenHeight)];
+        _rightFuncView = [[UIView alloc] initWithFrame:CGRectMake(ScreenWidth - 224.5 / WScaleT, 0, 224.5 / WScaleT, ScreenHeight)];
         _rightFuncView.backgroundColor = [UIColor colorWithRed:250/255.0 green:250/255.0 blue:250/255.0 alpha:0.96];
         [self.view addSubview:_rightFuncView];
     }

@@ -8,6 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface BakeViewController : BaseViewController
+@interface BakeViewController : UIViewController
 
 @end

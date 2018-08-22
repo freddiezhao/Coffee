@@ -16,7 +16,7 @@
         self.selectionStyle = UITableViewCellSelectionStyleNone;
         if (!_checkBtn) {
             _checkBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-            [_checkBtn setImage:[UIImage imageNamed:@"untick"] forState:UIControlStateNormal];
+            [_checkBtn setImage:[UIImage imageNamed:@"ic_select"] forState:UIControlStateNormal];
             [_checkBtn addTarget:self action:@selector(checkDevice) forControlEvents:UIControlEventTouchUpInside];
             [self.contentView addSubview:_checkBtn];
             [_checkBtn mas_makeConstraints:^(MASConstraintMaker *make) {

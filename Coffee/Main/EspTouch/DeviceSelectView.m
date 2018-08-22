@@ -105,7 +105,7 @@ NSString *const CellIdentifier_deviceSelect = @"CellID_deviceSelect";
         cell = [[DeviceSelectCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_deviceSelect];
     }
     cell.deviceName.text = LocalString(@"HB-M6G咖啡烘焙机");
-    
+    cell.image.image = [UIImage imageNamed:@"img_peak_edmund_small"];
     return cell;
     
 }

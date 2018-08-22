@@ -233,6 +233,7 @@ NSString *const CollectHeaderIdentifier_curve = @"CollectHeaderID_curve";
             case 7:
             {
                 cell.titleLabel.text = LocalString(@"一爆时间/温度");
+                
             }
                 break;
             case 8:

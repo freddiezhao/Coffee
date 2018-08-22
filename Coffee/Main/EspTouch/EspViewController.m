@@ -69,9 +69,19 @@ NSString *const CellNibName_password = @"PasswordTableViewCell";
 
 #pragma mark - masonry
 - (void)uiMasonry{
+    UIImageView *wifiImage = [[UIImageView alloc] init];
+    wifiImage.image = [UIImage imageNamed:@"img_wifi"];
+    [self.view addSubview:wifiImage];
+    
+    [wifiImage mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.size.mas_equalTo(CGSizeMake(150.f/WScale, 150/WScale));
+        make.top.equalTo(self.view.mas_top).offset(15/HScale);
+        make.centerX.equalTo(self.view.mas_centerX);
+    }];
+    
     [_ssidPasswordTable mas_makeConstraints:^(MASConstraintMaker *make) {
         make.size.mas_equalTo(CGSizeMake(ScreenWidth, HEIGHT_TEXT_FIELD * 2));
-        make.centerY.equalTo(self.view.mas_centerY);
+        make.top.equalTo(wifiImage.mas_bottom).offset(15/HScale);
         make.centerX.equalTo(self.view.mas_centerX);
     }];
     

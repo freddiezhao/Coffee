@@ -298,7 +298,7 @@
 - (UIButton *)leftPopBtn{
     if (!_leftPopBtn) {
         _leftPopBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        [_leftPopBtn setImage:[UIImage imageNamed:@"ic_leftpop"] forState:UIControlStateNormal];
+        [_leftPopBtn setImage:[UIImage imageNamed:@"btn_expand3"] forState:UIControlStateNormal];
         [_leftPopBtn addTarget:self action:@selector(popLeftControlView) forControlEvents:UIControlEventTouchUpInside];
         [self.view addSubview:_leftPopBtn];
     }
@@ -308,10 +308,8 @@
 - (UIButton *)rightPopBtn{
     if (!_rightPopBtn) {
         _rightPopBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        [_rightPopBtn setImage:[UIImage imageNamed:@"ic_leftpop"] forState:UIControlStateNormal];
+        [_rightPopBtn setImage:[UIImage imageNamed:@"btn_expand2"] forState:UIControlStateNormal];
         [_rightPopBtn addTarget:self action:@selector(popRightControlView) forControlEvents:UIControlEventTouchUpInside];
-        CGAffineTransform transform = CGAffineTransformMakeRotation(-180 * M_PI / 180.0);
-        [_rightPopBtn setTransform:transform];
         [self.view addSubview:_rightPopBtn];
     }
     return _rightPopBtn;
@@ -321,7 +319,7 @@
     if (!_backBtn) {
         _backBtn = [UIButton buttonWithType:UIButtonTypeCustom];
         _backBtn.frame = CGRectMake(15/WScale,19/HScale,22/WScale,22/HScale);
-        [_backBtn setImage:[UIImage imageNamed:@""] forState:UIControlStateNormal];
+        [_backBtn setImage:[UIImage imageNamed:@"ic_nav_back"] forState:UIControlStateNormal];
         [_backBtn addTarget:self action:@selector(dismissView) forControlEvents:UIControlEventTouchUpInside];
         [self.view addSubview:_backBtn];
 
@@ -515,12 +513,12 @@
     }];
     
     [_leftPopBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.size.mas_equalTo(CGSizeMake(20, 20));
+        make.size.mas_equalTo(CGSizeMake(32/WScale, 32/WScale));
         make.left.equalTo(self.view.mas_left);
         make.centerY.equalTo(self.view.mas_centerY);
     }];
     [_rightPopBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.size.mas_equalTo(CGSizeMake(20, 20));
+        make.size.mas_equalTo(CGSizeMake(32/WScale, 32/WScale));
         make.right.equalTo(self.view.mas_right);
         make.centerY.equalTo(self.view.mas_centerY);
     }];
@@ -588,7 +586,6 @@
     rfVC.modalPresentationStyle = UIModalPresentationOverCurrentContext;
     rfVC.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
     [self presentViewController:rfVC animated:YES completion:nil];
-
 }
 
 - (void)beanCurveAction{

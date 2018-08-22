@@ -98,7 +98,7 @@
 - (UIImageView *)image{
     if (!_image) {
         _image = [[UIImageView alloc] init];
-        _image.image = [UIImage imageNamed:@""];
+        _image.image = [UIImage imageNamed:@"img_peak_edmund"];
         [self.view addSubview:_image];
         
         [_image mas_makeConstraints:^(MASConstraintMaker *make) {

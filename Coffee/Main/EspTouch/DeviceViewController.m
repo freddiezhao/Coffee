@@ -63,7 +63,7 @@ NSString *const CellNibName_device = @"DeviceTableViewCell";
     
     UIButton *rightButton = [UIButton buttonWithType:UIButtonTypeCustom];
     rightButton.frame = CGRectMake(0, 0, 30, 30);
-    [rightButton setImage:[UIImage imageNamed:@"ic_details"] forState:UIControlStateNormal];
+    [rightButton setImage:[UIImage imageNamed:@"ic_nav_more_black"] forState:UIControlStateNormal];
     [rightButton addTarget:self action:@selector(goEsp) forControlEvents:UIControlEventTouchUpInside];
     UIBarButtonItem *rightBarButton = [[UIBarButtonItem alloc] initWithCustomView:rightButton];
     self.navigationItem.rightBarButtonItem = rightBarButton;
@@ -155,6 +155,10 @@ NSString *const CellNibName_device = @"DeviceTableViewCell";
         _noDeviceView.backgroundColor = [UIColor colorWithRed:250/255.0 green:250/255.0 blue:250/255.0 alpha:1];
         [self.view addSubview:_noDeviceView];
         
+        UIImageView *deviceImage = [[UIImageView alloc] init];
+        deviceImage.image = [UIImage imageNamed:@"img_peak_edmund"];
+        [_noDeviceView addSubview:deviceImage];
+        
         UILabel *label = [[UILabel alloc] init];
         label.text = LocalString(@"快添加您的第一个设备吧～");
         label.font = [UIFont fontWithName:@"PingFangSC-Regular" size:14];
@@ -169,6 +173,12 @@ NSString *const CellNibName_device = @"DeviceTableViewCell";
         [addBtn setBackgroundColor:[UIColor colorWithRed:71/255.0 green:120/255.0 blue:204/255.0 alpha:1]];
         [addBtn addTarget:self action:@selector(goEsp) forControlEvents:UIControlEventTouchUpInside];
         [_noDeviceView addSubview:addBtn];
+        
+        [deviceImage mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.size.mas_equalTo(CGSizeMake(225.f / WScale, 150.f / HScale));
+            make.centerX.equalTo(_noDeviceView.mas_centerX);
+            make.top.equalTo(_noDeviceView.mas_top).offset(80.f / HScale);
+        }];
         
         [label mas_makeConstraints:^(MASConstraintMaker *make) {
             make.size.mas_equalTo(CGSizeMake(168.f / WScale, 20.f / HScale));
