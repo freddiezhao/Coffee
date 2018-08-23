@@ -8,9 +8,11 @@
 
 #import "AddBeanTableController.h"
 #import "referCurveCell.h"
+#import "CurveInfoCell.h"
 
 NSString *const CellIdentifier_selectBean = @"CellID_selectBean";
 NSString *const CellIdentifier_referCurve = @"CellID_referCurve";
+NSString *const CellIdentifier_curveInfo = @"CellID_curveInfo";
 
 @interface AddBeanTableController ()
 
@@ -27,7 +29,8 @@ NSString *const CellIdentifier_referCurve = @"CellID_referCurve";
     
     [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:CellIdentifier_selectBean];
     [self.tableView registerClass:[referCurveCell class] forCellReuseIdentifier:CellIdentifier_referCurve];
-    self.tableView.backgroundColor = [UIColor colorWithRed:255/255.0 green:255/255.0 blue:255/255.0 alpha:1];
+    [self.tableView registerClass:[CurveInfoCell class] forCellReuseIdentifier:CellIdentifier_curveInfo];
+    self.tableView.backgroundColor = [UIColor colorWithRed:250/255.0 green:250/255.0 blue:250/255.0 alpha:1];
     self.tableView.estimatedRowHeight = 0;
     self.tableView.estimatedSectionHeaderHeight = 0;
     self.tableView.estimatedSectionFooterHeight = 0;
@@ -92,11 +95,30 @@ NSString *const CellIdentifier_referCurve = @"CellID_referCurve";
             
         case 1:
             {
-                referCurveCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_referCurve forIndexPath:indexPath];
-                if (cell == nil) {
-                    cell = [[referCurveCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_referCurve];
+                if (indexPath.row == 0) {
+                    referCurveCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_referCurve forIndexPath:indexPath];
+                    if (cell == nil) {
+                        cell = [[referCurveCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_referCurve];
+                    }
+                    cell.curveBlock = ^(BOOL isOn) {
+                        if (isOn) {
+                            curveOn = YES;
+                        }else{
+                            curveOn = NO;
+                        }
+                        [self.tableView reloadData];
+                    };
+                    return cell;
+                }else{
+                    CurveInfoCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_curveInfo forIndexPath:indexPath];
+                    if (cell == nil) {
+                        cell = [[CurveInfoCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_curveInfo];
+                    }
+                    
+                    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+                    return cell;
                 }
-                return cell;
+                
             }
             break;
             

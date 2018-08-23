@@ -169,7 +169,7 @@ static DataBase *_dataBase = nil;
     [_queueDB inDatabase:^(FMDatabase * _Nonnull db) {
         FMResultSet *set = [db executeQuery:@"SELECT * FROM beanInfo WHERE beanId = ?",beanId];
         while ([set next]) {
-            beanModel.beanName = [set stringForColumn:@"beanName"];
+            beanModel.name = [set stringForColumn:@"beanName"];
             beanModel.nation = [set stringForColumn:@"nation"];
             beanModel.area = [set stringForColumn:@"area"];
             beanModel.altitude = [set stringForColumn:@"altitude"];

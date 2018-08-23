@@ -8,9 +8,12 @@
 
 #import <UIKit/UIKit.h>
 
+typedef void(^curveBlock)(BOOL isOn);
+
 @interface referCurveCell : UITableViewCell
 
 @property (strong, nonatomic)  UILabel *curveLabel;
 @property (strong, nonatomic)  UISwitch *curveSwitch;
+@property (nonatomic)  curveBlock curveBlock;
 
 @end

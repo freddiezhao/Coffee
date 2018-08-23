@@ -48,16 +48,9 @@
 }
 
 - (void)switchAction:(UISwitch *)sender{
-//    if (_valveBlock) {
-//        self.valveBlock(sender.isOn);
-//        if (sender.isOn) {
-//            _startstopLabel.text = LocalString(@"start");
-//        }else{
-//            _startstopLabel.text = LocalString(@"stop");
-//        }
-//        _controlSwitch.enabled = NO;
-//        [self performSelector:@selector(delay4s) withObject:DelayParm afterDelay:4];
-//    }
+    if (self.curveBlock) {
+        self.curveBlock(sender.isOn);
+    }
 }
 
 

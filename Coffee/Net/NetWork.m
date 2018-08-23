@@ -691,7 +691,7 @@ static NSInteger curveId;
         curveName = [NSString stringWithFormat:@"拼配豆(%@)",myDB.deviceName];
     }else if (_beanArray.count == 1){
         BeanModel *bean = _beanArray[0];
-        curveName = [NSString stringWithFormat:@"%@(%@)",bean.beanName,myDB.deviceName];
+        curveName = [NSString stringWithFormat:@"%@(%@)",bean.name,myDB.deviceName];
     }
     
     //生豆重量

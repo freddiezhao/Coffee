@@ -653,7 +653,7 @@ NSString *const kCellIdentifier_addBean = @"cellID_addBean";
     }
     BeanModel *cellModel = _beanArray[indexPath.row];
     cell.numLabel.text = [NSString stringWithFormat:@"%ld",(long)indexPath.row];
-    cell.beanName.text = cellModel.beanName;
+    cell.beanName.text = cellModel.name;
     cell.delBlock = ^{
         [_beanArray removeObjectAtIndex:indexPath.row];
         [tableView reloadData];

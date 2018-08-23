@@ -11,6 +11,9 @@
 		BB149F3121215B4C00E5C2BF /* DeviceSelectCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BB149F2F21215B4C00E5C2BF /* DeviceSelectCell.m */; };
 		BB1C156620E1E8AD006D7053 /* UIButton+Common.m in Sources */ = {isa = PBXBuildFile; fileRef = BB1C156420E1E8AD006D7053 /* UIButton+Common.m */; };
 		BB23E563210964C20074C61B /* FeedbackViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB23E562210964C20074C61B /* FeedbackViewController.m */; };
+		BB25E7A5212E4E03003568BD /* CurveInfoCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BB25E7A4212E4E03003568BD /* CurveInfoCell.m */; };
+		BB25E7A9212E611A003568BD /* BeanViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB25E7A8212E611A003568BD /* BeanViewController.m */; };
+		BB25E7AC212E63A2003568BD /* beanCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BB25E7AB212E63A2003568BD /* beanCell.m */; };
 		BB26AFB220EDC846008AE330 /* 数据.json in Resources */ = {isa = PBXBuildFile; fileRef = BB26AFB120EDC846008AE330 /* 数据.json */; };
 		BB2912022106BA65001B9448 /* UsernameViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB2912012106BA65001B9448 /* UsernameViewController.m */; };
 		BB29120C2106CCE1001B9448 /* PasswordViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB2912082106CCE1001B9448 /* PasswordViewController.m */; };
@@ -411,6 +414,12 @@
 		BB1C156520E1E8AD006D7053 /* UIButton+Common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIButton+Common.h"; sourceTree = "<group>"; };
 		BB23E561210964C20074C61B /* FeedbackViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FeedbackViewController.h; sourceTree = "<group>"; };
 		BB23E562210964C20074C61B /* FeedbackViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FeedbackViewController.m; sourceTree = "<group>"; };
+		BB25E7A3212E4E03003568BD /* CurveInfoCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CurveInfoCell.h; sourceTree = "<group>"; };
+		BB25E7A4212E4E03003568BD /* CurveInfoCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CurveInfoCell.m; sourceTree = "<group>"; };
+		BB25E7A7212E611A003568BD /* BeanViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeanViewController.h; sourceTree = "<group>"; };
+		BB25E7A8212E611A003568BD /* BeanViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeanViewController.m; sourceTree = "<group>"; };
+		BB25E7AA212E63A2003568BD /* beanCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = beanCell.h; sourceTree = "<group>"; };
+		BB25E7AB212E63A2003568BD /* beanCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = beanCell.m; sourceTree = "<group>"; };
 		BB26AFB120EDC846008AE330 /* 数据.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "数据.json"; sourceTree = "<group>"; };
 		BB2912002106BA65001B9448 /* UsernameViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UsernameViewController.h; sourceTree = "<group>"; };
 		BB2912012106BA65001B9448 /* UsernameViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UsernameViewController.m; sourceTree = "<group>"; };
@@ -900,6 +909,15 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		BB25E7A6212E60FD003568BD /* Bean */ = {
+			isa = PBXGroup;
+			children = (
+				BB25E7A7212E611A003568BD /* BeanViewController.h */,
+				BB25E7A8212E611A003568BD /* BeanViewController.m */,
+			);
+			path = Bean;
+			sourceTree = "<group>";
+		};
 		BB26AFB020EDC846008AE330 /* SourceFile */ = {
 			isa = PBXGroup;
 			children = (
@@ -1213,15 +1231,19 @@
 			path = gatewayCell;
 			sourceTree = "<group>";
 		};
-		BB525F29212D73F2003484E9 /* AddBean */ = {
+		BB525F29212D73F2003484E9 /* Bean */ = {
 			isa = PBXGroup;
 			children = (
 				BB6A555C20FCCA3D0013C3C1 /* AddBeanTableViewCell.h */,
 				BB6A555D20FCCA3D0013C3C1 /* AddBeanTableViewCell.m */,
 				BB525F2A212D742C003484E9 /* referCurveCell.h */,
 				BB525F2B212D742C003484E9 /* referCurveCell.m */,
+				BB25E7A3212E4E03003568BD /* CurveInfoCell.h */,
+				BB25E7A4212E4E03003568BD /* CurveInfoCell.m */,
+				BB25E7AA212E63A2003568BD /* beanCell.h */,
+				BB25E7AB212E63A2003568BD /* beanCell.m */,
 			);
-			path = AddBean;
+			path = Bean;
 			sourceTree = "<group>";
 		};
 		BB65C25A20FE120200BB684E /* Curve */ = {
@@ -1497,7 +1519,7 @@
 		BB8AA4D820DFC23300610316 /* Cell */ = {
 			isa = PBXGroup;
 			children = (
-				BB525F29212D73F2003484E9 /* AddBean */,
+				BB525F29212D73F2003484E9 /* Bean */,
 				BB525F1F212D66F6003484E9 /* gatewayCell */,
 				BBA7B95C212AA56A004943DC /* CollectCell */,
 				BB6AA237212A529E0043716E /* CommonCell */,
@@ -1578,6 +1600,7 @@
 			children = (
 				BBC31F9A20E713730011360E /* Bake */,
 				BB65C25A20FE120200BB684E /* Curve */,
+				BB25E7A6212E60FD003568BD /* Bean */,
 				BB6AD20C21007BCE008C8763 /* Mine */,
 				BB8AA49B20DFAFA500610316 /* EspTouch */,
 				BB94EAA320DBA9C800370A95 /* MainViewController.h */,
@@ -2149,6 +2172,7 @@
 				BB8AA4E820DFD18D00610316 /* UIColor+ColorChange.m in Sources */,
 				BB68B60121282262001CABE5 /* ReportCurveCell.m in Sources */,
 				BB6A784B20E36E7200EE3E2E /* BaseViewController.m in Sources */,
+				BB25E7AC212E63A2003568BD /* beanCell.m in Sources */,
 				BB8AA4E420DFCA1C00610316 /* PasswordTableViewCell.m in Sources */,
 				BB8AA4DF20DFC96A00610316 /* SSIDTableViewCell.m in Sources */,
 				BB6A784620E32A4D00EE3E2E /* DeviceTableViewCell.m in Sources */,
@@ -2174,6 +2198,7 @@
 				BB1C156620E1E8AD006D7053 /* UIButton+Common.m in Sources */,
 				BB2912022106BA65001B9448 /* UsernameViewController.m in Sources */,
 				BB29121821071B1E001B9448 /* SettingModel.m in Sources */,
+				BB25E7A9212E611A003568BD /* BeanViewController.m in Sources */,
 				BBA7B965212AC531004943DC /* CollectEventCell.m in Sources */,
 				BB6E0B7E2122D5B0008F20FC /* YAlertViewController.m in Sources */,
 				BB4C906E2105C4200023EE9B /* DataBase.m in Sources */,
@@ -2215,6 +2240,7 @@
 				BB94EAA020DB8CE700370A95 /* RDVTabBar.m in Sources */,
 				BB8AA4CA20DFB9CA00610316 /* ESPTouchGenerator.m in Sources */,
 				BBA7B95F212AA586004943DC /* CollectInfoCellCell.m in Sources */,
+				BB25E7A5212E4E03003568BD /* CurveInfoCell.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

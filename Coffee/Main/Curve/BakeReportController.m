@@ -191,7 +191,7 @@ NSString *const CellIdentifier_TempPer30 = @"CellID_TempPer30";
             if (_beanArray.count>0) {
                 NSString *nameString = LocalString(@"");
                 for (BeanModel *model in _beanArray) {
-                    nameString = [nameString stringByAppendingString:[NSString stringWithFormat:@"%@、",model.beanName]];
+                    nameString = [nameString stringByAppendingString:[NSString stringWithFormat:@"%@、",model.name]];
                 }
                 cell.beanNameLabel.text = [nameString substringToIndex:[nameString length]-1];
                 cell.rawBean.text = [NSString stringWithFormat:@"%@%ld",LocalString(@"生豆:"),_reportModel.rawBeanWeight];
@@ -210,8 +210,8 @@ NSString *const CellIdentifier_TempPer30 = @"CellID_TempPer30";
                 cell = [[BeanInfoCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_reportBeanInfo];
             }
             for (BeanModel *bean in _beanArray) {
-                if (bean.beanName) {
-                    cell.beanName.text = bean.beanName;
+                if (bean.name) {
+                    cell.beanName.text = bean.name;
                 }else{
                     cell.beanName.text = LocalString(@"未知");
                 }

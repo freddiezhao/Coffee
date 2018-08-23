@@ -12,6 +12,7 @@
 #import "BakeViewController.h"
 #import "CurveViewController.h"
 #import "MineViewController.h"
+#import "BeanViewController.h"
 
 @interface MainViewController ()<RDVTabBarControllerDelegate>
 
@@ -29,8 +30,8 @@
     CurveViewController *curveVC = [[CurveViewController alloc] init];
     UINavigationController *NAV2 = [[UINavigationController alloc] initWithRootViewController:curveVC];
     
-    UIViewController *thirdVC = [[UIViewController alloc] init];
-    UINavigationController *NAV3 = [[UINavigationController alloc] initWithRootViewController:thirdVC];
+    BeanViewController *beanVC = [[BeanViewController alloc] init];
+    UINavigationController *NAV3 = [[UINavigationController alloc] initWithRootViewController:beanVC];
     
     UIViewController *fourthVc = [[UIViewController alloc] init];
     UINavigationController *NAV4 = [[UINavigationController alloc] initWithRootViewController:fourthVc];
