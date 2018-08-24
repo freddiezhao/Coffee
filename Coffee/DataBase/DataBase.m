@@ -54,7 +54,7 @@ static DataBase *_dataBase = nil;
 
 - (void)createTable{
     [_queueDB inDatabase:^(FMDatabase * _Nonnull db) {
-        BOOL result = [db executeUpdate:@"CREATE TABLE IF NOT EXISTS beanInfo (beanId integer PRIMARY KEY AUTOINCREMENT,beanName text NOT NULL,nation text NOT NULL,area text NOT NULL,manor text NOT NULL,altitude text NOT NULL,beanSpecies text NOT NULL,grade text NOT NULL,process text NOT NULL,water text NOT NULL,supplier text NOT NULL,price text NOT NULL,stock integer NOT NULL,time text NOT NULL)"];
+        BOOL result = [db executeUpdate:@"CREATE TABLE IF NOT EXISTS beanInfo (beanId integer PRIMARY KEY AUTOINCREMENT,beanName text NOT NULL,nation text NOT NULL,area text NOT NULL,manor text NOT NULL,altitude integer NOT NULL,beanSpecies text NOT NULL,grade text NOT NULL,process text NOT NULL,water integer NOT NULL,supplier text NOT NULL,price integer NOT NULL,stock integer NOT NULL,time text NOT NULL)"];
         if (result) {
             NSLog(@"创建表bean成功");
         }else{
@@ -164,6 +164,32 @@ static DataBase *_dataBase = nil;
     return [beanArray copy];
 }
 
+- (NSMutableArray *)queryAllBean{
+    NSMutableArray *beanArray = [NSMutableArray array];
+    BeanModel *beanModel = [[BeanModel alloc] init];
+    [_queueDB inDatabase:^(FMDatabase * _Nonnull db) {
+        FMResultSet *set = [db executeQuery:@"SELECT * FROM beanInfo"];
+        while ([set next]) {
+            beanModel.name = [set stringForColumn:@"beanName"];
+            beanModel.nation = [set stringForColumn:@"nation"];
+            beanModel.area = [set stringForColumn:@"area"];
+            beanModel.altitude = [set intForColumn:@"altitude"];
+            beanModel.manor = [set stringForColumn:@"manor"];
+            beanModel.beanSpecies = [set stringForColumn:@"beanSpecies"];
+            beanModel.grade = [set stringForColumn:@"grade"];
+            beanModel.process = [set stringForColumn:@"process"];
+            beanModel.water = [set intForColumn:@"water"];
+            beanModel.supplier = [set stringForColumn:@"supplier"];
+            beanModel.price = [set intForColumn:@"price"];
+            beanModel.stock = [set intForColumn:@"stock"];
+            beanModel.time = [NSDate UTCDateFromLocalString:[set stringForColumn:@"time"]];
+            [beanArray addObject:beanModel];
+        }
+        [set close];
+    }];
+    return beanArray;
+}
+
 - (BeanModel *)queryBean:(NSNumber *)beanId{
     BeanModel *beanModel = [[BeanModel alloc] init];
     [_queueDB inDatabase:^(FMDatabase * _Nonnull db) {
@@ -172,14 +198,14 @@ static DataBase *_dataBase = nil;
             beanModel.name = [set stringForColumn:@"beanName"];
             beanModel.nation = [set stringForColumn:@"nation"];
             beanModel.area = [set stringForColumn:@"area"];
-            beanModel.altitude = [set stringForColumn:@"altitude"];
+            beanModel.altitude = [set intForColumn:@"altitude"];
             beanModel.manor = [set stringForColumn:@"manor"];
             beanModel.beanSpecies = [set stringForColumn:@"beanSpecies"];
             beanModel.grade = [set stringForColumn:@"grade"];
             beanModel.process = [set stringForColumn:@"process"];
-            beanModel.water = [set stringForColumn:@"water"];
+            beanModel.water = [set intForColumn:@"water"];
             beanModel.supplier = [set stringForColumn:@"supplier"];
-            beanModel.price = [set stringForColumn:@"price"];
+            beanModel.price = [set intForColumn:@"price"];
             beanModel.stock = [set intForColumn:@"stock"];
             beanModel.time = [NSDate UTCDateFromLocalString:[set stringForColumn:@"time"]];
         }
@@ -230,6 +256,15 @@ static DataBase *_dataBase = nil;
             if (!result) {
                 NSLog(@"插入失败");
             }
+        }
+    }];
+}
+
+- (void)insertNewBean:(BeanModel *)bean{
+    [_queueDB inDatabase:^(FMDatabase * _Nonnull db) {
+        BOOL result = [db executeUpdate:@"INSERT INTO beanInfo (beanName,nation,area,manor,altitude,beanSpecies,grade,process,water,supplier,price,stock,time) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)",bean.name,bean.nation,bean.area,bean.manor,[NSNumber numberWithFloat:bean.altitude],bean.beanSpecies,bean.grade,bean.process,[NSNumber numberWithFloat:bean.water],bean.supplier,[NSNumber numberWithFloat:bean.price],[NSNumber numberWithFloat:bean.stock],[NSDate YMDStringFromDate:bean.time]];
+        if (!result) {
+            NSLog(@"添加咖啡豆失败");
         }
     }];
 }

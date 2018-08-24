@@ -138,4 +138,13 @@
     
 }
 
+//转化为年月日
++(NSString *)YMDStringFromDate:(NSDate *)Date{
+    
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc]init];
+    [dateFormatter setDateFormat:@"yyyy-MM-dd"];
+    NSString* result=[dateFormatter stringFromDate:Date];
+    return result;
+    
+}
 @end

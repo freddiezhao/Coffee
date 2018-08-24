@@ -63,6 +63,7 @@ NSString *const CellIdentifier_TempPer30 = @"CellID_TempPer30";
         _reportTable = ({
             TouchTableView *tableView = [[TouchTableView alloc] initWithFrame:CGRectMake(0, 0, ScreenWidth, ScreenHeight - 64) style:UITableViewStylePlain];
             tableView.backgroundColor = [UIColor clearColor];
+            tableView.separatorColor = [UIColor colorWithRed:0/255.0 green:0/255.0 blue:0/255.0 alpha:0.1];
             tableView.dataSource = self;
             tableView.delegate = self;
             //tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
@@ -226,7 +227,7 @@ NSString *const CellIdentifier_TempPer30 = @"CellID_TempPer30";
                     cell.area.text = LocalString(@"未知");
                 }
                 if (bean.altitude) {
-                    cell.altitude.text = bean.altitude;
+                    cell.altitude.text = [NSString stringWithFormat:@"%f",bean.altitude];
                 }else{
                     cell.altitude.text = LocalString(@"未知");
                 }
@@ -251,12 +252,12 @@ NSString *const CellIdentifier_TempPer30 = @"CellID_TempPer30";
                     cell.process.text = LocalString(@"未知");
                 }
                 if (bean.water) {
-                    cell.water.text = bean.water;
+                    cell.water.text = [NSString stringWithFormat:@"%f",bean.water];
                 }else{
                     cell.water.text = LocalString(@"未知");
                 }
                 if (bean.weight) {
-                    cell.weight.text = [NSString stringWithFormat:@"%ld",bean.weight];
+                    cell.weight.text = [NSString stringWithFormat:@"%f",bean.weight];
                 }else{
                     cell.weight.text = LocalString(@"未知");
                 }

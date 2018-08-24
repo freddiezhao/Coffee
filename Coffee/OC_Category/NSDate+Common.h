@@ -22,4 +22,5 @@
 - (NSString *)timeStamapFromUTCString:(NSString *)UTCString;
 - (NSDate *)UTCDateFromTimeStamap:(NSString *)timeStamap;
 
++(NSString *)YMDStringFromDate:(NSDate *)Date;
 @end

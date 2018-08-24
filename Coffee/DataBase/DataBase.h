@@ -32,8 +32,11 @@
 ///@brief query action
 - (ReportModel *)queryReport:(NSNumber *)curveId;
 - (NSArray *)queryReportRelaBean:(NSNumber *)curveId;
+- (NSMutableArray *)queryAllBean;
 - (BeanModel *)queryBean:(NSNumber *)beanId;
 - (NSArray *)queryEvent:(NSNumber *)curveId;
 - (NSMutableArray *)queryAllDevice;
+
+- (void)insertNewBean:(BeanModel *)bean;
 
 @end

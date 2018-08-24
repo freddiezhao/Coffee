@@ -16,14 +16,14 @@
 @property (nonatomic, strong) NSString *nation;
 @property (nonatomic, strong) NSString *area;
 @property (nonatomic, strong) NSString *manor;
-@property (nonatomic, strong) NSString *altitude;
+@property (nonatomic) float altitude;
 @property (nonatomic, strong) NSString *beanSpecies;
 @property (nonatomic, strong) NSString *grade;
 @property (nonatomic, strong) NSString *process;
-@property (nonatomic, strong) NSString *water;
+@property (nonatomic) float water;
 @property (nonatomic, strong) NSString *supplier;
-@property (nonatomic, strong) NSString *price;
-@property (nonatomic) NSInteger stock;
+@property (nonatomic) float price;
+@property (nonatomic) float stock;
 @property (nonatomic, strong) NSDate *time;
 
 @end

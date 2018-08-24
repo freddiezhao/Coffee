@@ -1,4 +1,5 @@
 
+//在烘焙中添加参考曲线
 //
 //  CurveInfoCell.m
 //  Coffee
@@ -7,9 +8,9 @@
 //  Copyright © 2018年 杭州轨物科技有限公司. All rights reserved.
 //
 
-#import "CurveInfoCell.h"
+#import "CurveInfoCell_add.h"
 
-@implementation CurveInfoCell
+@implementation CurveInfoCell_add
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {

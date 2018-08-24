@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface CurveInfoCell : UITableViewCell
+@interface CurveInfoCell_add : UITableViewCell
 
 @property (nonatomic, strong) UILabel *titleLabel;
 @property (nonatomic, strong) UILabel *curveLabel;

@@ -12,6 +12,7 @@
 #import "FMDB.h"
 #import "beanCell.h"
 #import "BeanModel.h"
+#import "AddNewBeanController.h"
 
 
 NSString *const CellIdentifier_bean = @"CellID_bean";
@@ -46,24 +47,8 @@ static float HEIGHT_HEADER = 36.f;
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self.view setBackgroundColor:[UIColor colorWithRed:250/255.0 green:250/255.0 blue:250/255.0 alpha:1]];
-    
-    self.navigationItem.title = LocalString(@"生豆");
-    
-    UIView *rightButtonView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 89, 30)];
-    
-    UIButton *addButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    addButton.frame = CGRectMake(52, 4, 22, 22);
-    [addButton setImage:[UIImage imageNamed:@"ic_nav_add_black"] forState:UIControlStateNormal];
-    [addButton addTarget:self action:@selector(addBean) forControlEvents:UIControlEventTouchUpInside];
-    [rightButtonView addSubview:addButton];
-    
-    UIButton *searchButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    searchButton.frame = CGRectMake(15, 4, 22, 22);
-    [searchButton setImage:[UIImage imageNamed:@"ic_nav_serch_black"] forState:UIControlStateNormal];
-    [searchButton addTarget:self action:@selector(searchBean) forControlEvents:UIControlEventTouchUpInside];
-    [rightButtonView addSubview:searchButton];
-    UIBarButtonItem *rightBarButton = [[UIBarButtonItem alloc] initWithCustomView:rightButtonView];
-    self.navigationItem.rightBarButtonItem = rightBarButton;
+    [self setNavItem];
+    [self getAllBean];
     
     _noBeanView = [self noBeanView];
     _beanTable = [self beanTable];
@@ -73,15 +58,15 @@ static float HEIGHT_HEADER = 36.f;
     _headerView = [self headerView];
     _timer = [self timer];
     
-    NSArray *array = @[@"李娜", @"林丹", @"张学友", @"孙燕姿", @"Sammi", @"Tanya", @"东野圭吾", @"周树人", @"张大千", @"阿新"];
-    NSArray *weightArray = @[@20, @40, @10, @20, @30, @15, @11, @31, @41, @51];
-    _beanArr = [NSMutableArray array];
-    for (int i = 0; i<array.count; i++) {
-        BeanModel *bean = [[BeanModel alloc] init];
-        bean.name = array[i];
-        bean.weight = [weightArray[i] floatValue];
-        [_beanArr addObject:bean];
-    }
+//    NSArray *array = @[@"李娜", @"林丹", @"张学友", @"孙燕姿", @"Sammi", @"Tanya", @"东野圭吾", @"周树人", @"张大千", @"阿新"];
+//    NSArray *weightArray = @[@20, @40, @10, @20, @30, @15, @11, @31, @41, @51];
+//    _beanArr = [NSMutableArray array];
+//    for (int i = 0; i<array.count; i++) {
+//        BeanModel *bean = [[BeanModel alloc] init];
+//        bean.name = array[i];
+//        bean.weight = [weightArray[i] floatValue];
+//        [_beanArr addObject:bean];
+//    }
     
     if (0) {
         _sort_nameBtn.hidden = YES;
@@ -120,11 +105,31 @@ static float HEIGHT_HEADER = 36.f;
 }
 
 #pragma mark - lazy load
+- (void)setNavItem{
+    self.navigationItem.title = LocalString(@"生豆");
+    
+    UIView *rightButtonView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 89, 30)];
+    
+    UIButton *addButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    addButton.frame = CGRectMake(52, 4, 22, 22);
+    [addButton setImage:[UIImage imageNamed:@"ic_nav_add_black"] forState:UIControlStateNormal];
+    [addButton addTarget:self action:@selector(addBean) forControlEvents:UIControlEventTouchUpInside];
+    [rightButtonView addSubview:addButton];
+    
+    UIButton *searchButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    searchButton.frame = CGRectMake(15, 4, 22, 22);
+    [searchButton setImage:[UIImage imageNamed:@"ic_nav_serch_black"] forState:UIControlStateNormal];
+    [searchButton addTarget:self action:@selector(searchBean) forControlEvents:UIControlEventTouchUpInside];
+    [rightButtonView addSubview:searchButton];
+    UIBarButtonItem *rightBarButton = [[UIBarButtonItem alloc] initWithCustomView:rightButtonView];
+    self.navigationItem.rightBarButtonItem = rightBarButton;
+}
 - (UITableView *)beanTable{
     if (!_beanTable) {
         _beanTable = ({
             TouchTableView *tableView = [[TouchTableView alloc] initWithFrame:CGRectMake(0, (44 + HEIGHT_HEADER)/HScale, ScreenWidth, ScreenHeight - 64 - (44 + 44 + HEIGHT_HEADER)/HScale) style:UITableViewStylePlain];
             tableView.backgroundColor = [UIColor clearColor];
+            tableView.separatorColor = [UIColor colorWithRed:0/255.0 green:0/255.0 blue:0/255.0 alpha:0.1];
             tableView.dataSource = self;
             tableView.delegate = self;
             tableView.hidden = YES;
@@ -354,22 +359,22 @@ static float HEIGHT_HEADER = 36.f;
         BeanModel *bean = _beanArr[indexPath.row];
         cell.beanImage.image = [UIImage imageNamed:@"img_coffee_beans"];
         cell.beanLabel.text = bean.name;
-        cell.infoLabel.text = @"Q1等级 · 处理方式日晒";
-        cell.weightLabel.text = [NSString stringWithFormat:@"%.1fkg",bean.weight];
+        cell.infoLabel.text = [NSString stringWithFormat:@"%@等级 · 处理方式%@",bean.grade,bean.process];
+        cell.weightLabel.text = [NSString stringWithFormat:@"%.1fkg",bean.stock];
         return cell;
     }else if (_sort_weightBtn.tag != sortUnselect){//重量排序(包括正序和倒叙)
         BeanModel *bean = _weightArr[indexPath.row];
         cell.beanImage.image = [UIImage imageNamed:@"img_coffee_beans"];
         cell.beanLabel.text = bean.name;
-        cell.infoLabel.text = @"Q1等级 · 处理方式日晒";
-        cell.weightLabel.text = [NSString stringWithFormat:@"%.1fkg",bean.weight];
+        cell.infoLabel.text = [NSString stringWithFormat:@"%@等级 · 处理方式%@",bean.grade,bean.process];
+        cell.weightLabel.text = [NSString stringWithFormat:@"%.1fkg",bean.stock];
         return cell;
     }else if (_sort_nameBtn.tag != sortUnselect){//名字排序
         BeanModel *bean = [_mutableSections[indexPath.section] objectAtIndex:indexPath.row];
         cell.beanImage.image = [UIImage imageNamed:@"img_coffee_beans"];
         cell.beanLabel.text = bean.name;
-        cell.infoLabel.text = @"Q1等级 · 处理方式日晒";
-        cell.weightLabel.text = [NSString stringWithFormat:@"%.1fkg",bean.weight];
+        cell.infoLabel.text = [NSString stringWithFormat:@"%@等级 · 处理方式%@",bean.grade,bean.process];
+        cell.weightLabel.text = [NSString stringWithFormat:@"%.1fkg",bean.stock];
         return cell;
     }else{
         cell.beanImage.image = [UIImage imageNamed:@"img_coffee_beans"];
@@ -442,7 +447,9 @@ sectionForSectionIndexTitle:(NSString *)title
 
 #pragma mark - actions
 - (void)addBean{
-    
+    AddNewBeanController *addNewVC = [[AddNewBeanController alloc] init];
+    UINavigationController *NAV = [[UINavigationController alloc] initWithRootViewController:addNewVC];
+    [self presentViewController:NAV animated:YES completion:nil];
 }
 
 - (void)searchBean{
@@ -450,6 +457,7 @@ sectionForSectionIndexTitle:(NSString *)title
 }
 
 - (void)refreshBeanInfo{
+    _beanArr = [[DataBase shareDataBase] queryAllBean];
     [_beanTable.mj_header endRefreshing];
 }
 
@@ -554,6 +562,9 @@ sectionForSectionIndexTitle:(NSString *)title
 }
 
 #pragma mark - Data Source
+- (void)getAllBean{
+    _beanArr = [[DataBase shareDataBase] queryAllBean];
+}
 
 @end
 

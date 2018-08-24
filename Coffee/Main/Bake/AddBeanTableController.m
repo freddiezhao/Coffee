@@ -8,11 +8,11 @@
 
 #import "AddBeanTableController.h"
 #import "referCurveCell.h"
-#import "CurveInfoCell.h"
+#import "CurveInfoCell_add.h"
 
 NSString *const CellIdentifier_selectBean = @"CellID_selectBean";
 NSString *const CellIdentifier_referCurve = @"CellID_referCurve";
-NSString *const CellIdentifier_curveInfo = @"CellID_curveInfo";
+NSString *const CellIdentifier_curveInfo = @"CellID_curveInfo_add";
 
 @interface AddBeanTableController ()
 
@@ -29,7 +29,7 @@ NSString *const CellIdentifier_curveInfo = @"CellID_curveInfo";
     
     [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:CellIdentifier_selectBean];
     [self.tableView registerClass:[referCurveCell class] forCellReuseIdentifier:CellIdentifier_referCurve];
-    [self.tableView registerClass:[CurveInfoCell class] forCellReuseIdentifier:CellIdentifier_curveInfo];
+    [self.tableView registerClass:[CurveInfoCell_add class] forCellReuseIdentifier:CellIdentifier_curveInfo];
     self.tableView.backgroundColor = [UIColor colorWithRed:250/255.0 green:250/255.0 blue:250/255.0 alpha:1];
     self.tableView.estimatedRowHeight = 0;
     self.tableView.estimatedSectionHeaderHeight = 0;
@@ -110,9 +110,9 @@ NSString *const CellIdentifier_curveInfo = @"CellID_curveInfo";
                     };
                     return cell;
                 }else{
-                    CurveInfoCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_curveInfo forIndexPath:indexPath];
+                    CurveInfoCell_add *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_curveInfo forIndexPath:indexPath];
                     if (cell == nil) {
-                        cell = [[CurveInfoCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_curveInfo];
+                        cell = [[CurveInfoCell_add alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_curveInfo];
                     }
                     
                     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;

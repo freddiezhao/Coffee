@@ -11,7 +11,7 @@
 		BB149F3121215B4C00E5C2BF /* DeviceSelectCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BB149F2F21215B4C00E5C2BF /* DeviceSelectCell.m */; };
 		BB1C156620E1E8AD006D7053 /* UIButton+Common.m in Sources */ = {isa = PBXBuildFile; fileRef = BB1C156420E1E8AD006D7053 /* UIButton+Common.m */; };
 		BB23E563210964C20074C61B /* FeedbackViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB23E562210964C20074C61B /* FeedbackViewController.m */; };
-		BB25E7A5212E4E03003568BD /* CurveInfoCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BB25E7A4212E4E03003568BD /* CurveInfoCell.m */; };
+		BB25E7A5212E4E03003568BD /* CurveInfoCell_add.m in Sources */ = {isa = PBXBuildFile; fileRef = BB25E7A4212E4E03003568BD /* CurveInfoCell_add.m */; };
 		BB25E7A9212E611A003568BD /* BeanViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB25E7A8212E611A003568BD /* BeanViewController.m */; };
 		BB25E7AC212E63A2003568BD /* beanCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BB25E7AB212E63A2003568BD /* beanCell.m */; };
 		BB26AFB220EDC846008AE330 /* 数据.json in Resources */ = {isa = PBXBuildFile; fileRef = BB26AFB120EDC846008AE330 /* 数据.json */; };
@@ -300,6 +300,14 @@
 		BB6AD2252100C182008C8763 /* LlabelRImageCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BB6AD2242100C182008C8763 /* LlabelRImageCell.m */; };
 		BB6E0B7E2122D5B0008F20FC /* YAlertViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB6E0B7D2122D5B0008F20FC /* YAlertViewController.m */; };
 		BB712ABD20E47F49005FF10F /* NetWork.m in Sources */ = {isa = PBXBuildFile; fileRef = BB712ABC20E47F49005FF10F /* NetWork.m */; };
+		BB73BA1E212F9CF7001D9258 /* AddNewBeanController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB73BA1D212F9CF7001D9258 /* AddNewBeanController.m */; };
+		BB73BA21212FA333001D9258 /* AddBeanInfoCell1.m in Sources */ = {isa = PBXBuildFile; fileRef = BB73BA20212FA333001D9258 /* AddBeanInfoCell1.m */; };
+		BB73BA24212FB4CF001D9258 /* AddBeanInfoCell2.m in Sources */ = {isa = PBXBuildFile; fileRef = BB73BA23212FB4CF001D9258 /* AddBeanInfoCell2.m */; };
+		BB73BA27212FE0E2001D9258 /* GradeSelController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB73BA26212FE0E2001D9258 /* GradeSelController.m */; };
+		BB73BA2A212FE6F2001D9258 /* SortModel.m in Sources */ = {isa = PBXBuildFile; fileRef = BB73BA29212FE6F2001D9258 /* SortModel.m */; };
+		BB73BA2D212FE903001D9258 /* SpicesSelController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB73BA2C212FE903001D9258 /* SpicesSelController.m */; };
+		BB73BA30212FEA44001D9258 /* ProcessSelController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB73BA2F212FEA44001D9258 /* ProcessSelController.m */; };
+		BB73BA33212FED92001D9258 /* BuyDateSelController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB73BA32212FED92001D9258 /* BuyDateSelController.m */; };
 		BB8AA20B20DE3F5200610316 /* ic_navbar_bean.png in Resources */ = {isa = PBXBuildFile; fileRef = BB8A9F7A20DE3F5100610316 /* ic_navbar_bean.png */; };
 		BB8AA21F20DE3F5200610316 /* ic_navbar_bake_selected.png in Resources */ = {isa = PBXBuildFile; fileRef = BB8A9F8E20DE3F5100610316 /* ic_navbar_bake_selected.png */; };
 		BB8AA23420DE3F5200610316 /* ic_navbar_cup_selected.png in Resources */ = {isa = PBXBuildFile; fileRef = BB8A9FA320DE3F5100610316 /* ic_navbar_cup_selected.png */; };
@@ -414,8 +422,8 @@
 		BB1C156520E1E8AD006D7053 /* UIButton+Common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIButton+Common.h"; sourceTree = "<group>"; };
 		BB23E561210964C20074C61B /* FeedbackViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FeedbackViewController.h; sourceTree = "<group>"; };
 		BB23E562210964C20074C61B /* FeedbackViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FeedbackViewController.m; sourceTree = "<group>"; };
-		BB25E7A3212E4E03003568BD /* CurveInfoCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CurveInfoCell.h; sourceTree = "<group>"; };
-		BB25E7A4212E4E03003568BD /* CurveInfoCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CurveInfoCell.m; sourceTree = "<group>"; };
+		BB25E7A3212E4E03003568BD /* CurveInfoCell_add.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CurveInfoCell_add.h; sourceTree = "<group>"; };
+		BB25E7A4212E4E03003568BD /* CurveInfoCell_add.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CurveInfoCell_add.m; sourceTree = "<group>"; };
 		BB25E7A7212E611A003568BD /* BeanViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeanViewController.h; sourceTree = "<group>"; };
 		BB25E7A8212E611A003568BD /* BeanViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeanViewController.m; sourceTree = "<group>"; };
 		BB25E7AA212E63A2003568BD /* beanCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = beanCell.h; sourceTree = "<group>"; };
@@ -741,6 +749,22 @@
 		BB6E0B7D2122D5B0008F20FC /* YAlertViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YAlertViewController.m; sourceTree = "<group>"; };
 		BB712ABB20E47F49005FF10F /* NetWork.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NetWork.h; sourceTree = "<group>"; };
 		BB712ABC20E47F49005FF10F /* NetWork.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NetWork.m; sourceTree = "<group>"; };
+		BB73BA1C212F9CF7001D9258 /* AddNewBeanController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AddNewBeanController.h; sourceTree = "<group>"; };
+		BB73BA1D212F9CF7001D9258 /* AddNewBeanController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AddNewBeanController.m; sourceTree = "<group>"; };
+		BB73BA1F212FA333001D9258 /* AddBeanInfoCell1.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AddBeanInfoCell1.h; sourceTree = "<group>"; };
+		BB73BA20212FA333001D9258 /* AddBeanInfoCell1.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AddBeanInfoCell1.m; sourceTree = "<group>"; };
+		BB73BA22212FB4CF001D9258 /* AddBeanInfoCell2.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AddBeanInfoCell2.h; sourceTree = "<group>"; };
+		BB73BA23212FB4CF001D9258 /* AddBeanInfoCell2.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AddBeanInfoCell2.m; sourceTree = "<group>"; };
+		BB73BA25212FE0E2001D9258 /* GradeSelController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GradeSelController.h; sourceTree = "<group>"; };
+		BB73BA26212FE0E2001D9258 /* GradeSelController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GradeSelController.m; sourceTree = "<group>"; };
+		BB73BA28212FE6F2001D9258 /* SortModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SortModel.h; sourceTree = "<group>"; };
+		BB73BA29212FE6F2001D9258 /* SortModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SortModel.m; sourceTree = "<group>"; };
+		BB73BA2B212FE903001D9258 /* SpicesSelController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SpicesSelController.h; sourceTree = "<group>"; };
+		BB73BA2C212FE903001D9258 /* SpicesSelController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SpicesSelController.m; sourceTree = "<group>"; };
+		BB73BA2E212FEA44001D9258 /* ProcessSelController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ProcessSelController.h; sourceTree = "<group>"; };
+		BB73BA2F212FEA44001D9258 /* ProcessSelController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ProcessSelController.m; sourceTree = "<group>"; };
+		BB73BA31212FED92001D9258 /* BuyDateSelController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BuyDateSelController.h; sourceTree = "<group>"; };
+		BB73BA32212FED92001D9258 /* BuyDateSelController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BuyDateSelController.m; sourceTree = "<group>"; };
 		BB8A9F7A20DE3F5100610316 /* ic_navbar_bean.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ic_navbar_bean.png; sourceTree = "<group>"; };
 		BB8A9F8E20DE3F5100610316 /* ic_navbar_bake_selected.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ic_navbar_bake_selected.png; sourceTree = "<group>"; };
 		BB8A9FA320DE3F5100610316 /* ic_navbar_cup_selected.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ic_navbar_cup_selected.png; sourceTree = "<group>"; };
@@ -914,6 +938,16 @@
 			children = (
 				BB25E7A7212E611A003568BD /* BeanViewController.h */,
 				BB25E7A8212E611A003568BD /* BeanViewController.m */,
+				BB73BA1C212F9CF7001D9258 /* AddNewBeanController.h */,
+				BB73BA1D212F9CF7001D9258 /* AddNewBeanController.m */,
+				BB73BA25212FE0E2001D9258 /* GradeSelController.h */,
+				BB73BA26212FE0E2001D9258 /* GradeSelController.m */,
+				BB73BA2B212FE903001D9258 /* SpicesSelController.h */,
+				BB73BA2C212FE903001D9258 /* SpicesSelController.m */,
+				BB73BA2E212FEA44001D9258 /* ProcessSelController.h */,
+				BB73BA2F212FEA44001D9258 /* ProcessSelController.m */,
+				BB73BA31212FED92001D9258 /* BuyDateSelController.h */,
+				BB73BA32212FED92001D9258 /* BuyDateSelController.m */,
 			);
 			path = Bean;
 			sourceTree = "<group>";
@@ -1238,10 +1272,14 @@
 				BB6A555D20FCCA3D0013C3C1 /* AddBeanTableViewCell.m */,
 				BB525F2A212D742C003484E9 /* referCurveCell.h */,
 				BB525F2B212D742C003484E9 /* referCurveCell.m */,
-				BB25E7A3212E4E03003568BD /* CurveInfoCell.h */,
-				BB25E7A4212E4E03003568BD /* CurveInfoCell.m */,
+				BB25E7A3212E4E03003568BD /* CurveInfoCell_add.h */,
+				BB25E7A4212E4E03003568BD /* CurveInfoCell_add.m */,
 				BB25E7AA212E63A2003568BD /* beanCell.h */,
 				BB25E7AB212E63A2003568BD /* beanCell.m */,
+				BB73BA1F212FA333001D9258 /* AddBeanInfoCell1.h */,
+				BB73BA20212FA333001D9258 /* AddBeanInfoCell1.m */,
+				BB73BA22212FB4CF001D9258 /* AddBeanInfoCell2.h */,
+				BB73BA23212FB4CF001D9258 /* AddBeanInfoCell2.m */,
 			);
 			path = Bean;
 			sourceTree = "<group>";
@@ -1326,6 +1364,8 @@
 				BB593FAB210F324C007ECB1D /* EventModel.m */,
 				BB5A3BEF211193180030ACA5 /* DeviceModel.h */,
 				BB5A3BF0211193180030ACA5 /* DeviceModel.m */,
+				BB73BA28212FE6F2001D9258 /* SortModel.h */,
+				BB73BA29212FE6F2001D9258 /* SortModel.m */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -1553,11 +1593,11 @@
 		BB8F7BCE20DA513B00BE5CFC /* Coffee */ = {
 			isa = PBXGroup;
 			children = (
+				BB8A9F7720DE3F5100610316 /* Image */,
 				BB4C906B2105C4010023EE9B /* DataBase */,
 				BB712ABA20E47F36005FF10F /* Net */,
 				BB6A784820E36E6800EE3E2E /* Base */,
 				BB8AA4D320DFBFA400610316 /* OC_Category */,
-				BB8A9F7720DE3F5100610316 /* Image */,
 				BB8AA4A620DFB9C900610316 /* EspTouch */,
 				BB94EA9920DB8CE700370A95 /* RDVTabbarController */,
 				BB6AD2222100C09B008C8763 /* Model */,
@@ -2191,6 +2231,7 @@
 				BB65C25920FDF00000BB684E /* BeanModel.m in Sources */,
 				BBA7B95B212AA0A0004943DC /* CollectInfoCell.m in Sources */,
 				BB8AA4D120DFB9CA00610316 /* ESPTouchTask.m in Sources */,
+				BB73BA27212FE0E2001D9258 /* GradeSelController.m in Sources */,
 				BBFE861820E63027005C6CE5 /* DeviceConnectView.m in Sources */,
 				BB65C25D20FE129200BB684E /* CurveViewController.m in Sources */,
 				BB6A555E20FCCA3D0013C3C1 /* AddBeanTableViewCell.m in Sources */,
@@ -2205,25 +2246,32 @@
 				BB8AA4C820DFB9CA00610316 /* ESP_ByteUtil.m in Sources */,
 				BBFE861520E62FF3005C6CE5 /* DeviceConfirmView.m in Sources */,
 				BB6AD0E82126CC0C0010458A /* ReportLightCell.m in Sources */,
+				BB73BA2D212FE903001D9258 /* SpicesSelController.m in Sources */,
 				BB593FAC210F324C007ECB1D /* EventModel.m in Sources */,
 				BB94EAA520DBA9C800370A95 /* MainViewController.m in Sources */,
 				BB525F2C212D742C003484E9 /* referCurveCell.m in Sources */,
 				BB94963F2125504F000A4A59 /* LeftFuncController.m in Sources */,
+				BB73BA24212FB4CF001D9258 /* AddBeanInfoCell2.m in Sources */,
 				BB712ABD20E47F49005FF10F /* NetWork.m in Sources */,
 				BB94EAA120DB8CE700370A95 /* RDVTabBarController.m in Sources */,
 				BB8AA4A520DFB25900610316 /* EspViewController.m in Sources */,
 				BB2912122106D8D5001B9448 /* GeneralViewController.m in Sources */,
 				BB8AA4C520DFB9CA00610316 /* ESPGuideCode.m in Sources */,
+				BB73BA21212FA333001D9258 /* AddBeanInfoCell1.m in Sources */,
 				BB23E563210964C20074C61B /* FeedbackViewController.m in Sources */,
+				BB73BA30212FEA44001D9258 /* ProcessSelController.m in Sources */,
 				BB8F7BDF20DA513B00BE5CFC /* main.m in Sources */,
+				BB73BA1E212F9CF7001D9258 /* AddNewBeanController.m in Sources */,
 				BB94964221256406000A4A59 /* RightFuncController.m in Sources */,
 				BB61D75A210DC31C0068A0A6 /* ReportModel.m in Sources */,
 				BB8AA4D220DFB9CA00610316 /* ESPDatumCode.m in Sources */,
 				BB68B5FE2128124D001CABE5 /* BeanInfoCell.m in Sources */,
 				BB2912152106FB43001B9448 /* SubtitileCell.m in Sources */,
 				BB8AA4C620DFB9CA00610316 /* ESPTouchResult.m in Sources */,
+				BB73BA33212FED92001D9258 /* BuyDateSelController.m in Sources */,
 				BB8AA4CB20DFB9CA00610316 /* ESP_CRC8.m in Sources */,
 				BB8F7BD120DA513B00BE5CFC /* AppDelegate.m in Sources */,
+				BB73BA2A212FE6F2001D9258 /* SortModel.m in Sources */,
 				BB635D282108781C005F42D6 /* CurveColorViewController.m in Sources */,
 				BB635D1F210862E8005F42D6 /* FastEventViewController.m in Sources */,
 				BB29120D2106CCE1001B9448 /* PasswordTableViewController.m in Sources */,
@@ -2240,7 +2288,7 @@
 				BB94EAA020DB8CE700370A95 /* RDVTabBar.m in Sources */,
 				BB8AA4CA20DFB9CA00610316 /* ESPTouchGenerator.m in Sources */,
 				BBA7B95F212AA586004943DC /* CollectInfoCellCell.m in Sources */,
-				BB25E7A5212E4E03003568BD /* CurveInfoCell.m in Sources */,
+				BB25E7A5212E4E03003568BD /* CurveInfoCell_add.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
