@@ -8,9 +8,12 @@
 
 #import <UIKit/UIKit.h>
 
+typedef void(^TFBlock)(NSString *text);
+
 @interface AddBeanInfoCell1 : UITableViewCell
 
 @property (nonatomic, strong) UILabel *nameLabel;
 @property (nonatomic, strong) UITextField *contentTF;
+@property (nonatomic) TFBlock TFBlock;
 
 @end

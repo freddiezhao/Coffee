@@ -1,12 +1,12 @@
 //
-//  CurveViewController.m
+//  CurveController_bakeRela.m
 //  Coffee
 //
-//  Created by 杭州轨物科技有限公司 on 2018/7/17.
+//  Created by 杭州轨物科技有限公司 on 2018/8/28.
 //  Copyright © 2018年 杭州轨物科技有限公司. All rights reserved.
 //
 
-#import "CurveViewController.h"
+#import "CurveController_bakeRela.h"
 #import "BakeReportController.h"
 #import "TouchTableView.h"
 #import <MJRefresh/MJRefresh.h>
@@ -14,9 +14,9 @@
 #import "ReportModel.h"
 #import "DeviceModel.h"
 
-NSString *const CellIdentifier_CurrentCurve = @"CellID_CurrentCurve";
+NSString *const CellIdentifier_CurrentCurve_bakeadd = @"CellID_CurrentCurve_bakeadd";
 
-@interface CurveViewController () <UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate>
+@interface CurveController_bakeRela () <UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate>
 
 @property (nonatomic, strong) UISearchBar *curveSearch;
 
@@ -28,7 +28,7 @@ NSString *const CellIdentifier_CurrentCurve = @"CellID_CurrentCurve";
 
 @end
 
-@implementation CurveViewController
+@implementation CurveController_bakeRela
 
 static float HEIGHT_CELL = 50.f;
 static float HEIGHT_HEADER = 36.f;
@@ -38,7 +38,7 @@ static float HEIGHT_HEADER = 36.f;
     
     [self setNavItem];
     
-    _currentReportArr = [self getAllReport:nil];
+    _currentReportArr = [self getAllReport];
     _titleData = [self titleData];
     _mySegment = [self mySegment];
     _currentTable = [self currentTable];
@@ -59,22 +59,12 @@ static float HEIGHT_HEADER = 36.f;
 - (void)setNavItem{
     self.navigationItem.title = LocalString(@"曲线");
     
-    UIView *rightButtonView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 89, 30)];
-    
-    UIButton *addButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    addButton.frame = CGRectMake(52, 4, 22, 22);
-    [addButton setImage:[UIImage imageNamed:@"ic_nav_scan_black"] forState:UIControlStateNormal];
-    [addButton addTarget:self action:@selector(addBean) forControlEvents:UIControlEventTouchUpInside];
-    [rightButtonView addSubview:addButton];
-    
-    UIButton *searchButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    searchButton.frame = CGRectMake(15, 4, 22, 22);
-    [searchButton setImage:[UIImage imageNamed:@"ic_nav_serch_black"] forState:UIControlStateNormal];
-    [searchButton addTarget:self action:@selector(searchBean) forControlEvents:UIControlEventTouchUpInside];
-    [rightButtonView addSubview:searchButton];
-    UIBarButtonItem *rightBarButton = [[UIBarButtonItem alloc] initWithCustomView:rightButtonView];
+    UIButton *rightButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    rightButton.frame = CGRectMake(0, 0, 30, 30);
+    [rightButton setImage:[UIImage imageNamed:@"ic_nav_serch_black"] forState:UIControlStateNormal];
+    [rightButton addTarget:self action:@selector(next) forControlEvents:UIControlEventTouchUpInside];
+    UIBarButtonItem *rightBarButton = [[UIBarButtonItem alloc] initWithCustomView:rightButton];
     self.navigationItem.rightBarButtonItem = rightBarButton;
-
 }
 
 - (UISegmentedControl *)mySegment{
@@ -133,7 +123,7 @@ static float HEIGHT_HEADER = 36.f;
             tableView.dataSource = self;
             tableView.delegate = self;
             tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-            [tableView registerClass:[CurrentCurveCell class] forCellReuseIdentifier:CellIdentifier_CurrentCurve];
+            [tableView registerClass:[CurrentCurveCell class] forCellReuseIdentifier:CellIdentifier_CurrentCurve_bakeadd];
             [self.view addSubview:tableView];
             tableView.estimatedRowHeight = 0;
             tableView.estimatedSectionHeaderHeight = 0;
@@ -172,27 +162,18 @@ static float HEIGHT_HEADER = 36.f;
 
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    CurrentCurveCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_CurrentCurve];
+    CurrentCurveCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_CurrentCurve_bakeadd];
     if (cell == nil) {
-        cell = [[CurrentCurveCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_CurrentCurve];
+        cell = [[CurrentCurveCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_CurrentCurve_bakeadd];
     }
     ReportModel *report = _currentReportArr[indexPath.section][indexPath.row];
     
-    if (_mySegment.selectedSegmentIndex == 0 || _mySegment.selectedSegmentIndex == 1) {
-        NSMutableAttributedString *str = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"%@  %@",report.curveName,report.deviceName]];
-        [str addAttribute:NSForegroundColorAttributeName value:[UIColor colorWithHexString:@"333333"] range:NSMakeRange(0,report.curveName.length)];
-        [str addAttribute:NSForegroundColorAttributeName value:[UIColor colorWithHexString:@"999999"] range:NSMakeRange(report.curveName.length + 2,report.deviceName.length)];
-        [str addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:16.f] range:NSMakeRange(0,report.curveName.length)];
-        [str addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:14.f] range:NSMakeRange(report.curveName.length + 2,report.deviceName.length)];
-        cell.beanDeviceName.attributedText = str;
-    }else if (_mySegment.selectedSegmentIndex == 2){
-        NSMutableAttributedString *str = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"%@  来自%@的分享",report.curveName,report.sharerName]];
-        [str addAttribute:NSForegroundColorAttributeName value:[UIColor colorWithHexString:@"333333"] range:NSMakeRange(0,report.curveName.length)];
-        [str addAttribute:NSForegroundColorAttributeName value:[UIColor colorWithHexString:@"999999"] range:NSMakeRange(report.curveName.length + 2,report.sharerName.length + 5)];
-        [str addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:16.f] range:NSMakeRange(0,report.curveName.length)];
-        [str addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:14.f] range:NSMakeRange(report.curveName.length + 2,report.sharerName.length + 5)];
-        cell.beanDeviceName.attributedText = str;
-    }
+    NSMutableAttributedString *str = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"%@  %@",report.curveName,report.deviceName]];
+    [str addAttribute:NSForegroundColorAttributeName value:[UIColor colorWithHexString:@"333333"] range:NSMakeRange(0,report.curveName.length)];
+    [str addAttribute:NSForegroundColorAttributeName value:[UIColor colorWithHexString:@"999999"] range:NSMakeRange(report.curveName.length + 2,report.deviceName.length)];
+    [str addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:16.f] range:NSMakeRange(0,report.curveName.length)];
+    [str addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:14.f] range:NSMakeRange(report.curveName.length + 2,report.deviceName.length)];
+    cell.beanDeviceName.attributedText = str;
     
     cell.dateLabel.text = [NSDate YMDHMStringFromUTCDate:report.date];
     
@@ -201,6 +182,9 @@ static float HEIGHT_HEADER = 36.f;
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    ReportModel *relaCurve = _currentReportArr[indexPath.section][indexPath.row];
+    [NetWork shareNetWork].relaCurve = relaCurve;
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -220,7 +204,7 @@ static float HEIGHT_HEADER = 36.f;
     
     ReportModel *report = _currentReportArr[section][0];
     textLabel.text = [NSDate YMDStringFromDate:report.date];
-
+    
     return headerView;
 }
 
@@ -264,31 +248,19 @@ static float HEIGHT_HEADER = 36.f;
     switch (Index) {
         case 0:
         {
-            [_currentTable.mj_header beginRefreshing];
-            DeviceModel *device = [[DeviceModel alloc] init];
-            device.sn = @"fbb";
-            _currentReportArr = [self getAllReport:device];
-            [_currentTable reloadData];
-            [_currentTable.mj_header endRefreshing];
+            _currentTable.hidden = NO;
         }
             break;
         case 1:
         {
-            [_currentTable.mj_header beginRefreshing];
-            _currentReportArr = [self getAllReport:nil];
-            [_currentTable reloadData];
-            [_currentTable.mj_header endRefreshing];
+            _currentTable.hidden = YES;
         }
             break;
         case 2:
         {
-            [_currentTable.mj_header beginRefreshing];
-            [self getAllSharedReport];
-            [_currentTable reloadData];
-            [_currentTable.mj_header endRefreshing];
+            _currentTable.hidden = YES;
         }
             break;
-            
         default:
             break;
     }
@@ -301,26 +273,41 @@ static float HEIGHT_HEADER = 36.f;
     [self.navigationController pushViewController:reportVC animated:YES];
 }
 
-- (NSMutableArray *)getAllReport:(DeviceModel *)device{
+- (NSMutableArray *)getAllReport{
+    DeviceModel *device = [[DeviceModel alloc] init];
+    device.sn = @"fbb";
     NSMutableArray *arr = [[DataBase shareDataBase] queryAllReport:device];
     //NSMutableArray *arr = [[DataBase shareDataBase] queryAllReport:[NetWork shareNetWork].connectedDevice];
     arr = [self sortByDate:arr];
-    NSMutableArray *classArr = [self classArray:arr];
+    //将相同date重新生成一个数组，作为一个section
+    NSMutableArray *classArr = [[NSMutableArray alloc] init];
+    for (int i = 0; i < arr.count; i++) {
+        ReportModel *obj1 = arr[i];
+        NSMutableArray *array = [[NSMutableArray alloc] init];
+        [array addObject:obj1];
+        NSLog(@"%@",[NSDate YMDHMStringFromUTCDate:obj1.date]);
+        for (int j = i+1; j < arr.count; j++) {
+            ReportModel *obj2 = arr[j];
+            if ([[NSDate YMDStringFromDate:obj1.date] isEqualToString:[NSDate YMDStringFromDate:obj2.date]]) {
+                [array addObject:obj2];
+                if (j+1 >= arr.count) {//最后一个与前一个相同时，则添加完后结束比较
+                    [classArr addObject:array];
+                    i = j;
+                    break;
+                }
+            }else{
+                //这个与比较的不同，则下一个比较以这个为基准开始比较
+                [classArr addObject:array];
+                i = j - 1;
+                break;
+            }
+        }
+    }
     return classArr;
 }
 
-- (void)getAllSharedReport{
-    NSMutableArray *arr = [[DataBase shareDataBase] queryAllSharedReport];
-    arr = [self sortByDate:arr];
-    NSMutableArray *classArr = [self classArray:arr];
-    if (_currentReportArr.count > 0) {
-        [_currentReportArr removeAllObjects];
-    }
-    _currentReportArr = [classArr mutableCopy];
-}
-
 - (void)refreshTable{
-    _currentReportArr = [self getAllReport:nil];
+    _currentReportArr = [self getAllReport];
 }
 #pragma mark - 排序
 - (NSMutableArray *)sortByDate:(NSMutableArray *)arr{
@@ -328,66 +315,6 @@ static float HEIGHT_HEADER = 36.f;
         return [obj1.date compare:obj2.date];
     }];
     return arr;
-}
-
-//将相同时间的object重新生成数组
-- (NSMutableArray *)classArray:(NSMutableArray *)arr{
-    //将相同date重新生成一个数组，作为一个section
-    NSMutableArray *classArr = [[NSMutableArray alloc] init];
-    
-    if (arr.count == 1) {
-        ReportModel *obj1 = arr[0];
-        NSMutableArray *array = [[NSMutableArray alloc] init];
-        [array addObject:obj1];
-        [classArr addObject:array];
-    }else if (arr.count > 1) {
-        NSMutableArray *array = [[NSMutableArray alloc] init];
-        for (int i = 0; i < arr.count - 1; i++) {
-            ReportModel *obj1 = arr[i];
-            ReportModel *obj2 = arr[i+1];
-            
-            if ([[NSDate YMDStringFromDate:obj1.date] isEqualToString:[NSDate YMDStringFromDate:obj2.date]]){
-                [array addObject:obj1];
-            }else{
-                [array addObject:obj1];
-                //[classArr addObject:array];//这样写会让每一个添加的array都指向同一个指针，所以值都是一样的
-                [classArr addObject:[array mutableCopy]];
-                [array removeAllObjects];
-            }
-            if (i == arr.count - 2) {//如果是最后一个值，无法进行到下个循环，所以将未插入的直接插入
-                [array addObject:obj2];
-                [classArr addObject:[array mutableCopy]];
-            }
-
-        }
-    }
-    
-//    for (int i = 0; i < arr.count; i++) {
-//        ReportModel *obj1 = arr[i];
-//        NSMutableArray *array = [[NSMutableArray alloc] init];
-//        [array addObject:obj1];
-//        if (i+1 > array.count) {//只有一个值时
-//            [classArr addObject:array];
-//        }
-//        for (int j = i+1; j < arr.count; j++) {
-//            ReportModel *obj2 = arr[j];
-//            if ([[NSDate YMDStringFromDate:obj1.date] isEqualToString:[NSDate YMDStringFromDate:obj2.date]]) {
-//                [array addObject:obj2];
-//                if (j+1 >= arr.count) {//最后一个与前一个相同时，则添加完后结束比较
-//                    [classArr addObject:array];
-//                    i = j;
-//                    break;
-//                }
-//            }else{
-//                //这个与比较的不同，则下一个比较以这个为基准开始比较
-//                [classArr addObject:array];
-//                i = j - 1;
-//                break;
-//            }
-//        }
-//    }
-    
-    return classArr;
 }
 
 @end

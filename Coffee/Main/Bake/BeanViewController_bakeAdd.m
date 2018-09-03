@@ -1,12 +1,12 @@
 //
-//  BeanViewController.m
+//  BeanViewController_bakeAdd.m
 //  Coffee
 //
-//  Created by 杭州轨物科技有限公司 on 2018/8/23.
+//  Created by 杭州轨物科技有限公司 on 2018/8/27.
 //  Copyright © 2018年 杭州轨物科技有限公司. All rights reserved.
 //
 
-#import "BeanViewController.h"
+#import "BeanViewController_bakeAdd.h"
 #import "TouchTableView.h"
 #import "MJRefresh.h"
 #import "FMDB.h"
@@ -15,10 +15,10 @@
 #import "AddNewBeanController.h"
 
 
-NSString *const CellIdentifier_bean = @"CellID_bean";
+NSString *const CellIdentifier_bean_bakeadd = @"CellID_bean_bakeadd";
 
 
-@interface BeanViewController ()<UITableViewDelegate,UITableViewDataSource>
+@interface BeanViewController_bakeAdd () <UITableViewDelegate,UITableViewDataSource>
 
 @property (nonatomic, strong) NSTimer *timer;
 @property (nonatomic, strong) NSLock *lock;
@@ -39,7 +39,7 @@ NSString *const CellIdentifier_bean = @"CellID_bean";
 @property (nonatomic, strong) NSMutableArray *weightArr;//重量
 @end
 
-@implementation BeanViewController
+@implementation BeanViewController_bakeAdd
 {
     BOOL isConnect;
     int resendTime;
@@ -61,16 +61,6 @@ static float HEIGHT_HEADER = 36.f;
     _sort_generalBtn = [self sort_generalBtn];
     _headerView = [self headerView];
     _timer = [self timer];
-    
-//    NSArray *array = @[@"李娜", @"林丹", @"张学友", @"孙燕姿", @"Sammi", @"Tanya", @"东野圭吾", @"周树人", @"张大千", @"阿新"];
-//    NSArray *weightArray = @[@20, @40, @10, @20, @30, @15, @11, @31, @41, @51];
-//    _beanArr = [NSMutableArray array];
-//    for (int i = 0; i<array.count; i++) {
-//        BeanModel *bean = [[BeanModel alloc] init];
-//        bean.name = array[i];
-//        bean.weight = [weightArray[i] floatValue];
-//        [_beanArr addObject:bean];
-//    }
     
     if (_beanArr.count == 0) {
         _sort_nameBtn.hidden = YES;
@@ -111,25 +101,17 @@ static float HEIGHT_HEADER = 36.f;
 
 #pragma mark - lazy load
 - (void)setNavItem{
-    self.navigationItem.title = LocalString(@"生豆");
+    self.navigationItem.title = LocalString(@"选择咖啡豆");
     
     UIView *rightButtonView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 89, 30)];
-    
-    UIButton *addButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    addButton.frame = CGRectMake(52, 4, 22, 22);
-    [addButton setImage:[UIImage imageNamed:@"ic_nav_add_black"] forState:UIControlStateNormal];
-    [addButton addTarget:self action:@selector(addBean) forControlEvents:UIControlEventTouchUpInside];
-    [rightButtonView addSubview:addButton];
-    
     UIButton *searchButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    searchButton.frame = CGRectMake(15, 4, 22, 22);
+    searchButton.frame = CGRectMake(52, 4, 22, 22);
     [searchButton setImage:[UIImage imageNamed:@"ic_nav_serch_black"] forState:UIControlStateNormal];
     [searchButton addTarget:self action:@selector(searchBean) forControlEvents:UIControlEventTouchUpInside];
     [rightButtonView addSubview:searchButton];
     UIBarButtonItem *rightBarButton = [[UIBarButtonItem alloc] initWithCustomView:rightButtonView];
     self.navigationItem.rightBarButtonItem = rightBarButton;
 }
-
 - (UITableView *)beanTable{
     if (!_beanTable) {
         _beanTable = ({
@@ -140,7 +122,7 @@ static float HEIGHT_HEADER = 36.f;
             tableView.delegate = self;
             tableView.hidden = YES;
             tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-            [tableView registerClass:[beanCell class] forCellReuseIdentifier:CellIdentifier_bean];
+            [tableView registerClass:[beanCell class] forCellReuseIdentifier:CellIdentifier_bean_bakeadd];
             [self.view addSubview:tableView];
             tableView.estimatedRowHeight = 0;
             tableView.estimatedSectionHeaderHeight = 0;
@@ -151,15 +133,15 @@ static float HEIGHT_HEADER = 36.f;
             tableView.sectionIndexColor = [UIColor colorWithHexString:@"4778CC"];//修改右边索引字体的颜色
             //tableView.sectionIndexTrackingBackgroundColor = [UIColor orangeColor];//修改右边索引点击时候的背景色
             
-
+            
             //tableView.scrollEnabled = NO;
-//            if ([tableView respondsToSelector:@selector(setSeparatorInset:)]) {
-//                [tableView setSeparatorInset:UIEdgeInsetsZero];
-//            }
-//            if ([tableView respondsToSelector:@selector(setLayoutMargins:)])  {
-//                [tableView setLayoutMargins:UIEdgeInsetsZero];
-//            }
-
+            //            if ([tableView respondsToSelector:@selector(setSeparatorInset:)]) {
+            //                [tableView setSeparatorInset:UIEdgeInsetsZero];
+            //            }
+            //            if ([tableView respondsToSelector:@selector(setLayoutMargins:)])  {
+            //                [tableView setLayoutMargins:UIEdgeInsetsZero];
+            //            }
+            
             MJRefreshGifHeader *header = [MJRefreshGifHeader headerWithRefreshingTarget:self refreshingAction:@selector(getAllBean)];
             // Set title
             [header setTitle:LocalString(@"下拉刷新") forState:MJRefreshStateIdle];
@@ -232,7 +214,7 @@ static float HEIGHT_HEADER = 36.f;
         _totolWeight.text = [NSString stringWithFormat:@"总重量：%f kg",0.f];
         [_headerView addSubview:_totolWeight];
         [self.view addSubview:_headerView];
-
+        
         [_headerView mas_makeConstraints:^(MASConstraintMaker *make) {
             make.size.mas_equalTo(CGSizeMake(ScreenWidth, HEIGHT_HEADER / HScale));
             make.left.equalTo(self.view.mas_left);
@@ -283,7 +265,7 @@ static float HEIGHT_HEADER = 36.f;
         }];
         [_sort_nameBtn setTitleEdgeInsets:UIEdgeInsetsMake(0, -_sort_nameBtn.imageView.bounds.size.width, 0, _sort_nameBtn.imageView.bounds.size.width)];
         [_sort_nameBtn setImageEdgeInsets:UIEdgeInsetsMake(0,_sort_nameBtn.titleLabel.bounds.size.width, 0, -_sort_nameBtn.titleLabel.bounds.size.width)];
-
+        
     }
     return _sort_nameBtn;
 }
@@ -309,7 +291,7 @@ static float HEIGHT_HEADER = 36.f;
             }];
             [_sort_weightBtn setTitleEdgeInsets:UIEdgeInsetsMake(0, -_sort_weightBtn.imageView.bounds.size.width, 0, _sort_weightBtn.imageView.bounds.size.width)];
             [_sort_weightBtn setImageEdgeInsets:UIEdgeInsetsMake(0,_sort_weightBtn.titleLabel.bounds.size.width, 0, -_sort_weightBtn.titleLabel.bounds.size.width)];
-
+            
         }
         return _sort_weightBtn;
     }
@@ -357,9 +339,9 @@ static float HEIGHT_HEADER = 36.f;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
-    beanCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_bean];
+    beanCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_bean_bakeadd];
     if (cell == nil) {
-        cell = [[beanCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_bean];
+        cell = [[beanCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_bean_bakeadd];
     }
     if (_sort_generalBtn.tag == sortSelect) {//综合排序
         BeanModel *bean = _beanArr[indexPath.row];
@@ -393,7 +375,22 @@ static float HEIGHT_HEADER = 36.f;
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    //NetWork *net = [NetWork shareNetWork];
+    BeanModel *bean;
+    if (_sort_generalBtn.tag == sortSelect) {
+        bean = _beanArr[indexPath.row];
+    }else if (_sort_nameBtn.tag == sortUp){
+        bean = _weightArr[indexPath.row];
+    }else if (_sort_weightBtn.tag == sortUp || _sort_weightBtn.tag == sortDown){
+        bean = [_mutableSections[indexPath.section] objectAtIndex:indexPath.row];
+    }
+    for (BeanModel *model in [NetWork shareNetWork].beanArray) {
+        if (model.beanId == bean.beanId) {
+            [NSObject showHudTipStr:@"你已经添加该生豆了"];
+            return;
+        }
+    }
+    [[NetWork shareNetWork].beanArray addObject:bean];
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
@@ -448,52 +445,6 @@ sectionForSectionIndexTitle:(NSString *)title
         return [[UILocalizedIndexedCollation currentCollation] sectionForSectionIndexTitleAtIndex:index];
     }else{
         return 0;
-    }
-}
-
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath{
-    return YES;
-}
-
-- (UITableViewCellEditingStyle)tableView:(UITableView *)tableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath{
-    return UITableViewCellEditingStyleDelete;
-}
-
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath{
-    if (editingStyle == UITableViewCellEditingStyleDelete) {
-        DataBase *db = [DataBase shareDataBase];
-        BOOL result = NO;
-        if (_sort_generalBtn.tag == sortSelect) {
-            BeanModel *bean = _beanArr[indexPath.row];
-            result = [db deleteqBean:bean];
-            if (result) {
-                [_beanArr removeObject:bean];
-                [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
-                [NSObject showHudTipStr:LocalString(@"删除成功")];
-            }else{
-                [NSObject showHudTipStr:LocalString(@"删除失败")];
-            }
-        }else if (_sort_nameBtn.tag == sortUp){
-            BeanModel *bean = _weightArr[indexPath.row];
-            result = [db deleteqBean:bean];
-            if (result) {
-                [_weightArr removeObject:bean];
-                [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
-                [NSObject showHudTipStr:LocalString(@"删除成功")];
-            }else{
-                [NSObject showHudTipStr:LocalString(@"删除失败")];
-            }
-        }else if (_sort_weightBtn.tag == sortUp || _sort_weightBtn.tag == sortDown){
-            BeanModel *bean = [_mutableSections[indexPath.section] objectAtIndex:indexPath.row];
-            result = [db deleteqBean:bean];
-            if (result) {
-                [_mutableSections[indexPath.section] removeObject:bean];
-                [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
-                [NSObject showHudTipStr:LocalString(@"删除成功")];
-            }else{
-                [NSObject showHudTipStr:LocalString(@"删除失败")];
-            }
-        }
     }
 }
 
@@ -570,7 +521,7 @@ sectionForSectionIndexTitle:(NSString *)title
     NSInteger sectionTitlesCount = [[collation sectionTitles] count];
     
     //2.构建每个section数组
-   _mutableSections = [NSMutableArray arrayWithCapacity:sectionTitlesCount];
+    _mutableSections = [NSMutableArray arrayWithCapacity:sectionTitlesCount];
     for (int i = 0; i < sectionTitlesCount; i++) {
         NSMutableArray *subArr = [NSMutableArray array];
         [_mutableSections addObject:subArr];
@@ -621,23 +572,6 @@ sectionForSectionIndexTitle:(NSString *)title
 #pragma mark - Data Source
 - (void)getAllBean{
     _beanArr = [[DataBase shareDataBase] queryAllBean];
-    
-    if (_beanArr.count == 0) {
-        _sort_nameBtn.hidden = YES;
-        _sort_generalBtn.hidden = YES;
-        _sort_weightBtn.hidden = YES;
-        _headerView.hidden = YES;
-        _beanTable.hidden = YES;
-        _noBeanView.hidden = NO;
-    }else{
-        _sort_nameBtn.hidden = NO;
-        _sort_generalBtn.hidden = NO;
-        _sort_weightBtn.hidden = NO;
-        _headerView.hidden = NO;
-        _beanTable.hidden = NO;
-        _noBeanView.hidden = YES;
-    }
-    
     _totolCount.text = [NSString stringWithFormat:@"总数:%ld",_beanArr.count];
     float totolWeight = 0.f;
     for (BeanModel *bean in _beanArr) {
@@ -654,6 +588,22 @@ sectionForSectionIndexTitle:(NSString *)title
     [self.beanTable reloadData];
     if ([_beanTable.mj_header isRefreshing]) {
         [_beanTable.mj_header endRefreshing];
+    }
+    
+    if (_beanArr.count == 0) {
+        _sort_nameBtn.hidden = YES;
+        _sort_generalBtn.hidden = YES;
+        _sort_weightBtn.hidden = YES;
+        _headerView.hidden = YES;
+        _beanTable.hidden = YES;
+        _noBeanView.hidden = NO;
+    }else{
+        _sort_nameBtn.hidden = NO;
+        _sort_generalBtn.hidden = NO;
+        _sort_weightBtn.hidden = NO;
+        _headerView.hidden = NO;
+        _beanTable.hidden = NO;
+        _noBeanView.hidden = YES;
     }
 }
 

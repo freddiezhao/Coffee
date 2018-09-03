@@ -9,15 +9,12 @@
 #import "BakeViewController.h"
 #import "DeviceViewController.h"
 #import "BakeCurveViewController.h"
-#import "AddBeanTableViewCell.h"
 #import "BeanModel.h"
 #import "AddBeanTableController.h"
 
 #define buttonHeight 44
 
-NSString *const kCellIdentifier_addBean = @"cellID_addBean";
-
-@interface BakeViewController () <UITableViewDelegate,UITableViewDataSource>
+@interface BakeViewController ()
 
 @property (nonatomic, strong) NetWork *myNet;
 
@@ -45,6 +42,13 @@ NSString *const kCellIdentifier_addBean = @"cellID_addBean";
 
 @property (nonatomic, strong) UIView *bottomView;
 @property (nonatomic, strong) UIButton *showControlViewBtn;
+@property (nonatomic, strong) UIButton *powerBtn;
+@property (nonatomic, strong) UIButton *fireBtn;
+@property (nonatomic, strong) UIButton *coldBtn;
+@property (nonatomic, strong) UIButton *stirBtn;
+@property (nonatomic, strong) UIButton *firePBtn;
+@property (nonatomic, strong) UIButton *windPBtn;
+
 @property (nonatomic, strong) UIButton *bakeCurveBtn;
 @property (nonatomic, strong) UIButton *addBeanBtn;
 
@@ -88,7 +92,10 @@ NSString *const kCellIdentifier_addBean = @"cellID_addBean";
     
     _myNet = [NetWork shareNetWork];
     [_myNet addObserver:self forKeyPath:@"tempData" options:NSKeyValueObservingOptionNew context:nil];
-    
+    [_myNet addObserver:self forKeyPath:@"powerStatus" options:NSKeyValueObservingOptionNew context:nil];
+    [_myNet addObserver:self forKeyPath:@"fireStatus" options:NSKeyValueObservingOptionNew context:nil];
+    [_myNet addObserver:self forKeyPath:@"coolStatus" options:NSKeyValueObservingOptionNew context:nil];
+    [_myNet addObserver:self forKeyPath:@"stirStatus" options:NSKeyValueObservingOptionNew context:nil];
 }
 
 - (void)viewDidAppear:(BOOL)animated{
@@ -205,69 +212,91 @@ NSString *const kCellIdentifier_addBean = @"cellID_addBean";
         _mainView.layer.shadowRadius = 20;
         [self.view addSubview:_mainView];
         
-        UIButton *power = [[UIButton alloc] init];
-        power = [UIButton buttonWithType:UIButtonTypeCustom];
-        [power setImage:[UIImage imageNamed:@"btn_power_off"] forState:UIControlStateNormal];
-        [power addTarget:self action:@selector(setPower) forControlEvents:UIControlEventTouchUpInside];
-        [_mainView addSubview:power];
+        _powerBtn = [[UIButton alloc] init];
+        _powerBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        if (_myNet.powerStatus) {
+            [_powerBtn setImage:[UIImage imageNamed:@"btn_power_on"] forState:UIControlStateNormal];
+        }else{
+            [_powerBtn setImage:[UIImage imageNamed:@"btn_power_off"] forState:UIControlStateNormal];
+        }
+        [_powerBtn addTarget:self action:@selector(setPower) forControlEvents:UIControlEventTouchUpInside];
+        _powerBtn.enabled = NO;
+        [_mainView addSubview:_powerBtn];
         
-        UIButton *fire = [[UIButton alloc] init];
-        fire = [UIButton buttonWithType:UIButtonTypeCustom];
-        [fire setImage:[UIImage imageNamed:@"btn_fire_off"] forState:UIControlStateNormal];
-        [fire addTarget:self action:@selector(setPower) forControlEvents:UIControlEventTouchUpInside];
-        [_mainView addSubview:fire];
+        _fireBtn = [[UIButton alloc] init];
+        _fireBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        if (_myNet.fireStatus) {
+            [_fireBtn setImage:[UIImage imageNamed:@"btn_fire_on"] forState:UIControlStateNormal];
+        }else{
+            [_fireBtn setImage:[UIImage imageNamed:@"btn_fire_off"] forState:UIControlStateNormal];
+        }
+        [_fireBtn addTarget:self action:@selector(setFire) forControlEvents:UIControlEventTouchUpInside];
+        _fireBtn.enabled = NO;
+        [_mainView addSubview:_fireBtn];
         
-        UIButton *stir = [[UIButton alloc] init];
-        stir = [UIButton buttonWithType:UIButtonTypeCustom];
-        [stir setImage:[UIImage imageNamed:@"btn_stir_off"] forState:UIControlStateNormal];
-        [stir addTarget:self action:@selector(setPower) forControlEvents:UIControlEventTouchUpInside];
-        [_mainView addSubview:stir];
+        _stirBtn = [[UIButton alloc] init];
+        _stirBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        if (_myNet.stirStatus) {
+            [_stirBtn setImage:[UIImage imageNamed:@"btn_stir_on"] forState:UIControlStateNormal];
+        }else{
+            [_stirBtn setImage:[UIImage imageNamed:@"btn_stir_off"] forState:UIControlStateNormal];
+        }
+        [_stirBtn addTarget:self action:@selector(setStir) forControlEvents:UIControlEventTouchUpInside];
+        _stirBtn.enabled = NO;
+        [_mainView addSubview:_stirBtn];
         
-        UIButton *cold = [[UIButton alloc] init];
-        cold = [UIButton buttonWithType:UIButtonTypeCustom];
-        [cold setImage:[UIImage imageNamed:@"btn_cold_off"] forState:UIControlStateNormal];
-        [cold addTarget:self action:@selector(setPower) forControlEvents:UIControlEventTouchUpInside];
-        [_mainView addSubview:cold];
+        _coldBtn = [[UIButton alloc] init];
+        _coldBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        if (_myNet.coolStatus) {
+            [_coldBtn setImage:[UIImage imageNamed:@"btn_cold_on"] forState:UIControlStateNormal];
+        }else{
+            [_coldBtn setImage:[UIImage imageNamed:@"btn_cold_off"] forState:UIControlStateNormal];
+        }
+        [_coldBtn addTarget:self action:@selector(setCold) forControlEvents:UIControlEventTouchUpInside];
+        _coldBtn.enabled = NO;
+        [_mainView addSubview:_coldBtn];
         
-        UIButton *fireP = [[UIButton alloc] init];
-        fireP = [UIButton buttonWithType:UIButtonTypeCustom];
-        [fireP setImage:[UIImage imageNamed:@"btn_firepower_disable"] forState:UIControlStateNormal];
-        [fireP addTarget:self action:@selector(setPower) forControlEvents:UIControlEventTouchUpInside];
-        [_mainView addSubview:fireP];
+        _firePBtn = [[UIButton alloc] init];
+        _firePBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        [_firePBtn setImage:[UIImage imageNamed:@"btn_firepower_disable"] forState:UIControlStateNormal];
+        [_firePBtn addTarget:self action:@selector(setPower) forControlEvents:UIControlEventTouchUpInside];
+        _firePBtn.enabled = NO;
+        [_mainView addSubview:_firePBtn];
         
-        UIButton *windP = [[UIButton alloc] init];
-        windP = [UIButton buttonWithType:UIButtonTypeCustom];
-        [windP setImage:[UIImage imageNamed:@"btn_windpower_disable"] forState:UIControlStateNormal];
-        [windP addTarget:self action:@selector(setPower) forControlEvents:UIControlEventTouchUpInside];
-        [_mainView addSubview:windP];
+        _windPBtn = [[UIButton alloc] init];
+        _windPBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        [_windPBtn setImage:[UIImage imageNamed:@"btn_windpower_disable"] forState:UIControlStateNormal];
+        [_windPBtn addTarget:self action:@selector(setPower) forControlEvents:UIControlEventTouchUpInside];
+        _windPBtn.enabled = NO;
+        [_mainView addSubview:_windPBtn];
         
         
-        [power mas_makeConstraints:^(MASConstraintMaker *make) {
+        [_powerBtn mas_makeConstraints:^(MASConstraintMaker *make) {
             make.size.mas_equalTo(CGSizeMake(50/WScale, 50/WScale));
             make.centerX.equalTo(_mainView.mas_centerX).offset(-125/WScale);
             make.top.equalTo(_mainView.mas_top).offset(246/HScale);
         }];
-        [fire mas_makeConstraints:^(MASConstraintMaker *make) {
+        [_fireBtn mas_makeConstraints:^(MASConstraintMaker *make) {
             make.size.mas_equalTo(CGSizeMake(50/WScale, 50/WScale));
             make.centerX.equalTo(_mainView.mas_centerX);
             make.top.equalTo(_mainView.mas_top).offset(246/HScale);
         }];
-        [stir mas_makeConstraints:^(MASConstraintMaker *make) {
+        [_stirBtn mas_makeConstraints:^(MASConstraintMaker *make) {
             make.size.mas_equalTo(CGSizeMake(50/WScale, 50/WScale));
             make.centerX.equalTo(_mainView.mas_centerX).offset(125/WScale);
             make.top.equalTo(_mainView.mas_top).offset(246/HScale);
         }];
-        [cold mas_makeConstraints:^(MASConstraintMaker *make) {
+        [_coldBtn mas_makeConstraints:^(MASConstraintMaker *make) {
             make.size.mas_equalTo(CGSizeMake(50/WScale, 50/WScale));
             make.centerX.equalTo(_mainView.mas_centerX).offset(-125/WScale);
             make.top.equalTo(_mainView.mas_top).offset(326/HScale);
         }];
-        [fireP mas_makeConstraints:^(MASConstraintMaker *make) {
+        [_firePBtn mas_makeConstraints:^(MASConstraintMaker *make) {
             make.size.mas_equalTo(CGSizeMake(50/WScale, 50/WScale));
             make.centerX.equalTo(_mainView.mas_centerX);
             make.top.equalTo(_mainView.mas_top).offset(326/HScale);
         }];
-        [windP mas_makeConstraints:^(MASConstraintMaker *make) {
+        [_windPBtn mas_makeConstraints:^(MASConstraintMaker *make) {
             make.size.mas_equalTo(CGSizeMake(50/WScale, 50/WScale));
             make.centerX.equalTo(_mainView.mas_centerX).offset(125/WScale);
             make.top.equalTo(_mainView.mas_top).offset(326/HScale);
@@ -317,33 +346,33 @@ NSString *const kCellIdentifier_addBean = @"cellID_addBean";
         
         [powerLabel mas_makeConstraints:^(MASConstraintMaker *make) {
             make.size.mas_equalTo(CGSizeMake(50/WScale, 19/HScale));
-            make.centerX.equalTo(power.mas_centerX);
-            make.top.equalTo(power.mas_bottom).offset(2/HScale);
+            make.centerX.equalTo(_powerBtn.mas_centerX);
+            make.top.equalTo(_powerBtn.mas_bottom).offset(2/HScale);
         }];
         [fireLabel mas_makeConstraints:^(MASConstraintMaker *make) {
             make.size.mas_equalTo(CGSizeMake(50/WScale, 19/HScale));
-            make.centerX.equalTo(fire.mas_centerX);
-            make.top.equalTo(fire.mas_bottom).offset(2/HScale);
+            make.centerX.equalTo(_fireBtn.mas_centerX);
+            make.top.equalTo(_fireBtn.mas_bottom).offset(2/HScale);
         }];
         [stirLabel mas_makeConstraints:^(MASConstraintMaker *make) {
             make.size.mas_equalTo(CGSizeMake(50/WScale, 19/HScale));
-            make.centerX.equalTo(stir.mas_centerX);
-            make.top.equalTo(stir.mas_bottom).offset(2/HScale);
+            make.centerX.equalTo(_stirBtn.mas_centerX);
+            make.top.equalTo(_stirBtn.mas_bottom).offset(2/HScale);
         }];
         [coldLabel mas_makeConstraints:^(MASConstraintMaker *make) {
             make.size.mas_equalTo(CGSizeMake(50/WScale, 19/HScale));
-            make.centerX.equalTo(cold.mas_centerX);
-            make.top.equalTo(cold.mas_bottom).offset(2/HScale);
+            make.centerX.equalTo(_coldBtn.mas_centerX);
+            make.top.equalTo(_coldBtn.mas_bottom).offset(2/HScale);
         }];
         [firepLabel mas_makeConstraints:^(MASConstraintMaker *make) {
             make.size.mas_equalTo(CGSizeMake(50/WScale, 19/HScale));
-            make.centerX.equalTo(fireP.mas_centerX);
-            make.top.equalTo(fireP.mas_bottom).offset(2/HScale);
+            make.centerX.equalTo(_firePBtn.mas_centerX);
+            make.top.equalTo(_firePBtn.mas_bottom).offset(2/HScale);
         }];
         [windpLabel mas_makeConstraints:^(MASConstraintMaker *make) {
             make.size.mas_equalTo(CGSizeMake(50/WScale, 19/HScale));
-            make.centerX.equalTo(windP.mas_centerX);
-            make.top.equalTo(windP.mas_bottom).offset(2/HScale);
+            make.centerX.equalTo(_windPBtn.mas_centerX);
+            make.top.equalTo(_windPBtn.mas_bottom).offset(2/HScale);
         }];
     }
     return _mainView;
@@ -624,46 +653,76 @@ NSString *const kCellIdentifier_addBean = @"cellID_addBean";
 }
 
 - (void)setPower{
-    
+    if (_myNet.powerStatus) {
+        [_powerBtn setImage:[UIImage imageNamed:@"btn_power_on"] forState:UIControlStateNormal];
+        _fireBtn.enabled = YES;
+        _coldBtn.enabled = YES;
+        _stirBtn.enabled = YES;
+        _windPBtn.enabled = YES;
+        _firePBtn.enabled = YES;
+    }else{
+        [_powerBtn setImage:[UIImage imageNamed:@"btn_power_off"] forState:UIControlStateNormal];
+        _fireBtn.enabled = NO;
+        _coldBtn.enabled = NO;
+        _stirBtn.enabled = NO;
+        _windPBtn.enabled = NO;
+        _firePBtn.enabled = NO;
+    }
+    _myNet.powerStatus = !_myNet.powerStatus;
 }
 
 - (void)setFire{
-    [[NetWork shareNetWork] bakeFire];
+    if (_myNet.fireStatus) {
+        [[NetWork shareNetWork] setFire:0x00];
+    }else{
+        [[NetWork shareNetWork] setFire:0xFF];
+    }
+    _myNet.fireStatus = !_myNet.fireStatus;
 }
 
+- (void)setStir{
+    if (_myNet.stirStatus) {
+        [_stirBtn setImage:[UIImage imageNamed:@"btn_stir_off"] forState:UIControlStateNormal];
+    }else{
+        [_stirBtn setImage:[UIImage imageNamed:@"btn_stir_on"] forState:UIControlStateNormal];
+    }
+    if (_myNet.stirStatus && _myNet.coolStatus) {
+        [_myNet setColdAndStir:0x01];
+    }else if (!_myNet.stirStatus && _myNet.coolStatus){
+        [_myNet setColdAndStir:0x11];
+    }else if (_myNet.stirStatus && !_myNet.coolStatus){
+        [_myNet setColdAndStir:0x00];
+    }else if (!_myNet.stirStatus && !_myNet.coolStatus){
+        [_myNet setColdAndStir:0x10];
+    }
+    _myNet.stirStatus = !_myNet.stirStatus;
+}
+
+- (void)setCold{
+    if (_myNet.coolStatus) {
+        [_coldBtn setImage:[UIImage imageNamed:@"btn_cold_off"] forState:UIControlStateNormal];
+    }else{
+        [_coldBtn setImage:[UIImage imageNamed:@"btn_cold_on"] forState:UIControlStateNormal];
+    }
+    if (_myNet.stirStatus && _myNet.coolStatus) {
+        [_myNet setColdAndStir:0x10];
+    }else if (!_myNet.stirStatus && _myNet.coolStatus){
+        [_myNet setColdAndStir:0x00];
+    }else if (_myNet.stirStatus && !_myNet.coolStatus){
+        [_myNet setColdAndStir:0x11];
+    }else if (!_myNet.stirStatus && !_myNet.coolStatus){
+        [_myNet setColdAndStir:0x01];
+    }
+    _myNet.coolStatus = !_myNet.coolStatus;
+}
 
 - (void)getCurve{
     
 }
 
-#pragma mark - UITableView Delegate
-
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView{
-    return 1;
-}
-
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
-    return _beanArray.count;
-}
-
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
-    AddBeanTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:kCellIdentifier_addBean];
-    if (cell == nil) {
-        cell = [[AddBeanTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kCellIdentifier_addBean];
-    }
-    BeanModel *cellModel = _beanArray[indexPath.row];
-    cell.numLabel.text = [NSString stringWithFormat:@"%ld",(long)indexPath.row];
-    cell.beanName.text = cellModel.name;
-    cell.delBlock = ^{
-        [_beanArray removeObjectAtIndex:indexPath.row];
-        [tableView reloadData];
-    };
-    return cell;
-}
-
 #pragma mark - kvo
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context{
-    if ([keyPath isEqualToString:@"tempData"] && object == _myNet) {
+    if ([keyPath isEqualToString:@"tempData"]) {
         NSMutableArray *data = [_myNet.recivedData68 copy];
         double tempOut = ([data[6] intValue] * 256 + [data[7] intValue]) / 10.0;
         double tempIn = ([data[8] intValue] * 256 + [data[9] intValue]) / 10.0;
@@ -672,12 +731,55 @@ NSString *const kCellIdentifier_addBean = @"cellID_addBean";
         
        // _beanTempRateLabel.text = [NSString stringWithFormat:@"%f℃/min",tempOut];
         dispatch_async(dispatch_get_main_queue(), ^{
-            _beanTempLabel.text = [NSString stringWithFormat:@"%f℃",tempBean];
-            _inTempLabel.text = [NSString stringWithFormat:@"%f℃",tempIn];
-            _outTempLabel.text = [NSString stringWithFormat:@"%f℃",tempOut];
-            _environTempLabel.text = [NSString stringWithFormat:@"%f℃",tempEnvironment];
+            _beanTempLabel.text = [NSString stringWithFormat:@"%.1f℃",tempBean];
+            _inTempLabel.text = [NSString stringWithFormat:@"%.1f℃",tempIn];
+            _outTempLabel.text = [NSString stringWithFormat:@"%.1f℃",tempOut];
+            _environTempLabel.text = [NSString stringWithFormat:@"%.1f℃",tempEnvironment];
         });
         
+    }else if ([keyPath isEqualToString:@"powerStatus"]){
+        dispatch_async(dispatch_get_main_queue(), ^{
+            _powerBtn.enabled = YES;
+            if (_myNet.powerStatus) {
+                [_powerBtn setImage:[UIImage imageNamed:@"btn_power_on"] forState:UIControlStateNormal];
+                _fireBtn.enabled = YES;
+                _coldBtn.enabled = YES;
+                _stirBtn.enabled = YES;
+                _windPBtn.enabled = YES;
+                _firePBtn.enabled = YES;
+            }else{
+                [_powerBtn setImage:[UIImage imageNamed:@"btn_power_off"] forState:UIControlStateNormal];
+                _fireBtn.enabled = NO;
+                _coldBtn.enabled = NO;
+                _stirBtn.enabled = NO;
+                _windPBtn.enabled = NO;
+                _firePBtn.enabled = NO;
+            }
+        });
+    }else if ([keyPath isEqualToString:@"fireStatus"]){
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (_myNet.fireStatus) {
+                [_fireBtn setImage:[UIImage imageNamed:@"btn_fire_on"] forState:UIControlStateNormal];
+            }else{
+                [_fireBtn setImage:[UIImage imageNamed:@"btn_fire_off"] forState:UIControlStateNormal];
+            }
+        });
+    }else if ([keyPath isEqualToString:@"coolStatus"]){
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (_myNet.coolStatus) {
+                [_coldBtn setImage:[UIImage imageNamed:@"btn_cold_on"] forState:UIControlStateNormal];
+            }else{
+                [_coldBtn setImage:[UIImage imageNamed:@"btn_cold_off"] forState:UIControlStateNormal];
+            }
+        });
+    }else if ([keyPath isEqualToString:@"stirStatus"]){
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (_myNet.stirStatus) {
+                [_stirBtn setImage:[UIImage imageNamed:@"btn_stir_on"] forState:UIControlStateNormal];
+            }else{
+                [_stirBtn setImage:[UIImage imageNamed:@"btn_stir_off"] forState:UIControlStateNormal];
+            }
+        });
     }
 }
 

@@ -8,6 +8,11 @@
 
 #import <UIKit/UIKit.h>
 
+typedef enum : NSUInteger {
+    btn_select = 1000,
+    btn_unselect,
+} btnStatus;
+
 @interface LeftFuncController : UIViewController
 
 @end

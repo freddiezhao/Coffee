@@ -7,6 +7,7 @@
 //
 
 #import "RightFuncController.h"
+#import "EventModel.h"
 
 #define WScaleT (667.f / ScreenWidth)
 #define HScaleT (375.f / ScreenHeight)
@@ -66,7 +67,7 @@
     [dehyOver setTitleColor:[UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1] forState:UIControlStateNormal];
     [dehyOver setButtonStyleWithColor:[UIColor clearColor] Width:1.0 cornerRadius:20/HScaleT];
     [dehyOver setBackgroundColor:[UIColor whiteColor]];
-    [dehyOver addTarget:self action:@selector(startBake) forControlEvents:UIControlEventTouchUpInside];
+    [dehyOver addTarget:self action:@selector(devyOver) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:dehyOver];
     
     UIButton *firstBurst = [[UIButton alloc] initWithFrame:CGRectMake(458/WScaleT,70/HScaleT,90/WScaleT,40/HScaleT)];
@@ -75,7 +76,7 @@
     [firstBurst setTitleColor:[UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1] forState:UIControlStateNormal];
     [firstBurst setButtonStyleWithColor:[UIColor clearColor] Width:1.0 cornerRadius:20/HScaleT];
     [firstBurst setBackgroundColor:[UIColor whiteColor]];
-    [firstBurst addTarget:self action:@selector(startBake) forControlEvents:UIControlEventTouchUpInside];
+    [firstBurst addTarget:self action:@selector(firstBurst) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:firstBurst];
     
     UIButton *firstBurstOver = [[UIButton alloc] initWithFrame:CGRectMake(563/WScaleT,70/HScaleT,90/WScaleT,40/HScaleT)];
@@ -84,7 +85,7 @@
     [firstBurstOver setTitleColor:[UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1] forState:UIControlStateNormal];
     [firstBurstOver setButtonStyleWithColor:[UIColor clearColor] Width:1.0 cornerRadius:20/HScaleT];
     [firstBurstOver setBackgroundColor:[UIColor whiteColor]];
-    [firstBurstOver addTarget:self action:@selector(startBake) forControlEvents:UIControlEventTouchUpInside];
+    [firstBurstOver addTarget:self action:@selector(firstBurstOver) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:firstBurstOver];
     
     UIButton *secondBurst = [[UIButton alloc] initWithFrame:CGRectMake(458/WScaleT,125/HScaleT,90/WScaleT,40/HScaleT)];
@@ -93,7 +94,7 @@
     [secondBurst setTitleColor:[UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1] forState:UIControlStateNormal];
     [secondBurst setButtonStyleWithColor:[UIColor clearColor] Width:1.0 cornerRadius:20/HScaleT];
     [secondBurst setBackgroundColor:[UIColor whiteColor]];
-    [secondBurst addTarget:self action:@selector(startBake) forControlEvents:UIControlEventTouchUpInside];
+    [secondBurst addTarget:self action:@selector(secondBurst) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:secondBurst];
     
     UIButton *secondBurstOver = [[UIButton alloc] initWithFrame:CGRectMake(563/WScaleT,125/HScaleT,90/WScaleT,40/HScaleT)];
@@ -102,7 +103,7 @@
     [secondBurstOver setTitleColor:[UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1] forState:UIControlStateNormal];
     [secondBurstOver setButtonStyleWithColor:[UIColor clearColor] Width:1.0 cornerRadius:20/HScaleT];
     [secondBurstOver setBackgroundColor:[UIColor whiteColor]];
-    [secondBurstOver addTarget:self action:@selector(startBake) forControlEvents:UIControlEventTouchUpInside];
+    [secondBurstOver addTarget:self action:@selector(secondBurstOver) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:secondBurstOver];
     
     UIButton *bakeOver = [[UIButton alloc] initWithFrame:CGRectMake(458/WScaleT,180/HScaleT,90/WScaleT,40/HScaleT)];
@@ -111,7 +112,7 @@
     [bakeOver setTitleColor:[UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1] forState:UIControlStateNormal];
     [bakeOver setButtonStyleWithColor:[UIColor clearColor] Width:1.0 cornerRadius:20/HScaleT];
     [bakeOver setBackgroundColor:[UIColor whiteColor]];
-    [bakeOver addTarget:self action:@selector(startBake) forControlEvents:UIControlEventTouchUpInside];
+    [bakeOver addTarget:self action:@selector(bakeOver) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:bakeOver];
     
     UIButton *fireorwindPower = [[UIButton alloc] initWithFrame:CGRectMake(563/WScaleT,180/HScaleT,90/WScaleT,40/HScaleT)];
@@ -138,7 +139,7 @@
     [saveCurve setTitleColor:[UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1] forState:UIControlStateNormal];
     [saveCurve setButtonStyleWithColor:[UIColor clearColor] Width:1.0 cornerRadius:20/HScaleT];
     [saveCurve setBackgroundColor:[UIColor whiteColor]];
-    [saveCurve addTarget:self action:@selector(startBake) forControlEvents:UIControlEventTouchUpInside];
+    [saveCurve addTarget:self action:@selector(saveCurve) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:saveCurve];
     
     UILabel *curveLabel = [[UILabel alloc] init];
@@ -161,6 +162,18 @@
     alert.lBlock = ^{
     };
     alert.rBlock = ^{
+        NetWork *net = [NetWork shareNetWork];
+        EventModel *event = [[EventModel alloc] init];
+        event.eventId = 0;
+        event.eventTime = net.timerValue;
+        event.eventText = LocalString(@"烘焙开始");
+        for (EventModel *event in net.eventArray) {
+            if (event.eventId == 0) {
+                [net.eventArray removeObject:event];
+                break;
+            }
+        }
+        [net.eventArray addObject:event];
     };
     alert.modalPresentationStyle = UIModalPresentationOverCurrentContext;
     [self presentViewController:alert animated:NO completion:^{
@@ -175,6 +188,197 @@
     }];
 }
 
+- (void)devyOver{
+    YAlertViewController *alert = [[YAlertViewController alloc] init];
+    alert.lBlock = ^{
+    };
+    alert.rBlock = ^{
+        NetWork *net = [NetWork shareNetWork];
+        EventModel *event = [[EventModel alloc] init];
+        event.eventId = 1;
+        event.eventTime = net.timerValue;
+        event.eventText = LocalString(@"脱水结束");
+        for (EventModel *event in net.eventArray) {
+            if (event.eventId == 1) {
+                [net.eventArray removeObject:event];
+                break;
+            }
+        }
+        [net.eventArray addObject:event];
+    };
+    alert.modalPresentationStyle = UIModalPresentationOverCurrentContext;
+    [self presentViewController:alert animated:NO completion:^{
+        alert.WScale_alert = WScaleT;
+        NSLog(@"%f",alert.WScale_alert);
+        alert.HScale_alert = HScaleT;
+        [alert showView];
+        alert.titleLabel.text = LocalString(@"提示");
+        alert.messageLabel.text = LocalString(@"确认脱水结束?");
+        [alert.leftBtn setTitle:LocalString(@"取消") forState:UIControlStateNormal];
+        [alert.rightBtn setTitle:LocalString(@"确认") forState:UIControlStateNormal];
+    }];
+}
+
+- (void)firstBurst{
+    YAlertViewController *alert = [[YAlertViewController alloc] init];
+    alert.lBlock = ^{
+    };
+    alert.rBlock = ^{
+        NetWork *net = [NetWork shareNetWork];
+        EventModel *event = [[EventModel alloc] init];
+        event.eventId = 2;
+        event.eventTime = net.timerValue;
+        event.eventText = LocalString(@"一爆开始");
+        for (EventModel *event in net.eventArray) {
+            if (event.eventId == 2) {
+                [net.eventArray removeObject:event];
+                break;
+            }
+        }
+        [net.eventArray addObject:event];
+    };
+    alert.modalPresentationStyle = UIModalPresentationOverCurrentContext;
+    [self presentViewController:alert animated:NO completion:^{
+        alert.WScale_alert = WScaleT;
+        NSLog(@"%f",alert.WScale_alert);
+        alert.HScale_alert = HScaleT;
+        [alert showView];
+        alert.titleLabel.text = LocalString(@"提示");
+        alert.messageLabel.text = LocalString(@"确认一爆开始?");
+        [alert.leftBtn setTitle:LocalString(@"取消") forState:UIControlStateNormal];
+        [alert.rightBtn setTitle:LocalString(@"确认") forState:UIControlStateNormal];
+    }];
+}
+
+- (void)firstBurstOver{
+    YAlertViewController *alert = [[YAlertViewController alloc] init];
+    alert.lBlock = ^{
+    };
+    alert.rBlock = ^{
+        NetWork *net = [NetWork shareNetWork];
+        EventModel *event = [[EventModel alloc] init];
+        event.eventId = 3;
+        event.eventTime = net.timerValue;
+        event.eventText = LocalString(@"一爆结束");
+        for (EventModel *event in net.eventArray) {
+            if (event.eventId == 3) {
+                [net.eventArray removeObject:event];
+                break;
+            }
+        }
+        [net.eventArray addObject:event];
+    };
+    alert.modalPresentationStyle = UIModalPresentationOverCurrentContext;
+    [self presentViewController:alert animated:NO completion:^{
+        alert.WScale_alert = WScaleT;
+        NSLog(@"%f",alert.WScale_alert);
+        alert.HScale_alert = HScaleT;
+        [alert showView];
+        alert.titleLabel.text = LocalString(@"提示");
+        alert.messageLabel.text = LocalString(@"确认一爆结束?");
+        [alert.leftBtn setTitle:LocalString(@"取消") forState:UIControlStateNormal];
+        [alert.rightBtn setTitle:LocalString(@"确认") forState:UIControlStateNormal];
+    }];
+}
+
+- (void)secondBurst{
+    YAlertViewController *alert = [[YAlertViewController alloc] init];
+    alert.lBlock = ^{
+    };
+    alert.rBlock = ^{
+        NetWork *net = [NetWork shareNetWork];
+        EventModel *event = [[EventModel alloc] init];
+        event.eventId = 4;
+        event.eventTime = net.timerValue;
+        event.eventText = LocalString(@"二爆开始");
+        for (EventModel *event in net.eventArray) {
+            if (event.eventId == 4) {
+                [net.eventArray removeObject:event];
+                break;
+            }
+        }
+        [net.eventArray addObject:event];
+    };
+    alert.modalPresentationStyle = UIModalPresentationOverCurrentContext;
+    [self presentViewController:alert animated:NO completion:^{
+        alert.WScale_alert = WScaleT;
+        NSLog(@"%f",alert.WScale_alert);
+        alert.HScale_alert = HScaleT;
+        [alert showView];
+        alert.titleLabel.text = LocalString(@"提示");
+        alert.messageLabel.text = LocalString(@"确认二爆开始?");
+        [alert.leftBtn setTitle:LocalString(@"取消") forState:UIControlStateNormal];
+        [alert.rightBtn setTitle:LocalString(@"确认") forState:UIControlStateNormal];
+    }];
+}
+
+- (void)secondBurstOver{
+    YAlertViewController *alert = [[YAlertViewController alloc] init];
+    alert.lBlock = ^{
+    };
+    alert.rBlock = ^{
+        NetWork *net = [NetWork shareNetWork];
+        EventModel *event = [[EventModel alloc] init];
+        event.eventId = 5;
+        event.eventTime = net.timerValue;
+        event.eventText = LocalString(@"二爆结束");
+        for (EventModel *event in net.eventArray) {
+            if (event.eventId == 5) {
+                [net.eventArray removeObject:event];
+                break;
+            }
+        }
+        [net.eventArray addObject:event];
+    };
+    alert.modalPresentationStyle = UIModalPresentationOverCurrentContext;
+    [self presentViewController:alert animated:NO completion:^{
+        alert.WScale_alert = WScaleT;
+        NSLog(@"%f",alert.WScale_alert);
+        alert.HScale_alert = HScaleT;
+        [alert showView];
+        alert.titleLabel.text = LocalString(@"提示");
+        alert.messageLabel.text = LocalString(@"确认二爆结束?");
+        [alert.leftBtn setTitle:LocalString(@"取消") forState:UIControlStateNormal];
+        [alert.rightBtn setTitle:LocalString(@"确认") forState:UIControlStateNormal];
+    }];
+}
+
+- (void)bakeOver{
+    YAlertViewController *alert = [[YAlertViewController alloc] init];
+    alert.lBlock = ^{
+    };
+    alert.rBlock = ^{
+        NetWork *net = [NetWork shareNetWork];
+        EventModel *event = [[EventModel alloc] init];
+        event.eventId = 6;
+        event.eventTime = net.timerValue;
+        event.eventText = LocalString(@"烘焙结束");
+        for (EventModel *event in net.eventArray) {
+            if (event.eventId == 6) {
+                [net.eventArray removeObject:event];
+                break;
+            }
+        }
+        [net.eventArray addObject:event];
+    };
+    alert.modalPresentationStyle = UIModalPresentationOverCurrentContext;
+    [self presentViewController:alert animated:NO completion:^{
+        alert.WScale_alert = WScaleT;
+        NSLog(@"%f",alert.WScale_alert);
+        alert.HScale_alert = HScaleT;
+        [alert showView];
+        alert.titleLabel.text = LocalString(@"提示");
+        alert.messageLabel.text = LocalString(@"确认烘焙结束?");
+        [alert.leftBtn setTitle:LocalString(@"取消") forState:UIControlStateNormal];
+        [alert.rightBtn setTitle:LocalString(@"确认") forState:UIControlStateNormal];
+    }];
+}
+
+- (void)saveCurve{
+    [self dismissViewControllerAnimated:YES completion:nil];
+    [[NetWork shareNetWork] showBakeOverAlertAction];
+}
+
 - (void)dismissVC{
     [self dismissViewControllerAnimated:YES completion:nil];
 }
@@ -182,4 +386,5 @@
 - (void)switchAction:(UISwitch *)sender{
     
 }
+
 @end

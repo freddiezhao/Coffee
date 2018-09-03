@@ -9,7 +9,8 @@
 #import <UIKit/UIKit.h>
 
 @interface DeviceTableViewCell : UITableViewCell
-@property (weak, nonatomic) IBOutlet UIImageView *deviceImage;
-@property (weak, nonatomic) IBOutlet UILabel *deviceLabel;
+
+@property (nonatomic, strong) UIImageView *deviceImage;
+@property (nonatomic, strong) UILabel *deviceName;
 
 @end

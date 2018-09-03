@@ -9,28 +9,36 @@
 #import "AddBeanTableController.h"
 #import "referCurveCell.h"
 #import "CurveInfoCell_add.h"
+#import "AddBeanTableViewCell.h"
+#import "BeanModel.h"
+#import "BeanViewController_bakeAdd.h"
+#import "ReportModel.h"
+#import "CurveController_bakeRela.h"
 
+NSString *const CellIdentifier_bakeBean_add = @"CellID_bakeBean_add";
 NSString *const CellIdentifier_selectBean = @"CellID_selectBean";
 NSString *const CellIdentifier_referCurve = @"CellID_referCurve";
 NSString *const CellIdentifier_curveInfo = @"CellID_curveInfo_add";
 
 @interface AddBeanTableController ()
 
+@property (nonatomic, strong) NetWork *myNet;
+
 @end
 
 @implementation AddBeanTableController
-{
-    BOOL curveOn;
-}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.navigationItem.title = LocalString(@"添加咖啡豆");
     
+    [self.tableView registerClass:[AddBeanTableViewCell class] forCellReuseIdentifier:CellIdentifier_bakeBean_add];
     [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:CellIdentifier_selectBean];
     [self.tableView registerClass:[referCurveCell class] forCellReuseIdentifier:CellIdentifier_referCurve];
     [self.tableView registerClass:[CurveInfoCell_add class] forCellReuseIdentifier:CellIdentifier_curveInfo];
     self.tableView.backgroundColor = [UIColor colorWithRed:250/255.0 green:250/255.0 blue:250/255.0 alpha:1];
+    self.tableView.separatorColor = [UIColor colorWithRed:0/255.0 green:0/255.0 blue:0/255.0 alpha:0.1];
+
     self.tableView.estimatedRowHeight = 0;
     self.tableView.estimatedSectionHeaderHeight = 0;
     self.tableView.estimatedSectionFooterHeight = 0;
@@ -48,6 +56,13 @@ NSString *const CellIdentifier_curveInfo = @"CellID_curveInfo_add";
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
     [self.rdv_tabBarController setTabBarHidden:YES animated:YES];
+    
+    _myNet = [NetWork shareNetWork];
+    [self.tableView reloadData];
+}
+
+- (void)viewDidDisappear:(BOOL)animated{
+    [super viewDidDisappear:animated];
 }
 
 #pragma mark - Table view data source
@@ -60,13 +75,13 @@ NSString *const CellIdentifier_curveInfo = @"CellID_curveInfo_add";
     switch (section) {
         case 0:
             {
-                return 1;
+                return 1 + _myNet.beanArray.count;
             }
             break;
             
         case 1:
             {
-                return curveOn?2:1;
+                return _myNet.isCurveOn?2:1;
             }
             break;
             
@@ -81,15 +96,28 @@ NSString *const CellIdentifier_curveInfo = @"CellID_curveInfo_add";
     switch (indexPath.section) {
         case 0:
             {
-                UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_selectBean forIndexPath:indexPath];
-                if (cell == nil) {
-                    cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_selectBean];
+                if (indexPath.row == _myNet.beanArray.count) {
+                    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_selectBean forIndexPath:indexPath];
+                    if (cell == nil) {
+                        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_selectBean];
+                    }
+                    cell.textLabel.text = LocalString(@"选择咖啡豆");
+                    cell.textLabel.textColor = [UIColor colorWithHexString:@"222222"];
+                    cell.textLabel.font = [UIFont systemFontOfSize:16.f];
+                    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+                    return cell;
+                }else{
+                    AddBeanTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_bakeBean_add forIndexPath:indexPath];
+                    if (cell == nil) {
+                        cell = [[AddBeanTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_bakeBean_add];
+                    }
+                    BeanModel *bean = _myNet.beanArray[indexPath.row];
+                    cell.beanName.text = bean.name;
+                    cell.TFBlock = ^(NSString *text) {
+                        bean.weight = [text floatValue];
+                    };
+                    return cell;
                 }
-                cell.textLabel.text = LocalString(@"选择咖啡豆");
-                cell.textLabel.textColor = [UIColor colorWithHexString:@"222222"];
-                cell.textLabel.font = [UIFont systemFontOfSize:16.f];
-                cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-                return cell;
             }
             break;
             
@@ -100,11 +128,12 @@ NSString *const CellIdentifier_curveInfo = @"CellID_curveInfo_add";
                     if (cell == nil) {
                         cell = [[referCurveCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_referCurve];
                     }
+                    cell.curveSwitch.on = _myNet.isCurveOn;
                     cell.curveBlock = ^(BOOL isOn) {
                         if (isOn) {
-                            curveOn = YES;
+                            _myNet.isCurveOn = YES;
                         }else{
-                            curveOn = NO;
+                            _myNet.isCurveOn = NO;
                         }
                         [self.tableView reloadData];
                     };
@@ -114,7 +143,9 @@ NSString *const CellIdentifier_curveInfo = @"CellID_curveInfo_add";
                     if (cell == nil) {
                         cell = [[CurveInfoCell_add alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_curveInfo];
                     }
-                    
+                    if (_myNet.relaCurve) {
+                        cell.curveLabel.text = [NSString stringWithFormat:@"%@·%@",_myNet.relaCurve.curveName,_myNet.relaCurve.deviceName];
+                    }
                     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
                     return cell;
                 }
@@ -132,6 +163,29 @@ NSString *const CellIdentifier_curveInfo = @"CellID_curveInfo_add";
             break;
     }
     
+}
+
+-(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    switch (indexPath.section) {
+        case 0:
+        {
+            BeanViewController_bakeAdd *bakeAdd = [[BeanViewController_bakeAdd alloc] init];
+            [self.navigationController pushViewController:bakeAdd animated:YES];
+        }
+            break;
+            
+        case 1:
+        {
+            if (indexPath.row == 1 && _myNet.isCurveOn) {
+                CurveController_bakeRela *curveAdd = [[CurveController_bakeRela alloc] init];
+                [self.navigationController pushViewController:curveAdd animated:YES];
+            }
+        }
+            break;
+            
+        default:
+            break;
+    }
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -164,25 +218,24 @@ NSString *const CellIdentifier_curveInfo = @"CellID_curveInfo_add";
     return 22;
 }
 
-/*
+
 // Override to support conditional editing of the table view.
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
-    // Return NO if you do not want the specified item to be editable.
     return YES;
 }
-*/
 
-/*
+- (UITableViewCellEditingStyle)tableView:(UITableView *)tableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath{
+    return UITableViewCellEditingStyleDelete;
+}
+
 // Override to support editing the table view.
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
     if (editingStyle == UITableViewCellEditingStyleDelete) {
-        // Delete the row from the data source
+        BeanModel *bean = _myNet.beanArray[indexPath.row];
+        [_myNet.beanArray removeObject:bean];
         [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
-    } else if (editingStyle == UITableViewCellEditingStyleInsert) {
-        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-    }   
+    }
 }
-*/
 
 /*
 // Override to support rearranging the table view.

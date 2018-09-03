@@ -14,10 +14,11 @@
 @property (nonatomic, strong) NSString *curveName;
 @property (nonatomic, strong) NSDate *date;
 @property (nonatomic, strong) NSString *deviceName;
-@property (nonatomic) NSInteger rawBeanWeight;
-@property (nonatomic) NSInteger bakeBeanWeight;
+@property (nonatomic, strong) NSString *sn;//设备sn码
+@property (nonatomic) double rawBeanWeight;
+@property (nonatomic) double bakeBeanWeight;
 @property (nonatomic, strong) NSString *outWaterRate;
-@property (nonatomic) NSInteger light;
+@property (nonatomic) double light;
 @property (nonatomic, strong) NSString *curveValueJson;
 @property (nonatomic) NSInteger bakeTime;
 @property (nonatomic) NSInteger developTime;
@@ -27,5 +28,7 @@
 @property (nonatomic, strong) NSString *firstBoom_event;
 @property (nonatomic, strong) NSString *startTemp;
 @property (nonatomic, strong) NSString *endTemp;
+@property (nonatomic, strong) NSString *sharerName;
+@property (nonatomic) NSInteger isShare;
 
 @end

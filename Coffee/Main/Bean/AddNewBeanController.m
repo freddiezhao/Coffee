@@ -143,6 +143,9 @@ static float HEIGHT_HEADER = 36.f;
                 cell = [[AddBeanInfoCell1 alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_addNewBean1];
             }
             cell.nameLabel.text = LocalString(@"生豆名称");
+            cell.TFBlock = ^(NSString *text) {
+                _myBean.name = text;
+            };
             return cell;
         }
             break;
@@ -158,12 +161,18 @@ static float HEIGHT_HEADER = 36.f;
                     case 0:
                     {
                         cell.nameLabel.text = LocalString(@"国家");
+                        cell.TFBlock = ^(NSString *text) {
+                            _myBean.nation = text;
+                        };
                     }
                         break;
                         
                     case 1:
                     {
                         cell.nameLabel.text = LocalString(@"产区");
+                        cell.TFBlock = ^(NSString *text) {
+                            _myBean.area = text;
+                        };
                     }
                         break;
                         
@@ -200,6 +209,9 @@ static float HEIGHT_HEADER = 36.f;
                 }
                 cell.nameLabel.text = LocalString(@"库存量");
                 cell.unitLabel.text = @"kg";
+                cell.TFBlock = ^(NSString *text) {
+                    _myBean.stock = [text floatValue];
+                };
                 return cell;
             }
             
@@ -217,12 +229,18 @@ static float HEIGHT_HEADER = 36.f;
                     case 0:
                     {
                         cell.nameLabel.text = LocalString(@"庄园");
+                        cell.TFBlock = ^(NSString *text) {
+                            _myBean.manor = text;
+                        };
                     }
                         break;
                         
                     case 1:
                     {
                         cell.nameLabel.text = LocalString(@"供应商");
+                        cell.TFBlock = ^(NSString *text) {
+                            _myBean.supplier = text;
+                        };
                     }
                         break;
                         
@@ -267,6 +285,9 @@ static float HEIGHT_HEADER = 36.f;
                     {
                         cell.nameLabel.text = LocalString(@"含水量");
                         cell.unitLabel.text = @"%";
+                        cell.TFBlock = ^(NSString *text) {
+                            _myBean.water = [text floatValue];
+                        };
                     }
                         break;
                         
@@ -274,6 +295,9 @@ static float HEIGHT_HEADER = 36.f;
                     {
                         cell.nameLabel.text = LocalString(@"海拔");
                         cell.unitLabel.text = @"m";
+                        cell.TFBlock = ^(NSString *text) {
+                            _myBean.altitude = [text floatValue];
+                        };
                     }
                         break;
                         
@@ -281,6 +305,9 @@ static float HEIGHT_HEADER = 36.f;
                     {
                         cell.nameLabel.text = LocalString(@"价格");
                         cell.unitLabel.text = @"¥/kg";
+                        cell.TFBlock = ^(NSString *text) {
+                            _myBean.price = [text floatValue];
+                        };
                     }
                         break;
                         
@@ -429,69 +456,40 @@ static float HEIGHT_HEADER = 36.f;
 }
 
 - (void)saveBeanInfo{
-    AddBeanInfoCell1 *cell = [_beanInfoTable cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
-    if (!cell.contentTF.text) {
+    if (!_myBean.name) {
         [NSObject showHudTipStr:LocalString(@"名字不能为空")];
         return;
-    }else{
-        _myBean.name = cell.contentTF.text;
     }
-    
-    cell = [_beanInfoTable cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:1]];
-    
-    if (!cell.contentTF.text) {
+    if (!_myBean.nation) {
         _myBean.nation = @"";
-    }else{
-        _myBean.nation = cell.contentTF.text;
     }
     
-    cell = [_beanInfoTable cellForRowAtIndexPath:[NSIndexPath indexPathForRow:1 inSection:1]];
-    if (!cell.contentTF.text) {
+    if (!_myBean.area) {
         _myBean.area = @"";
-    }else{
-        _myBean.area = cell.contentTF.text;
     }
     
-    cell = [_beanInfoTable cellForRowAtIndexPath:[NSIndexPath indexPathForRow:4 inSection:1]];
-    if (!cell.contentTF.text) {
+    if (!_myBean.stock) {
         _myBean.stock = 0;
-    }else{
-        _myBean.stock = [cell.contentTF.text integerValue];
     }
     
-    cell = [_beanInfoTable cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:2]];
-    if (!cell.contentTF.text) {
+    if (!_myBean.manor) {
         _myBean.manor = @"";
-    }else{
-        _myBean.manor = cell.contentTF.text;
     }
     
-    cell = [_beanInfoTable cellForRowAtIndexPath:[NSIndexPath indexPathForRow:1 inSection:1]];
-    if (!cell.contentTF.text) {
+    if (!_myBean.supplier) {
         _myBean.supplier = @"";
-    }else{
-        _myBean.supplier = cell.contentTF.text;
     }
     
-    cell = [_beanInfoTable cellForRowAtIndexPath:[NSIndexPath indexPathForRow:4 inSection:1]];
-    if (!cell.contentTF.text) {
+    if (!_myBean.water) {
         _myBean.water = 0;
-    }else{
-        _myBean.water = [cell.contentTF.text integerValue];
     }
     
-    cell = [_beanInfoTable cellForRowAtIndexPath:[NSIndexPath indexPathForRow:5 inSection:1]];
-    if (!cell.contentTF.text) {
+    if (!_myBean.altitude) {
         _myBean.altitude = 0;
-    }else{
-        _myBean.altitude = [cell.contentTF.text integerValue];
     }
     
-    cell = [_beanInfoTable cellForRowAtIndexPath:[NSIndexPath indexPathForRow:6 inSection:1]];
-    if (!cell.contentTF.text) {
+    if (!_myBean.price) {
         _myBean.price = 0;
-    }else{
-        _myBean.price = [cell.contentTF.text integerValue];
     }
     
     if (!_myBean.beanSpecies) {
@@ -506,7 +504,14 @@ static float HEIGHT_HEADER = 36.f;
     if (!_myBean.time) {
         _myBean.time = [NSDate date];
     }
-    [[DataBase shareDataBase] insertNewBean:_myBean];
+    BOOL result = [[DataBase shareDataBase] insertNewBean:_myBean];
+    if (result) {
+        [self dismissViewControllerAnimated:YES completion:nil];
+        [NSObject showHudTipStr:LocalString(@"添加咖啡豆成功")];
+    }else{
+        [NSObject showHudTipStr:LocalString(@"添加咖啡豆失败")];
+    }
+    
 }
 
 @end

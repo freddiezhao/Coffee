@@ -9,6 +9,6 @@
 #import <UIKit/UIKit.h>
 #import <WMPageController/WMPageController.h>
 
-@interface CurveViewController : WMPageController
+@interface CurveViewController : BaseViewController
 
 @end

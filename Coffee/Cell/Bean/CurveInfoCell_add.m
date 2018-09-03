@@ -34,17 +34,17 @@
 
         if (!self.curveLabel) {
             _curveLabel = [[UILabel alloc] init];
-            _curveLabel.font = [UIFont systemFontOfSize:16.f];
+            _curveLabel.font = [UIFont systemFontOfSize:14.f];
             _curveLabel.backgroundColor = [UIColor clearColor];
-            _curveLabel.textColor = [UIColor colorWithHexString:@"222222"];
+            _curveLabel.textColor = [UIColor colorWithHexString:@"999999"];
             _curveLabel.textAlignment = NSTextAlignmentRight;
-            _curveLabel.text = LocalString(@"参考曲线");
+            _curveLabel.adjustsFontSizeToFitWidth = YES;
             [self.contentView addSubview:_curveLabel];
             
             [_curveLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-                make.size.mas_equalTo(CGSizeMake(150/WScale, 23/HScale));
+                make.size.mas_equalTo(CGSizeMake(200/WScale, 23/HScale));
                 make.centerY.equalTo(self.contentView.mas_centerY);
-                make.right.equalTo(self.contentView.mas_right).offset(-37/WScale);
+                make.right.equalTo(self.contentView.mas_right).offset(-8/WScale);
             }];
         }
     }

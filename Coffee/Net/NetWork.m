@@ -68,6 +68,7 @@ static NSInteger curveId;
         if (!_yVals_Diff) {
             _yVals_Diff = [[NSMutableArray alloc] init];
         }
+        _beanArray = [[NSMutableArray alloc] init]; 
         _frameCount = 0;
         _myTimer = [self myTimer];
         _queue = dispatch_queue_create("com.thingcom.queue", DISPATCH_QUEUE_SERIAL);
@@ -92,6 +93,14 @@ static NSInteger curveId;
 {
     NSLog(@"连接成功");
     _frameCount = 0;
+    isGetTimerStatus = NO;
+    isGetFireStatus = NO;
+    isGetPowerStatus = NO;
+    sendCount = 0;
+    recvCount = 0;
+    resendCount = 0;
+    tempCountVer = 1000;
+
     [self inquireTimer];
     
     [_mySocket readDataWithTimeout:-1 tag:1];
@@ -106,6 +115,7 @@ static NSInteger curveId;
         [NSObject showHudTipStr:LocalString(@"连接已断开")];
     });
     [_myTimer setFireDate:[NSDate distantFuture]];
+    
 }
 
 - (void)socket:(GCDAsyncSocket *)sock didReadData:(NSData *)data withTag:(long)tag
@@ -147,22 +157,29 @@ static NSInteger curveId;
             NSData *sendData = [NSData dataWithBytes:sendBuffer length:len];
             NSLog(@"发送一条帧： %@",sendData);
             if (tag == 100) {
-                //fire
                 [self.mySocket writeData:sendData withTimeout:-1 tag:1];
                 [_mySocket readDataWithTimeout:-1 tag:1];
-            }else if(tag == 101){
-                [self.mySocket writeData:sendData withTimeout:-1 tag:1];
-                [_mySocket readDataWithTimeout:-1 tag:1];
-            }else if (tag == 102){
-                [self.mySocket writeData:sendData withTimeout:-1 tag:1];
-                [_mySocket readDataWithTimeout:-1 tag:1];
-            }else if(tag == 103){
-                [self.mySocket writeData:sendData withTimeout:-1 tag:2];
-                if (sendCount - recvCount == 4) {
-                    NSLog(@"两秒没回信息，断开连接");
+                //重发
+                if (resendCount > 3) {
+                    NSLog(@"四次重发没回信息，断开连接");
                     dispatch_async(dispatch_get_main_queue(), ^{
                         [NSObject showHudTipStr:LocalString(@"wifi断开")];
-                        
+                        [_myTimer setFireDate:[NSDate distantFuture]];
+                    });
+                    if (![_mySocket isDisconnected]) {
+                        NSLog(@"主动断开");
+                        [_mySocket disconnect];
+                    }
+                }
+                resendCount++;
+                
+            }else if(tag == 101){
+                [self.mySocket writeData:sendData withTimeout:-1 tag:2];
+                if (sendCount - recvCount == 4) {
+                    NSLog(@"四秒没回信息，断开连接");
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [NSObject showHudTipStr:LocalString(@"wifi断开")];
+                        [_myTimer setFireDate:[NSDate distantFuture]];
                     });
                     if (![_mySocket isDisconnected]) {
                         NSLog(@"主动断开");
@@ -170,19 +187,13 @@ static NSInteger curveId;
                     }
                 }
                 sendCount++;
-            }else if (tag == 104){
-                [self.mySocket writeData:sendData withTimeout:-1 tag:1];
-                [_mySocket readDataWithTimeout:-1 tag:1];
-            }else if (tag == 105){
-                [self.mySocket writeData:sendData withTimeout:-1 tag:1];
-                [_mySocket readDataWithTimeout:-1 tag:1];
-            }else if (tag == 106){
-                //power
+            }else if(tag == 102){
+                //设置
                 [self.mySocket writeData:sendData withTimeout:-1 tag:1];
                 [_mySocket readDataWithTimeout:-1 tag:1];
             }
             
-            [NSThread sleepForTimeInterval:1];
+            [NSThread sleepForTimeInterval:0.6];
             
         }
         else
@@ -211,8 +222,11 @@ static NSInteger curveId;
     [getTimer addObject:[NSNumber numberWithUnsignedChar:0x16]];
     [getTimer addObject:[NSNumber numberWithUnsignedChar:0x0D]];
     [getTimer addObject:[NSNumber numberWithUnsignedChar:0x0A]];
-    dispatch_async(_queue, ^{
+    dispatch_sync(_queue, ^{
         [self send:getTimer withTag:100];
+    });
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self performSelector:@selector(inquireTimer) withObject:nil afterDelay:3.f];
     });
 }
 
@@ -229,8 +243,8 @@ static NSInteger curveId;
     [getTimer addObject:[NSNumber numberWithUnsignedChar:0x16]];
     [getTimer addObject:[NSNumber numberWithUnsignedChar:0x0D]];
     [getTimer addObject:[NSNumber numberWithUnsignedChar:0x0A]];
-    dispatch_async(_queue, ^{
-        [self send:getTimer withTag:101];
+    dispatch_sync(_queue, ^{
+        [self send:getTimer withTag:100];
     });
 }
 
@@ -252,8 +266,8 @@ static NSInteger curveId;
     [getTimer addObject:[NSNumber numberWithUnsignedChar:0x16]];
     [getTimer addObject:[NSNumber numberWithUnsignedChar:0x0D]];
     [getTimer addObject:[NSNumber numberWithUnsignedChar:0x0A]];
-    dispatch_async(_queue, ^{
-        [self send:getTimer withTag:102];
+    dispatch_sync(_queue, ^{
+        [self send:getTimer withTag:100];
     });
 }
 
@@ -319,8 +333,8 @@ static NSInteger curveId;
     [getTemp addObject:[NSNumber numberWithUnsignedChar:0x0D]];
     [getTemp addObject:[NSNumber numberWithUnsignedChar:0x0A]];
     
-    dispatch_async(_queue, ^{
-        [self send:getTemp withTag:103];
+    dispatch_sync(_queue, ^{
+        [self send:getTemp withTag:101];
         [_mySocket readDataWithTimeout:-1 tag:2];
     });
 }
@@ -337,8 +351,32 @@ static NSInteger curveId;
     [bakeFire addObject:[NSNumber numberWithUnsignedChar:0x16]];
     [bakeFire addObject:[NSNumber numberWithUnsignedChar:0x0D]];
     [bakeFire addObject:[NSNumber numberWithUnsignedChar:0x0A]];
-    dispatch_async(_queue, ^{
-        [self send:bakeFire withTag:104];
+    dispatch_sync(_queue, ^{
+        [self send:bakeFire withTag:100];
+    });
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self performSelector:@selector(bakeFire) withObject:nil afterDelay:3.f];
+    });
+
+}
+
+- (void)bakeColdAndStir{
+    NSMutableArray *bakeColdAndStir = [[NSMutableArray alloc ] init];
+    [bakeColdAndStir addObject:[NSNumber numberWithUnsignedChar:0x68]];
+    [bakeColdAndStir addObject:[NSNumber numberWithUnsignedChar:0x00]];
+    [bakeColdAndStir addObject:[NSNumber numberWithUnsignedChar:_frameCount]];
+    [bakeColdAndStir addObject:[NSNumber numberWithUnsignedChar:0x00]];
+    [bakeColdAndStir addObject:[NSNumber numberWithUnsignedChar:0x01]];
+    [bakeColdAndStir addObject:[NSNumber numberWithUnsignedChar:0x01]];
+    [bakeColdAndStir addObject:[NSNumber numberWithUnsignedChar:[NSObject getCS:bakeColdAndStir]]];
+    [bakeColdAndStir addObject:[NSNumber numberWithUnsignedChar:0x16]];
+    [bakeColdAndStir addObject:[NSNumber numberWithUnsignedChar:0x0D]];
+    [bakeColdAndStir addObject:[NSNumber numberWithUnsignedChar:0x0A]];
+    dispatch_sync(_queue, ^{
+        [self send:bakeColdAndStir withTag:100];
+    });
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self performSelector:@selector(bakeColdAndStir) withObject:nil afterDelay:3.f];
     });
 }
 
@@ -354,28 +392,84 @@ static NSInteger curveId;
     [bakeFire addObject:[NSNumber numberWithUnsignedChar:0x16]];
     [bakeFire addObject:[NSNumber numberWithUnsignedChar:0x0D]];
     [bakeFire addObject:[NSNumber numberWithUnsignedChar:0x0A]];
-    dispatch_async(_queue, ^{
-        [self send:bakeFire withTag:105];
+    dispatch_sync(_queue, ^{
+        [self send:bakeFire withTag:100];
     });
 }
 
-- (void)getPowerStatus{
-    NSMutableArray *bakeFire = [[NSMutableArray alloc ] init];
-    [bakeFire addObject:[NSNumber numberWithUnsignedChar:0x68]];
-    [bakeFire addObject:[NSNumber numberWithUnsignedChar:0x00]];
-    [bakeFire addObject:[NSNumber numberWithUnsignedChar:_frameCount]];
-    [bakeFire addObject:[NSNumber numberWithUnsignedChar:0x00]];
-    [bakeFire addObject:[NSNumber numberWithUnsignedChar:0x01]];
-    [bakeFire addObject:[NSNumber numberWithUnsignedChar:0x06]];
-    [bakeFire addObject:[NSNumber numberWithUnsignedChar:[NSObject getCS:bakeFire]]];
-    [bakeFire addObject:[NSNumber numberWithUnsignedChar:0x16]];
-    [bakeFire addObject:[NSNumber numberWithUnsignedChar:0x0D]];
-    [bakeFire addObject:[NSNumber numberWithUnsignedChar:0x0A]];
-    dispatch_async(_queue, ^{
-        [self send:bakeFire withTag:106];
+- (void)inquirePowerStatus{
+    NSMutableArray *powerStatus = [[NSMutableArray alloc ] init];
+    [powerStatus addObject:[NSNumber numberWithUnsignedChar:0x68]];
+    [powerStatus addObject:[NSNumber numberWithUnsignedChar:0x00]];
+    [powerStatus addObject:[NSNumber numberWithUnsignedChar:_frameCount]];
+    [powerStatus addObject:[NSNumber numberWithUnsignedChar:0x00]];
+    [powerStatus addObject:[NSNumber numberWithUnsignedChar:0x01]];
+    [powerStatus addObject:[NSNumber numberWithUnsignedChar:0x06]];
+    [powerStatus addObject:[NSNumber numberWithUnsignedChar:[NSObject getCS:powerStatus]]];
+    [powerStatus addObject:[NSNumber numberWithUnsignedChar:0x16]];
+    [powerStatus addObject:[NSNumber numberWithUnsignedChar:0x0D]];
+    [powerStatus addObject:[NSNumber numberWithUnsignedChar:0x0A]];
+    dispatch_sync(_queue, ^{
+        [self send:powerStatus withTag:100];
+    });
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self performSelector:@selector(inquirePowerStatus) withObject:nil afterDelay:3.0f];
     });
 }
 
+- (void)setFire:(UInt8)isFire{
+    NSMutableArray *setFire = [[NSMutableArray alloc ] init];
+    [setFire addObject:[NSNumber numberWithUnsignedChar:0x68]];
+    [setFire addObject:[NSNumber numberWithUnsignedChar:0x01]];
+    [setFire addObject:[NSNumber numberWithUnsignedChar:_frameCount]];
+    [setFire addObject:[NSNumber numberWithUnsignedChar:0x00]];
+    [setFire addObject:[NSNumber numberWithUnsignedChar:0x02]];
+    [setFire addObject:[NSNumber numberWithUnsignedChar:0x00]];
+    [setFire addObject:[NSNumber numberWithUnsignedChar:isFire]];
+    [setFire addObject:[NSNumber numberWithUnsignedChar:[NSObject getCS:setFire]]];
+    [setFire addObject:[NSNumber numberWithUnsignedChar:0x16]];
+    [setFire addObject:[NSNumber numberWithUnsignedChar:0x0D]];
+    [setFire addObject:[NSNumber numberWithUnsignedChar:0x0A]];
+    dispatch_sync(_queue, ^{
+        [self send:setFire withTag:102];
+    });
+}
+
+- (void)setPower:(UInt8)isPower{
+    NSMutableArray *setPower = [[NSMutableArray alloc ] init];
+    [setPower addObject:[NSNumber numberWithUnsignedChar:0x68]];
+    [setPower addObject:[NSNumber numberWithUnsignedChar:0x01]];
+    [setPower addObject:[NSNumber numberWithUnsignedChar:_frameCount]];
+    [setPower addObject:[NSNumber numberWithUnsignedChar:0x00]];
+    [setPower addObject:[NSNumber numberWithUnsignedChar:0x02]];
+    [setPower addObject:[NSNumber numberWithUnsignedChar:0x06]];
+    [setPower addObject:[NSNumber numberWithUnsignedChar:isPower]];
+    [setPower addObject:[NSNumber numberWithUnsignedChar:[NSObject getCS:setPower]]];
+    [setPower addObject:[NSNumber numberWithUnsignedChar:0x16]];
+    [setPower addObject:[NSNumber numberWithUnsignedChar:0x0D]];
+    [setPower addObject:[NSNumber numberWithUnsignedChar:0x0A]];
+    dispatch_sync(_queue, ^{
+        [self send:setPower withTag:102];
+    });
+}
+
+- (void)setColdAndStir:(UInt8)isColdAndStir{
+    NSMutableArray *setColdAndStir = [[NSMutableArray alloc ] init];
+    [setColdAndStir addObject:[NSNumber numberWithUnsignedChar:0x68]];
+    [setColdAndStir addObject:[NSNumber numberWithUnsignedChar:0x01]];
+    [setColdAndStir addObject:[NSNumber numberWithUnsignedChar:_frameCount]];
+    [setColdAndStir addObject:[NSNumber numberWithUnsignedChar:0x00]];
+    [setColdAndStir addObject:[NSNumber numberWithUnsignedChar:0x02]];
+    [setColdAndStir addObject:[NSNumber numberWithUnsignedChar:0x01]];
+    [setColdAndStir addObject:[NSNumber numberWithUnsignedChar:isColdAndStir]];
+    [setColdAndStir addObject:[NSNumber numberWithUnsignedChar:[NSObject getCS:setColdAndStir]]];
+    [setColdAndStir addObject:[NSNumber numberWithUnsignedChar:0x16]];
+    [setColdAndStir addObject:[NSNumber numberWithUnsignedChar:0x0D]];
+    [setColdAndStir addObject:[NSNumber numberWithUnsignedChar:0x0A]];
+    dispatch_sync(_queue, ^{
+        [self send:setColdAndStir withTag:102];
+    });
+}
 #pragma mark - Frame68 接收处理
 - (void)checkOutFrame:(NSData *)data{
     //把读到的数据复制一份
@@ -412,13 +506,69 @@ static NSInteger curveId;
         
         if (self.frame68Type == readReplyFrame) {
             if (self.msg68Type == fire) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [NSObject cancelPreviousPerformRequestsWithTarget:self];
+                });
+                resendCount = 0;
+                
                 if ([_recivedData68[6] unsignedIntegerValue] == 0x00) {
+                    [self setFireStatus:NO];
                     NSLog(@"关闭");
+                }else if ([_recivedData68[6] unsignedIntegerValue] == 0xFF){
+                    [self setFireStatus:YES];
+                    NSLog(@"开启");
                 }
-            }else if (self.msg68Type == cool){
-                if ([_recivedData68[6] unsignedIntegerValue] == 0x00) {
-                    NSLog(@"关闭");
+                if (!isGetFireStatus) {
+                    [self bakeColdAndStir];
                 }
+                isGetFireStatus = YES;
+                
+                
+            }else if (self.msg68Type == coolAndStir){
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [NSObject cancelPreviousPerformRequestsWithTarget:self];
+                });
+                resendCount = 0;
+
+                switch ([_recivedData68[6] unsignedIntegerValue]) {
+                    case 0:
+                    {
+                        [self setCoolStatus:NO];
+                        [self setStirStatus:NO];
+                        NSLog(@"all off");
+                    }
+                        break;
+                        
+                    case 1:
+                    {
+                        [self setCoolStatus:YES];
+                        [self setStirStatus:NO];
+                        NSLog(@"stir off,cool on");
+                    }
+                        break;
+                        
+                    case 2:
+                    {
+                        [self setCoolStatus:NO];
+                        [self setStirStatus:YES];
+                        NSLog(@"stir on,cool off");
+                    }
+                        break;
+                        
+                    case 3:
+                    {
+                        [self setCoolStatus:YES];
+                        [self setStirStatus:YES];
+                        NSLog(@"all on");
+                    }
+                        break;
+                        
+                    default:
+                        break;
+                }
+                [_myTimer setFireDate:[NSDate distantFuture]];
+                [_myTimer setFireDate:[NSDate date]];
+                
             }else if (self.msg68Type == getTemp){
                 if (!_yVals_Out) {
                     _yVals_Out = [[NSMutableArray alloc] init];
@@ -491,17 +641,37 @@ static NSInteger curveId;
                 dispatch_semaphore_signal(_signal);
                 
             }else if (self.msg68Type == getTimerStatus){
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [NSObject cancelPreviousPerformRequestsWithTarget:self];
+                });
+                resendCount = 0;
                 switch ([_recivedData68[6] unsignedIntegerValue]) {
                         //暂停计时的时候无法进入曲线页面
                     case 0:
-                    case 1:
+                    {
+                        [self inquirePowerStatus];
                         [self inquireTempCount];
+                    }
+                        break;
+                      
+                    case 1:
+                    {
+                        if (!isGetTimerStatus) {
+                            [self inquirePowerStatus];
+                        }
+                        isGetTimerStatus = YES;
+                    }
                         break;
                         
                     case 2:
-                        [_myTimer setFireDate:[NSDate date]];
+                    {
+                        if (!isGetTimerStatus) {
+                            [self inquirePowerStatus];
+                        }
+                        isGetTimerStatus = YES;
+                    }
                         break;
-                        
+                    
                     default:
                         break;
                 }
@@ -511,8 +681,22 @@ static NSInteger curveId;
                 _timerValue = value;
                 
             }else if (self.msg68Type == getPowerStatus){
+                resendCount = 0;
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [NSObject cancelPreviousPerformRequestsWithTarget:self];
+                });
                 //查询电源状态结果
+                if ([_recivedData68[6] intValue] == 0x00) {
+                    [self setPowerStatus:NO];
+                }else if ([_recivedData68[6] intValue] == 0xFF){
+                    [self setPowerStatus:YES];
+                }
+                if (!isGetPowerStatus) {
+                    [self bakeFire];
+                }
+                isGetPowerStatus = YES;
             }
+            
         }else if (self.frame68Type == commandFrame){
             if (self.msg68Type == getTimerStatus) {
                 if ([_recivedData68[6] unsignedIntegerValue] == 0) {
@@ -523,7 +707,7 @@ static NSInteger curveId;
                     [_yVals_Environment removeAllObjects];
                     _timerValue = 0;
                     [_myTimer setFireDate:[NSDate date]];
-                }else if ([_recivedData68[6] unsignedIntegerValue] == 1){
+                }else if ([_recivedData68[6] unsignedIntegerValue] == 1 || [_recivedData68[6] unsignedIntegerValue] == 2){
                     //烘焙结束，保存数据生成报告
                     [[NSNotificationCenter defaultCenter] postNotificationName:@"bakeCompelete" object:nil userInfo:nil];
                 }
@@ -585,7 +769,7 @@ static NSInteger curveId;
                     break;
                     
                 case 1:
-                    returnVal = cool;
+                    returnVal = coolAndStir;
                     break;
                     
                 case 2:
@@ -659,7 +843,7 @@ static NSInteger curveId;
 }
 
 #pragma mark - Global Actions
-- (void)showAlertAction{
+- (void)showBakeOverAlertAction{
     YAlertViewController *alert = [[YAlertViewController alloc] init];
     alert.modalPresentationStyle = UIModalPresentationOverCurrentContext;
     [[self getCurrentVC] presentViewController:alert animated:NO completion:^{
@@ -687,7 +871,7 @@ static NSInteger curveId;
     
     //曲线名字
     NSString *curveName = @"";
-    if (_beanArray.count > 2) {
+    if (_beanArray.count >= 2) {
         curveName = [NSString stringWithFormat:@"拼配豆(%@)",myDB.deviceName];
     }else if (_beanArray.count == 1){
         BeanModel *bean = _beanArray[0];
@@ -723,6 +907,7 @@ static NSInteger curveId;
         //BOOL result = [db executeUpdate:@"INSERT INTO curveInfo (curveName,date,deviceName,rawBeanWeight,bakeBeanWeight,light,bakeTime,developTime,developRate,bakerName,curveValue) VALUES (?,?,?,?,?,?,?,?,?,?,?)",@"",[NSDate localStringFromUTCDate:[NSDate date]],@"",@0,@0,@0,@0,@0,@"",@"",@""];
         if (!result) {
             *rollback = YES;
+            [NSObject showHudTipStr:@"插入曲线失败"];
             return;
         }
         
@@ -739,6 +924,7 @@ static NSInteger curveId;
             result = [db executeUpdate:@"INSERT INTO curve_event (curveId,eventId,eventTime,eventBeanTemp) VALUES (?,?,?,?)",curveId,event.eventId,event.eventTime,event.eventBeanTemp];
             if (!result) {
                 *rollback = YES;
+                [NSObject showHudTipStr:@"插入曲线失败，事件信息有误"];
                 return;
             }
         }
@@ -749,6 +935,7 @@ static NSInteger curveId;
             result = [db executeUpdate:@"INSERT INTO bean_curve (beanId,curveId,beanWeight) VALUES (?,?,?)",bean.beanId,[NSNumber numberWithInteger:curveId],bean.weight];
             if (!result) {
                 *rollback = YES;
+                [NSObject showHudTipStr:@"插入曲线失败，生豆信息有误"];
                 return;
             }
         }

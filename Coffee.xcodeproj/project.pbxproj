@@ -9,11 +9,14 @@
 /* Begin PBXBuildFile section */
 		258879339880B16366F53ED6 /* Pods_Coffee.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27C3888E1688495B0D5D73D6 /* Pods_Coffee.framework */; };
 		BB149F3121215B4C00E5C2BF /* DeviceSelectCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BB149F2F21215B4C00E5C2BF /* DeviceSelectCell.m */; };
+		BB18D5B521358597006CA5A7 /* CurveController_bakeRela.m in Sources */ = {isa = PBXBuildFile; fileRef = BB18D5B421358597006CA5A7 /* CurveController_bakeRela.m */; };
 		BB1C156620E1E8AD006D7053 /* UIButton+Common.m in Sources */ = {isa = PBXBuildFile; fileRef = BB1C156420E1E8AD006D7053 /* UIButton+Common.m */; };
+		BB21D6092134470B009FCB66 /* CurrentCurveCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BB21D6082134470B009FCB66 /* CurrentCurveCell.m */; };
 		BB23E563210964C20074C61B /* FeedbackViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB23E562210964C20074C61B /* FeedbackViewController.m */; };
 		BB25E7A5212E4E03003568BD /* CurveInfoCell_add.m in Sources */ = {isa = PBXBuildFile; fileRef = BB25E7A4212E4E03003568BD /* CurveInfoCell_add.m */; };
 		BB25E7A9212E611A003568BD /* BeanViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB25E7A8212E611A003568BD /* BeanViewController.m */; };
 		BB25E7AC212E63A2003568BD /* beanCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BB25E7AB212E63A2003568BD /* beanCell.m */; };
+		BB26A97B21339E0C000F225C /* BeanViewController_bakeAdd.m in Sources */ = {isa = PBXBuildFile; fileRef = BB26A97A21339E0C000F225C /* BeanViewController_bakeAdd.m */; };
 		BB26AFB220EDC846008AE330 /* 数据.json in Resources */ = {isa = PBXBuildFile; fileRef = BB26AFB120EDC846008AE330 /* 数据.json */; };
 		BB2912022106BA65001B9448 /* UsernameViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB2912012106BA65001B9448 /* UsernameViewController.m */; };
 		BB29120C2106CCE1001B9448 /* PasswordViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB2912082106CCE1001B9448 /* PasswordViewController.m */; };
@@ -291,7 +294,6 @@
 		BB6A556220FCCDA90013C3C1 /* ic_bake_dialog_delete@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = BB6A556120FCCDA90013C3C1 /* ic_bake_dialog_delete@2x.png */; };
 		BB6A556420FCCDC40013C3C1 /* ic_bake_dialog_delete@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = BB6A556320FCCDC30013C3C1 /* ic_bake_dialog_delete@3x.png */; };
 		BB6A784620E32A4D00EE3E2E /* DeviceTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BB6A784420E32A4D00EE3E2E /* DeviceTableViewCell.m */; };
-		BB6A784720E32A4D00EE3E2E /* DeviceTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = BB6A784520E32A4D00EE3E2E /* DeviceTableViewCell.xib */; };
 		BB6A784B20E36E7200EE3E2E /* BaseViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB6A784A20E36E7200EE3E2E /* BaseViewController.m */; };
 		BB6AD0E82126CC0C0010458A /* ReportLightCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BB6AD0E72126CC0C0010458A /* ReportLightCell.m */; };
 		BB6AD21721007D15008C8763 /* MineViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB6AD21621007D15008C8763 /* MineViewController.m */; };
@@ -418,8 +420,12 @@
 		7BA3FAAB66A327260F196ABB /* Pods-Coffee.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Coffee.release.xcconfig"; path = "Pods/Target Support Files/Pods-Coffee/Pods-Coffee.release.xcconfig"; sourceTree = "<group>"; };
 		BB149F2E21215B4C00E5C2BF /* DeviceSelectCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DeviceSelectCell.h; sourceTree = "<group>"; };
 		BB149F2F21215B4C00E5C2BF /* DeviceSelectCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DeviceSelectCell.m; sourceTree = "<group>"; };
+		BB18D5B321358597006CA5A7 /* CurveController_bakeRela.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CurveController_bakeRela.h; sourceTree = "<group>"; };
+		BB18D5B421358597006CA5A7 /* CurveController_bakeRela.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CurveController_bakeRela.m; sourceTree = "<group>"; };
 		BB1C156420E1E8AD006D7053 /* UIButton+Common.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIButton+Common.m"; sourceTree = "<group>"; };
 		BB1C156520E1E8AD006D7053 /* UIButton+Common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIButton+Common.h"; sourceTree = "<group>"; };
+		BB21D6072134470B009FCB66 /* CurrentCurveCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CurrentCurveCell.h; sourceTree = "<group>"; };
+		BB21D6082134470B009FCB66 /* CurrentCurveCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CurrentCurveCell.m; sourceTree = "<group>"; };
 		BB23E561210964C20074C61B /* FeedbackViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FeedbackViewController.h; sourceTree = "<group>"; };
 		BB23E562210964C20074C61B /* FeedbackViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FeedbackViewController.m; sourceTree = "<group>"; };
 		BB25E7A3212E4E03003568BD /* CurveInfoCell_add.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CurveInfoCell_add.h; sourceTree = "<group>"; };
@@ -428,6 +434,8 @@
 		BB25E7A8212E611A003568BD /* BeanViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeanViewController.m; sourceTree = "<group>"; };
 		BB25E7AA212E63A2003568BD /* beanCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = beanCell.h; sourceTree = "<group>"; };
 		BB25E7AB212E63A2003568BD /* beanCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = beanCell.m; sourceTree = "<group>"; };
+		BB26A97921339E0C000F225C /* BeanViewController_bakeAdd.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeanViewController_bakeAdd.h; sourceTree = "<group>"; };
+		BB26A97A21339E0C000F225C /* BeanViewController_bakeAdd.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeanViewController_bakeAdd.m; sourceTree = "<group>"; };
 		BB26AFB120EDC846008AE330 /* 数据.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "数据.json"; sourceTree = "<group>"; };
 		BB2912002106BA65001B9448 /* UsernameViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UsernameViewController.h; sourceTree = "<group>"; };
 		BB2912012106BA65001B9448 /* UsernameViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UsernameViewController.m; sourceTree = "<group>"; };
@@ -732,7 +740,6 @@
 		BB6A556320FCCDC30013C3C1 /* ic_bake_dialog_delete@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ic_bake_dialog_delete@3x.png"; sourceTree = "<group>"; };
 		BB6A784320E32A4D00EE3E2E /* DeviceTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DeviceTableViewCell.h; sourceTree = "<group>"; };
 		BB6A784420E32A4D00EE3E2E /* DeviceTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DeviceTableViewCell.m; sourceTree = "<group>"; };
-		BB6A784520E32A4D00EE3E2E /* DeviceTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = DeviceTableViewCell.xib; sourceTree = "<group>"; };
 		BB6A784920E36E7200EE3E2E /* BaseViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BaseViewController.h; sourceTree = "<group>"; };
 		BB6A784A20E36E7200EE3E2E /* BaseViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BaseViewController.m; sourceTree = "<group>"; };
 		BB6AD0E62126CC0C0010458A /* ReportLightCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ReportLightCell.h; sourceTree = "<group>"; };
@@ -931,6 +938,15 @@
 				27C3888E1688495B0D5D73D6 /* Pods_Coffee.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		BB21D606213446E6009FCB66 /* Curve */ = {
+			isa = PBXGroup;
+			children = (
+				BB21D6072134470B009FCB66 /* CurrentCurveCell.h */,
+				BB21D6082134470B009FCB66 /* CurrentCurveCell.m */,
+			);
+			path = Curve;
 			sourceTree = "<group>";
 		};
 		BB25E7A6212E60FD003568BD /* Bean */ = {
@@ -1258,7 +1274,6 @@
 				BB8AA4E320DFCA1C00610316 /* PasswordTableViewCell.xib */,
 				BB6A784320E32A4D00EE3E2E /* DeviceTableViewCell.h */,
 				BB6A784420E32A4D00EE3E2E /* DeviceTableViewCell.m */,
-				BB6A784520E32A4D00EE3E2E /* DeviceTableViewCell.xib */,
 				BB149F2E21215B4C00E5C2BF /* DeviceSelectCell.h */,
 				BB149F2F21215B4C00E5C2BF /* DeviceSelectCell.m */,
 			);
@@ -1559,6 +1574,7 @@
 		BB8AA4D820DFC23300610316 /* Cell */ = {
 			isa = PBXGroup;
 			children = (
+				BB21D606213446E6009FCB66 /* Curve */,
 				BB525F29212D73F2003484E9 /* Bean */,
 				BB525F1F212D66F6003484E9 /* gatewayCell */,
 				BBA7B95C212AA56A004943DC /* CollectCell */,
@@ -1686,6 +1702,10 @@
 				BB94964121256406000A4A59 /* RightFuncController.m */,
 				BB525F26212D6FCB003484E9 /* AddBeanTableController.h */,
 				BB525F27212D6FCB003484E9 /* AddBeanTableController.m */,
+				BB26A97921339E0C000F225C /* BeanViewController_bakeAdd.h */,
+				BB26A97A21339E0C000F225C /* BeanViewController_bakeAdd.m */,
+				BB18D5B321358597006CA5A7 /* CurveController_bakeRela.h */,
+				BB18D5B421358597006CA5A7 /* CurveController_bakeRela.m */,
 			);
 			path = Bake;
 			sourceTree = "<group>";
@@ -1853,7 +1873,6 @@
 				BB525EFD212CFF47003484E9 /* img_logo@3x.png in Resources */,
 				BB52778320F845C100D020DD /* ic_leftpop@2x.png in Resources */,
 				BB525E50212CFF47003484E9 /* img_logo2@3x.png in Resources */,
-				BB6A784720E32A4D00EE3E2E /* DeviceTableViewCell.xib in Resources */,
 				BB525EE2212CFF47003484E9 /* img_scanning@3x.png in Resources */,
 				BB8AA21F20DE3F5200610316 /* ic_navbar_bake_selected.png in Resources */,
 				BB525ECA212CFF47003484E9 /* img_signal_light_lengque2@3x.png in Resources */,
@@ -2242,6 +2261,7 @@
 				BB25E7A9212E611A003568BD /* BeanViewController.m in Sources */,
 				BBA7B965212AC531004943DC /* CollectEventCell.m in Sources */,
 				BB6E0B7E2122D5B0008F20FC /* YAlertViewController.m in Sources */,
+				BB26A97B21339E0C000F225C /* BeanViewController_bakeAdd.m in Sources */,
 				BB4C906E2105C4200023EE9B /* DataBase.m in Sources */,
 				BB8AA4C820DFB9CA00610316 /* ESP_ByteUtil.m in Sources */,
 				BBFE861520E62FF3005C6CE5 /* DeviceConfirmView.m in Sources */,
@@ -2249,6 +2269,7 @@
 				BB73BA2D212FE903001D9258 /* SpicesSelController.m in Sources */,
 				BB593FAC210F324C007ECB1D /* EventModel.m in Sources */,
 				BB94EAA520DBA9C800370A95 /* MainViewController.m in Sources */,
+				BB21D6092134470B009FCB66 /* CurrentCurveCell.m in Sources */,
 				BB525F2C212D742C003484E9 /* referCurveCell.m in Sources */,
 				BB94963F2125504F000A4A59 /* LeftFuncController.m in Sources */,
 				BB73BA24212FB4CF001D9258 /* AddBeanInfoCell2.m in Sources */,
@@ -2261,6 +2282,7 @@
 				BB23E563210964C20074C61B /* FeedbackViewController.m in Sources */,
 				BB73BA30212FEA44001D9258 /* ProcessSelController.m in Sources */,
 				BB8F7BDF20DA513B00BE5CFC /* main.m in Sources */,
+				BB18D5B521358597006CA5A7 /* CurveController_bakeRela.m in Sources */,
 				BB73BA1E212F9CF7001D9258 /* AddNewBeanController.m in Sources */,
 				BB94964221256406000A4A59 /* RightFuncController.m in Sources */,
 				BB61D75A210DC31C0068A0A6 /* ReportModel.m in Sources */,

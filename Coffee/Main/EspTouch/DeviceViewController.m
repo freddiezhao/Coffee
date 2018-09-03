@@ -23,12 +23,11 @@
 #import <ifaddrs.h>
 #import <arpa/inet.h>
 
-#define HEIGHT_CELL 44.f
+#define HEIGHT_CELL 70.f
 #define HEIGHT_HEADER 44.f
 #define resendTimes 3
 
 NSString *const CellIdentifier_device = @"CellID_device";
-NSString *const CellNibName_device = @"DeviceTableViewCell";
 
 @interface DeviceViewController () <GCDAsyncUdpSocketDelegate,UITableViewDelegate,UITableViewDataSource>
 
@@ -115,7 +114,6 @@ NSString *const CellNibName_device = @"DeviceTableViewCell";
             tableView.hidden = YES;
             tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
             [tableView registerClass:[DeviceTableViewCell class] forCellReuseIdentifier:CellIdentifier_device];
-            [tableView registerNib:[UINib nibWithNibName:CellNibName_device bundle:nil] forCellReuseIdentifier:CellIdentifier_device];
             [self.view addSubview:tableView];
             tableView.estimatedRowHeight = 0;
             tableView.estimatedSectionHeaderHeight = 0;
@@ -300,7 +298,7 @@ NSString *const CellNibName_device = @"DeviceTableViewCell";
             int isNewDevice = 1;
             for (int i = 0; i < _deviceArray.count; i++) {
                 DeviceModel *device = _deviceArray[i];
-                if ([[msg substringWithRange:NSMakeRange(0, 8)] isEqualToString:device.deviceMac]) {
+                if ([[msg substringWithRange:NSMakeRange(0, 8)] isEqualToString:device.sn]) {
                     dModel.deviceName = device.deviceName;
                     [_deviceArray removeObjectAtIndex:i];
                     isNewDevice = 0;
@@ -309,7 +307,7 @@ NSString *const CellNibName_device = @"DeviceTableViewCell";
             }
             if (isNewDevice) {
                 [[DataBase shareDataBase].queueDB inDatabase:^(FMDatabase * _Nonnull db) {
-                    BOOL result = [db executeUpdate:@"INSERT INTO device (mac,deviceName) VALUES (?,?)",[msg substringWithRange:NSMakeRange(0, 8)],[msg substringWithRange:NSMakeRange(0, 8)]];
+                    BOOL result = [db executeUpdate:@"INSERT INTO device (sn,deviceName) VALUES (?,?)",[msg substringWithRange:NSMakeRange(0, 8)],[msg substringWithRange:NSMakeRange(0, 8)]];
                     if (result) {
                         NSLog(@"插入新设备到device成功");
                     }else{
@@ -326,6 +324,14 @@ NSString *const CellNibName_device = @"DeviceTableViewCell";
             
             [_onlineDeviceArray addObject:dModel];
             dispatch_async(dispatch_get_main_queue(), ^{
+                if (!_onlineDeviceArray.count) {
+                    _devieceTable.hidden = YES;
+                    _noDeviceView.hidden = NO;
+                }else{
+                    _devieceTable.hidden = NO;
+                    _noDeviceView.hidden = YES;
+                }
+                
                 [_devieceTable reloadData];
             });
         }
@@ -434,38 +440,44 @@ NSString *const CellNibName_device = @"DeviceTableViewCell";
     if (indexPath.section == 1) {
         DeviceTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_device];
         if (cell == nil) {
-            cell = [[[NSBundle mainBundle] loadNibNamed:CellNibName_device owner:self options:nil] lastObject];
+            cell = [[DeviceTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_device];
         }
-        
+        cell.backgroundColor = [UIColor clearColor];
+        cell.userInteractionEnabled = YES;
         DeviceModel *dModel = _onlineDeviceArray[indexPath.row];
         if (!dModel.deviceName) {
-            cell.deviceLabel.text = dModel.deviceMac;
+            cell.deviceName.text = dModel.deviceMac;
         }else{
-            cell.deviceLabel.text = dModel.deviceName;
+            cell.deviceName.text = dModel.deviceName;
         }
         
         return cell;
     }else if (indexPath.section == 0){
         DeviceTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_device];
         if (cell == nil) {
-            cell = [[[NSBundle mainBundle] loadNibNamed:CellNibName_device owner:self options:nil] lastObject];
+            cell = [[DeviceTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_device];
         }
+        cell.backgroundColor = [UIColor clearColor];
+        cell.userInteractionEnabled = YES;
+
         NetWork *net = [NetWork shareNetWork];
         
         if (!net.connectedDevice.deviceName) {
-            cell.deviceLabel.text = net.connectedDevice.deviceMac;
+            cell.deviceName.text = net.connectedDevice.deviceMac;
         }else{
-            cell.deviceLabel.text = net.connectedDevice.deviceName;
+            cell.deviceName.text = net.connectedDevice.deviceName;
         }
         
         return cell;
     }else{
         DeviceTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_device];
         if (cell == nil) {
-            cell = [[[NSBundle mainBundle] loadNibNamed:CellNibName_device owner:self options:nil] lastObject];
+            cell = [[DeviceTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_device];
         }
+        cell.backgroundColor = [UIColor colorWithRed:247/255.0 green:247/255.0 blue:247/255.0 alpha:1];
+        cell.userInteractionEnabled = NO;
         DeviceModel *device = _deviceArray[indexPath.row];
-        cell.deviceLabel.text = device.deviceName;
+        cell.deviceName.text = device.deviceName;
         return cell;
     }
     

@@ -147,4 +147,15 @@
     return result;
     
 }
+
++(NSString *)YMDHMStringFromUTCDate:(NSDate *)UTCDate{
+    
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc]init];
+    NSTimeZone *tz = [NSTimeZone defaultTimeZone];
+    [dateFormatter setTimeZone:tz];
+    [dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm"];
+    NSString* result=[dateFormatter stringFromDate:UTCDate];
+    return result;
+    
+}
 @end
