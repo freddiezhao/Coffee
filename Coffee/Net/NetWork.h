@@ -48,6 +48,7 @@ static NSInteger tempCountVer = 1000;
 
 @property (nonatomic, strong) dispatch_queue_t queue;
 @property (nonatomic, strong) dispatch_semaphore_t signal;
+@property (nonatomic, strong) dispatch_semaphore_t sendSignal;
 
 ///@brief 连接上的设备
 @property (nonatomic, strong) DeviceModel *connectedDevice;
@@ -74,7 +75,12 @@ static NSInteger tempCountVer = 1000;
 ///@brief 用于KVO传参数
 @property (nonatomic, strong) NSArray *tempData;
 
-///@brief 温度数据
+///@brief 温度数据(float)
+@property (nonatomic, strong) NSMutableArray *OutArr;
+@property (nonatomic, strong) NSMutableArray *InArr;
+@property (nonatomic, strong) NSMutableArray *BeanArr;
+@property (nonatomic, strong) NSMutableArray *EnvironmentArr;
+///@brief 温度数据(chartDataEntry)
 @property (nonatomic, strong) NSMutableArray *yVals_Out;
 @property (nonatomic, strong) NSMutableArray *yVals_In;
 @property (nonatomic, strong) NSMutableArray *yVals_Bean;
@@ -87,10 +93,13 @@ static NSInteger tempCountVer = 1000;
 @property (nonatomic) BOOL isCurveOn;
 @property (nonatomic, strong) ReportModel *relaCurve;//参考曲线
 ///@brief 发展时间发展率
-@property (nonatomic) NSInteger developTime;
+@property (nonatomic, assign) BOOL isDevelop;
+@property (nonatomic, assign) int developTime;
 @property (nonatomic, strong) NSString *developRate;
 ///@brief 计时器数据,app中所有计时都以秒为单位
 @property (nonatomic, assign) int timerValue;
+///@brief 计时器状态
+@property (nonatomic, assign) int deviceTimerStatus;
 ///@brief 事件数组
 @property (nonatomic, strong) NSMutableArray *eventArray;
 
@@ -118,6 +127,8 @@ static NSInteger tempCountVer = 1000;
 - (void)setFire:(UInt8)isFire;
 - (void)setPower:(UInt8)isPower;
 - (void)setColdAndStir:(UInt8)isColdAndStir;
+- (void)setTimerStatusOn;
+- (void)setTimerStatusOff;
 
 - (void)showBakeOverAlertAction;
 @end

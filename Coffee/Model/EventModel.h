@@ -12,7 +12,7 @@
 
 @property (nonatomic) NSInteger eventId;
 @property (nonatomic) NSInteger eventTime;
-@property (nonatomic, strong) NSString *eventBeanTemp;
+@property (nonatomic, assign) double eventBeanTemp;
 @property (nonatomic, strong) NSString *eventText;
 
 @end

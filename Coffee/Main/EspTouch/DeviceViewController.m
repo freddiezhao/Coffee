@@ -73,7 +73,7 @@ NSString *const CellIdentifier_device = @"CellID_device";
     _timer = [self timer];
     _lock = [self lock];
     
-    if (!_deviceArray.count && !_onlineDeviceArray.count) {
+    if (!_deviceArray.count && !_onlineDeviceArray.count && ![NetWork shareNetWork].connectedDevice) {
         _devieceTable.hidden = YES;
         _noDeviceView.hidden = NO;
     }else{
@@ -292,7 +292,7 @@ NSString *const CellIdentifier_device = @"CellID_device";
             
             NSString *msg = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
             NSLog(@"%@",msg);
-            dModel.deviceMac = [msg substringWithRange:NSMakeRange(0, 8)];
+            dModel.sn = [msg substringWithRange:NSMakeRange(0, 8)];
             
             //判断本地是否已经存储过，如果有则将_deviceArray中的该设备删除，如果没有则存储该设备
             int isNewDevice = 1;
@@ -446,7 +446,7 @@ NSString *const CellIdentifier_device = @"CellID_device";
         cell.userInteractionEnabled = YES;
         DeviceModel *dModel = _onlineDeviceArray[indexPath.row];
         if (!dModel.deviceName) {
-            cell.deviceName.text = dModel.deviceMac;
+            cell.deviceName.text = dModel.sn;
         }else{
             cell.deviceName.text = dModel.deviceName;
         }
@@ -463,7 +463,7 @@ NSString *const CellIdentifier_device = @"CellID_device";
         NetWork *net = [NetWork shareNetWork];
         
         if (!net.connectedDevice.deviceName) {
-            cell.deviceName.text = net.connectedDevice.deviceMac;
+            cell.deviceName.text = net.connectedDevice.sn;
         }else{
             cell.deviceName.text = net.connectedDevice.deviceName;
         }
@@ -553,7 +553,7 @@ NSString *const CellIdentifier_device = @"CellID_device";
     _deviceArray = [[DataBase shareDataBase] queryAllDevice];
     if ([NetWork shareNetWork].connectedDevice) {
         for (DeviceModel *device in _deviceArray) {
-            if ([device.deviceMac isEqualToString:[NetWork shareNetWork].connectedDevice.deviceMac]) {
+            if ([device.sn isEqualToString:[NetWork shareNetWork].connectedDevice.sn]) {
                 [_deviceArray removeObject:device];
                 break;
             }

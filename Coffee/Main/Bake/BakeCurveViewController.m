@@ -67,6 +67,7 @@
     
     [_myNet addObserver:self forKeyPath:@"tempData" options:NSKeyValueObservingOptionNew context:nil];
     [_myNet addObserver:self forKeyPath:@"timerValue" options:NSKeyValueObservingOptionNew context:nil];
+    [_myNet addObserver:self forKeyPath:@"developTime" options:NSKeyValueObservingOptionNew context:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(bakeCompelete) name:@"bakeCompelete" object:nil];
     
     [self setDataValue:nil];
@@ -204,8 +205,9 @@
         _bakeTime = [[UILabel alloc] init];
         _bakeTime.textAlignment = NSTextAlignmentLeft;
         _bakeTime.font = [UIFont fontWithName:@"PingFangSC-Light" size:13];
-        _bakeTime.text = @"07:45";
+        _bakeTime.text = @"00:00";
         _bakeTime.textColor = [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1];
+        _bakeTime.adjustsFontSizeToFitWidth = YES;
         [self.view addSubview:_bakeTime];
     }
     return _bakeTime;
@@ -216,8 +218,9 @@
         _developRate = [[UILabel alloc] init];
         _developRate.textAlignment = NSTextAlignmentLeft;
         _developRate.font = [UIFont fontWithName:@"PingFangSC-Light" size:13];
-        _developRate.text = @"70.2%";
+        _developRate.text = @"0.0%";
         _developRate.textColor = [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1];
+        _developRate.adjustsFontSizeToFitWidth = YES;
         [self.view addSubview:_developRate];
     }
     return _developRate;
@@ -228,8 +231,9 @@
         _developTime = [[UILabel alloc] init];
         _developTime.textAlignment = NSTextAlignmentLeft;
         _developTime.font = [UIFont fontWithName:@"PingFangSC-Light" size:13];
-        _developTime.text = @"05:40";
+        _developTime.text = @"00:00";
         _developTime.textColor = [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1];
+        _developTime.adjustsFontSizeToFitWidth = YES;
         [self.view addSubview:_developTime];
     }
     return _developTime;
@@ -240,8 +244,9 @@
         _beanTempLabel = [[UILabel alloc] init];
         _beanTempLabel.textAlignment = NSTextAlignmentLeft;
         _beanTempLabel.font = [UIFont fontWithName:@"PingFangSC-Light" size:13];
-        _beanTempLabel.text = @"200.5℃";
+        _beanTempLabel.text = @"0.0℃";
         _beanTempLabel.textColor = [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1];
+        _beanTempLabel.adjustsFontSizeToFitWidth = YES;
         [self.view addSubview:_beanTempLabel];
     }
     return _beanTempLabel;
@@ -252,8 +257,9 @@
         _inTempLabel = [[UILabel alloc] init];
         _inTempLabel.textAlignment = NSTextAlignmentLeft;
         _inTempLabel.font = [UIFont fontWithName:@"PingFangSC-Light" size:13];
-        _inTempLabel.text = @"25.3℃";
+        _inTempLabel.text = @"0.0℃";
         _inTempLabel.textColor = [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1];
+        _inTempLabel.adjustsFontSizeToFitWidth = YES;
         [self.view addSubview:_inTempLabel];
     }
     return _inTempLabel;
@@ -264,8 +270,9 @@
         _outTempLabel = [[UILabel alloc] init];
         _outTempLabel.textAlignment = NSTextAlignmentLeft;
         _outTempLabel.font = [UIFont fontWithName:@"PingFangSC-Light" size:13];
-        _outTempLabel.text = @"212.2℃";
+        _outTempLabel.text = @"0.0℃";
         _outTempLabel.textColor = [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1];
+        _outTempLabel.adjustsFontSizeToFitWidth = YES;
         [self.view addSubview:_outTempLabel];
     }
     return _outTempLabel;
@@ -276,8 +283,9 @@
         _environTempLabel = [[UILabel alloc] init];
         _environTempLabel.textAlignment = NSTextAlignmentLeft;
         _environTempLabel.font = [UIFont fontWithName:@"PingFangSC-Light" size:13];
-        _environTempLabel.text = @"212.0℃";
+        _environTempLabel.text = @"0.0℃";
         _environTempLabel.textColor = [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1];
+        _environTempLabel.adjustsFontSizeToFitWidth = YES;
         [self.view addSubview:_environTempLabel];
     }
     return _environTempLabel;
@@ -288,8 +296,9 @@
         _beanTempRateLabel = [[UILabel alloc] init];
         _beanTempRateLabel.textAlignment = NSTextAlignmentLeft;
         _beanTempRateLabel.font = [UIFont fontWithName:@"PingFangSC-Light" size:13];
-        _beanTempRateLabel.text = @"-5.4℃/min";
+        _beanTempRateLabel.text = @"0.0℃/min";
         _beanTempRateLabel.textColor = [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1];
+        _beanTempRateLabel.adjustsFontSizeToFitWidth = YES;
         [self.view addSubview:_beanTempRateLabel];
     }
     return _beanTempRateLabel;
@@ -634,14 +643,14 @@
     
     if (_chartView.data.dataSetCount > 0)
     {
-        set1 = (LineChartDataSet *)_chartView.data.dataSets[0];
-        set1.values = _myNet.yVals_Out;
+        //set1 = (LineChartDataSet *)_chartView.data.dataSets[0];
+        //set1.values = _myNet.yVals_Out;
         
         //set2 = (LineChartDataSet *)_chartView.data.dataSets[1];
         //set2.values = _myNet.yVals_In;
         
-        set3 = (LineChartDataSet *)_chartView.data.dataSets[1];
-        set3.values = _myNet.yVals_Bean;
+        //set3 = (LineChartDataSet *)_chartView.data.dataSets[1];
+        //set3.values = _myNet.yVals_Bean;
         
        // set4 = (LineChartDataSet *)_chartView.data.dataSets[3];
        // set4.values = _myNet.yVals_Environment;
@@ -769,26 +778,35 @@
 
 #pragma mark - kvo
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context{
-    if ([keyPath isEqualToString:@"tempData"] && object == _myNet) {
+    if ([keyPath isEqualToString:@"tempData"]) {
         dispatch_async(dispatch_get_main_queue(), ^{
             [self setDataValue:_myNet.tempData];
+            
+            NSMutableArray *data = [_myNet.recivedData68 copy];
+            double tempOut = ([data[6] intValue] * 256 + [data[7] intValue]) / 10.0;
+            double tempIn = ([data[8] intValue] * 256 + [data[9] intValue]) / 10.0;
+            double tempBean = ([data[10] intValue] * 256 + [data[11] intValue]) / 10.0;
+            double tempEnvironment = ([data[12] intValue] * 256 + [data[13] intValue]) / 10.0;
+            
+            _beanTempLabel.text = [NSString stringWithFormat:@"%.1f℃",tempBean];
+            _inTempLabel.text = [NSString stringWithFormat:@"%.1f℃",tempIn];
+            _outTempLabel.text = [NSString stringWithFormat:@"%.1f℃",tempOut];
+            _environTempLabel.text = [NSString stringWithFormat:@"%.1f℃",tempEnvironment];
+            //_beanTempRateLabel.text = [NSString stringWithFormat:@"%.1f℃/min",tempRate];
         });
-        NSMutableArray *data = [_myNet.recivedData68 copy];
-        double tempOut = ([data[6] intValue] * 256 + [data[7] intValue]) / 10.0;
-        double tempIn = ([data[8] intValue] * 256 + [data[9] intValue]) / 10.0;
-        double tempBean = ([data[10] intValue] * 256 + [data[11] intValue]) / 10.0;
-        double tempEnvironment = ([data[12] intValue] * 256 + [data[13] intValue]) / 10.0;
-        
-        //_beanTempRateLabel.text = [NSString stringWithFormat:@"△豆温:%f℃/min",tempOut];
-        _beanTempLabel.text = [NSString stringWithFormat:@"豆温:%f℃",tempBean];
-        _inTempLabel.text = [NSString stringWithFormat:@"进风温:%f℃",tempIn];
-        _outTempLabel.text = [NSString stringWithFormat:@"出风温:%f℃",tempOut];
-        _environTempLabel.text = [NSString stringWithFormat:@"环境温:%f℃",tempEnvironment];
 
-    }else if ([keyPath isEqualToString:@"timerValue"] && object == _myNet){
+    }else if ([keyPath isEqualToString:@"timerValue"]){
         long minute = _myNet.timerValue / 60;
         long second = _myNet.timerValue % 60;
-        _bakeTime.text = [NSString stringWithFormat:@"%@ %ld:%ld",LocalString(@"已烘焙时间:"),minute,second];
+        if (_myNet.deviceTimerStatus == 0) {
+            _bakeTime.text = [NSString stringWithFormat:@"%02ld:%02ld",minute,second];
+        }
+    }else if ([keyPath isEqualToString:@"developTime"]){
+        long minute = _myNet.developTime / 60;
+        long second = _myNet.developTime % 60;
+        if (_myNet.isDevelop) {
+            _developTime.text = [NSString stringWithFormat:@"%02ld:%02ld",minute,second];
+        }
     }
 }
 

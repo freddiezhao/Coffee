@@ -19,7 +19,6 @@
 @property (nonatomic, strong) NSString *userName;
 @property (nonatomic, strong) NSNumber *userId;
 
-@property (nonatomic, strong) NSString *deviceName;
 ///@brief Settings
 @property (nonatomic, strong) SettingModel *setting;
 @property (nonatomic, strong) BeanModel *bean;

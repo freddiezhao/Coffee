@@ -40,6 +40,9 @@
 @property (nonatomic, strong) UILabel *outTempLabel;
 @property (nonatomic, strong) UILabel *environTempLabel;
 
+@property (nonatomic, strong) UIScrollView *beanNameView;
+@property (nonatomic, strong) UILabel *beanNameLabel;
+
 @property (nonatomic, strong) UIView *bottomView;
 @property (nonatomic, strong) UIButton *showControlViewBtn;
 @property (nonatomic, strong) UIButton *powerBtn;
@@ -52,7 +55,7 @@
 @property (nonatomic, strong) UIButton *bakeCurveBtn;
 @property (nonatomic, strong) UIButton *addBeanBtn;
 
-
+@property (nonatomic, strong) NSString *resourcePath;
 @end
 
 @implementation BakeViewController
@@ -60,9 +63,12 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.navigationItem.title = LocalString(@"烘焙");
+    self.navigationItem.title = LocalString(@"烘焙机名称");
     [self.navigationController.navigationBar setBarTintColor:[UIColor colorWithRed:250/255.0 green:250/255.0 blue:250/255.0 alpha:1]];
     [self.view setBackgroundColor:[UIColor colorWithRed:250/255.0 green:250/255.0 blue:250/255.0 alpha:1]];
+    
+    NSBundle *bundle = [NSBundle mainBundle];
+    _resourcePath = [bundle resourcePath];
     
     UIButton *rightButton = [UIButton buttonWithType:UIButtonTypeCustom];
     rightButton.frame = CGRectMake(0, 0, 30, 30);
@@ -84,6 +90,8 @@
     _inTempLabel = [self inTempLabel];
     _outTempLabel = [self outTempLabel];
     _environTempLabel = [self environTempLabel];
+    _beanNameView = [self beanNameView];
+    
     
     _bottomView = [self bottomView];
     _showControlViewBtn = [self showControlViewBtn];
@@ -105,6 +113,18 @@
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
     [self.rdv_tabBarController setTabBarHidden:NO animated:YES];
+    
+    if (_beanNameView) {
+        _beanNameView = [self beanNameView];
+    }
+}
+
+- (void)dealloc{
+    [_myNet removeObserver:self forKeyPath:@"tempData"];
+    [_myNet removeObserver:self forKeyPath:@"powerStatus"];
+    [_myNet removeObserver:self forKeyPath:@"fireStatus"];
+    [_myNet removeObserver:self forKeyPath:@"coolStatus"];
+    [_myNet removeObserver:self forKeyPath:@"stirStatus"];
 }
 
 #pragma mark - Lazy Load
@@ -127,11 +147,10 @@
         
         _statusView = [[UIView alloc] init];
         _statusView.frame = CGRectMake(148/WScale,6.5/HScale,6/WScale,6/WScale);
-        _statusView.layer.backgroundColor = [UIColor colorWithRed:126/255.0 green:211/255.0 blue:33/255.0 alpha:1].CGColor;
-        _statusView.layer.shadowColor = [UIColor colorWithRed:106/255.0 green:255/255.0 blue:77/255.0 alpha:1].CGColor;
+        _statusView.layer.backgroundColor = [UIColor colorWithRed:254/255.0 green:71/255.0 blue:51/255.0 alpha:1].CGColor;
+        _statusView.layer.shadowColor = [UIColor colorWithRed:254/255.0 green:71/255.0 blue:52/255.0 alpha:1].CGColor;
         _statusView.layer.shadowOffset = CGSizeMake(0,0);
         _statusView.layer.shadowOpacity = 1;
-        _statusView.layer.shadowRadius = 8;
         _statusView.layer.cornerRadius = 3/WScale;
         [self.view addSubview:_statusView];
     }
@@ -215,9 +234,9 @@
         _powerBtn = [[UIButton alloc] init];
         _powerBtn = [UIButton buttonWithType:UIButtonTypeCustom];
         if (_myNet.powerStatus) {
-            [_powerBtn setImage:[UIImage imageNamed:@"btn_power_on"] forState:UIControlStateNormal];
+            [_powerBtn setImage:[UIImage imageWithContentsOfFile:[_resourcePath stringByAppendingPathComponent:@"btn_power_on@2x.png"]] forState:UIControlStateNormal];
         }else{
-            [_powerBtn setImage:[UIImage imageNamed:@"btn_power_off"] forState:UIControlStateNormal];
+            [_powerBtn setImage:[UIImage imageWithContentsOfFile:[_resourcePath stringByAppendingPathComponent:@"btn_power_off@2x.png"]] forState:UIControlStateNormal];
         }
         [_powerBtn addTarget:self action:@selector(setPower) forControlEvents:UIControlEventTouchUpInside];
         _powerBtn.enabled = NO;
@@ -226,9 +245,9 @@
         _fireBtn = [[UIButton alloc] init];
         _fireBtn = [UIButton buttonWithType:UIButtonTypeCustom];
         if (_myNet.fireStatus) {
-            [_fireBtn setImage:[UIImage imageNamed:@"btn_fire_on"] forState:UIControlStateNormal];
+            [_fireBtn setImage:[UIImage imageWithContentsOfFile:[_resourcePath stringByAppendingPathComponent:@"btn_fire_on@2x.png"]] forState:UIControlStateNormal];
         }else{
-            [_fireBtn setImage:[UIImage imageNamed:@"btn_fire_off"] forState:UIControlStateNormal];
+            [_fireBtn setImage:[UIImage imageWithContentsOfFile:[_resourcePath stringByAppendingPathComponent:@"btn_fire_off@2x.png"]] forState:UIControlStateNormal];
         }
         [_fireBtn addTarget:self action:@selector(setFire) forControlEvents:UIControlEventTouchUpInside];
         _fireBtn.enabled = NO;
@@ -237,9 +256,9 @@
         _stirBtn = [[UIButton alloc] init];
         _stirBtn = [UIButton buttonWithType:UIButtonTypeCustom];
         if (_myNet.stirStatus) {
-            [_stirBtn setImage:[UIImage imageNamed:@"btn_stir_on"] forState:UIControlStateNormal];
+            [_stirBtn setImage:[UIImage imageWithContentsOfFile:[_resourcePath stringByAppendingPathComponent:@"btn_stir_on@2x.png"]] forState:UIControlStateNormal];
         }else{
-            [_stirBtn setImage:[UIImage imageNamed:@"btn_stir_off"] forState:UIControlStateNormal];
+            [_stirBtn setImage:[UIImage imageWithContentsOfFile:[_resourcePath stringByAppendingPathComponent:@"btn_stir_off@2x.png"]] forState:UIControlStateNormal];
         }
         [_stirBtn addTarget:self action:@selector(setStir) forControlEvents:UIControlEventTouchUpInside];
         _stirBtn.enabled = NO;
@@ -248,9 +267,9 @@
         _coldBtn = [[UIButton alloc] init];
         _coldBtn = [UIButton buttonWithType:UIButtonTypeCustom];
         if (_myNet.coolStatus) {
-            [_coldBtn setImage:[UIImage imageNamed:@"btn_cold_on"] forState:UIControlStateNormal];
+            [_coldBtn setImage:[UIImage imageWithContentsOfFile:[_resourcePath stringByAppendingPathComponent:@"btn_cold_on@2x.png"]] forState:UIControlStateNormal];
         }else{
-            [_coldBtn setImage:[UIImage imageNamed:@"btn_cold_off"] forState:UIControlStateNormal];
+            [_coldBtn setImage:[UIImage imageWithContentsOfFile:[_resourcePath stringByAppendingPathComponent:@"btn_cold_off@2x.png"]] forState:UIControlStateNormal];
         }
         [_coldBtn addTarget:self action:@selector(setCold) forControlEvents:UIControlEventTouchUpInside];
         _coldBtn.enabled = NO;
@@ -258,14 +277,14 @@
         
         _firePBtn = [[UIButton alloc] init];
         _firePBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        [_firePBtn setImage:[UIImage imageNamed:@"btn_firepower_disable"] forState:UIControlStateNormal];
+        [_firePBtn setImage:[UIImage imageWithContentsOfFile:[_resourcePath stringByAppendingPathComponent:@"btn_firepower_disable@2x.png"]] forState:UIControlStateNormal];
         [_firePBtn addTarget:self action:@selector(setPower) forControlEvents:UIControlEventTouchUpInside];
         _firePBtn.enabled = NO;
         [_mainView addSubview:_firePBtn];
         
         _windPBtn = [[UIButton alloc] init];
         _windPBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        [_windPBtn setImage:[UIImage imageNamed:@"btn_windpower_disable"] forState:UIControlStateNormal];
+        [_windPBtn setImage:[UIImage imageWithContentsOfFile:[_resourcePath stringByAppendingPathComponent:@"btn_windpower_disable@2x.png"]] forState:UIControlStateNormal];
         [_windPBtn addTarget:self action:@selector(setPower) forControlEvents:UIControlEventTouchUpInside];
         _windPBtn.enabled = NO;
         [_mainView addSubview:_windPBtn];
@@ -541,6 +560,61 @@
     return _environTempLabel;
 }
 
+- (UIScrollView *)beanNameView{
+    if (_beanNameView) {
+        [_beanNameView removeFromSuperview];
+        _beanNameView = nil;
+    }
+    if (_beanNameLabel) {
+        [_beanNameLabel removeFromSuperview];
+        _beanNameLabel = nil;
+    }
+    NSString *string = @"";
+    for (BeanModel *bean in _myNet.beanArray) {
+        string = [string stringByAppendingString:bean.name];
+        string = [string stringByAppendingString:@"、"];
+    }
+    if (![string isEqualToString:@""]) {
+        string = [string substringWithRange:NSMakeRange(0, string.length - 1)];
+    }
+    _beanNameLabel = [[UILabel alloc] init];
+    _beanNameLabel.text = string;
+    _beanNameLabel.font = [UIFont systemFontOfSize:14.f];
+    _beanNameLabel.textColor = [UIColor colorWithRed:71/255.0 green:120/255.0 blue:204/255.0 alpha:1];
+    NSDictionary *attr = @{NSFontAttributeName:[UIFont systemFontOfSize:14.f]};
+    CGSize size = [_beanNameLabel.text boundingRectWithSize:CGSizeMake(ScreenWidth, ScreenHeight) options:NSStringDrawingUsesLineFragmentOrigin attributes:attr context:nil].size;
+    _beanNameLabel.frame = (CGRect){CGPointZero,size};
+    
+    
+    _beanNameView = [[UIScrollView alloc] init];
+    _beanNameView.contentSize = size;
+    _beanNameView.showsHorizontalScrollIndicator = NO;
+    [_beanNameView addSubview:_beanNameLabel];
+    [_mainView addSubview:_beanNameView];
+    
+    [_beanNameView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.size.mas_equalTo(CGSizeMake(155/WScale, size.height));
+        make.left.equalTo(_mainView.mas_left).offset(205/WScale);
+        make.top.equalTo(_beanTempRateLabel.mas_bottom).offset(18/HScale);
+    }];
+    
+    if (size.width > 155/WScale) {
+        [UIView animateWithDuration:5
+                              delay:0
+                            options:UIViewAnimationOptionRepeat|UIViewAnimationOptionAutoreverse|UIViewAnimationCurveLinear
+                         animations:^{
+                             CGPoint point = _beanNameView.contentOffset;
+                             point.x = size.width - 155/WScale;
+                             _beanNameView.contentOffset = point;
+                         }
+                         completion:^(BOOL finished) {
+                             
+                         }
+         ];
+    }
+    return _beanNameView;
+}
+
 - (UIView *)bottomView{
     if (!_bottomView) {
         _bottomView = [[UIView alloc] initWithFrame:CGRectMake(0, 461/HScale, ScreenWidth, 110/HScale)];
@@ -621,6 +695,7 @@
 
 - (void)goBakeCurveViewController{
     BakeCurveViewController *bakeCurveVC = [[BakeCurveViewController alloc] init];
+    bakeCurveVC.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
     [self presentViewController:bakeCurveVC animated:YES completion:nil];
 }
 
@@ -654,19 +729,9 @@
 
 - (void)setPower{
     if (_myNet.powerStatus) {
-        [_powerBtn setImage:[UIImage imageNamed:@"btn_power_on"] forState:UIControlStateNormal];
-        _fireBtn.enabled = YES;
-        _coldBtn.enabled = YES;
-        _stirBtn.enabled = YES;
-        _windPBtn.enabled = YES;
-        _firePBtn.enabled = YES;
+        [_myNet setPower:0x00];
     }else{
-        [_powerBtn setImage:[UIImage imageNamed:@"btn_power_off"] forState:UIControlStateNormal];
-        _fireBtn.enabled = NO;
-        _coldBtn.enabled = NO;
-        _stirBtn.enabled = NO;
-        _windPBtn.enabled = NO;
-        _firePBtn.enabled = NO;
+        [_myNet setPower:0xFF];
     }
     _myNet.powerStatus = !_myNet.powerStatus;
 }
@@ -681,11 +746,6 @@
 }
 
 - (void)setStir{
-    if (_myNet.stirStatus) {
-        [_stirBtn setImage:[UIImage imageNamed:@"btn_stir_off"] forState:UIControlStateNormal];
-    }else{
-        [_stirBtn setImage:[UIImage imageNamed:@"btn_stir_on"] forState:UIControlStateNormal];
-    }
     if (_myNet.stirStatus && _myNet.coolStatus) {
         [_myNet setColdAndStir:0x01];
     }else if (!_myNet.stirStatus && _myNet.coolStatus){
@@ -699,11 +759,6 @@
 }
 
 - (void)setCold{
-    if (_myNet.coolStatus) {
-        [_coldBtn setImage:[UIImage imageNamed:@"btn_cold_off"] forState:UIControlStateNormal];
-    }else{
-        [_coldBtn setImage:[UIImage imageNamed:@"btn_cold_on"] forState:UIControlStateNormal];
-    }
     if (_myNet.stirStatus && _myNet.coolStatus) {
         [_myNet setColdAndStir:0x10];
     }else if (!_myNet.stirStatus && _myNet.coolStatus){
@@ -740,44 +795,82 @@
     }else if ([keyPath isEqualToString:@"powerStatus"]){
         dispatch_async(dispatch_get_main_queue(), ^{
             _powerBtn.enabled = YES;
+            
             if (_myNet.powerStatus) {
-                [_powerBtn setImage:[UIImage imageNamed:@"btn_power_on"] forState:UIControlStateNormal];
+                [_powerBtn setImage:[UIImage imageWithContentsOfFile:[_resourcePath stringByAppendingPathComponent:@"btn_power_on@2x.png"]] forState:UIControlStateNormal];
                 _fireBtn.enabled = YES;
                 _coldBtn.enabled = YES;
                 _stirBtn.enabled = YES;
                 _windPBtn.enabled = YES;
                 _firePBtn.enabled = YES;
+                _status.text = LocalString(@"电源开启");
+                _statusView.layer.backgroundColor = [UIColor colorWithRed:126/255.0 green:211/255.0 blue:33/255.0 alpha:1].CGColor;
+                _statusView.layer.shadowColor = [UIColor colorWithRed:106/255.0 green:255/255.0 blue:77/255.0 alpha:1].CGColor;
+                _statusView.layer.shadowOffset = CGSizeMake(0,0);
+                _statusView.layer.shadowOpacity = 1;
+                _statusView.layer.shadowRadius = 8;
             }else{
-                [_powerBtn setImage:[UIImage imageNamed:@"btn_power_off"] forState:UIControlStateNormal];
+                [_powerBtn setImage:[UIImage imageWithContentsOfFile:[_resourcePath stringByAppendingPathComponent:@"btn_power_off@2x.png"]] forState:UIControlStateNormal];
                 _fireBtn.enabled = NO;
                 _coldBtn.enabled = NO;
                 _stirBtn.enabled = NO;
                 _windPBtn.enabled = NO;
                 _firePBtn.enabled = NO;
+                _status.text = LocalString(@"电源关闭");
+                _statusView.layer.backgroundColor = [UIColor colorWithRed:254/255.0 green:71/255.0 blue:51/255.0 alpha:1].CGColor;
+                _statusView.layer.shadowColor = [UIColor colorWithRed:254/255.0 green:71/255.0 blue:52/255.0 alpha:1].CGColor;
+                _statusView.layer.shadowOffset = CGSizeMake(0,0);
+                _statusView.layer.shadowOpacity = 1;
             }
         });
     }else if ([keyPath isEqualToString:@"fireStatus"]){
         dispatch_async(dispatch_get_main_queue(), ^{
             if (_myNet.fireStatus) {
-                [_fireBtn setImage:[UIImage imageNamed:@"btn_fire_on"] forState:UIControlStateNormal];
+                [_fireBtn setImage:[UIImage imageWithContentsOfFile:[_resourcePath stringByAppendingPathComponent:@"btn_fire_on@2x.png"]] forState:UIControlStateNormal];
+
+                _status1.textColor = [UIColor colorWithHexString:@"333333"];
+                
+                _statusView1.layer.backgroundColor = [UIColor colorWithRed:255/255.0 green:128/255.0 blue:0/255.0 alpha:1].CGColor;
+                _statusView1.layer.shadowColor = [UIColor colorWithRed:255/255.0 green:128/255.0 blue:0/255.0 alpha:1].CGColor;
+                _statusView1.layer.shadowOffset = CGSizeMake(0,0);
+                _statusView1.layer.shadowOpacity = 1;
+                _statusView1.layer.shadowRadius = 8;
             }else{
-                [_fireBtn setImage:[UIImage imageNamed:@"btn_fire_off"] forState:UIControlStateNormal];
+                [_fireBtn setImage:[UIImage imageWithContentsOfFile:[_resourcePath stringByAppendingPathComponent:@"btn_fire_off@2x.png"]] forState:UIControlStateNormal];
+
+                _status1.textColor = [UIColor colorWithHexString:@"999999"];
+                
+                _statusView1.layer.backgroundColor = [UIColor colorWithRed:213/255.0 green:218/255.0 blue:224/255.0 alpha:1].CGColor;
+                _statusView1.layer.shadowOpacity = 0;
             }
         });
     }else if ([keyPath isEqualToString:@"coolStatus"]){
         dispatch_async(dispatch_get_main_queue(), ^{
             if (_myNet.coolStatus) {
-                [_coldBtn setImage:[UIImage imageNamed:@"btn_cold_on"] forState:UIControlStateNormal];
+                [_coldBtn setImage:[UIImage imageWithContentsOfFile:[_resourcePath stringByAppendingPathComponent:@"btn_cold_on@2x.png"]] forState:UIControlStateNormal];
+
+                _status3.textColor = [UIColor colorWithHexString:@"333333"];
+                
+                _statusView3.layer.backgroundColor = [UIColor colorWithRed:73/255.0 green:152/255.0 blue:242/255.0 alpha:1].CGColor;
+                _statusView3.layer.shadowColor = [UIColor colorWithRed:73/255.0 green:152/255.0 blue:242/255.0 alpha:1].CGColor;
+                _statusView3.layer.shadowOffset = CGSizeMake(0,0);
+                _statusView3.layer.shadowOpacity = 1;
+                _statusView3.layer.shadowRadius = 8;
             }else{
-                [_coldBtn setImage:[UIImage imageNamed:@"btn_cold_off"] forState:UIControlStateNormal];
+                [_coldBtn setImage:[UIImage imageWithContentsOfFile:[_resourcePath stringByAppendingPathComponent:@"btn_cold_off@2x.png"]] forState:UIControlStateNormal];
+
+                _status3.textColor = [UIColor colorWithHexString:@"999999"];
+                
+                _statusView3.layer.backgroundColor = [UIColor colorWithRed:213/255.0 green:218/255.0 blue:224/255.0 alpha:1].CGColor;
+                _statusView3.layer.shadowOpacity = 0;
             }
         });
     }else if ([keyPath isEqualToString:@"stirStatus"]){
         dispatch_async(dispatch_get_main_queue(), ^{
             if (_myNet.stirStatus) {
-                [_stirBtn setImage:[UIImage imageNamed:@"btn_stir_on"] forState:UIControlStateNormal];
+                [_stirBtn setImage:[UIImage imageWithContentsOfFile:[_resourcePath stringByAppendingPathComponent:@"btn_stir_on@2x.png"]] forState:UIControlStateNormal];
             }else{
-                [_stirBtn setImage:[UIImage imageNamed:@"btn_stir_off"] forState:UIControlStateNormal];
+                [_stirBtn setImage:[UIImage imageWithContentsOfFile:[_resourcePath stringByAppendingPathComponent:@"btn_stir_off@2x.png"]] forState:UIControlStateNormal];
             }
         });
     }

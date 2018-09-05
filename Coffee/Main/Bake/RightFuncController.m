@@ -8,6 +8,7 @@
 
 #import "RightFuncController.h"
 #import "EventModel.h"
+#import <SVProgressHUD/SVProgressHUD.h>
 
 #define WScaleT (667.f / ScreenWidth)
 #define HScaleT (375.f / ScreenHeight)
@@ -158,14 +159,20 @@
 
 #pragma mark - Actions
 - (void)startBake{
+    NetWork *net = [NetWork shareNetWork];
+    [net.myTimer setFireDate:[NSDate distantFuture]];
+    
     YAlertViewController *alert = [[YAlertViewController alloc] init];
     alert.lBlock = ^{
+        [net.myTimer setFireDate:[NSDate date]];
     };
     alert.rBlock = ^{
-        NetWork *net = [NetWork shareNetWork];
+        net.deviceTimerStatus = 0;
+        [net setTimerStatusOn];
+        
         EventModel *event = [[EventModel alloc] init];
         event.eventId = 0;
-        event.eventTime = net.timerValue;
+        event.eventTime = 0;
         event.eventText = LocalString(@"烘焙开始");
         for (EventModel *event in net.eventArray) {
             if (event.eventId == 0) {
@@ -225,6 +232,7 @@
     };
     alert.rBlock = ^{
         NetWork *net = [NetWork shareNetWork];
+        net.isDevelop = YES;
         EventModel *event = [[EventModel alloc] init];
         event.eventId = 2;
         event.eventTime = net.timerValue;
@@ -287,6 +295,7 @@
     };
     alert.rBlock = ^{
         NetWork *net = [NetWork shareNetWork];
+        net.isDevelop = NO;
         EventModel *event = [[EventModel alloc] init];
         event.eventId = 4;
         event.eventTime = net.timerValue;
@@ -344,11 +353,19 @@
 }
 
 - (void)bakeOver{
+    NetWork *net = [NetWork shareNetWork];
+    [net.myTimer setFireDate:[NSDate distantFuture]];
+    
     YAlertViewController *alert = [[YAlertViewController alloc] init];
     alert.lBlock = ^{
+        [net.myTimer setFireDate:[NSDate date]];
     };
     alert.rBlock = ^{
-        NetWork *net = [NetWork shareNetWork];
+        [net setTimerStatusOff];
+        net.deviceTimerStatus = 2;
+        
+        net.developRate = [NSString stringWithFormat:@"%.1f%%",1.0*net.developTime/net.timerValue];
+
         EventModel *event = [[EventModel alloc] init];
         event.eventId = 6;
         event.eventTime = net.timerValue;
@@ -360,6 +377,7 @@
             }
         }
         [net.eventArray addObject:event];
+        [net showBakeOverAlertAction];
     };
     alert.modalPresentationStyle = UIModalPresentationOverCurrentContext;
     [self presentViewController:alert animated:NO completion:^{

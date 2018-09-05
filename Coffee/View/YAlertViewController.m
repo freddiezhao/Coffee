@@ -83,10 +83,10 @@
 }
 
 - (void)rightAction{
+    [self dismissViewControllerAnimated:NO completion:nil];
     if (self.rBlock) {
         self.rBlock();
     }
-    [self dismissViewControllerAnimated:NO completion:nil];
 }
 
 - (void)showView{

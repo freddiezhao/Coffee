@@ -168,7 +168,7 @@ NSString *const CellIdentifier_TempPer30 = @"CellID_TempPer30";
             cell = [[ReportLightCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_reportLight];
         }
         if (_reportModel.light) {
-            cell.lightValue.text = [NSString stringWithFormat:@"%ld",_reportModel.light];
+            cell.lightValue.text = [NSString stringWithFormat:@"%lf",_reportModel.light];
         }else{
             cell.lightValue.text = LocalString(@"?");
         }
@@ -195,8 +195,8 @@ NSString *const CellIdentifier_TempPer30 = @"CellID_TempPer30";
                     nameString = [nameString stringByAppendingString:[NSString stringWithFormat:@"%@、",model.name]];
                 }
                 cell.beanNameLabel.text = [nameString substringToIndex:[nameString length]-1];
-                cell.rawBean.text = [NSString stringWithFormat:@"%@%ld",LocalString(@"生豆:"),_reportModel.rawBeanWeight];
-                cell.bakedBean.text = [NSString stringWithFormat:@"%@%ld",LocalString(@"熟豆:"),_reportModel.bakeBeanWeight];
+                cell.rawBean.text = [NSString stringWithFormat:@"%@%lf",LocalString(@"生豆:"),_reportModel.rawBeanWeight];
+                cell.bakedBean.text = [NSString stringWithFormat:@"%@%lf",LocalString(@"熟豆:"),_reportModel.bakeBeanWeight];
                 cell.outWaterRate.text = [NSString stringWithFormat:@"%@%@",LocalString(@"脱水率:"),_reportModel.outWaterRate];
             }else{
                 cell.beanNameLabel.text = LocalString(@"未添加豆种");

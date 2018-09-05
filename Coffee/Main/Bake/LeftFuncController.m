@@ -23,6 +23,8 @@
 
 @property (nonatomic, strong) UIButton *dismissBtn;
 
+@property (nonatomic, strong) NetWork *myNet;
+
 @end
 
 @implementation LeftFuncController
@@ -31,15 +33,32 @@
     [super viewDidLoad];
     [self.view setBackgroundColor:[UIColor colorWithRed:0/255.0 green:0/255.0 blue:0/255.0 alpha:0.6]];
     
+    _myNet = [NetWork shareNetWork];
+
     _leftFuncView = [self leftFuncView];
     _dismissBtn = [self dismissBtn];
     [self drawLeftViewContent];
+    [self getAllStatus];
+    
+    [_myNet addObserver:self forKeyPath:@"powerStatus" options:NSKeyValueObservingOptionNew context:nil];
+    [_myNet addObserver:self forKeyPath:@"fireStatus" options:NSKeyValueObservingOptionNew context:nil];
+    [_myNet addObserver:self forKeyPath:@"coolStatus" options:NSKeyValueObservingOptionNew context:nil];
+    [_myNet addObserver:self forKeyPath:@"stirStatus" options:NSKeyValueObservingOptionNew context:nil];
 }
 
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
     
 }
+
+- (void)dealloc{
+    [_myNet removeObserver:self forKeyPath:@"powerStatus"];
+    [_myNet removeObserver:self forKeyPath:@"fireStatus"];
+    [_myNet removeObserver:self forKeyPath:@"coolStatus"];
+    [_myNet removeObserver:self forKeyPath:@"stirStatus"];
+}
+
+#pragma mark - Lazy load
 
 - (UIView *)leftFuncView{
     if (!_leftFuncView) {
@@ -147,50 +166,103 @@
 }
 
 #pragma mark - Actions
-- (void)setPower{
-    if (_powerBtn.tag == btn_unselect) {
-        _powerBtn.tag = btn_select;
+- (void)getAllStatus{
+    if (_myNet.powerStatus) {
+        [_powerBtn setImage:[UIImage imageNamed:@"btn_power_on"] forState:UIControlStateNormal];
         _fireBtn.enabled = YES;
-        _stirBtn.enabled = YES;
-        _firePowerBtn.enabled = YES;
-        _windPowerBtn.enabled = YES;
         _coolingBtn.enabled = YES;
+        _stirBtn.enabled = YES;
+        _windPowerBtn.enabled = YES;
+        _firePowerBtn.enabled = YES;
     }else{
-        _powerBtn.tag = btn_unselect;
+        [_powerBtn setImage:[UIImage imageNamed:@"btn_power_off"] forState:UIControlStateNormal];
         _fireBtn.enabled = NO;
-        _stirBtn.enabled = NO;
-        _firePowerBtn.enabled = NO;
-        _windPowerBtn.enabled = NO;
         _coolingBtn.enabled = NO;
+        _stirBtn.enabled = NO;
+        _windPowerBtn.enabled = NO;
+        _firePowerBtn.enabled = NO;
+    }
+    if (_myNet.fireStatus) {
+        [_fireBtn setImage:[UIImage imageNamed:@"btn_fire_on"] forState:UIControlStateNormal];
+    }else{
+        [_fireBtn setImage:[UIImage imageNamed:@"btn_fire_off"] forState:UIControlStateNormal];
+    }
+    if (_myNet.coolStatus) {
+        [_coolingBtn setImage:[UIImage imageNamed:@"btn_cold_on"] forState:UIControlStateNormal];
+    }else{
+        [_coolingBtn setImage:[UIImage imageNamed:@"btn_cold_off"] forState:UIControlStateNormal];
+    }
+    if (_myNet.stirStatus) {
+        [_stirBtn setImage:[UIImage imageNamed:@"btn_stir_on"] forState:UIControlStateNormal];
+    }else{
+        [_stirBtn setImage:[UIImage imageNamed:@"btn_stir_off"] forState:UIControlStateNormal];
     }
 }
 
-- (void)clickFire{
-    NetWork *net = [NetWork shareNetWork];
-    
-    NSMutableArray *bakeFire = [[NSMutableArray alloc ] init];
-    [bakeFire addObject:[NSNumber numberWithUnsignedChar:0x68]];
-    [bakeFire addObject:[NSNumber numberWithUnsignedChar:0x00]];
-    [bakeFire addObject:[NSNumber numberWithUnsignedChar:net.frameCount]];
-    [bakeFire addObject:[NSNumber numberWithUnsignedChar:0x00]];
-    [bakeFire addObject:[NSNumber numberWithUnsignedChar:0x01]];
-    [bakeFire addObject:[NSNumber numberWithUnsignedChar:0x06]];
-    [bakeFire addObject:[NSNumber numberWithUnsignedChar:[NSObject getCS:bakeFire]]];
-    [bakeFire addObject:[NSNumber numberWithUnsignedChar:0x16]];
-    [bakeFire addObject:[NSNumber numberWithUnsignedChar:0x0D]];
-    [bakeFire addObject:[NSNumber numberWithUnsignedChar:0x0A]];
-    dispatch_async(net.queue, ^{
-        [net send:bakeFire withTag:107];
-    });
+- (void)setPower{
+    if (_myNet.powerStatus) {
+        [_powerBtn setImage:[UIImage imageNamed:@"btn_power_on"] forState:UIControlStateNormal];
+        _fireBtn.enabled = YES;
+        _coolingBtn.enabled = YES;
+        _stirBtn.enabled = YES;
+        _windPowerBtn.enabled = YES;
+        _firePowerBtn.enabled = YES;
+        [_myNet setPower:0x00];
+    }else{
+        [_powerBtn setImage:[UIImage imageNamed:@"btn_power_off"] forState:UIControlStateNormal];
+        _fireBtn.enabled = NO;
+        _coolingBtn.enabled = NO;
+        _stirBtn.enabled = NO;
+        _windPowerBtn.enabled = NO;
+        _firePowerBtn.enabled = NO;
+        [_myNet setPower:0xFF];
+    }
+    _myNet.powerStatus = !_myNet.powerStatus;
+}
 
+- (void)clickFire{
+    if (_myNet.fireStatus) {
+        [[NetWork shareNetWork] setFire:0x00];
+    }else{
+        [[NetWork shareNetWork] setFire:0xFF];
+    }
+    _myNet.fireStatus = !_myNet.fireStatus;
 }
 
 - (void)clickStir{
-    
+    if (_myNet.stirStatus) {
+        [_stirBtn setImage:[UIImage imageNamed:@"btn_stir_off"] forState:UIControlStateNormal];
+    }else{
+        [_stirBtn setImage:[UIImage imageNamed:@"btn_stir_on"] forState:UIControlStateNormal];
+    }
+    if (_myNet.stirStatus && _myNet.coolStatus) {
+        [_myNet setColdAndStir:0x01];
+    }else if (!_myNet.stirStatus && _myNet.coolStatus){
+        [_myNet setColdAndStir:0x11];
+    }else if (_myNet.stirStatus && !_myNet.coolStatus){
+        [_myNet setColdAndStir:0x00];
+    }else if (!_myNet.stirStatus && !_myNet.coolStatus){
+        [_myNet setColdAndStir:0x10];
+    }
+    _myNet.stirStatus = !_myNet.stirStatus;
 }
 
 - (void)clickCool{
-    
+    if (_myNet.coolStatus) {
+        [_coolingBtn setImage:[UIImage imageNamed:@"btn_cold_off"] forState:UIControlStateNormal];
+    }else{
+        [_coolingBtn setImage:[UIImage imageNamed:@"btn_cold_on"] forState:UIControlStateNormal];
+    }
+    if (_myNet.stirStatus && _myNet.coolStatus) {
+        [_myNet setColdAndStir:0x10];
+    }else if (!_myNet.stirStatus && _myNet.coolStatus){
+        [_myNet setColdAndStir:0x00];
+    }else if (_myNet.stirStatus && !_myNet.coolStatus){
+        [_myNet setColdAndStir:0x11];
+    }else if (!_myNet.stirStatus && !_myNet.coolStatus){
+        [_myNet setColdAndStir:0x01];
+    }
+    _myNet.coolStatus = !_myNet.coolStatus;
 }
 
 - (void)clickFP{
@@ -203,6 +275,54 @@
 
 - (void)dismissVC{
     [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+#pragma mark - kvo
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context{
+    if ([keyPath isEqualToString:@"powerStatus"]){
+        dispatch_async(dispatch_get_main_queue(), ^{
+            _powerBtn.enabled = YES;
+            if (_myNet.powerStatus) {
+                [_powerBtn setImage:[UIImage imageNamed:@"btn_power_on"] forState:UIControlStateNormal];
+                _fireBtn.enabled = YES;
+                _coolingBtn.enabled = YES;
+                _stirBtn.enabled = YES;
+                _windPowerBtn.enabled = YES;
+                _firePowerBtn.enabled = YES;
+            }else{
+                [_powerBtn setImage:[UIImage imageNamed:@"btn_power_off"] forState:UIControlStateNormal];
+                _fireBtn.enabled = NO;
+                _coolingBtn.enabled = NO;
+                _stirBtn.enabled = NO;
+                _windPowerBtn.enabled = NO;
+                _firePowerBtn.enabled = NO;
+            }
+        });
+    }else if ([keyPath isEqualToString:@"fireStatus"]){
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (_myNet.fireStatus) {
+                [_fireBtn setImage:[UIImage imageNamed:@"btn_fire_on"] forState:UIControlStateNormal];
+            }else{
+                [_fireBtn setImage:[UIImage imageNamed:@"btn_fire_off"] forState:UIControlStateNormal];
+            }
+        });
+    }else if ([keyPath isEqualToString:@"coolStatus"]){
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (_myNet.coolStatus) {
+                [_coolingBtn setImage:[UIImage imageNamed:@"btn_cold_on"] forState:UIControlStateNormal];
+            }else{
+                [_coolingBtn setImage:[UIImage imageNamed:@"btn_cold_off"] forState:UIControlStateNormal];
+            }
+        });
+    }else if ([keyPath isEqualToString:@"stirStatus"]){
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (_myNet.stirStatus) {
+                [_stirBtn setImage:[UIImage imageNamed:@"btn_stir_on"] forState:UIControlStateNormal];
+            }else{
+                [_stirBtn setImage:[UIImage imageNamed:@"btn_stir_off"] forState:UIControlStateNormal];
+            }
+        });
+    }
 }
 
 @end

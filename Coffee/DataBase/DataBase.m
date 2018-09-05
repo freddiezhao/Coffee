@@ -43,6 +43,7 @@ static DataBase *_dataBase = nil;
     if (self) {
         NSString *docPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
         _userId = [NSNumber numberWithInt:11111];
+        _userName = @"烘焙师";
         NSString *filePath = [docPath stringByAppendingPathComponent:[NSString stringWithFormat:@"%@_Coffee.sql",_userId]];
         NSLog(@"%@",filePath);
         _queueDB = [FMDatabaseQueue databaseQueueWithPath:filePath];
@@ -260,7 +261,7 @@ static DataBase *_dataBase = nil;
         while ([set next]) {
             eventModel.eventId = [set intForColumn:@"eventId"];
             eventModel.eventTime = [set intForColumn:@"eventTime"];
-            eventModel.eventBeanTemp = [set stringForColumn:@"eventBeanTemp"];
+            eventModel.eventBeanTemp = [set doubleForColumn:@"eventBeanTemp"];
             eventModel.eventText = [set stringForColumn:@"event"];
             [eventArray addObject:eventModel];
         }
