@@ -68,4 +68,8 @@
     return csTemp;
 }
 
+- (void)evaluateAcceleration:(NSMutableArray *)valueArr{
+    
+}
+
 @end

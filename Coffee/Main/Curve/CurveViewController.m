@@ -201,6 +201,11 @@ static float HEIGHT_HEADER = 36.f;
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    ReportModel *report = _currentReportArr[indexPath.section][indexPath.row];
+    
+    BakeReportController *reportVC = [[BakeReportController alloc] init];
+    reportVC.curveId = report.curveId;
+    [self.navigationController pushViewController:reportVC animated:YES];
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{

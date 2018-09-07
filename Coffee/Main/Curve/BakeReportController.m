@@ -41,6 +41,12 @@ NSString *const CellIdentifier_TempPer30 = @"CellID_TempPer30";
 @property (nonatomic, strong) NSMutableArray *yVals_Environment;
 @property (nonatomic, strong) NSMutableArray *yVals_Diff;
 
+@property (nonatomic, strong) NSMutableArray *Out;
+@property (nonatomic, strong) NSMutableArray *In;
+@property (nonatomic, strong) NSMutableArray *Bean;
+@property (nonatomic, strong) NSMutableArray *Environment;
+@property (nonatomic, strong) NSMutableArray *Diff;
+
 @end
 
 @implementation BakeReportController
@@ -50,6 +56,16 @@ NSString *const CellIdentifier_TempPer30 = @"CellID_TempPer30";
     self.navigationItem.title = LocalString(@"烘焙报告");
     
     _reportTable = [self reportTable];
+    
+    _beanArray = [[NSMutableArray alloc] init];
+    _eventArray = [[NSMutableArray alloc] init];
+    _yVals_In = [[NSMutableArray alloc] init];
+    _yVals_Out = [[NSMutableArray alloc] init];
+    _yVals_Bean = [[NSMutableArray alloc] init];
+    _yVals_Diff = [[NSMutableArray alloc] init];
+    _yVals_Environment = [[NSMutableArray alloc] init];
+    
+    [self queryReportInfo];
 }
 
 - (void)viewWillAppear:(BOOL)animated{
@@ -115,7 +131,7 @@ NSString *const CellIdentifier_TempPer30 = @"CellID_TempPer30";
             break;
             
         case 4:
-            return _yVals_Bean.count / 30 + 1;
+            return _yVals_Bean.count>0?_yVals_Bean.count / 30 + 1 + 1:1;
             break;
             
         default:
@@ -173,7 +189,7 @@ NSString *const CellIdentifier_TempPer30 = @"CellID_TempPer30";
             cell.lightValue.text = LocalString(@"?");
         }
         if (_reportModel.date) {
-            cell.bakeDate.text = [NSString stringWithFormat:@"%@%@",LocalString(@"烘焙日期:"),[NSDate localStringFromUTCDate:_reportModel.date]];
+            cell.bakeDate.text = [NSString stringWithFormat:@"%@%@",LocalString(@"烘焙日期:"),[NSDate YMDStringFromDate:_reportModel.date]];
         }else{
             cell.bakeDate.text = LocalString(@"烘焙日期:1970-01-01");
         }
@@ -269,12 +285,14 @@ NSString *const CellIdentifier_TempPer30 = @"CellID_TempPer30";
         if (cell == nil) {
             cell = [[ReportCurveCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_reportCurve];
         }
-        cell.yVals_In = _yVals_In;
-        cell.yVals_Out = _yVals_Out;
-        cell.yVals_Bean = _yVals_Bean;
-        cell.yVals_Environment = _yVals_Environment;
-        cell.yVals_Diff = _yVals_Diff;
-        [cell setDataValue];
+        if (_yVals_In.count > 0 && _yVals_Out.count > 0 && _yVals_Bean.count > 0 && _yVals_Environment.count > 0) {
+            cell.yVals_In = _yVals_In;
+            cell.yVals_Out = _yVals_Out;
+            cell.yVals_Bean = _yVals_Bean;
+            cell.yVals_Environment = _yVals_Environment;
+            //cell.yVals_Diff = _yVals_Diff;
+            [cell setDataValue];
+        }
         return cell;
     }else if (indexPath.section == 3){
         CollectInfoCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_collect];
@@ -283,6 +301,7 @@ NSString *const CellIdentifier_TempPer30 = @"CellID_TempPer30";
         }
         cell.reportModel = _reportModel;
         cell.eventArray = [_eventArray copy];
+        //[cell.curveCollectView reloadData];
         return cell;
     }else if (indexPath.section == 4){
         TempPer30sCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_TempPer30];
@@ -297,30 +316,32 @@ NSString *const CellIdentifier_TempPer30 = @"CellID_TempPer30";
             cell.Label5.text = LocalString(@"环境温(°C)");
             cell.Label6.text = LocalString(@"升温率\n(°C/min)");
         }else{
-            if (indexPath.row * 30 < _yVals_In.count || indexPath.row * 30 < _yVals_Out.count || indexPath.row * 30 < _yVals_Bean.count || indexPath.row * 30 < _yVals_Environment.count || indexPath.row * 30 < _yVals_Diff.count) {
-                cell.Label1.text = [NSString stringWithFormat:@"%ld:%ld",indexPath.row/2,indexPath.row%2*30];
-                if (indexPath.row * 30 < _yVals_In.count) {
-                    cell.Label2.text = _yVals_In[indexPath.row * 30];
+            //|| indexPath.row * 30 < _yVals_Diff.count
+            NSInteger row = indexPath.row - 1;
+            if (row * 30 < _In.count || row * 30 < _Out.count || row * 30 < _Bean.count || row * 30 < _Environment.count ) {
+                cell.Label1.text = [NSString stringWithFormat:@"%ld:%ld",row/2,row%2*30];
+                if (row * 30 < _In.count) {
+                    cell.Label2.text = [_In[row * 30] stringValue];
                 }else{
                     cell.Label2.text = @"?";
                 }
-                if (indexPath.row * 30 < _yVals_Out.count) {
-                    cell.Label3.text = _yVals_Out[indexPath.row * 30];
+                if (row * 30 < _Out.count) {
+                    cell.Label3.text = [_Out[row * 30] stringValue];
                 }else{
                     cell.Label3.text = @"?";
                 }
-                if (indexPath.row * 30 < _yVals_Bean.count) {
-                    cell.Label4.text = _yVals_Bean[indexPath.row * 30];
+                if (row * 30 < _Bean.count) {
+                    cell.Label4.text = [_Bean[row * 30] stringValue];
                 }else{
                     cell.Label4.text = @"?";
                 }
-                if (indexPath.row * 30 < _yVals_Environment.count) {
-                    cell.Label5.text = _yVals_Environment[indexPath.row * 30];
+                if (row * 30 < _Environment.count) {
+                    cell.Label5.text = [_Environment[row * 30] stringValue];
                 }else{
                     cell.Label5.text = @"?";
                 }
-                if (indexPath.row * 30 < _yVals_Diff.count) {
-                    cell.Label6.text = _yVals_Diff[indexPath.row * 30];
+                if (row * 30 < _Diff.count) {
+                    cell.Label6.text = [_Diff[row * 30] stringValue];
                 }else{
                     cell.Label6.text = @"?";
                 }
@@ -397,18 +418,41 @@ NSString *const CellIdentifier_TempPer30 = @"CellID_TempPer30";
     NSData *curveData = [_reportModel.curveValueJson dataUsingEncoding:NSUTF8StringEncoding];
     NSDictionary *curveDic = [NSJSONSerialization JSONObjectWithData:curveData options:NSJSONReadingMutableLeaves error:nil];
 
-    _yVals_Bean = [curveDic objectForKey:@"bean"];
-    _yVals_Out = [curveDic objectForKey:@"out"];
-    _yVals_In = [curveDic objectForKey:@"in"];
-    _yVals_Environment = [curveDic objectForKey:@"environment"];
-    _yVals_Diff = [curveDic objectForKey:@"diff"];
+    _Bean = [curveDic objectForKey:@"bean"];
+    _Out = [curveDic objectForKey:@"out"];
+    _In = [curveDic objectForKey:@"in"];
+    _Environment = [curveDic objectForKey:@"environment"];
+    //NSArray *Diff = [curveDic objectForKey:@"diff"];
+    NSLog(@"%lu",(unsigned long)_Bean.count);
+    NSLog(@"%lu",_Out.count);
+    NSLog(@"%lu",_In.count);
+    NSLog(@"%lu",_Environment.count);
+    
+    for (int i = 0; i<_Bean.count; i++) {
+        [_yVals_Bean addObject:[[ChartDataEntry alloc] initWithX:i y:[_Bean[i] doubleValue]]];
+    }
+    for (int i = 0; i<_Out.count; i++) {
+        [_yVals_Out addObject:[[ChartDataEntry alloc] initWithX:i y:[_Out[i] doubleValue]]];
+    }
+    for (int i = 0; i<_In.count; i++) {
+        [_yVals_In addObject:[[ChartDataEntry alloc] initWithX:i y:[_In[i] doubleValue]]];
+    }
+    for (int i = 0; i<_Environment.count; i++) {
+        [_yVals_Environment addObject:[[ChartDataEntry alloc] initWithX:i y:[_Environment[i] doubleValue]]];
+    }
+    //_yVals_Diff = [curveDic objectForKey:@"diff"];
+
+    [self queryEventInfo];
 }
 
 - (void)queryEventInfo{
     _eventArray = [[DataBase shareDataBase] queryEvent:[NSNumber numberWithInteger:_curveId]];
     for (EventModel *event in _eventArray) {
         NSLog(@"%@",event.eventText);
+        //NSLog(@"%ld",event.eventId);
     }
+    
+    [self queryBeanInfo];
 }
 
 - (void)queryBeanInfo{
@@ -423,6 +467,8 @@ NSString *const CellIdentifier_TempPer30 = @"CellID_TempPer30";
     }
     //可能没有添加生豆数据
     _beanArray = [beanMutaArray copy];
+    
+    [self.reportTable reloadData];
 }
 
 @end

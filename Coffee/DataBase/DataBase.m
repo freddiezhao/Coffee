@@ -255,10 +255,10 @@ static DataBase *_dataBase = nil;
 //user_setting_events中1-8都是基本事件，快速事件id从10后面开始
 - (NSArray *)queryEvent:(NSNumber *)curveId{
     NSMutableArray *eventArray = [[NSMutableArray alloc] init];
-    EventModel *eventModel = [[EventModel alloc] init];
     [_queueDB inDatabase:^(FMDatabase * _Nonnull db) {
-        FMResultSet *set = [db executeQuery:@"SELECT bc.*,use.event FROM curve_event bc,user_setting_events use WHERE curveId = ? AND bc.eventId = use.eventId ORDER BY bc.eventId",curveId];
+        FMResultSet *set = [db executeQuery:@"SELECT bc.*,use.event FROM curve_event AS bc,user_setting_events AS use WHERE bc.curveId = ? AND bc.eventId = use.eventId ORDER BY bc.eventId",curveId];
         while ([set next]) {
+            EventModel *eventModel = [[EventModel alloc] init];//每次循环都必须新建对象，不然都是在同一个对象（内存地址）操作
             eventModel.eventId = [set intForColumn:@"eventId"];
             eventModel.eventTime = [set intForColumn:@"eventTime"];
             eventModel.eventBeanTemp = [set doubleForColumn:@"eventBeanTemp"];

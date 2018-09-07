@@ -405,7 +405,9 @@
         
         _pointerImage = [[UIImageView alloc] initWithFrame:CGRectMake(30/WScale, 30/HScale, 150/WScale, 150/HScale)];
         _pointerImage.image = [UIImage imageNamed:@"img_pointer"];
-        _pointerImage.transform = CGAffineTransformMakeRotation(140.0 / 180 * M_PI);
+        //当顺时针旋转120度时，指针转到129
+        int temp = 200;
+        _pointerImage.transform = CGAffineTransformMakeRotation((temp / 129.f * 120.0) / 180 * M_PI);
         [_mainView addSubview:_pointerImage];
     }
     return _pointerImage;

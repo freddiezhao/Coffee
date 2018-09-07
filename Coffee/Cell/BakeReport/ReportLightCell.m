@@ -15,10 +15,11 @@
     self.selectionStyle = UITableViewCellSelectionStyleNone;
     if (self) {
         if (!_bakeDate) {
-            _bakeDate = [[UILabel alloc] initWithFrame:CGRectMake(15/WScale, 10/HScale, 124/WScale, 17/HScale)];
+            _bakeDate = [[UILabel alloc] initWithFrame:CGRectMake(15/WScale, 10/HScale, 180/WScale, 17/HScale)];
             _bakeDate.textColor = [UIColor colorWithHexString:@"999999"];
             _bakeDate.font = [UIFont systemFontOfSize:12.0];
             _bakeDate.textAlignment = NSTextAlignmentLeft;
+            _bakeDate.adjustsFontSizeToFitWidth = YES;
             [self.contentView addSubview:_bakeDate];
         }
         
@@ -27,6 +28,7 @@
             _deviceName.textColor = [UIColor colorWithHexString:@"999999"];
             _deviceName.font = [UIFont systemFontOfSize:12.0];
             _deviceName.textAlignment = NSTextAlignmentRight;
+            _deviceName.adjustsFontSizeToFitWidth = YES;
             [self.contentView addSubview:_deviceName];
         }
         

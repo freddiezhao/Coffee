@@ -23,6 +23,7 @@
         _titleLabel.textColor = [UIColor colorWithHexString:@"999999"];
         _titleLabel.font = [UIFont systemFontOfSize:13];
         _titleLabel.backgroundColor = [UIColor clearColor];
+        _titleLabel.adjustsFontSizeToFitWidth = YES;
         [self.contentView addSubview:_titleLabel];
         
         _valueLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 45/HScale, viewWidth, 19/HScale)];
@@ -30,6 +31,7 @@
         _valueLabel.textColor = [UIColor colorWithHexString:@"333333"];
         _valueLabel.font = [UIFont systemFontOfSize:13];
         _valueLabel.backgroundColor = [UIColor clearColor];
+        _valueLabel.adjustsFontSizeToFitWidth = YES;
         [self.contentView addSubview:_valueLabel];
     }
     

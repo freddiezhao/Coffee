@@ -10,6 +10,7 @@
 #import "CollectInfoCellCell.h"
 #import "ReportModel.h"
 #import "CollectEventCell.h"
+#import "EventModel.h"
 
 NSString *const CollectCellIdentifier_curve = @"CollectCellID_curve";
 NSString *const CollectCellIdentifier_curveEvent = @"CollectCellID_curveEvent";
@@ -95,6 +96,11 @@ NSString *const CollectHeaderIdentifier_curve = @"CollectHeaderID_curve";
                     cell.leftLabel.text = LocalString(@"开始烘焙");
                     cell.centerLabel.text = LocalString(@"空");
                     cell.rightLabel.text = LocalString(@"空");
+                    for (EventModel *event in _eventArray) {
+                        if (event.eventId == 0) {
+                            cell.centerLabel.text = [NSString stringWithFormat:@"%ld:%02ld",event.eventTime/60,event.eventTime%60];
+                        }
+                    }
                 }
                 break;
                 
@@ -111,6 +117,11 @@ NSString *const CollectHeaderIdentifier_curve = @"CollectHeaderID_curve";
                     cell.leftLabel.text = LocalString(@"脱水结束");
                     cell.centerLabel.text = LocalString(@"空");
                     cell.rightLabel.text = LocalString(@"空");
+                    for (EventModel *event in _eventArray) {
+                        if (event.eventId == 1) {
+                            cell.centerLabel.text = [NSString stringWithFormat:@"%ld:%02ld",event.eventTime/60,event.eventTime%60];
+                        }
+                    }
                 }
                 break;
                 
@@ -119,6 +130,11 @@ NSString *const CollectHeaderIdentifier_curve = @"CollectHeaderID_curve";
                     cell.leftLabel.text = LocalString(@"火力调节");
                     cell.centerLabel.text = LocalString(@"空");
                     cell.rightLabel.text = LocalString(@"空");
+                    for (EventModel *event in _eventArray) {
+                        if (event.eventId == 2) {
+                            cell.centerLabel.text = [NSString stringWithFormat:@"%ld:%02ld",event.eventTime/60,event.eventTime%60];
+                        }
+                    }
                 }
                 break;
                 
@@ -127,6 +143,11 @@ NSString *const CollectHeaderIdentifier_curve = @"CollectHeaderID_curve";
                     cell.leftLabel.text = LocalString(@"一爆开始");
                     cell.centerLabel.text = LocalString(@"空");
                     cell.rightLabel.text = LocalString(@"空");
+                    for (EventModel *event in _eventArray) {
+                        if (event.eventId == 3) {
+                            cell.centerLabel.text = [NSString stringWithFormat:@"%ld:%02ld",event.eventTime/60,event.eventTime%60];
+                        }
+                    }
                 }
                 break;
                 
@@ -135,6 +156,11 @@ NSString *const CollectHeaderIdentifier_curve = @"CollectHeaderID_curve";
                     cell.leftLabel.text = LocalString(@"一爆结束");
                     cell.centerLabel.text = LocalString(@"空");
                     cell.rightLabel.text = LocalString(@"空");
+                    for (EventModel *event in _eventArray) {
+                        if (event.eventId == 4) {
+                            cell.centerLabel.text = [NSString stringWithFormat:@"%ld:%02ld",event.eventTime/60,event.eventTime%60];
+                        }
+                    }
                 }
                 break;
                 
@@ -143,6 +169,11 @@ NSString *const CollectHeaderIdentifier_curve = @"CollectHeaderID_curve";
                     cell.leftLabel.text = LocalString(@"二爆开始");
                     cell.centerLabel.text = LocalString(@"空");
                     cell.rightLabel.text = LocalString(@"空");
+                    for (EventModel *event in _eventArray) {
+                        if (event.eventId == 5) {
+                            cell.centerLabel.text = [NSString stringWithFormat:@"%ld:%02ld",event.eventTime/60,event.eventTime%60];
+                        }
+                    }
                 }
                 break;
             default:
@@ -163,7 +194,7 @@ NSString *const CollectHeaderIdentifier_curve = @"CollectHeaderID_curve";
             {
                 cell.titleLabel.text = LocalString(@"日期");
                 if (_reportModel.date) {
-                    cell.valueLabel.text = [NSDate localStringFromUTCDate:_reportModel.date];
+                    cell.valueLabel.text = [NSDate YMDStringFromDate:_reportModel.date];
                 }else{
                     cell.valueLabel.text = LocalString(@"空");
                 }
@@ -194,7 +225,7 @@ NSString *const CollectHeaderIdentifier_curve = @"CollectHeaderID_curve";
             {
                 cell.titleLabel.text = LocalString(@"开始/结束重量");
                 if (_reportModel.rawBeanWeight && _reportModel.bakeBeanWeight) {
-                    cell.valueLabel.text = [NSString stringWithFormat:@"%ld/%ld",(long)_reportModel.rawBeanWeight,_reportModel.bakeBeanWeight];
+                    cell.valueLabel.text = [NSString stringWithFormat:@"%ld/%lf",(long)_reportModel.rawBeanWeight,_reportModel.bakeBeanWeight];
                 }else if(_reportModel.rawBeanWeight && !_reportModel.bakeBeanWeight){
                     cell.valueLabel.text = [NSString stringWithFormat:@"%ld/空",(long)_reportModel.rawBeanWeight];
                 }else if (!_reportModel.rawBeanWeight && _reportModel.bakeBeanWeight){
@@ -218,7 +249,7 @@ NSString *const CollectHeaderIdentifier_curve = @"CollectHeaderID_curve";
             {
                 cell.titleLabel.text = LocalString(@"烘焙时长");
                 if (_reportModel.bakeTime) {
-                    cell.valueLabel.text = [NSString stringWithFormat:@"%ld:%ld",_reportModel.bakeTime/60,_reportModel.bakeTime%60];
+                    cell.valueLabel.text = [NSString stringWithFormat:@"%02ld:%02ld",_reportModel.bakeTime/60,_reportModel.bakeTime%60];
                 }else{
                     cell.valueLabel.text = LocalString(@"空");
                 }
@@ -233,14 +264,18 @@ NSString *const CollectHeaderIdentifier_curve = @"CollectHeaderID_curve";
             case 7:
             {
                 cell.titleLabel.text = LocalString(@"一爆时间/温度");
-                
+                for (EventModel *event in _eventArray) {
+                    if (event.eventId == 2) {
+                        cell.titleLabel.text = [NSString stringWithFormat:@"%ld:%02ld/%f°C",event.eventTime/60,event.eventTime%60,event.eventBeanTemp];
+                    }
+                }
             }
                 break;
             case 8:
             {
                 cell.titleLabel.text = LocalString(@"发展时间");
                 if (_reportModel.developTime) {
-                    cell.valueLabel.text = [NSString stringWithFormat:@"%ld:%ld",_reportModel.developTime/60,_reportModel.developTime%60];
+                    cell.valueLabel.text = [NSString stringWithFormat:@"%02ld:%02ld",_reportModel.developTime/60,_reportModel.developTime%60];
                 }else{
                     cell.valueLabel.text = LocalString(@"空");
                 }
@@ -284,18 +319,37 @@ NSString *const CollectHeaderIdentifier_curve = @"CollectHeaderID_curve";
                 break;
         }
     }else if (indexPath.section == 1){
+        EventModel *event1;
+        EventModel *event2;
+        for (EventModel *event in _eventArray) {
+            if (event.eventId == 0) {
+                event1 = event;
+            }else if (event.eventId == 1){
+                event2 = event;
+            }
+        }
         switch (indexPath.row) {
             case 0:
                 {
-                    cell.titleLabel.text = LocalString(@"平均温升");
-                    cell.valueLabel.text = LocalString(@"空");
+                    if (event1 && event2) {
+                        cell.titleLabel.text = LocalString(@"平均温升");
+                        cell.valueLabel.text = [NSString stringWithFormat:@"%.1lf°C",(event2.eventBeanTemp - event1.eventBeanTemp)/(event2.eventTime - event1.eventTime)];
+                    }else{
+                        cell.titleLabel.text = LocalString(@"平均温升");
+                        cell.valueLabel.text = LocalString(@"空");
+                    }
                 }
                 break;
                
             case 1:
                 {
-                    cell.titleLabel.text = LocalString(@"时间");
-                    cell.valueLabel.text = LocalString(@"空");
+                    if (event1 && event2) {
+                        cell.titleLabel.text = LocalString(@"时间");
+                        cell.valueLabel.text = [NSString stringWithFormat:@"%02ld:%02ld",(event2.eventTime - event1.eventTime)/60,(event2.eventTime - event1.eventTime)%60];
+                    }else{
+                        cell.titleLabel.text = LocalString(@"时间");
+                        cell.valueLabel.text = LocalString(@"空");
+                    }
                 }
                 break;
                 
@@ -303,18 +357,37 @@ NSString *const CollectHeaderIdentifier_curve = @"CollectHeaderID_curve";
                 break;
         }
     }else if (indexPath.section == 2){
+        EventModel *event1;
+        EventModel *event2;
+        for (EventModel *event in _eventArray) {
+            if (event.eventId == 1) {
+                event1 = event;
+            }else if (event.eventId == 2){
+                event2 = event;
+            }
+        }
         switch (indexPath.row) {
             case 0:
             {
-                cell.titleLabel.text = LocalString(@"平均温升");
-                cell.valueLabel.text = LocalString(@"空");
+                if (event1 && event2) {
+                    cell.titleLabel.text = LocalString(@"平均温升");
+                    cell.valueLabel.text = [NSString stringWithFormat:@"%.1lf°C",(event2.eventBeanTemp - event1.eventBeanTemp)/(event2.eventTime - event1.eventTime)];
+                }else{
+                    cell.titleLabel.text = LocalString(@"平均温升");
+                    cell.valueLabel.text = LocalString(@"空");
+                }
             }
                 break;
                 
             case 1:
             {
-                cell.titleLabel.text = LocalString(@"时间");
-                cell.valueLabel.text = LocalString(@"空");
+                if (event1 && event2) {
+                    cell.titleLabel.text = LocalString(@"时间");
+                    cell.valueLabel.text = [NSString stringWithFormat:@"%02ld:%02ld",(event2.eventTime - event1.eventTime)/60,(event2.eventTime - event1.eventTime)%60];
+                }else{
+                    cell.titleLabel.text = LocalString(@"时间");
+                    cell.valueLabel.text = LocalString(@"空");
+                }
             }
                 break;
                 
@@ -322,18 +395,37 @@ NSString *const CollectHeaderIdentifier_curve = @"CollectHeaderID_curve";
                 break;
         }
     }else if (indexPath.section == 3){
+        EventModel *event1;
+        EventModel *event2;
+        for (EventModel *event in _eventArray) {
+            if (event.eventId == 2) {
+                event1 = event;
+            }else if (event.eventId == 3){
+                event2 = event;
+            }
+        }
         switch (indexPath.row) {
             case 0:
             {
-                cell.titleLabel.text = LocalString(@"平均温升");
-                cell.valueLabel.text = LocalString(@"空");
+                if (event1 && event2) {
+                    cell.titleLabel.text = LocalString(@"平均温升");
+                    cell.valueLabel.text = [NSString stringWithFormat:@"%.1lf°C",(event2.eventBeanTemp - event1.eventBeanTemp)/(event2.eventTime - event1.eventTime)];
+                }else{
+                    cell.titleLabel.text = LocalString(@"平均温升");
+                    cell.valueLabel.text = LocalString(@"空");
+                }
             }
                 break;
                 
             case 1:
             {
-                cell.titleLabel.text = LocalString(@"时间");
-                cell.valueLabel.text = LocalString(@"空");
+                if (event1 && event2) {
+                    cell.titleLabel.text = LocalString(@"时间");
+                    cell.valueLabel.text = [NSString stringWithFormat:@"%02ld:%02ld",(event2.eventTime - event1.eventTime)/60,(event2.eventTime - event1.eventTime)%60];
+                }else{
+                    cell.titleLabel.text = LocalString(@"时间");
+                    cell.valueLabel.text = LocalString(@"空");
+                }
             }
                 break;
                 
@@ -414,7 +506,7 @@ NSString *const CollectHeaderIdentifier_curve = @"CollectHeaderID_curve";
     }else if (indexPath.section == 2){
         label.text = @"脱水结束至一爆开始";
     }else if (indexPath.section == 3){
-        label.text = @"脱水结束至一爆开始";
+        label.text = @"一爆开始至一爆结束";
     }else if (indexPath.section == 4){
         label.text = @"事件列表";
     }
