@@ -160,6 +160,7 @@ static NSInteger curveId;
     dispatch_async(dispatch_get_main_queue(), ^{
         [NSObject showHudTipStr:LocalString(@"连接已断开")];
     });
+    [self setConnectedDevice:nil];
     [_myTimer setFireDate:[NSDate distantFuture]];
 }
 
@@ -815,10 +816,10 @@ static NSInteger curveId;
                 });
                 resendCount = 0;
                 switch ([_recivedData68[6] unsignedIntegerValue]) {
-                        //暂停计时的时候无法进入曲线页面
                     case 0:
                     {
                         _deviceTimerStatus = 0;
+                        [_myTimer setFireDate:[NSDate date]];
                         //[self inquirePowerStatus];
                         //[self inquireTempCount];
                     }
@@ -877,6 +878,12 @@ static NSInteger curveId;
                 });
                 resendCount = 0;
                 if (_deviceTimerStatus == 0) {
+                    NSLog(@"adssd");
+                    [_OutArr removeAllObjects];
+                    [_InArr removeAllObjects];
+                    [_BeanArr removeAllObjects];
+                    [_EnvironmentArr removeAllObjects];
+
                     [_yVals_In removeAllObjects];
                     [_yVals_Out removeAllObjects];
                     [_yVals_Bean removeAllObjects];
@@ -890,21 +897,97 @@ static NSInteger curveId;
             if (self.msg68Type == getTimerStatus) {
                 if ([_recivedData68[6] unsignedIntegerValue] == 0) {
                     [_myTimer setFireDate:[NSDate distantFuture]];
+                    [_OutArr removeAllObjects];
+                    [_InArr removeAllObjects];
+                    [_BeanArr removeAllObjects];
+                    [_EnvironmentArr removeAllObjects];
+                    
                     [_yVals_In removeAllObjects];
                     [_yVals_Out removeAllObjects];
                     [_yVals_Bean removeAllObjects];
                     [_yVals_Environment removeAllObjects];
                     _timerValue = 0;
+                    
+                    _deviceTimerStatus = 0;
+                    
+                    EventModel *event = [[EventModel alloc] init];
+                    event.eventId = 0;
+                    event.eventTime = 0;
+                    event.eventText = LocalString(@"烘焙开始");
+                    for (EventModel *event in _eventArray) {
+                        if (event.eventId == 0) {
+                            [_eventArray removeObject:event];
+                            break;
+                        }
+                    }
+                    [_eventArray addObject:event];
+
                     [_myTimer setFireDate:[NSDate date]];
                 }else if ([_recivedData68[6] unsignedIntegerValue] == 1 || [_recivedData68[6] unsignedIntegerValue] == 2){
                     //烘焙结束，保存数据生成报告
-                    [[NSNotificationCenter defaultCenter] postNotificationName:@"bakeCompelete" object:nil userInfo:nil];
+                    //[[NSNotificationCenter defaultCenter] postNotificationName:@"bakeCompelete" object:nil userInfo:nil];
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [self showBakeOverAlertAction];
+                    });
                 }
+            }else if (self.msg68Type == fire) {
+                
+                if ([_recivedData68[6] unsignedIntegerValue] == 0x00) {
+                    [self setFireStatus:NO];
+                    NSLog(@"关闭");
+                }else if ([_recivedData68[6] unsignedIntegerValue] == 0xFF){
+                    [self setFireStatus:YES];
+                    NSLog(@"开启");
+                }
+                
+            }else if (self.msg68Type == coolAndStir){
+                switch ([_recivedData68[6] unsignedIntegerValue]) {
+                    case 0:
+                    {
+                        [self setCoolStatus:NO];
+                        [self setStirStatus:NO];
+                        NSLog(@"all off");
+                    }
+                        break;
+                        
+                    case 1:
+                    {
+                        [self setCoolStatus:YES];
+                        [self setStirStatus:NO];
+                        NSLog(@"stir off,cool on");
+                    }
+                        break;
+                        
+                    case 2:
+                    {
+                        [self setCoolStatus:NO];
+                        [self setStirStatus:YES];
+                        NSLog(@"stir on,cool off");
+                    }
+                        break;
+                        
+                    case 3:
+                    {
+                        [self setCoolStatus:YES];
+                        [self setStirStatus:YES];
+                        NSLog(@"all on");
+                    }
+                        break;
+                        
+                    default:
+                        break;
+                }
+                [_myTimer setFireDate:[NSDate distantFuture]];
+                [_myTimer setFireDate:[NSDate date]];
+                
             }else if (self.msg68Type == getPowerStatus){
-                //电源开启或关闭
+                if ([_recivedData68[6] intValue] == 0x00) {
+                    [self setPowerStatus:NO];
+                }else if ([_recivedData68[6] intValue] == 0xFF){
+                    [self setPowerStatus:YES];
+                }
             }
         }
-        
     }
     
 }
@@ -999,7 +1082,7 @@ static NSInteger curveId;
     unsigned char dataType;
     
     unsigned char type[3] = {
-        0x80,0x81,0x11
+        0x80,0x81,0x03
     };
     
     dataType = [data[1] unsignedIntegerValue];
@@ -1019,7 +1102,9 @@ static NSInteger curveId;
                 break;
                 
                 case 2:
-                returnVal = commandFrame;
+                {
+                    returnVal = commandFrame;
+                }
                 break;
                 
                 default:

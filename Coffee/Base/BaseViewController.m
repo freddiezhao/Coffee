@@ -19,4 +19,10 @@
     [self.view setBackgroundColor:[UIColor colorWithRed:255/255.0 green:255/255.0 blue:255/255.0 alpha:1]];
 }
 
+- (void)viewWillAppear:(BOOL)animated{
+    [super viewWillAppear:animated];
+    //去掉返回键的文字
+    self.navigationController.navigationBar.topItem.title = @"";
+}
+
 @end

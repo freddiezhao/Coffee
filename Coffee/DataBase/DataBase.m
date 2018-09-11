@@ -71,7 +71,7 @@ static DataBase *_dataBase = nil;
         }else{
             NSLog(@"创建表curve失败");
         }
-        result = [db executeUpdate:@"CREATE TABLE IF NOT EXISTS bean_curve (id integer PRIMARY KEY AUTOINCREMENT,beanId integer NOT NULl,curveId integer NOT NULL,beanWeight REAL NOT NULL)"];
+        result = [db executeUpdate:@"CREATE TABLE IF NOT EXISTS bean_curve (beanId integer NOT NULl,curveId integer NOT NULL,beanWeight REAL NOT NULL,constraint pk_id primary key (beanId,curveId))"];
         if (result) {
             NSLog(@"创建表bean_curve成功");
         }else{
@@ -197,10 +197,10 @@ static DataBase *_dataBase = nil;
 
 - (NSArray *)queryReportRelaBean:(NSNumber *)curveId{
     NSMutableArray *beanArray = [[NSMutableArray alloc] init];
-    BeanModel *beanModel = [[BeanModel alloc] init];
     [_queueDB inDatabase:^(FMDatabase * _Nonnull db) {
         FMResultSet *set = [db executeQuery:@"SELECT * FROM bean_curve WHERE curveId = ?",curveId];
         while ([set next]) {
+            BeanModel *beanModel = [[BeanModel alloc] init];
             beanModel.beanId = [set intForColumn:@"beanId"];
             beanModel.weight = [set intForColumn:@"beanWeight"];
             [beanArray addObject:beanModel];
@@ -326,15 +326,51 @@ static DataBase *_dataBase = nil;
 - (BOOL)deleteqBean:(BeanModel *)bean{
     static BOOL result = YES;
     [_queueDB inDatabase:^(FMDatabase *db) {
-        result = [ db executeUpdate:@"delete from beanInfo where beanId = ?",[NSNumber numberWithInteger:bean.beanId]];
+        result = [db executeUpdate:@"delete from beanInfo where beanId = ?",[NSNumber numberWithInteger:bean.beanId]];
     }];
     return result;
+}
+
+- (BOOL)deleteqReport:(ReportModel *)report{
+    static BOOL result = YES;
+    [_queueDB inDatabase:^(FMDatabase *db) {
+        result = [db executeUpdate:@"delete from curveInfo where curveId = ?",[NSNumber numberWithInteger:report.curveId]];
+    }];
+    return result;
+}
+
+#pragma mark - 改
+- (BOOL)updateReportWithReport:(ReportModel *)report WithBean:(NSMutableArray *)beanArr{
+    static BOOL isSucc = NO;
+    [_queueDB inTransaction:^(FMDatabase * _Nonnull db, BOOL * _Nonnull rollback) {
+        BOOL result = [db executeUpdate:@"UPDATE curveInfo SET curveName = ?,light = ?,bakeBeanWeight = ? WHERE curveId = ?",report.curveName,[NSNumber numberWithFloat:report.light],[NSNumber numberWithFloat:report.bakeBeanWeight],[NSNumber numberWithInteger:report.curveId]];
+        if (!result) {
+            *rollback = YES;
+            NSLog(@"修改曲线失败");
+            [NSObject showHudTipStr:@"修改曲线失败"];
+            return;
+        }
+        
+        //更新曲线生豆关联
+        for (int i = 0; i < beanArr.count; i++) {
+            BeanModel *bean = beanArr[i];
+            result = [db executeUpdate:@"REPLACE INTO bean_curve (beanId,curveId,beanWeight) VALUES (?,?,?)",[NSNumber numberWithInteger:bean.beanId],[NSNumber numberWithInteger:report.curveId],[NSNumber numberWithFloat:bean.weight]];
+            if (!result) {
+                *rollback = YES;
+                NSLog(@"插入曲线失败，生豆信息有误");
+                [NSObject showHudTipStr:@"插入曲线失败，生豆信息有误"];
+                return;
+            }
+        }
+        isSucc = YES;
+    }];
+    return isSucc;
 }
 
 #pragma mark - 删表(用来重新生成表格)
 - (void)deleteTable{
     [_queueDB inDatabase:^(FMDatabase * _Nonnull db) {
-        BOOL result = [db executeUpdate:@"DROP TABLE curveInfo"];
+        BOOL result = [db executeUpdate:@"DROP TABLE bean_curve"];
         if (result) {
                         NSLog(@"Drop table success");
                     }

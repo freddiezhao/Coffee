@@ -495,7 +495,7 @@ NSString *const CellIdentifier_device = @"CellID_device";
         if (error) {
             NSLog(@"tcp连接错误:%@",error);
         }else{
-            net.connectedDevice = dModel;
+            [net setConnectedDevice:dModel];
             [_onlineDeviceArray removeObject:dModel];
             [tableView reloadData];
             [self.navigationController popViewControllerAnimated:YES];
@@ -504,10 +504,10 @@ NSString *const CellIdentifier_device = @"CellID_device";
     }else if (indexPath.section == 0){
         if (!net.mySocket.isDisconnected) {
             [net.mySocket disconnect];
-            net.connectedDevice = nil;
+            [net setConnectedDevice:nil];
             [_devieceTable reloadData];
         }else{
-            net.connectedDevice = nil;
+            [net setConnectedDevice:nil];
             [_devieceTable reloadData];
         }
     }

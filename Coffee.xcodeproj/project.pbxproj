@@ -18,6 +18,7 @@
 		BB25E7AC212E63A2003568BD /* beanCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BB25E7AB212E63A2003568BD /* beanCell.m */; };
 		BB26A97B21339E0C000F225C /* BeanViewController_bakeAdd.m in Sources */ = {isa = PBXBuildFile; fileRef = BB26A97A21339E0C000F225C /* BeanViewController_bakeAdd.m */; };
 		BB26AFB220EDC846008AE330 /* 数据.json in Resources */ = {isa = PBXBuildFile; fileRef = BB26AFB120EDC846008AE330 /* 数据.json */; };
+		BB28E7402146832B005B884C /* ReportEditController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB28E73F2146832B005B884C /* ReportEditController.m */; };
 		BB2912022106BA65001B9448 /* UsernameViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB2912012106BA65001B9448 /* UsernameViewController.m */; };
 		BB29120C2106CCE1001B9448 /* PasswordViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB2912082106CCE1001B9448 /* PasswordViewController.m */; };
 		BB29120D2106CCE1001B9448 /* PasswordTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB2912092106CCE1001B9448 /* PasswordTableViewController.m */; };
@@ -310,6 +311,10 @@
 		BB73BA2D212FE903001D9258 /* SpicesSelController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB73BA2C212FE903001D9258 /* SpicesSelController.m */; };
 		BB73BA30212FEA44001D9258 /* ProcessSelController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB73BA2F212FEA44001D9258 /* ProcessSelController.m */; };
 		BB73BA33212FED92001D9258 /* BuyDateSelController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB73BA32212FED92001D9258 /* BuyDateSelController.m */; };
+		BB7835E22147588D000E2FCB /* EditNameCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BB7835E12147588D000E2FCB /* EditNameCell.m */; };
+		BB7835E52147643B000E2FCB /* EditLightCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BB7835E42147643B000E2FCB /* EditLightCell.m */; };
+		BB7835E821476D20000E2FCB /* EditBakeBeanCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BB7835E721476D20000E2FCB /* EditBakeBeanCell.m */; };
+		BB7835EB2147E898000E2FCB /* EditBeanController_bakeAdd.m in Sources */ = {isa = PBXBuildFile; fileRef = BB7835EA2147E898000E2FCB /* EditBeanController_bakeAdd.m */; };
 		BB8AA20B20DE3F5200610316 /* ic_navbar_bean.png in Resources */ = {isa = PBXBuildFile; fileRef = BB8A9F7A20DE3F5100610316 /* ic_navbar_bean.png */; };
 		BB8AA21F20DE3F5200610316 /* ic_navbar_bake_selected.png in Resources */ = {isa = PBXBuildFile; fileRef = BB8A9F8E20DE3F5100610316 /* ic_navbar_bake_selected.png */; };
 		BB8AA23420DE3F5200610316 /* ic_navbar_cup_selected.png in Resources */ = {isa = PBXBuildFile; fileRef = BB8A9FA320DE3F5100610316 /* ic_navbar_cup_selected.png */; };
@@ -437,6 +442,8 @@
 		BB26A97921339E0C000F225C /* BeanViewController_bakeAdd.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeanViewController_bakeAdd.h; sourceTree = "<group>"; };
 		BB26A97A21339E0C000F225C /* BeanViewController_bakeAdd.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeanViewController_bakeAdd.m; sourceTree = "<group>"; };
 		BB26AFB120EDC846008AE330 /* 数据.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "数据.json"; sourceTree = "<group>"; };
+		BB28E73E2146832B005B884C /* ReportEditController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ReportEditController.h; sourceTree = "<group>"; };
+		BB28E73F2146832B005B884C /* ReportEditController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ReportEditController.m; sourceTree = "<group>"; };
 		BB2912002106BA65001B9448 /* UsernameViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UsernameViewController.h; sourceTree = "<group>"; };
 		BB2912012106BA65001B9448 /* UsernameViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UsernameViewController.m; sourceTree = "<group>"; };
 		BB2912072106CCE1001B9448 /* PasswordTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PasswordTableViewController.h; sourceTree = "<group>"; };
@@ -772,6 +779,14 @@
 		BB73BA2F212FEA44001D9258 /* ProcessSelController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ProcessSelController.m; sourceTree = "<group>"; };
 		BB73BA31212FED92001D9258 /* BuyDateSelController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BuyDateSelController.h; sourceTree = "<group>"; };
 		BB73BA32212FED92001D9258 /* BuyDateSelController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BuyDateSelController.m; sourceTree = "<group>"; };
+		BB7835E02147588D000E2FCB /* EditNameCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EditNameCell.h; sourceTree = "<group>"; };
+		BB7835E12147588D000E2FCB /* EditNameCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EditNameCell.m; sourceTree = "<group>"; };
+		BB7835E32147643B000E2FCB /* EditLightCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EditLightCell.h; sourceTree = "<group>"; };
+		BB7835E42147643B000E2FCB /* EditLightCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EditLightCell.m; sourceTree = "<group>"; };
+		BB7835E621476D20000E2FCB /* EditBakeBeanCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EditBakeBeanCell.h; sourceTree = "<group>"; };
+		BB7835E721476D20000E2FCB /* EditBakeBeanCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EditBakeBeanCell.m; sourceTree = "<group>"; };
+		BB7835E92147E898000E2FCB /* EditBeanController_bakeAdd.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EditBeanController_bakeAdd.h; sourceTree = "<group>"; };
+		BB7835EA2147E898000E2FCB /* EditBeanController_bakeAdd.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EditBeanController_bakeAdd.m; sourceTree = "<group>"; };
 		BB8A9F7A20DE3F5100610316 /* ic_navbar_bean.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ic_navbar_bean.png; sourceTree = "<group>"; };
 		BB8A9F8E20DE3F5100610316 /* ic_navbar_bake_selected.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ic_navbar_bake_selected.png; sourceTree = "<group>"; };
 		BB8A9FA320DE3F5100610316 /* ic_navbar_cup_selected.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ic_navbar_cup_selected.png; sourceTree = "<group>"; };
@@ -1306,6 +1321,10 @@
 				BB65C25C20FE129200BB684E /* CurveViewController.m */,
 				BB61D755210D619E0068A0A6 /* BakeReportController.h */,
 				BB61D756210D619E0068A0A6 /* BakeReportController.m */,
+				BB28E73E2146832B005B884C /* ReportEditController.h */,
+				BB28E73F2146832B005B884C /* ReportEditController.m */,
+				BB7835E92147E898000E2FCB /* EditBeanController_bakeAdd.h */,
+				BB7835EA2147E898000E2FCB /* EditBeanController_bakeAdd.m */,
 			);
 			path = Curve;
 			sourceTree = "<group>";
@@ -1401,6 +1420,19 @@
 				BB712ABC20E47F49005FF10F /* NetWork.m */,
 			);
 			path = Net;
+			sourceTree = "<group>";
+		};
+		BB7835DF21475856000E2FCB /* EditReport */ = {
+			isa = PBXGroup;
+			children = (
+				BB7835E02147588D000E2FCB /* EditNameCell.h */,
+				BB7835E12147588D000E2FCB /* EditNameCell.m */,
+				BB7835E32147643B000E2FCB /* EditLightCell.h */,
+				BB7835E42147643B000E2FCB /* EditLightCell.m */,
+				BB7835E621476D20000E2FCB /* EditBakeBeanCell.h */,
+				BB7835E721476D20000E2FCB /* EditBakeBeanCell.m */,
+			);
+			path = EditReport;
 			sourceTree = "<group>";
 		};
 		BB8A9F7720DE3F5100610316 /* Image */ = {
@@ -1580,6 +1612,7 @@
 				BBA7B95C212AA56A004943DC /* CollectCell */,
 				BB6AA237212A529E0043716E /* CommonCell */,
 				BB6AD0E52126CB620010458A /* BakeReport */,
+				BB7835DF21475856000E2FCB /* EditReport */,
 			);
 			path = Cell;
 			sourceTree = "<group>";
@@ -2250,17 +2283,21 @@
 				BB65C25920FDF00000BB684E /* BeanModel.m in Sources */,
 				BBA7B95B212AA0A0004943DC /* CollectInfoCell.m in Sources */,
 				BB8AA4D120DFB9CA00610316 /* ESPTouchTask.m in Sources */,
+				BB7835E52147643B000E2FCB /* EditLightCell.m in Sources */,
 				BB73BA27212FE0E2001D9258 /* GradeSelController.m in Sources */,
 				BBFE861820E63027005C6CE5 /* DeviceConnectView.m in Sources */,
 				BB65C25D20FE129200BB684E /* CurveViewController.m in Sources */,
 				BB6A555E20FCCA3D0013C3C1 /* AddBeanTableViewCell.m in Sources */,
 				BB8AA4CF20DFB9CA00610316 /* ESPDataCode.m in Sources */,
+				BB28E7402146832B005B884C /* ReportEditController.m in Sources */,
 				BB1C156620E1E8AD006D7053 /* UIButton+Common.m in Sources */,
+				BB7835EB2147E898000E2FCB /* EditBeanController_bakeAdd.m in Sources */,
 				BB2912022106BA65001B9448 /* UsernameViewController.m in Sources */,
 				BB29121821071B1E001B9448 /* SettingModel.m in Sources */,
 				BB25E7A9212E611A003568BD /* BeanViewController.m in Sources */,
 				BBA7B965212AC531004943DC /* CollectEventCell.m in Sources */,
 				BB6E0B7E2122D5B0008F20FC /* YAlertViewController.m in Sources */,
+				BB7835E821476D20000E2FCB /* EditBakeBeanCell.m in Sources */,
 				BB26A97B21339E0C000F225C /* BeanViewController_bakeAdd.m in Sources */,
 				BB4C906E2105C4200023EE9B /* DataBase.m in Sources */,
 				BB8AA4C820DFB9CA00610316 /* ESP_ByteUtil.m in Sources */,
@@ -2275,6 +2312,7 @@
 				BB73BA24212FB4CF001D9258 /* AddBeanInfoCell2.m in Sources */,
 				BB712ABD20E47F49005FF10F /* NetWork.m in Sources */,
 				BB94EAA120DB8CE700370A95 /* RDVTabBarController.m in Sources */,
+				BB7835E22147588D000E2FCB /* EditNameCell.m in Sources */,
 				BB8AA4A520DFB25900610316 /* EspViewController.m in Sources */,
 				BB2912122106D8D5001B9448 /* GeneralViewController.m in Sources */,
 				BB8AA4C520DFB9CA00610316 /* ESPGuideCode.m in Sources */,

@@ -19,6 +19,7 @@
 #import "ReportCurveCell.h"
 #import "CollectInfoCell.h"
 #import "TempPer30sCell.h"
+#import "ReportEditController.h"
 
 NSString *const CellIdentifier_reportLight = @"CellID_reportLight";
 NSString *const CellIdentifier_reportBeanHeader = @"CellID_reportBeanHeader";
@@ -53,7 +54,8 @@ NSString *const CellIdentifier_TempPer30 = @"CellID_TempPer30";
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.navigationItem.title = LocalString(@"烘焙报告");
+    
+    [self setNavItem];
     
     _reportTable = [self reportTable];
     
@@ -74,6 +76,27 @@ NSString *const CellIdentifier_TempPer30 = @"CellID_TempPer30";
 }
 
 #pragma mark - lazy load
+- (void)setNavItem{
+    self.navigationItem.title = LocalString(@"烘焙报告");
+
+    UIView *rightButtonView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 74, 30)];
+    
+    UIButton *addButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    addButton.frame = CGRectMake(52, 4, 22, 22);
+    [addButton setImage:[UIImage imageNamed:@"ic_nav_edit_black"] forState:UIControlStateNormal];
+    [addButton addTarget:self action:@selector(editReport) forControlEvents:UIControlEventTouchUpInside];
+    [rightButtonView addSubview:addButton];
+    
+    UIButton *searchButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    searchButton.frame = CGRectMake(15, 4, 22, 22);
+    [searchButton setImage:[UIImage imageNamed:@"ic_nav_more_share"] forState:UIControlStateNormal];
+    [searchButton addTarget:self action:@selector(shareReport) forControlEvents:UIControlEventTouchUpInside];
+    [rightButtonView addSubview:searchButton];
+    UIBarButtonItem *rightBarButton = [[UIBarButtonItem alloc] initWithCustomView:rightButtonView];
+    self.navigationItem.rightBarButtonItem = rightBarButton;
+}
+
+
 - (UITableView *)reportTable{
     if (!_reportTable) {
         _reportTable = ({
@@ -211,8 +234,8 @@ NSString *const CellIdentifier_TempPer30 = @"CellID_TempPer30";
                     nameString = [nameString stringByAppendingString:[NSString stringWithFormat:@"%@、",model.name]];
                 }
                 cell.beanNameLabel.text = [nameString substringToIndex:[nameString length]-1];
-                cell.rawBean.text = [NSString stringWithFormat:@"%@%lf",LocalString(@"生豆:"),_reportModel.rawBeanWeight];
-                cell.bakedBean.text = [NSString stringWithFormat:@"%@%lf",LocalString(@"熟豆:"),_reportModel.bakeBeanWeight];
+                cell.rawBean.text = [NSString stringWithFormat:@"%@%.1lf",LocalString(@"生豆:"),_reportModel.rawBeanWeight];
+                cell.bakedBean.text = [NSString stringWithFormat:@"%@%.1lf",LocalString(@"熟豆:"),_reportModel.bakeBeanWeight];
                 cell.outWaterRate.text = [NSString stringWithFormat:@"%@%@",LocalString(@"脱水率:"),_reportModel.outWaterRate];
             }else{
                 cell.beanNameLabel.text = LocalString(@"未添加豆种");
@@ -226,57 +249,56 @@ NSString *const CellIdentifier_TempPer30 = @"CellID_TempPer30";
             if (cell == nil) {
                 cell = [[BeanInfoCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_reportBeanInfo];
             }
-            for (BeanModel *bean in _beanArray) {
-                if (bean.name) {
-                    cell.beanName.text = bean.name;
-                }else{
-                    cell.beanName.text = LocalString(@"未知");
-                }
-                if (bean.nation) {
-                    cell.nation.text = bean.nation;
-                }else{
-                    cell.nation.text = LocalString(@"未知");
-                }
-                if (bean.area) {
-                    cell.area.text = bean.area;
-                }else{
-                    cell.area.text = LocalString(@"未知");
-                }
-                if (bean.altitude) {
-                    cell.altitude.text = [NSString stringWithFormat:@"%f",bean.altitude];
-                }else{
-                    cell.altitude.text = LocalString(@"未知");
-                }
-                if (bean.manor) {
-                    cell.manor.text = bean.manor;
-                }else{
-                    cell.manor.text = LocalString(@"未知");
-                }
-                if (bean.beanSpecies) {
-                    cell.beanSpecies.text = bean.beanSpecies;
-                }else{
-                    cell.beanSpecies.text = LocalString(@"未知");
-                }
-                if (bean.grade) {
-                    cell.grade.text = bean.grade;
-                }else{
-                    cell.grade.text = LocalString(@"未知");
-                }
-                if (bean.process) {
-                    cell.process.text = bean.process;
-                }else{
-                    cell.process.text = LocalString(@"未知");
-                }
-                if (bean.water) {
-                    cell.water.text = [NSString stringWithFormat:@"%f",bean.water];
-                }else{
-                    cell.water.text = LocalString(@"未知");
-                }
-                if (bean.weight) {
-                    cell.weight.text = [NSString stringWithFormat:@"%f",bean.weight];
-                }else{
-                    cell.weight.text = LocalString(@"未知");
-                }
+            BeanModel *bean = _beanArray[indexPath.row - 1];
+            if (bean.name) {
+                cell.beanName.text = bean.name;
+            }else{
+                cell.beanName.text = LocalString(@"未知");
+            }
+            if (bean.nation) {
+                cell.nation.text = bean.nation;
+            }else{
+                cell.nation.text = LocalString(@"未知");
+            }
+            if (bean.area) {
+                cell.area.text = bean.area;
+            }else{
+                cell.area.text = LocalString(@"未知");
+            }
+            if (bean.altitude) {
+                cell.altitude.text = [NSString stringWithFormat:@"%.1f",bean.altitude];
+            }else{
+                cell.altitude.text = LocalString(@"未知");
+            }
+            if (bean.manor) {
+                cell.manor.text = bean.manor;
+            }else{
+                cell.manor.text = LocalString(@"未知");
+            }
+            if (bean.beanSpecies) {
+                cell.beanSpecies.text = bean.beanSpecies;
+            }else{
+                cell.beanSpecies.text = LocalString(@"未知");
+            }
+            if (bean.grade) {
+                cell.grade.text = bean.grade;
+            }else{
+                cell.grade.text = LocalString(@"未知");
+            }
+            if (bean.process) {
+                cell.process.text = bean.process;
+            }else{
+                cell.process.text = LocalString(@"未知");
+            }
+            if (bean.water) {
+                cell.water.text = [NSString stringWithFormat:@"%.1f",bean.water];
+            }else{
+                cell.water.text = LocalString(@"未知");
+            }
+            if (bean.weight) {
+                cell.weight.text = [NSString stringWithFormat:@"%.1f",bean.weight];
+            }else{
+                cell.weight.text = LocalString(@"未知");
             }
             return cell;
         }
@@ -414,6 +436,7 @@ NSString *const CellIdentifier_TempPer30 = @"CellID_TempPer30";
 #pragma mark - DataSource
 - (void)queryReportInfo{
     _reportModel = [[DataBase shareDataBase] queryReport:[NSNumber numberWithInteger:_curveId]];
+    _reportModel.curveId = _curveId;
     NSLog(@"%@",_reportModel.date);
     NSData *curveData = [_reportModel.curveValueJson dataUsingEncoding:NSUTF8StringEncoding];
     NSDictionary *curveDic = [NSJSONSerialization JSONObjectWithData:curveData options:NSJSONReadingMutableLeaves error:nil];
@@ -471,4 +494,11 @@ NSString *const CellIdentifier_TempPer30 = @"CellID_TempPer30";
     [self.reportTable reloadData];
 }
 
+#pragma mark - Actions
+- (void)editReport{
+    ReportEditController *editVC = [[ReportEditController alloc] init];
+    editVC.beanArray = [_beanArray mutableCopy];
+    editVC.reportModel = _reportModel;
+    [self.navigationController pushViewController:editVC animated:YES];
+}
 @end

@@ -233,6 +233,29 @@ static float HEIGHT_HEADER = 36.f;
     return HEIGHT_HEADER/HScale;
 }
 
+- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath{
+    return YES;
+}
+
+- (UITableViewCellEditingStyle)tableView:(UITableView *)tableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath{
+    return UITableViewCellEditingStyleDelete;
+}
+
+- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath{
+    if (editingStyle == UITableViewCellEditingStyleDelete) {
+        DataBase *db = [DataBase shareDataBase];
+        ReportModel *report = _currentReportArr[indexPath.section][indexPath.row];
+        BOOL result = NO;
+        result = [db deleteqReport:report];
+        if (result) {
+            [_currentReportArr[indexPath.section] removeObjectAtIndex:indexPath.row];
+            [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
+            [NSObject showHudTipStr:LocalString(@"删除成功")];
+        }else{
+            [NSObject showHudTipStr:LocalString(@"删除失败")];
+        }
+    }
+}
 
 #pragma mark - uisearchbar delegate
 //- (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar{

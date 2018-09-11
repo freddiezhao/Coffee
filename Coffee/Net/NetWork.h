@@ -99,7 +99,7 @@ static NSInteger tempCountVer = 1000;
 ///@brief 计时器数据,app中所有计时都以秒为单位
 @property (nonatomic, assign) int timerValue;
 ///@brief 计时器状态
-@property (nonatomic, assign) int deviceTimerStatus;
+@property (nonatomic, assign) int deviceTimerStatus;//0是计时状态，1和2是停止
 ///@brief 事件数组
 @property (nonatomic, strong) NSMutableArray *eventArray;
 

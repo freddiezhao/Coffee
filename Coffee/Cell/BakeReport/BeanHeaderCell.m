@@ -22,6 +22,7 @@
             _beanNameLabel.textColor = [UIColor colorWithHexString:@"333333"];
             _beanNameLabel.font = [UIFont systemFontOfSize:13.0];
             _beanNameLabel.textAlignment = NSTextAlignmentLeft;
+            _beanNameLabel.adjustsFontSizeToFitWidth = YES;
             [self.contentView addSubview:_beanNameLabel];
         }
         

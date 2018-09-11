@@ -40,5 +40,6 @@
 
 - (BOOL)insertNewBean:(BeanModel *)bean;
 - (BOOL)deleteqBean:(BeanModel *)bean;
-
+- (BOOL)deleteqReport:(ReportModel *)report;
+- (BOOL)updateReportWithReport:(ReportModel *)report WithBean:(NSMutableArray *)beanArr;
 @end

@@ -266,7 +266,7 @@ NSString *const CollectHeaderIdentifier_curve = @"CollectHeaderID_curve";
                 cell.titleLabel.text = LocalString(@"一爆时间/温度");
                 for (EventModel *event in _eventArray) {
                     if (event.eventId == 2) {
-                        cell.titleLabel.text = [NSString stringWithFormat:@"%ld:%02ld/%f°C",event.eventTime/60,event.eventTime%60,event.eventBeanTemp];
+                        cell.valueLabel.text = [NSString stringWithFormat:@"%ld:%02ld/%.1f°C",event.eventTime/60,event.eventTime%60,event.eventBeanTemp];
                     }
                 }
             }

@@ -104,6 +104,7 @@
     [_myNet addObserver:self forKeyPath:@"fireStatus" options:NSKeyValueObservingOptionNew context:nil];
     [_myNet addObserver:self forKeyPath:@"coolStatus" options:NSKeyValueObservingOptionNew context:nil];
     [_myNet addObserver:self forKeyPath:@"stirStatus" options:NSKeyValueObservingOptionNew context:nil];
+    [_myNet addObserver:self forKeyPath:@"connectedDevice" options:NSKeyValueObservingOptionNew context:nil];
 }
 
 - (void)viewDidAppear:(BOOL)animated{
@@ -125,6 +126,7 @@
     [_myNet removeObserver:self forKeyPath:@"fireStatus"];
     [_myNet removeObserver:self forKeyPath:@"coolStatus"];
     [_myNet removeObserver:self forKeyPath:@"stirStatus"];
+    [_myNet removeObserver:self forKeyPath:@"connectedDevice"];
 }
 
 #pragma mark - Lazy Load
@@ -873,6 +875,15 @@
                 [_stirBtn setImage:[UIImage imageWithContentsOfFile:[_resourcePath stringByAppendingPathComponent:@"btn_stir_on@2x.png"]] forState:UIControlStateNormal];
             }else{
                 [_stirBtn setImage:[UIImage imageWithContentsOfFile:[_resourcePath stringByAppendingPathComponent:@"btn_stir_off@2x.png"]] forState:UIControlStateNormal];
+            }
+        });
+    }
+    else if ([keyPath isEqualToString:@"connectedDevice"]){
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (_myNet.connectedDevice != nil) {
+                _status.text = LocalString(@"设备已连接");
+            }else{
+                _status.text = LocalString(@"设备未连接");
             }
         });
     }
