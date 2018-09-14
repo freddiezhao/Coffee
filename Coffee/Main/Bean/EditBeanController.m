@@ -6,7 +6,7 @@
 //  Copyright © 2018年 杭州轨物科技有限公司. All rights reserved.
 //
 
-#import "AddNewBeanController.h"
+#import "EditBeanController.h"
 #import "TouchTableView.h"
 #import "AddBeanInfoCell1.h"
 #import "AddBeanInfoCell2.h"
@@ -16,16 +16,16 @@
 #import "BuyDateSelController.h"
 #import "BeanModel.h"
 
-NSString *const CellIdentifier_addNewBean1 = @"CellID_addNewBean1";
-NSString *const CellIdentifier_addNewBean2 = @"CellID_addNewBean2";
+NSString *const CellIdentifier_EditBean1 = @"CellID_EditBean1";
+NSString *const CellIdentifier_EditBean2 = @"CellID_EditBean2";
 
-@interface AddNewBeanController () <UITableViewDelegate, UITableViewDataSource>
+@interface EditBeanController () <UITableViewDelegate, UITableViewDataSource>
 
 @property (nonatomic, strong) UITableView *beanInfoTable;
 
 @end
 
-@implementation AddNewBeanController
+@implementation EditBeanController
 
 static float HEIGHT_CELL = 50.f;
 static float HEIGHT_HEADER = 36.f;
@@ -45,7 +45,7 @@ static float HEIGHT_HEADER = 36.f;
 
 #pragma mark - Lazy Load
 - (void)setNavItem{
-    self.navigationItem.title = LocalString(@"添加咖啡豆");
+    self.navigationItem.title = LocalString(@"编辑咖啡豆");
     
     UIButton *leftButton = [UIButton buttonWithType:UIButtonTypeCustom];
     leftButton.frame = CGRectMake(0, 0, 32, 23);
@@ -77,9 +77,9 @@ static float HEIGHT_HEADER = 36.f;
             tableView.dataSource = self;
             tableView.delegate = self;
             //tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-            [tableView registerClass:[AddBeanInfoCell1 class] forCellReuseIdentifier:CellIdentifier_addNewBean1];
-            [tableView registerClass:[AddBeanInfoCell2 class] forCellReuseIdentifier:CellIdentifier_addNewBean2];
-
+            [tableView registerClass:[AddBeanInfoCell1 class] forCellReuseIdentifier:CellIdentifier_EditBean1];
+            [tableView registerClass:[AddBeanInfoCell2 class] forCellReuseIdentifier:CellIdentifier_EditBean2];
+            
             [self.view addSubview:tableView];
             tableView.estimatedRowHeight = 0;
             tableView.estimatedSectionHeaderHeight = 0;
@@ -117,7 +117,7 @@ static float HEIGHT_HEADER = 36.f;
             return 5;
         }
             break;
-         
+            
         case 2:
         {
             return 7;
@@ -138,9 +138,9 @@ static float HEIGHT_HEADER = 36.f;
     switch (indexPath.section) {
         case 0:
         {
-            AddBeanInfoCell1 *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_addNewBean1];
+            AddBeanInfoCell1 *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_EditBean1];
             if (cell == nil) {
-                cell = [[AddBeanInfoCell1 alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_addNewBean1];
+                cell = [[AddBeanInfoCell1 alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_EditBean1];
             }
             cell.nameLabel.text = LocalString(@"生豆名称");
             if (_myBean.name) {
@@ -156,9 +156,9 @@ static float HEIGHT_HEADER = 36.f;
         case 1:
         {
             if (indexPath.row < 4) {
-                AddBeanInfoCell1 *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_addNewBean1];
+                AddBeanInfoCell1 *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_EditBean1];
                 if (cell == nil) {
-                    cell = [[AddBeanInfoCell1 alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_addNewBean1];
+                    cell = [[AddBeanInfoCell1 alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_EditBean1];
                 }
                 switch (indexPath.row) {
                     case 0:
@@ -212,9 +212,9 @@ static float HEIGHT_HEADER = 36.f;
                 }
                 return cell;
             }else{
-                AddBeanInfoCell2 *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_addNewBean2];
+                AddBeanInfoCell2 *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_EditBean2];
                 if (cell == nil) {
-                    cell = [[AddBeanInfoCell2 alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_addNewBean2];
+                    cell = [[AddBeanInfoCell2 alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_EditBean2];
                 }
                 cell.nameLabel.text = LocalString(@"库存量");
                 cell.unitLabel.text = @"kg";
@@ -233,9 +233,9 @@ static float HEIGHT_HEADER = 36.f;
         case 2:
         {
             if (indexPath.row < 4) {
-                AddBeanInfoCell1 *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_addNewBean1];
+                AddBeanInfoCell1 *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_EditBean1];
                 if (cell == nil) {
-                    cell = [[AddBeanInfoCell1 alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_addNewBean1];
+                    cell = [[AddBeanInfoCell1 alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_EditBean1];
                 }
                 switch (indexPath.row) {
                     case 0:
@@ -284,7 +284,7 @@ static float HEIGHT_HEADER = 36.f;
                             
                             cell.contentTF.text = date;
                         }
-
+                        
                         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
                     }
                         break;
@@ -294,9 +294,9 @@ static float HEIGHT_HEADER = 36.f;
                 }
                 return cell;
             }else{
-                AddBeanInfoCell2 *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_addNewBean2];
+                AddBeanInfoCell2 *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_EditBean2];
                 if (cell == nil) {
-                    cell = [[AddBeanInfoCell2 alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_addNewBean2];
+                    cell = [[AddBeanInfoCell2 alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_EditBean2];
                 }
                 switch (indexPath.row) {
                     case 4:
@@ -410,7 +410,7 @@ static float HEIGHT_HEADER = 36.f;
                     buyVC.modalPresentationStyle = UIModalPresentationOverCurrentContext;
                     buyVC.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
                     [self presentViewController:buyVC animated:YES completion:nil];
-
+                    
                 }
                     break;
                     
@@ -534,9 +534,9 @@ static float HEIGHT_HEADER = 36.f;
     BOOL result = [[DataBase shareDataBase] insertNewBean:_myBean];
     if (result) {
         [self dismissViewControllerAnimated:YES completion:nil];
-        [NSObject showHudTipStr:LocalString(@"添加咖啡豆成功")];
+        [NSObject showHudTipStr:LocalString(@"编辑咖啡豆成功")];
     }else{
-        [NSObject showHudTipStr:LocalString(@"添加咖啡豆失败")];
+        [NSObject showHudTipStr:LocalString(@"编辑咖啡豆失败")];
     }
     
 }

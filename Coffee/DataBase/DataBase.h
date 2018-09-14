@@ -29,14 +29,17 @@
 + (instancetype)shareDataBase;
 
 ///@brief DB action
+- (NSMutableArray *)queryAllReport;
 - (NSMutableArray *)queryAllReport:(DeviceModel *)device;
 - (NSMutableArray *)queryAllSharedReport;
 - (ReportModel *)queryReport:(NSNumber *)curveId;
+- (NSMutableArray *)queryBeanRelaReport:(NSNumber *)beanId;
 - (NSArray *)queryReportRelaBean:(NSNumber *)curveId;
 - (NSMutableArray *)queryAllBean;
 - (BeanModel *)queryBean:(NSNumber *)beanId;
 - (NSArray *)queryEvent:(NSNumber *)curveId;
 - (NSMutableArray *)queryAllDevice;
+- (BOOL)queryDevice:(NSString *)sn;
 
 - (BOOL)insertNewBean:(BeanModel *)bean;
 - (BOOL)deleteqBean:(BeanModel *)bean;

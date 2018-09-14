@@ -538,7 +538,7 @@ static NSInteger curveId;
     });
 }
 
-- (void)setFire:(UInt8)isFire{
+- (void)setFire:(NSNumber *)isFire{
     NSMutableArray *setFire = [[NSMutableArray alloc ] init];
     [setFire addObject:[NSNumber numberWithUnsignedChar:0x68]];
     [setFire addObject:[NSNumber numberWithUnsignedChar:0x01]];
@@ -546,7 +546,7 @@ static NSInteger curveId;
     [setFire addObject:[NSNumber numberWithUnsignedChar:0x00]];
     [setFire addObject:[NSNumber numberWithUnsignedChar:0x02]];
     [setFire addObject:[NSNumber numberWithUnsignedChar:0x00]];
-    [setFire addObject:[NSNumber numberWithUnsignedChar:isFire]];
+    [setFire addObject:isFire];
     [setFire addObject:[NSNumber numberWithUnsignedChar:[NSObject getCS:setFire]]];
     [setFire addObject:[NSNumber numberWithUnsignedChar:0x16]];
     [setFire addObject:[NSNumber numberWithUnsignedChar:0x0D]];
@@ -554,9 +554,13 @@ static NSInteger curveId;
     dispatch_async(_queue, ^{
         [self send:setFire withTag:102];
     });
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self performSelector:@selector(setFire:) withObject:isFire afterDelay:3.0f];
+    });
 }
 
-- (void)setPower:(UInt8)isPower{
+- (void)setPower:(NSNumber *)isPower{
+    NSLog(@"%@",isPower);
     NSMutableArray *setPower = [[NSMutableArray alloc ] init];
     [setPower addObject:[NSNumber numberWithUnsignedChar:0x68]];
     [setPower addObject:[NSNumber numberWithUnsignedChar:0x01]];
@@ -564,7 +568,7 @@ static NSInteger curveId;
     [setPower addObject:[NSNumber numberWithUnsignedChar:0x00]];
     [setPower addObject:[NSNumber numberWithUnsignedChar:0x02]];
     [setPower addObject:[NSNumber numberWithUnsignedChar:0x06]];
-    [setPower addObject:[NSNumber numberWithUnsignedChar:isPower]];
+    [setPower addObject:isPower];
     [setPower addObject:[NSNumber numberWithUnsignedChar:[NSObject getCS:setPower]]];
     [setPower addObject:[NSNumber numberWithUnsignedChar:0x16]];
     [setPower addObject:[NSNumber numberWithUnsignedChar:0x0D]];
@@ -572,9 +576,13 @@ static NSInteger curveId;
     dispatch_async(_queue, ^{
         [self send:setPower withTag:102];
     });
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self performSelector:@selector(setPower:) withObject:isPower afterDelay:3.0f];
+    });
 }
 
-- (void)setColdAndStir:(UInt8)isColdAndStir{
+- (void)setColdAndStir:(NSNumber *)isColdAndStir{
+    NSLog(@"%@",isColdAndStir);
     NSMutableArray *setColdAndStir = [[NSMutableArray alloc ] init];
     [setColdAndStir addObject:[NSNumber numberWithUnsignedChar:0x68]];
     [setColdAndStir addObject:[NSNumber numberWithUnsignedChar:0x01]];
@@ -582,13 +590,16 @@ static NSInteger curveId;
     [setColdAndStir addObject:[NSNumber numberWithUnsignedChar:0x00]];
     [setColdAndStir addObject:[NSNumber numberWithUnsignedChar:0x02]];
     [setColdAndStir addObject:[NSNumber numberWithUnsignedChar:0x01]];
-    [setColdAndStir addObject:[NSNumber numberWithUnsignedChar:isColdAndStir]];
+    [setColdAndStir addObject:isColdAndStir];
     [setColdAndStir addObject:[NSNumber numberWithUnsignedChar:[NSObject getCS:setColdAndStir]]];
     [setColdAndStir addObject:[NSNumber numberWithUnsignedChar:0x16]];
     [setColdAndStir addObject:[NSNumber numberWithUnsignedChar:0x0D]];
     [setColdAndStir addObject:[NSNumber numberWithUnsignedChar:0x0A]];
     dispatch_async(_queue, ^{
         [self send:setColdAndStir withTag:102];
+    });
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self performSelector:@selector(setColdAndStir:) withObject:isColdAndStir afterDelay:3.0f];
     });
 }
 
@@ -765,7 +776,9 @@ static NSInteger curveId;
                 //数组保存在这里防止页面不慎退出后所有数据丢失
                 [_yVals_Out addObject:[[ChartDataEntry alloc] initWithX:[_yVals_Out count] y:tempOut]];
                 [_yVals_In addObject:[[ChartDataEntry alloc] initWithX:[_yVals_In count] y:tempIn]];
-                [_yVals_Bean addObject:[[ChartDataEntry alloc] initWithX:[_yVals_Bean count] y:tempBean]];
+                ChartDataEntry *entry =[[ChartDataEntry alloc] initWithX:[_yVals_Bean count] y:tempBean];
+                [entry setTag:@"哈哈"];
+                [_yVals_Bean addObject:entry];
                 [_yVals_Environment addObject:[[ChartDataEntry alloc] initWithX:[_yVals_Environment count] y:tempEnvironment]];
                 
                 
@@ -799,7 +812,7 @@ static NSInteger curveId;
                     //数组保存在这里防止页面不慎退出后所有数据丢失
                     [_yVals_Out addObject:[[ChartDataEntry alloc] initWithX:[_yVals_Out count] y:tempOut]];
                     [_yVals_In addObject:[[ChartDataEntry alloc] initWithX:[_yVals_In count] y:tempIn]];
-                    [_yVals_Bean addObject:[[ChartDataEntry alloc] initWithX:[_yVals_Bean count] y:tempBean]];
+                    [_yVals_Bean addObject:[[ChartDataEntry alloc] initWithX:[_yVals_In count] y:tempBean]];
                     [_yVals_Environment addObject:[[ChartDataEntry alloc] initWithX:[_yVals_Environment count] y:tempEnvironment]];
                 }
                 
@@ -892,6 +905,21 @@ static NSInteger curveId;
                     [_myTimer setFireDate:[NSDate distantFuture]];
                     [_myTimer setFireDate:[NSDate date]];
                 }
+            }else if (self.msg68Type == getPowerStatus){
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [NSObject cancelPreviousPerformRequestsWithTarget:self];
+                });
+                resendCount = 0;
+            }else if (self.msg68Type == fire){
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [NSObject cancelPreviousPerformRequestsWithTarget:self];
+                });
+                resendCount = 0;
+            }else if (self.msg68Type == coolAndStir){
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [NSObject cancelPreviousPerformRequestsWithTarget:self];
+                });
+                resendCount = 0;
             }
         }else if (self.frame68Type == commandFrame){
             if (self.msg68Type == getTimerStatus) {

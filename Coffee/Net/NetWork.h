@@ -124,9 +124,9 @@ static NSInteger tempCountVer = 1000;
 
 //- (void)inquireTimer;
 //- (void)bakeFire;
-- (void)setFire:(UInt8)isFire;
-- (void)setPower:(UInt8)isPower;
-- (void)setColdAndStir:(UInt8)isColdAndStir;
+- (void)setFire:(NSNumber *)isFire;
+- (void)setPower:(NSNumber *)isPower;
+- (void)setColdAndStir:(NSNumber *)isColdAndStir;
 - (void)setTimerStatusOn;
 - (void)setTimerStatusOff;
 

@@ -24,4 +24,5 @@
 
 +(NSString *)YMDStringFromDate:(NSDate *)Date;
 +(NSString *)YMDHMStringFromUTCDate:(NSDate *)UTCDate;
++ (NSDate *)YMDDateFromLocalString:(NSString *)localString;
 @end

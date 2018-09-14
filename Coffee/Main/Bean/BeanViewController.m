@@ -13,6 +13,7 @@
 #import "beanCell.h"
 #import "BeanModel.h"
 #import "AddNewBeanController.h"
+#import "BeanDetailController.h"
 
 
 NSString *const CellIdentifier_bean = @"CellID_bean";
@@ -91,6 +92,8 @@ static float HEIGHT_HEADER = 36.f;
 
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
+    [self.rdv_tabBarController setTabBarHidden:NO animated:YES];
+    
     [self getAllBean];
 }
 
@@ -393,6 +396,17 @@ static float HEIGHT_HEADER = 36.f;
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    BeanDetailController *detailVC = [[BeanDetailController alloc] init];
+    BeanModel *bean;
+    if (_sort_generalBtn.tag == sortSelect) {//综合排序
+        bean = _beanArr[indexPath.row];
+    }else if (_sort_weightBtn.tag != sortUnselect){//重量排序(包括正序和倒叙)
+        bean = _weightArr[indexPath.row];
+    }else if (_sort_nameBtn.tag != sortUnselect){//名字排序
+        bean = [_mutableSections[indexPath.section] objectAtIndex:indexPath.row];
+    }
+    detailVC.myBean = bean;
+    [self.navigationController pushViewController:detailVC animated:YES];
     //NetWork *net = [NetWork shareNetWork];
 }
 

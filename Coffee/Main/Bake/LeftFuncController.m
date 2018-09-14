@@ -207,7 +207,7 @@
         _stirBtn.enabled = YES;
         _windPowerBtn.enabled = YES;
         _firePowerBtn.enabled = YES;
-        [_myNet setPower:0x00];
+        [_myNet setPower:[NSNumber numberWithUnsignedInteger:0x00]];
     }else{
         [_powerBtn setImage:[UIImage imageNamed:@"btn_power_off"] forState:UIControlStateNormal];
         _fireBtn.enabled = NO;
@@ -215,16 +215,16 @@
         _stirBtn.enabled = NO;
         _windPowerBtn.enabled = NO;
         _firePowerBtn.enabled = NO;
-        [_myNet setPower:0xFF];
+        [_myNet setPower:[NSNumber numberWithUnsignedInteger:0xFF]];
     }
     _myNet.powerStatus = !_myNet.powerStatus;
 }
 
 - (void)clickFire{
     if (_myNet.fireStatus) {
-        [[NetWork shareNetWork] setFire:0x00];
+        [[NetWork shareNetWork] setFire:[NSNumber numberWithUnsignedInteger:0x00]];
     }else{
-        [[NetWork shareNetWork] setFire:0xFF];
+        [[NetWork shareNetWork] setFire:[NSNumber numberWithUnsignedInteger:0xFF]];
     }
     _myNet.fireStatus = !_myNet.fireStatus;
 }
@@ -236,13 +236,13 @@
         [_stirBtn setImage:[UIImage imageNamed:@"btn_stir_on"] forState:UIControlStateNormal];
     }
     if (_myNet.stirStatus && _myNet.coolStatus) {
-        [_myNet setColdAndStir:0x01];
+        [_myNet setColdAndStir:[NSNumber numberWithUnsignedInteger:0x01]];
     }else if (!_myNet.stirStatus && _myNet.coolStatus){
-        [_myNet setColdAndStir:0x11];
+        [_myNet setColdAndStir:[NSNumber numberWithUnsignedInteger:0x03]];
     }else if (_myNet.stirStatus && !_myNet.coolStatus){
-        [_myNet setColdAndStir:0x00];
+        [_myNet setColdAndStir:[NSNumber numberWithUnsignedInteger:0x00]];
     }else if (!_myNet.stirStatus && !_myNet.coolStatus){
-        [_myNet setColdAndStir:0x10];
+        [_myNet setColdAndStir:[NSNumber numberWithUnsignedInteger:0x02]];
     }
     _myNet.stirStatus = !_myNet.stirStatus;
 }
@@ -254,13 +254,13 @@
         [_coolingBtn setImage:[UIImage imageNamed:@"btn_cold_on"] forState:UIControlStateNormal];
     }
     if (_myNet.stirStatus && _myNet.coolStatus) {
-        [_myNet setColdAndStir:0x10];
+        [_myNet setColdAndStir:[NSNumber numberWithUnsignedInteger:0x02]];
     }else if (!_myNet.stirStatus && _myNet.coolStatus){
-        [_myNet setColdAndStir:0x00];
+        [_myNet setColdAndStir:[NSNumber numberWithUnsignedInteger:0x00]];
     }else if (_myNet.stirStatus && !_myNet.coolStatus){
-        [_myNet setColdAndStir:0x11];
+        [_myNet setColdAndStir:[NSNumber numberWithUnsignedInteger:0x03]];
     }else if (!_myNet.stirStatus && !_myNet.coolStatus){
-        [_myNet setColdAndStir:0x01];
+        [_myNet setColdAndStir:[NSNumber numberWithUnsignedInteger:0x01]];
     }
     _myNet.coolStatus = !_myNet.coolStatus;
 }

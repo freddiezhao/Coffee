@@ -20,4 +20,6 @@
 
 - (UInt8)getCS:(NSArray *)data;
 
+//逐差法求加速度
++ (NSMutableArray *)evaluateAcceleration:(NSMutableArray *)valueArr;
 @end

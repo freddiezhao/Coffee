@@ -7,7 +7,6 @@
 //
 
 #import <UIKit/UIKit.h>
-#import <WMPageController/WMPageController.h>
 
 @interface CurveViewController : BaseViewController
 

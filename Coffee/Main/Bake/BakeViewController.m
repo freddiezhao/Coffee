@@ -241,7 +241,7 @@
             [_powerBtn setImage:[UIImage imageWithContentsOfFile:[_resourcePath stringByAppendingPathComponent:@"btn_power_off@2x.png"]] forState:UIControlStateNormal];
         }
         [_powerBtn addTarget:self action:@selector(setPower) forControlEvents:UIControlEventTouchUpInside];
-        _powerBtn.enabled = NO;
+        //_powerBtn.enabled = NO;
         [_mainView addSubview:_powerBtn];
         
         _fireBtn = [[UIButton alloc] init];
@@ -408,7 +408,7 @@
         _pointerImage = [[UIImageView alloc] initWithFrame:CGRectMake(30/WScale, 30/HScale, 150/WScale, 150/HScale)];
         _pointerImage.image = [UIImage imageNamed:@"img_pointer"];
         //当顺时针旋转120度时，指针转到129
-        int temp = 200;
+        float temp = [_beanTempLabel.text floatValue];
         _pointerImage.transform = CGAffineTransformMakeRotation((temp / 129.f * 120.0) / 180 * M_PI);
         [_mainView addSubview:_pointerImage];
     }
@@ -423,6 +423,7 @@
         _beanTempLabel.textAlignment = NSTextAlignmentLeft;
         _beanTempLabel.textColor = [UIColor colorWithHexString:@"4778CC"];
         _beanTempLabel.font = [UIFont fontWithName:@"Avenir" size:40.f];
+        _beanTempLabel.adjustsFontSizeToFitWidth = YES;
         [_mainView addSubview:_beanTempLabel];
         
         UILabel *textLabel = [[UILabel alloc] init];
@@ -460,6 +461,7 @@
         _beanTempRateLabel.textAlignment = NSTextAlignmentLeft;
         _beanTempRateLabel.textColor = [UIColor colorWithHexString:@"4778CC"];
         _beanTempRateLabel.font = [UIFont fontWithName:@"Avenir" size:16.f];
+        _beanTempRateLabel.adjustsFontSizeToFitWidth = YES;
         [_mainView addSubview:_beanTempRateLabel];
     }
     return _beanTempRateLabel;
@@ -473,6 +475,7 @@
         _inTempLabel.textAlignment = NSTextAlignmentLeft;
         _inTempLabel.textColor = [UIColor colorWithHexString:@"4778CC"];
         _inTempLabel.font = [UIFont fontWithName:@"Avenir" size:18.f];
+        _inTempLabel.adjustsFontSizeToFitWidth = YES;
         [_mainView addSubview:_inTempLabel];
         
         UILabel *textLabel = [[UILabel alloc] init];
@@ -506,6 +509,7 @@
         _outTempLabel.textAlignment = NSTextAlignmentLeft;
         _outTempLabel.textColor = [UIColor colorWithHexString:@"4778CC"];
         _outTempLabel.font = [UIFont fontWithName:@"Avenir" size:18.f];
+        _outTempLabel.adjustsFontSizeToFitWidth = YES;
         [_mainView addSubview:_outTempLabel];
         
         UILabel *textLabel = [[UILabel alloc] init];
@@ -539,6 +543,7 @@
         _environTempLabel.textAlignment = NSTextAlignmentLeft;
         _environTempLabel.textColor = [UIColor colorWithHexString:@"4778CC"];
         _environTempLabel.font = [UIFont fontWithName:@"Avenir" size:18.f];
+        _environTempLabel.adjustsFontSizeToFitWidth = YES;
         [_mainView addSubview:_environTempLabel];
         
         UILabel *textLabel = [[UILabel alloc] init];
@@ -632,27 +637,30 @@
     if (!_bakeCurveBtn) {
         _bakeCurveBtn = [UIButton buttonWithType:UIButtonTypeCustom];
         _bakeCurveBtn.frame = CGRectMake(87/WScale, 10/HScale, 201/WScale, 50/HScale);
+        //[_bakeCurveBtn setImage:[UIImage imageNamed:@"btn_baking_curve"] forState:UIControlStateNormal];
         [_bakeCurveBtn setTitle:LocalString(@"烘焙曲线") forState:UIControlStateNormal];
         [_bakeCurveBtn.titleLabel setFont:[UIFont systemFontOfSize:17.f]];
         [_bakeCurveBtn setTitleColor:[UIColor colorWithHexString:@"4778CC"] forState:UIControlStateNormal];
         [_bakeCurveBtn addTarget:self action:@selector(goBakeCurveViewController) forControlEvents:UIControlEventTouchUpInside];
         
-        _bakeCurveBtn.layer.borderColor = [UIColor colorWithRed:235/255.0 green:235/255.0 blue:235/255.0 alpha:1].CGColor;
         // gradient
         CAGradientLayer *gl = [CAGradientLayer layer];
         gl.frame = CGRectMake(87.5/HScale,0.5/HScale,200/WScale,49/HScale);
         gl.position = _bakeCurveBtn.center;
         [_bottomView.layer addSublayer:gl];
         gl.cornerRadius = 24.5/HScale;
-        gl.startPoint = CGPointMake(0.41318634152412415, 1);
-        gl.endPoint = CGPointMake(0.41318634152412415, 0);
+        gl.startPoint = CGPointMake(0.41, 1);
+        gl.endPoint = CGPointMake(0.41, 0);
         gl.colors = @[(__bridge id)[UIColor colorWithRed:247/255.0 green:247/255.0 blue:247/255.0 alpha:1].CGColor, (__bridge id)[UIColor colorWithRed:255/255.0 green:255/255.0 blue:255/255.0 alpha:1].CGColor];
         gl.locations = @[@(0), @(1.0f)];
-        
+
         _bakeCurveBtn.layer.shadowColor = [UIColor colorWithRed:0/255.0 green:0/255.0 blue:0/255.0 alpha:0.05].CGColor;
         _bakeCurveBtn.layer.shadowOffset = CGSizeMake(0,0);
         _bakeCurveBtn.layer.shadowOpacity = 1;
         _bakeCurveBtn.layer.shadowRadius = 10;
+        _bakeCurveBtn.layer.borderColor = [UIColor colorWithRed:235/255.0 green:235/255.0 blue:235/255.0 alpha:1].CGColor;
+        _bakeCurveBtn.layer.borderWidth = 1.f;
+        _bakeCurveBtn.layer.cornerRadius = 24.5;
         [_bottomView addSubview:_bakeCurveBtn];
     }
     return _bakeCurveBtn;
@@ -733,44 +741,44 @@
 
 - (void)setPower{
     if (_myNet.powerStatus) {
-        [_myNet setPower:0x00];
+        [_myNet setPower:[NSNumber numberWithUnsignedInteger:0x00]];
     }else{
-        [_myNet setPower:0xFF];
+        [_myNet setPower:[NSNumber numberWithUnsignedInteger:0xFF]];
     }
     _myNet.powerStatus = !_myNet.powerStatus;
 }
 
 - (void)setFire{
     if (_myNet.fireStatus) {
-        [[NetWork shareNetWork] setFire:0x00];
+        [[NetWork shareNetWork] setFire:[NSNumber numberWithUnsignedInteger:0x00]];
     }else{
-        [[NetWork shareNetWork] setFire:0xFF];
+        [[NetWork shareNetWork] setFire:[NSNumber numberWithUnsignedInteger:0xFF]];
     }
     _myNet.fireStatus = !_myNet.fireStatus;
 }
 
 - (void)setStir{
     if (_myNet.stirStatus && _myNet.coolStatus) {
-        [_myNet setColdAndStir:0x01];
+        [_myNet setColdAndStir:[NSNumber numberWithUnsignedInteger:0x01]];
     }else if (!_myNet.stirStatus && _myNet.coolStatus){
-        [_myNet setColdAndStir:0x11];
+        [_myNet setColdAndStir:[NSNumber numberWithUnsignedInteger:0x03]];
     }else if (_myNet.stirStatus && !_myNet.coolStatus){
-        [_myNet setColdAndStir:0x00];
+        [_myNet setColdAndStir:[NSNumber numberWithUnsignedInteger:0x00]];
     }else if (!_myNet.stirStatus && !_myNet.coolStatus){
-        [_myNet setColdAndStir:0x10];
+        [_myNet setColdAndStir:[NSNumber numberWithUnsignedInteger:0x02]];
     }
     _myNet.stirStatus = !_myNet.stirStatus;
 }
 
 - (void)setCold{
     if (_myNet.stirStatus && _myNet.coolStatus) {
-        [_myNet setColdAndStir:0x10];
+        [_myNet setColdAndStir:[NSNumber numberWithUnsignedInteger:0x02]];
     }else if (!_myNet.stirStatus && _myNet.coolStatus){
-        [_myNet setColdAndStir:0x00];
+        [_myNet setColdAndStir:[NSNumber numberWithUnsignedInteger:0x00]];
     }else if (_myNet.stirStatus && !_myNet.coolStatus){
-        [_myNet setColdAndStir:0x11];
+        [_myNet setColdAndStir:[NSNumber numberWithUnsignedInteger:0x03]];
     }else if (!_myNet.stirStatus && !_myNet.coolStatus){
-        [_myNet setColdAndStir:0x01];
+        [_myNet setColdAndStir:[NSNumber numberWithUnsignedInteger:0x01]];
     }
     _myNet.coolStatus = !_myNet.coolStatus;
 }
@@ -790,7 +798,9 @@
         
        // _beanTempRateLabel.text = [NSString stringWithFormat:@"%f℃/min",tempOut];
         dispatch_async(dispatch_get_main_queue(), ^{
-            _beanTempLabel.text = [NSString stringWithFormat:@"%.1f℃",tempBean];
+            //当顺时针旋转120度时，指针转到129
+            _pointerImage.transform = CGAffineTransformMakeRotation((tempBean / 129.f * 120.0) / 180 * M_PI);
+            _beanTempLabel.text = [NSString stringWithFormat:@"%.1f",tempBean];
             _inTempLabel.text = [NSString stringWithFormat:@"%.1f℃",tempIn];
             _outTempLabel.text = [NSString stringWithFormat:@"%.1f℃",tempOut];
             _environTempLabel.text = [NSString stringWithFormat:@"%.1f℃",tempEnvironment];

@@ -35,7 +35,7 @@ static float HEIGHT_HEADER = 36.f;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
+    self.view.layer.backgroundColor = [UIColor colorWithRed:246/255.0 green:246/255.0 blue:246/255.0 alpha:1].CGColor;
     [self setNavItem];
     
     _currentReportArr = [self getAllReport:nil];
@@ -303,7 +303,7 @@ static float HEIGHT_HEADER = 36.f;
         case 1:
         {
             [_currentTable.mj_header beginRefreshing];
-            _currentReportArr = [self getAllReport:nil];
+            _currentReportArr = [self getAllReport];
             [_currentTable reloadData];
             [_currentTable.mj_header endRefreshing];
         }
@@ -329,9 +329,15 @@ static float HEIGHT_HEADER = 36.f;
     [self.navigationController pushViewController:reportVC animated:YES];
 }
 
+- (NSMutableArray *)getAllReport{
+    NSMutableArray *arr = [[DataBase shareDataBase] queryAllReport];
+    arr = [self sortByDate:arr];
+    NSMutableArray *classArr = [self classArray:arr];
+    return classArr;
+}
+
 - (NSMutableArray *)getAllReport:(DeviceModel *)device{
-    NSMutableArray *arr = [[DataBase shareDataBase] queryAllReport:device];
-    //NSMutableArray *arr = [[DataBase shareDataBase] queryAllReport:[NetWork shareNetWork].connectedDevice];
+    NSMutableArray *arr = [[DataBase shareDataBase] queryAllReport:[NetWork shareNetWork].connectedDevice];
     arr = [self sortByDate:arr];
     NSMutableArray *classArr = [self classArray:arr];
     return classArr;

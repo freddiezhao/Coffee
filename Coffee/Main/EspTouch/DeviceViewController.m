@@ -295,17 +295,8 @@ NSString *const CellIdentifier_device = @"CellID_device";
             dModel.sn = [msg substringWithRange:NSMakeRange(0, 8)];
             
             //判断本地是否已经存储过，如果有则将_deviceArray中的该设备删除，如果没有则存储该设备
-            int isNewDevice = 1;
-            for (int i = 0; i < _deviceArray.count; i++) {
-                DeviceModel *device = _deviceArray[i];
-                if ([[msg substringWithRange:NSMakeRange(0, 8)] isEqualToString:device.sn]) {
-                    dModel.deviceName = device.deviceName;
-                    [_deviceArray removeObjectAtIndex:i];
-                    isNewDevice = 0;
-                    break;
-                }
-            }
-            if (isNewDevice) {
+            BOOL isStored = [[DataBase shareDataBase] queryDevice:[msg substringWithRange:NSMakeRange(0, 8)]];
+            if (!isStored) {
                 [[DataBase shareDataBase].queueDB inDatabase:^(FMDatabase * _Nonnull db) {
                     BOOL result = [db executeUpdate:@"INSERT INTO device (sn,deviceName) VALUES (?,?)",[msg substringWithRange:NSMakeRange(0, 8)],[msg substringWithRange:NSMakeRange(0, 8)]];
                     if (result) {
@@ -314,6 +305,15 @@ NSString *const CellIdentifier_device = @"CellID_device";
                         NSLog(@"插入新设备到device失败");
                     }
                 }];
+            }else{
+                for (int i = 0; i < _deviceArray.count; i++) {
+                    DeviceModel *device = _deviceArray[i];
+                    if ([[msg substringWithRange:NSMakeRange(0, 8)] isEqualToString:device.sn]) {
+                        dModel.deviceName = device.deviceName;
+                        [_deviceArray removeObjectAtIndex:i];
+                        break;
+                    }
+                }
             }
             
 //            NSArray *msgArray = [msg componentsSeparatedByString:@"|"];
@@ -491,7 +491,8 @@ NSString *const CellIdentifier_device = @"CellID_device";
         NSError *error = nil;
         DeviceModel *dModel = _onlineDeviceArray[indexPath.row];
         [net connectToHost:dModel.ipAddress onPort:16888 error:&error];
-        
+        //[net connectToHost:@"172.16.1.104" onPort:16888 error:&error];
+
         if (error) {
             NSLog(@"tcp连接错误:%@",error);
         }else{

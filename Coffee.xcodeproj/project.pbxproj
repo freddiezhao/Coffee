@@ -278,6 +278,10 @@
 		BB635D25210868EF005F42D6 /* ic_quick_event_add@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = BB635D24210868EF005F42D6 /* ic_quick_event_add@3x.png */; };
 		BB635D282108781C005F42D6 /* CurveColorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB635D272108781C005F42D6 /* CurveColorViewController.m */; };
 		BB635D2B2108794B005F42D6 /* CurveColorCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BB635D2A2108794B005F42D6 /* CurveColorCell.m */; };
+		BB63B3FC2148FE8F00EAC364 /* BeanDetailController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB63B3FB2148FE8F00EAC364 /* BeanDetailController.m */; };
+		BB63B3FF2149012F00EAC364 /* BeanDetailCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BB63B3FE2149012F00EAC364 /* BeanDetailCell.m */; };
+		BB63B40221490EB500EAC364 /* EditBeanController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB63B40121490EB500EAC364 /* EditBeanController.m */; };
+		BB63B40521491CC600EAC364 /* BeanRelaCurveController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB63B40421491CC600EAC364 /* BeanRelaCurveController.m */; };
 		BB65C25120FD8F0400BB684E /* tick@1x.png in Resources */ = {isa = PBXBuildFile; fileRef = BB65C24B20FD8F0300BB684E /* tick@1x.png */; };
 		BB65C25220FD8F0400BB684E /* tick@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = BB65C24C20FD8F0300BB684E /* tick@2x.png */; };
 		BB65C25320FD8F0400BB684E /* untick@1x.png in Resources */ = {isa = PBXBuildFile; fileRef = BB65C24D20FD8F0400BB684E /* untick@1x.png */; };
@@ -301,6 +305,7 @@
 		BB6AD21E2100B706008C8763 /* AccountViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB6AD21D2100B706008C8763 /* AccountViewController.m */; };
 		BB6AD2212100C058008C8763 /* LlabelRlabelCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BB6AD2202100C058008C8763 /* LlabelRlabelCell.m */; };
 		BB6AD2252100C182008C8763 /* LlabelRImageCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BB6AD2242100C182008C8763 /* LlabelRImageCell.m */; };
+		BB6CD7E0214A561D0046A792 /* BalloonMarker.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB6CD7DF214A561C0046A792 /* BalloonMarker.swift */; };
 		BB6E0B7E2122D5B0008F20FC /* YAlertViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB6E0B7D2122D5B0008F20FC /* YAlertViewController.m */; };
 		BB712ABD20E47F49005FF10F /* NetWork.m in Sources */ = {isa = PBXBuildFile; fileRef = BB712ABC20E47F49005FF10F /* NetWork.m */; };
 		BB73BA1E212F9CF7001D9258 /* AddNewBeanController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB73BA1D212F9CF7001D9258 /* AddNewBeanController.m */; };
@@ -722,6 +727,14 @@
 		BB635D272108781C005F42D6 /* CurveColorViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CurveColorViewController.m; sourceTree = "<group>"; };
 		BB635D292108794B005F42D6 /* CurveColorCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CurveColorCell.h; sourceTree = "<group>"; };
 		BB635D2A2108794B005F42D6 /* CurveColorCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CurveColorCell.m; sourceTree = "<group>"; };
+		BB63B3FA2148FE8F00EAC364 /* BeanDetailController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeanDetailController.h; sourceTree = "<group>"; };
+		BB63B3FB2148FE8F00EAC364 /* BeanDetailController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeanDetailController.m; sourceTree = "<group>"; };
+		BB63B3FD2149012F00EAC364 /* BeanDetailCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeanDetailCell.h; sourceTree = "<group>"; };
+		BB63B3FE2149012F00EAC364 /* BeanDetailCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeanDetailCell.m; sourceTree = "<group>"; };
+		BB63B40021490EB500EAC364 /* EditBeanController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EditBeanController.h; sourceTree = "<group>"; };
+		BB63B40121490EB500EAC364 /* EditBeanController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EditBeanController.m; sourceTree = "<group>"; };
+		BB63B40321491CC600EAC364 /* BeanRelaCurveController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeanRelaCurveController.h; sourceTree = "<group>"; };
+		BB63B40421491CC600EAC364 /* BeanRelaCurveController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeanRelaCurveController.m; sourceTree = "<group>"; };
 		BB65C24B20FD8F0300BB684E /* tick@1x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tick@1x.png"; sourceTree = "<group>"; };
 		BB65C24C20FD8F0300BB684E /* tick@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tick@2x.png"; sourceTree = "<group>"; };
 		BB65C24D20FD8F0400BB684E /* untick@1x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "untick@1x.png"; sourceTree = "<group>"; };
@@ -759,6 +772,8 @@
 		BB6AD2202100C058008C8763 /* LlabelRlabelCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LlabelRlabelCell.m; sourceTree = "<group>"; };
 		BB6AD2232100C182008C8763 /* LlabelRImageCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LlabelRImageCell.h; sourceTree = "<group>"; };
 		BB6AD2242100C182008C8763 /* LlabelRImageCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LlabelRImageCell.m; sourceTree = "<group>"; };
+		BB6CD7DE214A561B0046A792 /* Coffee-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Coffee-Bridging-Header.h"; sourceTree = "<group>"; };
+		BB6CD7DF214A561C0046A792 /* BalloonMarker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BalloonMarker.swift; sourceTree = "<group>"; };
 		BB6E0B7C2122D5B0008F20FC /* YAlertViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YAlertViewController.h; sourceTree = "<group>"; };
 		BB6E0B7D2122D5B0008F20FC /* YAlertViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YAlertViewController.m; sourceTree = "<group>"; };
 		BB712ABB20E47F49005FF10F /* NetWork.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NetWork.h; sourceTree = "<group>"; };
@@ -969,6 +984,10 @@
 			children = (
 				BB25E7A7212E611A003568BD /* BeanViewController.h */,
 				BB25E7A8212E611A003568BD /* BeanViewController.m */,
+				BB63B3FA2148FE8F00EAC364 /* BeanDetailController.h */,
+				BB63B3FB2148FE8F00EAC364 /* BeanDetailController.m */,
+				BB63B40021490EB500EAC364 /* EditBeanController.h */,
+				BB63B40121490EB500EAC364 /* EditBeanController.m */,
 				BB73BA1C212F9CF7001D9258 /* AddNewBeanController.h */,
 				BB73BA1D212F9CF7001D9258 /* AddNewBeanController.m */,
 				BB73BA25212FE0E2001D9258 /* GradeSelController.h */,
@@ -979,6 +998,8 @@
 				BB73BA2F212FEA44001D9258 /* ProcessSelController.m */,
 				BB73BA31212FED92001D9258 /* BuyDateSelController.h */,
 				BB73BA32212FED92001D9258 /* BuyDateSelController.m */,
+				BB63B40321491CC600EAC364 /* BeanRelaCurveController.h */,
+				BB63B40421491CC600EAC364 /* BeanRelaCurveController.m */,
 			);
 			path = Bean;
 			sourceTree = "<group>";
@@ -1310,8 +1331,17 @@
 				BB73BA20212FA333001D9258 /* AddBeanInfoCell1.m */,
 				BB73BA22212FB4CF001D9258 /* AddBeanInfoCell2.h */,
 				BB73BA23212FB4CF001D9258 /* AddBeanInfoCell2.m */,
+				BB63B3FD2149012F00EAC364 /* BeanDetailCell.h */,
+				BB63B3FE2149012F00EAC364 /* BeanDetailCell.m */,
 			);
 			path = Bean;
+			sourceTree = "<group>";
+		};
+		BB63B3F42148F1D400EAC364 /* Login */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Login;
 			sourceTree = "<group>";
 		};
 		BB65C25A20FE120200BB684E /* Curve */ = {
@@ -1402,6 +1432,15 @@
 				BB73BA29212FE6F2001D9258 /* SortModel.m */,
 			);
 			path = Model;
+			sourceTree = "<group>";
+		};
+		BB6CD7D9214A50DE0046A792 /* Charts */ = {
+			isa = PBXGroup;
+			children = (
+				BB6CD7DF214A561C0046A792 /* BalloonMarker.swift */,
+				BB6CD7DE214A561B0046A792 /* Coffee-Bridging-Header.h */,
+			);
+			path = Charts;
 			sourceTree = "<group>";
 		};
 		BB6E0B782122D49A008F20FC /* View */ = {
@@ -1581,6 +1620,7 @@
 		BB8AA4D320DFBFA400610316 /* OC_Category */ = {
 			isa = PBXGroup;
 			children = (
+				BB6CD7D9214A50DE0046A792 /* Charts */,
 				BB8AA4D420DFBFA400610316 /* TableView+Touch */,
 				BB69CA7120ECBB490032F126 /* NSObject+Common.h */,
 				BB69CA7220ECBB490032F126 /* NSObject+Common.m */,
@@ -1687,6 +1727,7 @@
 		BB8F7C0120DA51A600BE5CFC /* Main */ = {
 			isa = PBXGroup;
 			children = (
+				BB63B3F42148F1D400EAC364 /* Login */,
 				BBC31F9A20E713730011360E /* Bake */,
 				BB65C25A20FE120200BB684E /* Curve */,
 				BB25E7A6212E60FD003568BD /* Bean */,
@@ -1822,6 +1863,7 @@
 				TargetAttributes = {
 					BB8F7BCB20DA513B00BE5CFC = {
 						CreatedOnToolsVersion = 9.2;
+						LastSwiftMigration = 0940;
 						ProvisioningStyle = Automatic;
 					};
 					BB8F7BE320DA513C00BE5CFC = {
@@ -2275,10 +2317,12 @@
 				BB6AD2212100C058008C8763 /* LlabelRlabelCell.m in Sources */,
 				BB8AA49A20DE475200610316 /* BakeViewController.m in Sources */,
 				BB8AA4C920DFB9CA00610316 /* ESP_WifiUtil.m in Sources */,
+				BB63B3FC2148FE8F00EAC364 /* BeanDetailController.m in Sources */,
 				BB94EAA220DB8CE700370A95 /* RDVTabBarItem.m in Sources */,
 				BB6AD21E2100B706008C8763 /* AccountViewController.m in Sources */,
 				BB29120C2106CCE1001B9448 /* PasswordViewController.m in Sources */,
 				BB68B5FB21280A42001CABE5 /* BeanHeaderCell.m in Sources */,
+				BB63B40521491CC600EAC364 /* BeanRelaCurveController.m in Sources */,
 				BB635D2B2108794B005F42D6 /* CurveColorCell.m in Sources */,
 				BB65C25920FDF00000BB684E /* BeanModel.m in Sources */,
 				BBA7B95B212AA0A0004943DC /* CollectInfoCell.m in Sources */,
@@ -2290,12 +2334,14 @@
 				BB6A555E20FCCA3D0013C3C1 /* AddBeanTableViewCell.m in Sources */,
 				BB8AA4CF20DFB9CA00610316 /* ESPDataCode.m in Sources */,
 				BB28E7402146832B005B884C /* ReportEditController.m in Sources */,
+				BB63B3FF2149012F00EAC364 /* BeanDetailCell.m in Sources */,
 				BB1C156620E1E8AD006D7053 /* UIButton+Common.m in Sources */,
 				BB7835EB2147E898000E2FCB /* EditBeanController_bakeAdd.m in Sources */,
 				BB2912022106BA65001B9448 /* UsernameViewController.m in Sources */,
 				BB29121821071B1E001B9448 /* SettingModel.m in Sources */,
 				BB25E7A9212E611A003568BD /* BeanViewController.m in Sources */,
 				BBA7B965212AC531004943DC /* CollectEventCell.m in Sources */,
+				BB6CD7E0214A561D0046A792 /* BalloonMarker.swift in Sources */,
 				BB6E0B7E2122D5B0008F20FC /* YAlertViewController.m in Sources */,
 				BB7835E821476D20000E2FCB /* EditBakeBeanCell.m in Sources */,
 				BB26A97B21339E0C000F225C /* BeanViewController_bakeAdd.m in Sources */,
@@ -2314,6 +2360,7 @@
 				BB94EAA120DB8CE700370A95 /* RDVTabBarController.m in Sources */,
 				BB7835E22147588D000E2FCB /* EditNameCell.m in Sources */,
 				BB8AA4A520DFB25900610316 /* EspViewController.m in Sources */,
+				BB63B40221490EB500EAC364 /* EditBeanController.m in Sources */,
 				BB2912122106D8D5001B9448 /* GeneralViewController.m in Sources */,
 				BB8AA4C520DFB9CA00610316 /* ESPGuideCode.m in Sources */,
 				BB73BA21212FA333001D9258 /* AddBeanInfoCell1.m in Sources */,
@@ -2512,6 +2559,7 @@
 			baseConfigurationReference = 720E238F8A2AE22A51FFC2D2 /* Pods-Coffee.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 5FAMV3D32N;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -2521,6 +2569,10 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.thingcom.Coffee;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "Coffee/OC_Category/Charts/Coffee-Bridging-Header.h";
+				SWIFT_OBJC_INTERFACE_HEADER_NAME = "$(SWIFT_MODULE_NAME)-Swift.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = 1;
 				USER_HEADER_SEARCH_PATHS = "$(PODS_ROOT)/FMDB/**";
 			};
@@ -2531,6 +2583,7 @@
 			baseConfigurationReference = 7BA3FAAB66A327260F196ABB /* Pods-Coffee.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 5FAMV3D32N;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -2540,6 +2593,9 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.thingcom.Coffee;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "Coffee/OC_Category/Charts/Coffee-Bridging-Header.h";
+				SWIFT_OBJC_INTERFACE_HEADER_NAME = "$(SWIFT_MODULE_NAME)-Swift.h";
+				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = 1;
 				USER_HEADER_SEARCH_PATHS = "$(PODS_ROOT)/FMDB/**";
 			};
@@ -2548,6 +2604,7 @@
 		BB8F7BFC20DA513C00BE5CFC /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 5FAMV3D32N;
@@ -2563,6 +2620,7 @@
 		BB8F7BFD20DA513C00BE5CFC /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 5FAMV3D32N;
@@ -2578,6 +2636,7 @@
 		BB8F7BFF20DA513C00BE5CFC /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 5FAMV3D32N;
 				INFOPLIST_FILE = CoffeeUITests/Info.plist;
@@ -2592,6 +2651,7 @@
 		BB8F7C0020DA513C00BE5CFC /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 5FAMV3D32N;
 				INFOPLIST_FILE = CoffeeUITests/Info.plist;

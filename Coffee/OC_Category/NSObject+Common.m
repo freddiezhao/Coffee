@@ -7,6 +7,7 @@
 //
 
 #import "NSObject+Common.h"
+#import <Charts/Charts-Swift.h>
 
 @implementation NSObject (Common)
 
@@ -68,8 +69,20 @@
     return csTemp;
 }
 
-- (void)evaluateAcceleration:(NSMutableArray *)valueArr{
-    
-}
 
+/**
+ **逐差法求加速度
+ **/
++ (NSMutableArray *)evaluateAcceleration:(NSMutableArray *)valueArr{
+    NSMutableArray *displacementArr = [[NSMutableArray alloc] init];//位移数组
+    for (int i = 1; i < valueArr.count; i++) {
+        float displacement = [valueArr[i] floatValue] - [valueArr[i-1] floatValue];
+        [displacementArr addObject:[NSNumber numberWithFloat:displacement]];
+    }
+    NSMutableArray *acceleratioArr = [[NSMutableArray alloc] init];
+    for (int i = 10; i < displacementArr.count-9; i++) {
+        [acceleratioArr addObject:[[ChartDataEntry alloc] initWithX:i y:([displacementArr[i+9] doubleValue]+[displacementArr[i+8] doubleValue]+[displacementArr[i+7] doubleValue]+[displacementArr[i+6] doubleValue]+[displacementArr[i+5] doubleValue]+[displacementArr[i+4] doubleValue]+[displacementArr[i+3] doubleValue]+[displacementArr[i+2] doubleValue]+[displacementArr[i+1] doubleValue]+[displacementArr[i] doubleValue] - [displacementArr[i-1] doubleValue] - [displacementArr[i-2] doubleValue] - [displacementArr[i-3] doubleValue] - [displacementArr[i-4] doubleValue] - [displacementArr[i-5] doubleValue] - [displacementArr[i-6] doubleValue] - [displacementArr[i-7] doubleValue] - [displacementArr[i-8] doubleValue] - [displacementArr[i-9] doubleValue] - [displacementArr[i-10] doubleValue])/(10*10)]];
+    }
+    return acceleratioArr;
+}
 @end

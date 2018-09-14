@@ -128,12 +128,30 @@ static DataBase *_dataBase = nil;
     return model;
 }
 
+- (NSMutableArray *)queryAllReport{//device为nil就查全部
+    NSMutableArray *reportArr = [[NSMutableArray alloc] init];
+    [_queueDB inDatabase:^(FMDatabase * _Nonnull db) {
+        FMResultSet *set = [db executeQuery:@"SELECT * FROM curveInfo WHERE isShare = 0"];
+        while ([set next]) {
+            ReportModel *reportModel = [[ReportModel alloc] init];
+            reportModel.curveId = [set intForColumn:@"curveId"];
+            reportModel.curveName = [set stringForColumn:@"curveName"];
+            reportModel.date = [NSDate UTCDateFromLocalString:[set stringForColumn:@"date"]];
+            reportModel.deviceName = [set stringForColumn:@"deviceName"];
+            [reportArr addObject:reportModel];
+        }
+        [set close];
+    }];
+    return reportArr;
+}
+
+
 - (NSMutableArray *)queryAllReport:(DeviceModel *)device{//device为nil就查全部
     NSMutableArray *reportArr = [[NSMutableArray alloc] init];
     [_queueDB inDatabase:^(FMDatabase * _Nonnull db) {
         FMResultSet *set;
         if (device == nil) {
-            set = [db executeQuery:@"SELECT * FROM curveInfo WHERE isShare = 0"];
+            return ;
         }else{
             set = [db executeQuery:@"SELECT * FROM curveInfo WHERE sn = ? AND isShare = 0",device.sn];
         }
@@ -195,6 +213,23 @@ static DataBase *_dataBase = nil;
     return reportModel;
 }
 
+- (NSMutableArray *)queryBeanRelaReport:(NSNumber *)beanId{//device为nil就查全部
+    NSMutableArray *reportArr = [[NSMutableArray alloc] init];
+    [_queueDB inDatabase:^(FMDatabase * _Nonnull db) {
+        FMResultSet *set = [db executeQuery:@"SELECT curve.curveId,curve.curveName,curve.date,curve.deviceName FROM bean_curve AS bc,curveInfo AS curve WHERE bc.beanId = ? AND bc.curveId = curve.curveId",beanId];
+        while ([set next]) {
+            ReportModel *reportModel = [[ReportModel alloc] init];
+            reportModel.curveId = [set intForColumn:@"curveId"];
+            reportModel.curveName = [set stringForColumn:@"curveName"];
+            reportModel.date = [NSDate UTCDateFromLocalString:[set stringForColumn:@"date"]];
+            reportModel.deviceName = [set stringForColumn:@"deviceName"];
+            [reportArr addObject:reportModel];
+        }
+        [set close];
+    }];
+    return reportArr;
+}
+
 - (NSArray *)queryReportRelaBean:(NSNumber *)curveId{
     NSMutableArray *beanArray = [[NSMutableArray alloc] init];
     [_queueDB inDatabase:^(FMDatabase * _Nonnull db) {
@@ -218,9 +253,18 @@ static DataBase *_dataBase = nil;
             BeanModel *beanModel = [[BeanModel alloc] init];
             beanModel.beanId = [set intForColumn:@"beanId"];
             beanModel.name = [set stringForColumn:@"beanName"];
+            beanModel.nation = [set stringForColumn:@"nation"];
+            beanModel.area = [set stringForColumn:@"area"];
+            beanModel.altitude = [set doubleForColumn:@"altitude"];
+            beanModel.manor = [set stringForColumn:@"manor"];
+            beanModel.beanSpecies = [set stringForColumn:@"beanSpecies"];
             beanModel.grade = [set stringForColumn:@"grade"];
             beanModel.process = [set stringForColumn:@"process"];
+            beanModel.water = [set doubleForColumn:@"water"];
+            beanModel.supplier = [set stringForColumn:@"supplier"];
+            beanModel.price = [set doubleForColumn:@"price"];
             beanModel.stock = [set doubleForColumn:@"stock"];
+            beanModel.time = [NSDate YMDDateFromLocalString:[set stringForColumn:@"time"]];
             [beanArray addObject:beanModel];
         }
         [set close];
@@ -233,6 +277,7 @@ static DataBase *_dataBase = nil;
     [_queueDB inDatabase:^(FMDatabase * _Nonnull db) {
         FMResultSet *set = [db executeQuery:@"SELECT * FROM beanInfo WHERE beanId = ?",beanId];
         while ([set next]) {
+            beanModel.beanId = [beanId integerValue];
             beanModel.name = [set stringForColumn:@"beanName"];
             beanModel.nation = [set stringForColumn:@"nation"];
             beanModel.area = [set stringForColumn:@"area"];
@@ -245,7 +290,7 @@ static DataBase *_dataBase = nil;
             beanModel.supplier = [set stringForColumn:@"supplier"];
             beanModel.price = [set doubleForColumn:@"price"];
             beanModel.stock = [set doubleForColumn:@"stock"];
-            beanModel.time = [NSDate UTCDateFromLocalString:[set stringForColumn:@"time"]];
+            beanModel.time = [NSDate YMDDateFromLocalString:[set stringForColumn:@"time"]];
         }
         [set close];
     }];
@@ -285,6 +330,17 @@ static DataBase *_dataBase = nil;
     return deviceArray;
 }
 
+- (BOOL)queryDevice:(NSString *)sn{
+    static BOOL isContain = NO;
+    [_queueDB inDatabase:^(FMDatabase * _Nonnull db) {
+        FMResultSet *set = [db executeQuery:@"SELECT * FROM device WHERE sn = ?",sn];
+        while ([set next]) {
+            isContain = YES;
+        }
+    }];
+    return isContain;
+}
+
 #pragma mark - 增
 - (void)insertBaseEvent{
     NSArray *eventTextArray = @[@"开始烘焙",@"脱水结束",@"一爆开始",@"一爆结束",@"二爆开始",@"二爆结束",@"烘焙结束"];
@@ -313,7 +369,7 @@ static DataBase *_dataBase = nil;
 - (BOOL)insertNewBean:(BeanModel *)bean{
     static BOOL result = YES;
     [_queueDB inDatabase:^(FMDatabase * _Nonnull db) {
-        result = [db executeUpdate:@"INSERT INTO beanInfo (beanName,nation,area,manor,altitude,beanSpecies,grade,process,water,supplier,price,stock,time) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)",bean.name,bean.nation,bean.area,bean.manor,[NSNumber numberWithFloat:bean.altitude],bean.beanSpecies,bean.grade,bean.process,[NSNumber numberWithFloat:bean.water],bean.supplier,[NSNumber numberWithFloat:bean.price],[NSNumber numberWithFloat:bean.stock],[NSDate YMDStringFromDate:bean.time]];
+        result = [db executeUpdate:@"REPLACE INTO beanInfo (beanId,beanName,nation,area,manor,altitude,beanSpecies,grade,process,water,supplier,price,stock,time) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)",[NSNumber numberWithInteger:bean.beanId],bean.name,bean.nation,bean.area,bean.manor,[NSNumber numberWithFloat:bean.altitude],bean.beanSpecies,bean.grade,bean.process,[NSNumber numberWithFloat:bean.water],bean.supplier,[NSNumber numberWithFloat:bean.price],[NSNumber numberWithFloat:bean.stock],[NSDate YMDStringFromDate:bean.time]];
         NSLog(@"%@",bean.name);
         if (!result) {
             NSLog(@"添加咖啡豆失败");

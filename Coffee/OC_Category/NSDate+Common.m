@@ -148,6 +148,16 @@
     
 }
 
+//将当前年月日时间字符串转为UTCDate
++ (NSDate *)YMDDateFromLocalString:(NSString *)localString{
+    
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    [dateFormatter setDateFormat:@"yyyy-MM-dd"];
+    NSDate *date = [dateFormatter dateFromString:localString];
+    return date;
+}
+
+
 +(NSString *)YMDHMStringFromUTCDate:(NSDate *)UTCDate{
     
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc]init];

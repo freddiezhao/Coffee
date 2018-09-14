@@ -9,11 +9,13 @@
 #import "BakeCurveViewController.h"
 #import "AppDelegate.h"
 #import <Charts/Charts-Swift.h>
+#import "Coffee-Swift.h"
 #import "FMDB.h"
 #import "BeanModel.h"
 #import "EventModel.h"
 #import "LeftFuncController.h"
 #import "RightFuncController.h"
+
 
 #define buttonHeight 30
 
@@ -84,6 +86,7 @@
 - (void)dealloc{
     [_myNet removeObserver:self forKeyPath:@"tempData"];
     [_myNet removeObserver:self forKeyPath:@"timerValue"];
+    [_myNet removeObserver:self forKeyPath:@"developTime"];
 }
 
 #pragma mark - lazy load
@@ -138,7 +141,6 @@
         [_chartView setScaleEnabled:YES];//缩放
         [_chartView setScaleYEnabled:NO];
         
-        
         _chartView.drawGridBackgroundEnabled = NO;//网格线
         _chartView.pinchZoomEnabled = YES;
         //_chartView.doubleTapToZoomEnabled = NO;//取消双击缩放
@@ -172,8 +174,8 @@
         ChartYAxis *leftAxis = _chartView.leftAxis;
         leftAxis.labelTextColor = [UIColor colorWithRed:184/255.0 green:190/255.0 blue:204/255.0 alpha:1];
         leftAxis.labelFont = [UIFont fontWithName:@"Avenir-Light" size:12];
-        leftAxis.axisMaximum = 40 - 0.5;
-        leftAxisMax = 40 - 0.5;
+        leftAxis.axisMaximum = 300 - 0.5;
+        leftAxisMax = 300 - 0.5;
         leftAxis.axisMinimum = 0.0;
         leftAxis.spaceTop = 30.f;
         leftAxis.drawGridLinesEnabled = YES;
@@ -186,10 +188,20 @@
         ChartYAxis *rightAxis = _chartView.rightAxis;
         rightAxis.labelFont = [UIFont fontWithName:@"Avenir-Light" size:12];
         rightAxis.labelTextColor = [UIColor colorWithRed:184/255.0 green:190/255.0 blue:204/255.0 alpha:1];
-        rightAxis.axisMaximum = 10.0;
+        rightAxis.axisMaximum = 0.5;
         rightAxis.axisMinimum = 0;
         rightAxis.drawGridLinesEnabled = NO;
         rightAxis.granularityEnabled = NO;
+        
+        // 显示气泡效果
+        BalloonMarker *marker = [[BalloonMarker alloc]
+                                 initWithColor: [UIColor colorWithRed:255/255.0 green:255/255.0 blue:255/255.0 alpha:0.75]
+                                 font: [UIFont systemFontOfSize:12.0]
+                                 textColor: [UIColor colorWithHexString:@"333333"]
+                                 insets: UIEdgeInsetsMake(8.0, 8.0, 20.0, 8.0)];
+        //marker.img = [UIImage imageNamed:@"marker"];
+        marker.chartView = self.chartView;
+        self.chartView.marker = marker;
         
         [_chartView animateWithXAxisDuration:1.0];
         
@@ -534,31 +546,36 @@
     UIButton *beanBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     beanBtn.frame = CGRectMake(272/HScale,0,75/HScale,60/WScale);
     [beanBtn setBackgroundColor:[UIColor clearColor]];
-    [beanBtn addTarget:self action:@selector(beanCurveAction) forControlEvents:UIControlEventTouchUpInside];
+    [beanBtn addTarget:self action:@selector(beanCurveAction:) forControlEvents:UIControlEventTouchUpInside];
+    beanBtn.tag = unselect;
     [self.view addSubview:beanBtn];
     
     UIButton *inBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     inBtn.frame = CGRectMake(347/HScale,0,75/HScale,60/WScale);
     [inBtn setBackgroundColor:[UIColor clearColor]];
-    [inBtn addTarget:self action:@selector(inCurveAction) forControlEvents:UIControlEventTouchUpInside];
+    [inBtn addTarget:self action:@selector(inCurveAction:) forControlEvents:UIControlEventTouchUpInside];
+    inBtn.tag = unselect;
     [self.view addSubview:inBtn];
     
     UIButton *outBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     outBtn.frame = CGRectMake(422/HScale,0,75/HScale,60/WScale);
     [outBtn setBackgroundColor:[UIColor clearColor]];
-    [outBtn addTarget:self action:@selector(outCurveAction) forControlEvents:UIControlEventTouchUpInside];
+    [outBtn addTarget:self action:@selector(outCurveAction:) forControlEvents:UIControlEventTouchUpInside];
+    outBtn.tag = unselect;
     [self.view addSubview:outBtn];
     
     UIButton *environBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     environBtn.frame = CGRectMake(497/HScale,0,75/HScale,60/WScale);
     [environBtn setBackgroundColor:[UIColor clearColor]];
-    [environBtn addTarget:self action:@selector(environCurveAction) forControlEvents:UIControlEventTouchUpInside];
+    [environBtn addTarget:self action:@selector(environCurveAction:) forControlEvents:UIControlEventTouchUpInside];
+    environBtn.tag = unselect;
     [self.view addSubview:environBtn];
     
     UIButton *upTempBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     upTempBtn.frame = CGRectMake(572/HScale,0,75/HScale,60/WScale);
     [upTempBtn setBackgroundColor:[UIColor clearColor]];
-    [upTempBtn addTarget:self action:@selector(upTempCurveAction) forControlEvents:UIControlEventTouchUpInside];
+    [upTempBtn addTarget:self action:@selector(upTempCurveAction:) forControlEvents:UIControlEventTouchUpInside];
+    upTempBtn.tag = unselect;
     [self.view addSubview:upTempBtn];
 }
 
@@ -595,23 +612,55 @@
     [self presentViewController:rfVC animated:YES completion:nil];
 }
 
-- (void)beanCurveAction{
-    NSLog(@"1");
+- (void)beanCurveAction:(UIButton *)sender{
+    LineChartDataSet *set3 = (LineChartDataSet *)_chartView.data.dataSets[2];
+    if (sender.tag == unselect) {
+        set3.visible = NO;
+        sender.tag = select;
+    }else if(sender.tag == select){
+        set3.visible = YES;
+        sender.tag = unselect;
+    }
+    [self setDataValue:nil];
 }
 
-- (void)inCurveAction{
-    NSLog(@"2");
+- (void)inCurveAction:(UIButton *)sender{
+    LineChartDataSet *set2 = (LineChartDataSet *)_chartView.data.dataSets[1];
+    if (sender.tag == unselect) {
+        set2.visible = NO;
+        sender.tag = select;
+    }else{
+        set2.visible = YES;
+        sender.tag = unselect;
+    }
+    [self setDataValue:nil];
 }
 
-- (void)outCurveAction{
-    NSLog(@"3");
+- (void)outCurveAction:(UIButton *)sender{
+    LineChartDataSet *set1 = (LineChartDataSet *)_chartView.data.dataSets[0];
+    if (sender.tag == unselect) {
+        set1.visible = NO;
+        sender.tag = select;
+    }else{
+        set1.visible = YES;
+        sender.tag = unselect;
+    }
+    [self setDataValue:nil];
 }
 
-- (void)environCurveAction{
-    NSLog(@"4");
+- (void)environCurveAction:(UIButton *)sender{
+    LineChartDataSet *set4 = (LineChartDataSet *)_chartView.data.dataSets[3];
+    if (sender.tag == unselect) {
+        set4.visible = NO;
+        sender.tag = select;
+    }else{
+        set4.visible = YES;
+        sender.tag = unselect;
+    }
+    [self setDataValue:nil];
 }
 
-- (void)upTempCurveAction{
+- (void)upTempCurveAction:(UIButton *)sender{
     NSLog(@"5");
 }
 
@@ -621,9 +670,10 @@
 
 - (void)setDataValue:(NSArray *)dataArray
 {
-//    NSDictionary *tempDic = [NSObject readLocalFileWithName:@"数据"];
-//    NSArray *beanTemp = tempDic[@"temp2"];
-//    NSMutableArray *yVals = [NSMutableArray array];
+    NSDictionary *tempDic = [NSObject readLocalFileWithName:@"数据"];
+    NSArray *beanTemp = tempDic[@"temp2"];
+    NSMutableArray *yVals = [NSMutableArray array];
+    yVals = [NSObject evaluateAcceleration:[beanTemp mutableCopy]];
 //    for (int i = 0, j = 0; i < [beanTemp count]; i++) {
 //        [yVals addObject:[[ChartDataEntry alloc] initWithX:i y:[beanTemp[i] doubleValue]]];
 //
@@ -647,16 +697,16 @@
         set2 = (LineChartDataSet *)_chartView.data.dataSets[1];
         set2.values = _myNet.yVals_In;
         
-        set3 = (LineChartDataSet *)_chartView.data.dataSets[1];
+        set3 = (LineChartDataSet *)_chartView.data.dataSets[2];
         set3.values = _myNet.yVals_Bean;
         
         set4 = (LineChartDataSet *)_chartView.data.dataSets[3];
         set4.values = _myNet.yVals_Environment;
         
-//        //实时调整y轴最大值
-//        if (tempOut > leftAxisMax) {
-//            _chartView.leftAxis.axisMaximum = tempOut + 30;
-//        }
+        //实时调整y轴最大值
+        if ([_myNet.BeanArr[_myNet.BeanArr.count-1] floatValue] > leftAxisMax) {
+            _chartView.leftAxis.axisMaximum = [_myNet.BeanArr[_myNet.BeanArr.count-1] floatValue] + 30;
+        }
         
         if (_myNet.yVals_Out.count > 150) {
             _chartView.xAxis.axisRange = 15;
@@ -668,18 +718,19 @@
     }
     else
     {
-//        test = [[LineChartDataSet alloc] initWithValues:yVals label:LocalString(@"test")];
-//        test.axisDependency = AxisDependencyLeft;
-//        [test setColor:[UIColor colorWithRed:51/255.f green:181/255.f blue:229/255.f alpha:1.f]];
-//        [test setCircleColor:UIColor.whiteColor];
-//        test.lineWidth = 2.0;
-//        test.circleRadius = 0.0;
-//        test.fillAlpha = 65/255.0;
-//        test.fillColor = [UIColor colorWithRed:51/255.f green:181/255.f blue:229/255.f alpha:1.f];
-//        test.highlightColor = [UIColor colorWithRed:244/255.f green:117/255.f blue:117/255.f alpha:1.f];
-//        test.drawCircleHoleEnabled = NO;
-//        test.drawValuesEnabled = NO;//是否在拐点处显示数据
-//        test.highlightEnabled = NO;//选中拐点,是否开启高亮效果(显示十字线)
+        test = [[LineChartDataSet alloc] initWithValues:yVals label:LocalString(@"test")];
+        test.axisDependency = AxisDependencyRight;
+        [test setColor:[UIColor colorWithRed:51/255.f green:181/255.f blue:229/255.f alpha:1.f]];
+        [test setCircleColor:UIColor.whiteColor];
+        test.lineWidth = 2.0;
+        test.circleRadius = 0.0;
+        test.fillAlpha = 65/255.0;
+        //test.fillColor = [UIColor colorWithRed:51/255.f green:181/255.f blue:229/255.f alpha:1.f];
+        //test.highlightColor = [UIColor colorWithRed:244/255.f green:117/255.f blue:117/255.f alpha:1.f];
+        test.drawCircleHoleEnabled = NO;
+        test.drawValuesEnabled = NO;//是否在拐点处显示数据
+        test.highlightEnabled = NO;//选中拐点,是否开启高亮效果(显示十字线)
+        //[test setColor:[UIColor clearColor]];//用于隐藏曲线
         
         set1 = [[LineChartDataSet alloc] initWithValues:_myNet.yVals_Out label:LocalString(@"进风温")];
         set1.axisDependency = AxisDependencyLeft;
@@ -695,6 +746,7 @@
         //set1.cubicIntensity = 5;//曲线弧度
         set1.highlightEnabled = NO;//选中拐点,是否开启高亮效果(显示十字线)
         //set1.mode = LineChartModeCubicBezier;
+        
         
         set2 = [[LineChartDataSet alloc] initWithValues:_myNet.yVals_In label:LocalString(@"出风温")];
         set2.axisDependency = AxisDependencyLeft;
@@ -712,15 +764,16 @@
         set3 = [[LineChartDataSet alloc] initWithValues:_myNet.yVals_Bean label:LocalString(@"豆温")];
         set3.axisDependency = AxisDependencyLeft;
         [set3 setColor:[UIColor colorWithRed:71/255.0 green:120/255.0 blue:204/255.0 alpha:1]];
-        [set3 setCircleColor:UIColor.whiteColor];
+        [set3 setCircleColor:[UIColor colorWithRed:71/255.0 green:120/255.0 blue:204/255.0 alpha:1]];
         set3.lineWidth = 2.0;
-        set3.circleRadius = 0.0;
+        set3.circleRadius = 2.0;
         set3.fillAlpha = 65/255.0;
         set3.fillColor = [UIColor colorWithRed:71/255.0 green:120/255.0 blue:204/255.0 alpha:1];
         set3.drawCircleHoleEnabled = NO;
         set3.drawValuesEnabled = NO;//是否在拐点处显示数据
         //set1.cubicIntensity = 1;//曲线弧度
-        set3.highlightEnabled = NO;//选中拐点,是否开启高亮效果(显示十字线)
+        set3.highlightEnabled = YES;//选中拐点,是否开启高亮效果(显示十字线)
+        
         
         set4 = [[LineChartDataSet alloc] initWithValues:_myNet.yVals_Environment label:LocalString(@"环境温")];
         set4.axisDependency = AxisDependencyLeft;
