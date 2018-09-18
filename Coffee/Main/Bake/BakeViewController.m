@@ -11,6 +11,7 @@
 #import "BakeCurveViewController.h"
 #import "BeanModel.h"
 #import "AddBeanTableController.h"
+#import "DeviceModel.h"
 
 #define buttonHeight 44
 
@@ -115,6 +116,9 @@
     [super viewWillAppear:animated];
     [self.rdv_tabBarController setTabBarHidden:NO animated:YES];
     
+    if (_myNet.connectedDevice) {
+        self.navigationItem.title = _myNet.connectedDevice.deviceName;
+    }
     if (_beanNameView) {
         _beanNameView = [self beanNameView];
     }

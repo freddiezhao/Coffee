@@ -531,7 +531,7 @@ static float HEIGHT_HEADER = 36.f;
     if (!_myBean.time) {
         _myBean.time = [NSDate date];
     }
-    BOOL result = [[DataBase shareDataBase] insertNewBean:_myBean];
+    BOOL result = [[DataBase shareDataBase] updateBean:_myBean];
     if (result) {
         [self dismissViewControllerAnimated:YES completion:nil];
         [NSObject showHudTipStr:LocalString(@"编辑咖啡豆成功")];

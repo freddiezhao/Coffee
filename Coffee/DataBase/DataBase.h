@@ -13,6 +13,7 @@
 @class ReportModel;
 @class BeanModel;
 @class EventModel;
+@class CupModel;
 
 @interface DataBase : NSObject
 ///@brief User Information
@@ -40,9 +41,15 @@
 - (NSArray *)queryEvent:(NSNumber *)curveId;
 - (NSMutableArray *)queryAllDevice;
 - (BOOL)queryDevice:(NSString *)sn;
+- (NSMutableArray *)queryAllCup;
+
 
 - (BOOL)insertNewBean:(BeanModel *)bean;
 - (BOOL)deleteqBean:(BeanModel *)bean;
 - (BOOL)deleteqReport:(ReportModel *)report;
 - (BOOL)updateReportWithReport:(ReportModel *)report WithBean:(NSMutableArray *)beanArr;
+- (BOOL)updateBean:(BeanModel *)bean;
+- (BOOL)insertNewCup:(CupModel *)cup;
+- (BOOL)updateCup:(CupModel *)cup;
+- (BOOL)deleteqCup:(CupModel *)cup;
 @end

@@ -20,25 +20,11 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    self.view.layer.backgroundColor = [UIColor colorWithRed:246/255.0 green:246/255.0 blue:246/255.0 alpha:1].CGColor;
+
+    [self setNavItem];
     _userNameTF = [self userNameTF];
     
-    _rightButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    _rightButton.frame = CGRectMake(0, 0, 30, 30);
-    [_rightButton setTitle:LocalString(@"完成") forState:UIControlStateNormal];
-    [_rightButton setTitleColor:[UIColor greenColor] forState:UIControlStateNormal];
-    [_rightButton addTarget:self action:@selector(Done) forControlEvents:UIControlEventTouchUpInside];
-    UIBarButtonItem *rightBarButton = [[UIBarButtonItem alloc] initWithCustomView:_rightButton];
-    _rightButton.enabled = NO;
-    _rightButton.alpha = 0.4;
-    self.navigationItem.rightBarButtonItem = rightBarButton;
-    
-    UIButton *leftButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    leftButton.frame = CGRectMake(0, 0, 30, 30);
-    [leftButton setTitle:LocalString(@"取消") forState:UIControlStateNormal];
-    [leftButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    [leftButton addTarget:self action:@selector(Cancel) forControlEvents:UIControlEventTouchUpInside];
-    UIBarButtonItem *leftBarButton = [[UIBarButtonItem alloc] initWithCustomView:leftButton];
-    self.navigationItem.leftBarButtonItem = leftBarButton;
 }
 
 - (void)viewWillAppear:(BOOL)animated{
@@ -52,6 +38,20 @@
 }
 
 #pragma mark - Lazyload
+- (void)setNavItem{
+    self.navigationItem.title = LocalString(@"修改昵称");
+    
+    UIBarButtonItem *rightBar = [[UIBarButtonItem alloc] initWithTitle:LocalString(@"完成") style:UIBarButtonItemStylePlain target:self action:@selector(Done)];
+    [rightBar setTintColor:[UIColor colorWithHexString:@"4778CC"]];
+    [rightBar setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:[UIFont boldSystemFontOfSize:16.f], NSFontAttributeName,nil] forState:(UIControlStateNormal)];
+    self.navigationItem.rightBarButtonItem = rightBar;
+
+    UIBarButtonItem *leftBar = [[UIBarButtonItem alloc] initWithTitle:LocalString(@"取消") style:UIBarButtonItemStylePlain target:self action:@selector(Cancel)];
+    [leftBar setTintColor:[UIColor colorWithHexString:@"222222"]];
+    [leftBar setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:[UIFont boldSystemFontOfSize:16.f], NSFontAttributeName,nil] forState:(UIControlStateNormal)];
+    self.navigationItem.leftBarButtonItem = leftBar;
+}
+
 - (UITextField *)userNameTF{
     if (!_userNameTF) {
         _userNameTF = [[UITextField alloc] init];
@@ -76,6 +76,7 @@
 
 #pragma mark - Actions
 - (void)Done{
+    [DataBase shareDataBase].userName = _userNameTF.text;
     [self dismissViewControllerAnimated:YES completion:nil];
     [self resignFirstResponder];
 }

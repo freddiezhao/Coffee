@@ -181,6 +181,7 @@
             }
         }
         [net.eventArray addObject:event];
+        
     };
     alert.modalPresentationStyle = UIModalPresentationOverCurrentContext;
     [self presentViewController:alert animated:NO completion:^{
@@ -377,7 +378,6 @@
             }
         }
         [net.eventArray addObject:event];
-        [net showBakeOverAlertAction];
     };
     alert.modalPresentationStyle = UIModalPresentationOverCurrentContext;
     [self presentViewController:alert animated:NO completion:^{

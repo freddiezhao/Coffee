@@ -57,6 +57,12 @@
 #define select 100001
 #define unselect 100000
 
+typedef enum : NSUInteger {
+    sortUnselect = 1000,
+    sortSelect,
+    sortUp,
+    sortDown,
+} nameStatus;
 
 #endif /* Coffee_Prefix_pch */
 

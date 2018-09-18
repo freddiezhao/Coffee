@@ -45,7 +45,6 @@ NSString *const CellIdentifier_bean = @"CellID_bean";
     BOOL isConnect;
     int resendTime;
 }
-static int resendTimes = 3;
 static float HEIGHT_CELL = 70.f;
 static float HEIGHT_HEADER = 36.f;
 
@@ -142,7 +141,7 @@ static float HEIGHT_HEADER = 36.f;
             tableView.dataSource = self;
             tableView.delegate = self;
             tableView.hidden = YES;
-            tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+            tableView.separatorColor = [UIColor colorWithRed:0/255.0 green:0/255.0 blue:0/255.0 alpha:0.08];
             [tableView registerClass:[beanCell class] forCellReuseIdentifier:CellIdentifier_bean];
             [self.view addSubview:tableView];
             tableView.estimatedRowHeight = 0;

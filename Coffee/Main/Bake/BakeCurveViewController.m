@@ -70,17 +70,18 @@
     [_myNet addObserver:self forKeyPath:@"tempData" options:NSKeyValueObservingOptionNew context:nil];
     [_myNet addObserver:self forKeyPath:@"timerValue" options:NSKeyValueObservingOptionNew context:nil];
     [_myNet addObserver:self forKeyPath:@"developTime" options:NSKeyValueObservingOptionNew context:nil];
-    
-    [self setDataValue:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(clearCurve) name:@"clearCurve" object:nil];
 }
 
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
+    
 }
 
 - (void)viewWillDisappear:(BOOL)animated{
     [super viewWillDisappear:animated];
     [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"clearCurve" object:nil];
 }
 
 - (void)dealloc{
@@ -196,15 +197,15 @@
         // 显示气泡效果
         BalloonMarker *marker = [[BalloonMarker alloc]
                                  initWithColor: [UIColor colorWithRed:255/255.0 green:255/255.0 blue:255/255.0 alpha:0.75]
-                                 font: [UIFont systemFontOfSize:12.0]
+                                 font: [UIFont systemFontOfSize:15.0]
                                  textColor: [UIColor colorWithHexString:@"333333"]
-                                 insets: UIEdgeInsetsMake(8.0, 8.0, 20.0, 8.0)];
-        //marker.img = [UIImage imageNamed:@"marker"];
+                                 insets: UIEdgeInsetsMake(8.0, 8.0, 20.0, 8.0)
+                                 borderColor:[UIColor colorWithRed:213/255.0 green:218/255.0 blue:224/255.0 alpha:0.5]];
+        marker.minimumSize = CGSizeMake(0, 0);
         marker.chartView = self.chartView;
         self.chartView.marker = marker;
-        
+        [self.chartView setDrawMarkers:YES];
         [_chartView animateWithXAxisDuration:1.0];
-        
     }
     
     return _chartView;
@@ -593,6 +594,13 @@
 }
 
 #pragma mark - actions
+- (void)clearCurve{
+    if (_chartView) {
+        [_chartView clear];
+        [_chartView clearValues];
+    }
+}
+
 - (void)dismissView{
     [self dismissViewControllerAnimated:YES completion:nil];
 }
@@ -613,6 +621,9 @@
 }
 
 - (void)beanCurveAction:(UIButton *)sender{
+    if (_chartView.data.dataSets.count < 3) {
+        return;
+    }
     LineChartDataSet *set3 = (LineChartDataSet *)_chartView.data.dataSets[2];
     if (sender.tag == unselect) {
         set3.visible = NO;
@@ -625,6 +636,9 @@
 }
 
 - (void)inCurveAction:(UIButton *)sender{
+    if (_chartView.data.dataSets.count < 2) {
+        return;
+    }
     LineChartDataSet *set2 = (LineChartDataSet *)_chartView.data.dataSets[1];
     if (sender.tag == unselect) {
         set2.visible = NO;
@@ -637,6 +651,9 @@
 }
 
 - (void)outCurveAction:(UIButton *)sender{
+    if (_chartView.data.dataSets.count < 1) {
+        return;
+    }
     LineChartDataSet *set1 = (LineChartDataSet *)_chartView.data.dataSets[0];
     if (sender.tag == unselect) {
         set1.visible = NO;
@@ -649,6 +666,9 @@
 }
 
 - (void)environCurveAction:(UIButton *)sender{
+    if (_chartView.data.dataSets.count < 4) {
+        return;
+    }
     LineChartDataSet *set4 = (LineChartDataSet *)_chartView.data.dataSets[3];
     if (sender.tag == unselect) {
         set4.visible = NO;
@@ -765,12 +785,14 @@
         set3.axisDependency = AxisDependencyLeft;
         [set3 setColor:[UIColor colorWithRed:71/255.0 green:120/255.0 blue:204/255.0 alpha:1]];
         [set3 setCircleColor:[UIColor colorWithRed:71/255.0 green:120/255.0 blue:204/255.0 alpha:1]];
+        [set3 setCircleHoleColor:[UIColor whiteColor]];
         set3.lineWidth = 2.0;
-        set3.circleRadius = 2.0;
+        set3.circleRadius = 6.0;
+        set3.circleHoleRadius = 5.5;
         set3.fillAlpha = 65/255.0;
         set3.fillColor = [UIColor colorWithRed:71/255.0 green:120/255.0 blue:204/255.0 alpha:1];
-        set3.drawCircleHoleEnabled = NO;
-        set3.drawValuesEnabled = NO;//是否在拐点处显示数据
+        set3.drawCircleHoleEnabled = YES;
+        set3.drawValuesEnabled = YES;//是否在拐点处显示数据
         //set1.cubicIntensity = 1;//曲线弧度
         set3.highlightEnabled = YES;//选中拐点,是否开启高亮效果(显示十字线)
         

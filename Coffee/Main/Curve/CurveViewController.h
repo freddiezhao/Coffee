@@ -8,6 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface CurveViewController : BaseViewController
+@interface CurveViewController : UIViewController
 
 @end

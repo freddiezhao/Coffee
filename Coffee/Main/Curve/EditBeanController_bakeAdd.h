@@ -7,7 +7,12 @@
 //
 
 #import <UIKit/UIKit.h>
+@class BeanModel;
 
-@interface BeanViewController_bakeAdd : UIViewController
+typedef void(^VCBlock)(BeanModel *bean);
+
+@interface EditBeanController_bakeAdd : UIViewController
+
+@property (nonatomic) VCBlock VCBlock;
 
 @end

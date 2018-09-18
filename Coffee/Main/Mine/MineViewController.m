@@ -9,50 +9,104 @@
 #import "MineViewController.h"
 #import "AccountViewController.h"
 #import "GeneralViewController.h"
+#import "MineNormalCell.h"
 
 NSString *const CellIdentifier_Mine = @"CellID_Mine";
 
 @interface MineViewController ()
+
+@property (nonatomic, strong) UIView *headerView;
+@property (nonatomic, strong) UIButton *headButton;
+@property (nonatomic, strong) UILabel *nickLabel;
 
 @property (nonatomic, strong) UITableView *mineTableView;
 
 @end
 
 @implementation MineViewController
+static float HEIGHT_CELL = 51.f;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    self.view.layer.backgroundColor = [UIColor colorWithRed:246/255.0 green:246/255.0 blue:246/255.0 alpha:1].CGColor;
+    
+    _headerView = [self headerView];
     _mineTableView = [self mineTableView];
 }
 
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
     [self.rdv_tabBarController setTabBarHidden:NO animated:YES];
+    self.navigationController.navigationBar.translucent = YES;
+    [self.navigationController.navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
+    [self.navigationController.navigationBar setShadowImage:[UIImage new]];
+
+}
+
+-(void)viewWillDisappear:(BOOL)animated{
+    [super viewWillDisappear:animated];
+    self.navigationController.navigationBar.translucent = NO;
+    [self.navigationController.navigationBar setBackgroundImage:nil forBarMetrics:UIBarMetricsDefault];
+    //[self.navigationController.navigationBar setShadowImage:nil];
 }
 
 #pragma mark - Lazyload
+-(UIView *)headerView{
+    if (!_headerView) {
+        _headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, ScreenWidth, 210/HScale)];
+        UIColor *bgColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"img_mine_bg"]];
+        [_headerView setBackgroundColor:bgColor];
+        [self.view addSubview:_headerView];
+        
+        UIButton *scanBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        [scanBtn setImage:[UIImage imageNamed:@"ic_nav_scan"] forState:UIControlStateNormal];
+        [scanBtn addTarget:self action:@selector(scanAction) forControlEvents:UIControlEventTouchUpInside];
+        [_headerView addSubview:scanBtn];
+        [scanBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.size.mas_equalTo(CGSizeMake(22/WScale, 22/WScale));
+            make.top.equalTo(self.headerView.mas_top).offset((15+20)/HScale);
+            make.right.equalTo(self.headerView.mas_right).offset(-15/WScale);
+        }];
+        
+        _headButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        [_headButton setImage:[UIImage imageNamed:@"ic_default_headportrait"] forState:UIControlStateNormal];
+        [_headButton addTarget:self action:@selector(accountSetAction) forControlEvents:UIControlEventTouchUpInside];
+        [_headerView addSubview:_headButton];
+        [_headButton mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.size.mas_equalTo(CGSizeMake(70/WScale, 70/WScale));
+            make.centerX.equalTo(self.headerView.mas_centerX);
+            make.top.equalTo(self.headerView.mas_top).offset(64/HScale);
+        }];
+        
+        _nickLabel = [[UILabel alloc] init];
+        _nickLabel.text = @"红鲤鱼与绿鲤鱼";
+        _nickLabel.font = [UIFont systemFontOfSize:17.f];
+        _nickLabel.textColor = [UIColor colorWithRed:255/255.0 green:255/255.0 blue:255/255.0 alpha:1];
+        _nickLabel.textAlignment = NSTextAlignmentCenter;
+        _nickLabel.adjustsFontSizeToFitWidth = YES;
+        [_headerView addSubview:_nickLabel];
+        [_nickLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.size.mas_equalTo(CGSizeMake(300/WScale, 24/HScale));
+            make.centerX.equalTo(self.headerView.mas_centerX);
+            make.top.equalTo(self.headButton.mas_bottom).offset(12/HScale);
+        }];
+    }
+    return _headerView;
+}
+
 - (UITableView *)mineTableView{
     if (!_mineTableView) {
         _mineTableView = ({
-            UITableView *tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, ScreenWidth, ScreenHeight)];
+            UITableView *tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 210/HScale, ScreenWidth, ScreenHeight - (210 + 44)/HScale)];
             tableView.backgroundColor = [UIColor clearColor];
             tableView.dataSource = self;
             tableView.delegate = self;
-            //tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-            [tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:CellIdentifier_Mine];
+            [tableView registerClass:[MineNormalCell class] forCellReuseIdentifier:CellIdentifier_Mine];
+            tableView.separatorColor = [UIColor colorWithRed:0/255.0 green:0/255.0 blue:0/255.0 alpha:0.08];
 
             [self.view addSubview:tableView];
-            //tableView.estimatedRowHeight = 0;
-            //tableView.estimatedSectionHeaderHeight = 0;
-            //tableView.estimatedSectionFooterHeight = 0;
             
             tableView.scrollEnabled = NO;
-            if ([tableView respondsToSelector:@selector(setSeparatorInset:)]) {
-                [tableView setSeparatorInset:UIEdgeInsetsZero];
-            }
-            if ([tableView respondsToSelector:@selector(setLayoutMargins:)])  {
-                [tableView setLayoutMargins:UIEdgeInsetsZero];
-            }
             tableView;
         });
     }
@@ -61,15 +115,13 @@ NSString *const CellIdentifier_Mine = @"CellID_Mine";
 
 #pragma mark - UITableView Delegate
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView{
-    return 3;
+    return 2;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
-    if (section == 0) {
-        return 1;
-    }else if (section == 1){
+    if (section == 0){
         return 2;
-    }else if (section == 2){
+    }else if (section == 1){
         return 3;
     }else{
         return 0;
@@ -77,37 +129,33 @@ NSString *const CellIdentifier_Mine = @"CellID_Mine";
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_Mine];
+    MineNormalCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_Mine];
     if (cell == nil) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_Mine];
+        cell = [[MineNormalCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_Mine];
     }
     
-    if (indexPath.section == 0) {
-        cell.imageView.image = [UIImage imageNamed:@"ic_bake_bean"];
-        cell.textLabel.text = @"My Name";
-        return cell;
-    }else if (indexPath.section == 1){
+    if (indexPath.section == 0){
         if (indexPath.row == 0) {
-            cell.textLabel.text = LocalString(@"我的设备");
+            cell.normalLabel.text = LocalString(@"我的设备");
             cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
             return cell;
         }else{
-            cell.textLabel.text = LocalString(@"通用设置");
+            cell.normalLabel.text = LocalString(@"通用设置");
             cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
             return cell;
         }
         
-    }else if (indexPath.section == 2){
+    }else if (indexPath.section == 1){
         if (indexPath.row == 0) {
-            cell.textLabel.text = LocalString(@"我要反馈");
+            cell.normalLabel.text = LocalString(@"我要反馈");
             cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
             return cell;
         }else if (indexPath.row == 1){
-            cell.textLabel.text = LocalString(@"检查更新");
+            cell.normalLabel.text = LocalString(@"关于我们");
+            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
             return cell;
         }else{
-            cell.textLabel.text = LocalString(@"关于我们");
-            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+            cell.normalLabel.text = LocalString(@"检查更新");
             return cell;
         }
     }else{
@@ -117,10 +165,7 @@ NSString *const CellIdentifier_Mine = @"CellID_Mine";
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    if (indexPath.section == 0) {
-        AccountViewController *accountVC = [[AccountViewController alloc] init];
-        [self.navigationController pushViewController:accountVC animated:YES];
-    }else if (indexPath.section == 1){
+    if (indexPath.section == 0){
         if (indexPath.row == 1) {
             GeneralViewController *generalVC = [[GeneralViewController alloc] init];
             [self.navigationController pushViewController:generalVC animated:YES];
@@ -129,11 +174,7 @@ NSString *const CellIdentifier_Mine = @"CellID_Mine";
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
-    if (indexPath.section == 0) {
-        return 90.f;
-    }else{
-        return cellHeight;
-    }
+    return HEIGHT_CELL;
 }
 
 //section头部间距
@@ -152,7 +193,7 @@ NSString *const CellIdentifier_Mine = @"CellID_Mine";
 //section底部间距
 - (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
 {
-    return 50;
+    return 15;
 }
 //section底部视图
 - (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section
@@ -160,6 +201,16 @@ NSString *const CellIdentifier_Mine = @"CellID_Mine";
     UIView *view=[[UIView alloc] initWithFrame:CGRectMake(0, 0, ScreenWidth, 0)];
     view.backgroundColor = [UIColor clearColor];
     return view;
+}
+
+#pragma mark - Actions
+- (void)accountSetAction{
+    AccountViewController *accountVC = [[AccountViewController alloc] init];
+    [self.navigationController pushViewController:accountVC animated:YES];
+}
+
+- (void)scanAction{
+    
 }
 
 @end

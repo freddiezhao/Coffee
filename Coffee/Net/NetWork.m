@@ -142,6 +142,7 @@ static NSInteger curveId;
     _developTime = 0;
     _developRate = @"";
     _deviceTimerStatus = 0;
+    _eventCount = 0;
     
     _ssid = @"";
     _bssid = @"";
@@ -776,8 +777,12 @@ static NSInteger curveId;
                 //数组保存在这里防止页面不慎退出后所有数据丢失
                 [_yVals_Out addObject:[[ChartDataEntry alloc] initWithX:[_yVals_Out count] y:tempOut]];
                 [_yVals_In addObject:[[ChartDataEntry alloc] initWithX:[_yVals_In count] y:tempIn]];
-                ChartDataEntry *entry =[[ChartDataEntry alloc] initWithX:[_yVals_Bean count] y:tempBean];
-                [entry setTag:@"哈哈"];
+                ChartDataEntry *entry = [[ChartDataEntry alloc] initWithX:[_yVals_Bean count] y:tempBean];
+                if (_eventArray.count > _eventCount) {
+                    EventModel *event = [_eventArray lastObject];
+                    entry.tag = event.eventText;
+                    _eventCount = (int)_eventArray.count;
+                }
                 [_yVals_Bean addObject:entry];
                 [_yVals_Environment addObject:[[ChartDataEntry alloc] initWithX:[_yVals_Environment count] y:tempEnvironment]];
                 
@@ -935,6 +940,7 @@ static NSInteger curveId;
                     [_yVals_Bean removeAllObjects];
                     [_yVals_Environment removeAllObjects];
                     _timerValue = 0;
+                    _eventCount = 0;
                     
                     _deviceTimerStatus = 0;
                     
@@ -1278,6 +1284,7 @@ static NSInteger curveId;
         _developTime = 0;
         _developRate = @"";
         _deviceTimerStatus = 0;
+        _eventCount = 0;
         
         _ssid = @"";
         _bssid = @"";

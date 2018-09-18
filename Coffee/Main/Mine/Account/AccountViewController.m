@@ -8,80 +8,98 @@
 
 #import "AccountViewController.h"
 #import "LlabelRlabelCell.h"
-#import "LlabelRImageCell.h"
 #import "UsernameViewController.h"
 #import "PasswordViewController.h"
 
-#define buttonHeight 44
-
 NSString *const CellIdentifier_Accountll = @"CellID_Accountll";
-NSString *const CellIdentifier_Accountlm = @"CellID_Accountlm";
 
 @interface AccountViewController () <UIImagePickerControllerDelegate,UINavigationControllerDelegate>
 
 @property (nonatomic, strong) UITableView *accountTableView;
-@property (nonatomic, strong) UIImage *headImage;
-@property (nonatomic, strong) NSString *userName;
+@property (nonatomic, strong) UIView *headerView;
+@property (nonatomic, strong) UIButton *headButton;
 @property (nonatomic, strong) DataBase *database;
 
 @end
 
 @implementation AccountViewController
+static float HEIGHT_CELL = 50.f;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.navigationItem.title = LocalString(@"账号设置");
-    
+    [self setNavItem];
+    self.view.layer.backgroundColor = [UIColor colorWithRed:246/255.0 green:246/255.0 blue:246/255.0 alpha:1].CGColor;
+
     _accountTableView = [self accountTableView];
     
-    UIButton *logoutBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    [logoutBtn setTitle:LocalString(@"退出登录") forState:UIControlStateNormal];
-    [logoutBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    [logoutBtn setButtonStyleWithColor:[UIColor clearColor] Width:1.0 cornerRadius:buttonHeight * 0.1];
-    [logoutBtn setBackgroundColor:[UIColor redColor]];
-    [logoutBtn addTarget:self action:@selector(logout) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:logoutBtn];
-    
-    [logoutBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.size.mas_equalTo(CGSizeMake(120, buttonHeight));
-        make.centerX.equalTo(self.view.mas_centerX);
-        make.top.mas_equalTo(_accountTableView.mas_bottom).offset(20);
-    }];
-    
     _database = [DataBase shareDataBase];
-    _headImage = [UIImage imageNamed:@"ic_bake_bean"];
-    _userName = _database.userName;
+    _headerView = [self headerView];
 }
 
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
     [self.rdv_tabBarController setTabBarHidden:YES animated:YES];
+    if (_accountTableView) {
+        [_accountTableView reloadData];
+    }
 }
 
 #pragma mark - Lazyload
+- (void)setNavItem{
+    self.navigationItem.title = LocalString(@"账户管理");
+    
+    UIBarButtonItem *rightBar = [[UIBarButtonItem alloc] initWithTitle:LocalString(@"保存") style:UIBarButtonItemStylePlain target:self action:@selector(saveEdit)];
+    [rightBar setTintColor:[UIColor colorWithHexString:@"4778CC"]];
+    [rightBar setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:[UIFont boldSystemFontOfSize:16.f], NSFontAttributeName,nil] forState:(UIControlStateNormal)];
+    
+    self.navigationItem.rightBarButtonItem = rightBar;
+}
+
+- (UIView *)headerView{
+    if (!_headerView) {
+        _headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, ScreenWidth, 130/HScale)];
+        _headerView.layer.backgroundColor = [UIColor colorWithRed:246/255.0 green:246/255.0 blue:246/255.0 alpha:1].CGColor;
+        [self.view addSubview:_headerView];
+        
+        _headButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        [_headButton setImage:[UIImage imageNamed:@"ic_default_headportrait"] forState:UIControlStateNormal];
+        [_headButton addTarget:self action:@selector(showSheet:) forControlEvents:UIControlEventTouchUpInside];
+        [_headerView addSubview:_headButton];
+        [_headButton mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.size.mas_equalTo(CGSizeMake(70/WScale, 70/WScale));
+            make.centerX.equalTo(self.headerView.mas_centerX);
+            make.top.equalTo(self.headerView.mas_top).offset(30/HScale);
+        }];
+        _headButton.layer.cornerRadius = 35.f/HScale;
+        _headButton.imageView.layer.cornerRadius = _headButton.bounds.size.height/2.0;
+        
+        UIButton *cameraBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        [cameraBtn setImage:[UIImage imageNamed:@"ic_account_pic"] forState:UIControlStateNormal];
+        [_headerView addSubview:cameraBtn];
+        [_headerView bringSubviewToFront:cameraBtn];
+        [cameraBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.size.mas_equalTo(CGSizeMake(24/WScale, 24/WScale));
+            make.right.equalTo(self.headButton.mas_right);
+            make.bottom.equalTo(self.headButton.mas_bottom);
+        }];
+    }
+    return _headerView;
+}
+
 - (UITableView *)accountTableView{
     if (!_accountTableView) {
         _accountTableView = ({
-            UITableView *tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, ScreenWidth, cellHeight * 5)];
+            UITableView *tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 130/HScale, ScreenWidth, ScreenHeight - 64 - 130/HScale)];
             tableView.backgroundColor = [UIColor clearColor];
             tableView.dataSource = self;
             tableView.delegate = self;
-            //tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+            tableView.separatorColor = [UIColor colorWithRed:0/255.0 green:0/255.0 blue:0/255.0 alpha:0.08];
             [tableView registerClass:[LlabelRlabelCell class] forCellReuseIdentifier:CellIdentifier_Accountll];
-            [tableView registerClass:[LlabelRImageCell class] forCellReuseIdentifier:CellIdentifier_Accountlm];
             
             [self.view addSubview:tableView];
-            //tableView.estimatedRowHeight = 0;
-            //tableView.estimatedSectionHeaderHeight = 0;
-            //tableView.estimatedSectionFooterHeight = 0;
             
             tableView.scrollEnabled = NO;
-            if ([tableView respondsToSelector:@selector(setSeparatorInset:)]) {
-                [tableView setSeparatorInset:UIEdgeInsetsZero];
-            }
-            if ([tableView respondsToSelector:@selector(setLayoutMargins:)])  {
-                [tableView setLayoutMargins:UIEdgeInsetsZero];
-            }
+            tableView.tableFooterView = [[UIView alloc] init];
             tableView;
         });
     }
@@ -90,40 +108,44 @@ NSString *const CellIdentifier_Accountlm = @"CellID_Accountlm";
 
 #pragma mark - UITableView Delegate
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView{
-    return 1;
+    return 2;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
-    return 4;
+    switch (section) {
+        case 0:
+            return 1;
+            break;
+            
+        case 1:
+            return 2;
+            break;
+            
+        default:
+            return 0;
+            break;
+    }
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
-
-    if (indexPath.row == 0) {
-        LlabelRImageCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_Accountlm];
-        if (cell == nil) {
-            cell = [[LlabelRImageCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_Accountlm];
-        }
-        cell.leftLabel.text = LocalString(@"头像");
-        cell.rightImage.image = _headImage;
+    LlabelRlabelCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_Accountll];
+    if (cell == nil) {
+        cell = [[LlabelRlabelCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_Accountll];
+    }
+    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+    if (indexPath.section == 0) {
+        cell.leftLabel.text = LocalString(@"昵称");
+        cell.rightLabel.text = _database.userName;
         return cell;
     }else{
-        LlabelRlabelCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_Accountll];
-        if (cell == nil) {
-            cell = [[LlabelRlabelCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_Accountll];
-        }
-        
-        if (indexPath.row == 1){
-            cell.leftLabel.text = LocalString(@"用户名");
-            cell.rightLabel.text = _userName;
+        if (indexPath.row == 0){
+            cell.leftLabel.text = LocalString(@"修改登录密码");
             return cell;
-        }else if (indexPath.row == 2){
-            cell.leftLabel.text = LocalString(@"手机");
+        }else if (indexPath.row == 1){
+            cell.leftLabel.text = LocalString(@"修改手机号码");
             cell.rightLabel.text = LocalString(@"138****7276");
             return cell;
         }else{
-            cell.leftLabel.text = LocalString(@"登陆密码");
-            cell.rightLabel.text = LocalString(@"修改");
             return cell;
         }
     }
@@ -131,35 +153,29 @@ NSString *const CellIdentifier_Accountlm = @"CellID_Accountlm";
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    if (indexPath.row == 0) {
-        UIImagePickerController *ipcVC = [[UIImagePickerController alloc] init];
-        [ipcVC setSourceType:UIImagePickerControllerSourceTypePhotoLibrary];
-        [ipcVC setDelegate:self];
-        [self presentViewController:ipcVC animated:YES completion:^{
-            
-        }];
-    }else if (indexPath.row == 1){
+    if (indexPath.section == 0) {
         UsernameViewController *userNameVC = [[UsernameViewController alloc] init];
         UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:userNameVC];
         [self presentViewController:nav animated:YES completion:nil];
-    }else if (indexPath.row == 2){
-
-    }else if (indexPath.row == 3){
-        PasswordViewController *pwVc = [[UIStoryboard storyboardWithName:@"Password" bundle:nil] instantiateViewControllerWithIdentifier:@"PasswordViewController"];
-        UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:pwVc];
-        [self presentViewController:nav animated:YES completion:nil];
+    }else{
+        if (indexPath.row == 0){
+            PasswordViewController *pwVc = [[UIStoryboard storyboardWithName:@"Password" bundle:nil] instantiateViewControllerWithIdentifier:@"PasswordViewController"];
+            UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:pwVc];
+            [self presentViewController:nav animated:YES completion:nil];
+        }
     }
+    
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
-    return cellHeight;
+    return HEIGHT_CELL;
 }
 
 //section头部间距
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
 {
-    return 30;//section头部高度
+    return 15;//section头部高度
 }
 //section头部视图
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
@@ -184,8 +200,7 @@ NSString *const CellIdentifier_Accountlm = @"CellID_Accountlm";
 #pragma mark - ImagePicker
 -(void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary<NSString *,id> *)info{
     UIImage *image = [info objectForKey:UIImagePickerControllerOriginalImage];
-    _headImage = image;
-    [_accountTableView reloadData];
+    [_headButton setImage:image forState:UIControlStateNormal];
     [picker dismissViewControllerAnimated:YES completion:nil];
 }
 
@@ -196,10 +211,43 @@ NSString *const CellIdentifier_Accountlm = @"CellID_Accountlm";
 }
 
 #pragma mark - Actions
-- (void)logout{
+- (void)saveEdit{
     
 }
 
+
+- (void)showSheet:(UIButton *)sender {
+    //显示弹出框列表选择
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"请选择您的照片"
+                                                                   message:nil
+                                                            preferredStyle:UIAlertControllerStyleActionSheet];
+    
+    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel
+                                                         handler:^(UIAlertAction * action) {
+                                                             //响应事件
+                                                             NSLog(@"action = %@", action);
+                                                         }];
+    UIAlertAction *cameraAction = [UIAlertAction actionWithTitle:@"拍照" style:UIAlertActionStyleDefault
+                                                         handler:^(UIAlertAction * action) {
+                                                             //响应事件
+                                                             NSLog(@"action = %@", action);
+                                                         }];
+    UIAlertAction *albumAction = [UIAlertAction actionWithTitle:@"从相册选择" style:UIAlertActionStyleDefault
+                                                       handler:^(UIAlertAction * action) {
+                                                           //响应事件
+                                                           NSLog(@"action = %@", action);
+                                                           UIImagePickerController *ipcVC = [[UIImagePickerController alloc] init];
+                                                           [ipcVC setSourceType:UIImagePickerControllerSourceTypePhotoLibrary];
+                                                           [ipcVC setDelegate:self];
+                                                           [self presentViewController:ipcVC animated:YES completion:^{
+                                                               
+                                                           }];
+                                                       }];
+    [alert addAction:cameraAction];
+    [alert addAction:albumAction];
+    [alert addAction:cancelAction];
+    [self presentViewController:alert animated:YES completion:nil];
+}
 
 
 @end

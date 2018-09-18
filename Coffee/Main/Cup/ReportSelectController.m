@@ -1,12 +1,12 @@
 //
-//  CurveViewController.m
+//  ReportSelectController.m
 //  Coffee
 //
-//  Created by 杭州轨物科技有限公司 on 2018/7/17.
+//  Created by 杭州轨物科技有限公司 on 2018/9/17.
 //  Copyright © 2018年 杭州轨物科技有限公司. All rights reserved.
 //
 
-#import "CurveViewController.h"
+#import "ReportSelectController.h"
 #import "BakeReportController.h"
 #import "TouchTableView.h"
 #import <MJRefresh/MJRefresh.h>
@@ -14,9 +14,9 @@
 #import "ReportModel.h"
 #import "DeviceModel.h"
 
-NSString *const CellIdentifier_CurrentCurve = @"CellID_CurrentCurve";
+NSString *const CellIdentifier_CupSelectCurve = @"CellID_CupSelectCurve";
 
-@interface CurveViewController () <UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate>
+@interface ReportSelectController () <UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate>
 
 @property (nonatomic, strong) UISearchBar *curveSearch;
 
@@ -28,7 +28,7 @@ NSString *const CellIdentifier_CurrentCurve = @"CellID_CurrentCurve";
 
 @end
 
-@implementation CurveViewController
+@implementation ReportSelectController
 
 static float HEIGHT_CELL = 50.f;
 static float HEIGHT_HEADER = 36.f;
@@ -49,8 +49,6 @@ static float HEIGHT_HEADER = 36.f;
 
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
-    [self.rdv_tabBarController setTabBarHidden:NO animated:YES];
-    
 }
 - (void)viewDidLayoutSubviews
 {
@@ -60,23 +58,7 @@ static float HEIGHT_HEADER = 36.f;
 
 #pragma mark - Lazyload
 - (void)setNavItem{
-    self.navigationItem.title = LocalString(@"曲线");
-    
-    UIView *rightButtonView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 89, 30)];
-    
-    UIButton *addButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    addButton.frame = CGRectMake(52, 4, 22, 22);
-    [addButton setImage:[UIImage imageNamed:@"ic_nav_scan_black"] forState:UIControlStateNormal];
-    [addButton addTarget:self action:@selector(scanQRcode) forControlEvents:UIControlEventTouchUpInside];
-    [rightButtonView addSubview:addButton];
-    
-    UIButton *searchButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    searchButton.frame = CGRectMake(15, 4, 22, 22);
-    [searchButton setImage:[UIImage imageNamed:@"ic_nav_serch_black"] forState:UIControlStateNormal];
-    [searchButton addTarget:self action:@selector(searchCurve) forControlEvents:UIControlEventTouchUpInside];
-    [rightButtonView addSubview:searchButton];
-    UIBarButtonItem *rightBarButton = [[UIBarButtonItem alloc] initWithCustomView:rightButtonView];
-    self.navigationItem.rightBarButtonItem = rightBarButton;
+    self.navigationItem.title = LocalString(@"选择曲线");
 
 }
 
@@ -135,7 +117,7 @@ static float HEIGHT_HEADER = 36.f;
             tableView.separatorColor = [UIColor colorWithRed:0/255.0 green:0/255.0 blue:0/255.0 alpha:0.08];
             tableView.dataSource = self;
             tableView.delegate = self;
-            [tableView registerClass:[CurrentCurveCell class] forCellReuseIdentifier:CellIdentifier_CurrentCurve];
+            [tableView registerClass:[CurrentCurveCell class] forCellReuseIdentifier:CellIdentifier_CupSelectCurve];
             [self.view addSubview:tableView];
             tableView.estimatedRowHeight = 0;
             tableView.estimatedSectionHeaderHeight = 0;
@@ -174,9 +156,9 @@ static float HEIGHT_HEADER = 36.f;
 
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    CurrentCurveCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_CurrentCurve];
+    CurrentCurveCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_CupSelectCurve];
     if (cell == nil) {
-        cell = [[CurrentCurveCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_CurrentCurve];
+        cell = [[CurrentCurveCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_CupSelectCurve];
     }
     ReportModel *report = _currentReportArr[indexPath.section][indexPath.row];
     if (_mySegment.selectedSegmentIndex == 0 || _mySegment.selectedSegmentIndex == 1) {
@@ -204,10 +186,11 @@ static float HEIGHT_HEADER = 36.f;
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     //NSLog(@"%ld",[_currentReportArr[0] count]);
     ReportModel *report = _currentReportArr[indexPath.section][indexPath.row];
+    if (self.selBlock) {
+        self.selBlock(report.curveId);
+    }
     
-    BakeReportController *reportVC = [[BakeReportController alloc] init];
-    reportVC.curveId = report.curveId;
-    [self.navigationController pushViewController:reportVC animated:YES];
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -227,7 +210,7 @@ static float HEIGHT_HEADER = 36.f;
     
     ReportModel *report = _currentReportArr[section][0];
     textLabel.text = [NSDate YMDStringFromDate:report.date];
-
+    
     return headerView;
 }
 
@@ -236,7 +219,7 @@ static float HEIGHT_HEADER = 36.f;
 }
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath{
-    return YES;
+    return NO;
 }
 
 - (UITableViewCellEditingStyle)tableView:(UITableView *)tableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -402,34 +385,34 @@ static float HEIGHT_HEADER = 36.f;
                 [array addObject:obj2];
                 [classArr addObject:[array mutableCopy]];
             }
-
+            
         }
     }
     
-//    for (int i = 0; i < arr.count; i++) {
-//        ReportModel *obj1 = arr[i];
-//        NSMutableArray *array = [[NSMutableArray alloc] init];
-//        [array addObject:obj1];
-//        if (i+1 > array.count) {//只有一个值时
-//            [classArr addObject:array];
-//        }
-//        for (int j = i+1; j < arr.count; j++) {
-//            ReportModel *obj2 = arr[j];
-//            if ([[NSDate YMDStringFromDate:obj1.date] isEqualToString:[NSDate YMDStringFromDate:obj2.date]]) {
-//                [array addObject:obj2];
-//                if (j+1 >= arr.count) {//最后一个与前一个相同时，则添加完后结束比较
-//                    [classArr addObject:array];
-//                    i = j;
-//                    break;
-//                }
-//            }else{
-//                //这个与比较的不同，则下一个比较以这个为基准开始比较
-//                [classArr addObject:array];
-//                i = j - 1;
-//                break;
-//            }
-//        }
-//    }
+    //    for (int i = 0; i < arr.count; i++) {
+    //        ReportModel *obj1 = arr[i];
+    //        NSMutableArray *array = [[NSMutableArray alloc] init];
+    //        [array addObject:obj1];
+    //        if (i+1 > array.count) {//只有一个值时
+    //            [classArr addObject:array];
+    //        }
+    //        for (int j = i+1; j < arr.count; j++) {
+    //            ReportModel *obj2 = arr[j];
+    //            if ([[NSDate YMDStringFromDate:obj1.date] isEqualToString:[NSDate YMDStringFromDate:obj2.date]]) {
+    //                [array addObject:obj2];
+    //                if (j+1 >= arr.count) {//最后一个与前一个相同时，则添加完后结束比较
+    //                    [classArr addObject:array];
+    //                    i = j;
+    //                    break;
+    //                }
+    //            }else{
+    //                //这个与比较的不同，则下一个比较以这个为基准开始比较
+    //                [classArr addObject:array];
+    //                i = j - 1;
+    //                break;
+    //            }
+    //        }
+    //    }
     
     return classArr;
 }

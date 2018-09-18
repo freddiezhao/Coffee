@@ -8,13 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-typedef enum : NSUInteger {
-    sortUnselect = 1000,
-    sortSelect,
-    sortUp,
-    sortDown,
-} nameStatus;
-
 @interface BeanViewController : UIViewController
 
 @end

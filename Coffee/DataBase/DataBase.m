@@ -14,6 +14,7 @@
 #import "EventModel.h"
 #import "DeviceModel.h"
 #import "DeviceModel.h"
+#import "CupModel.h"
 
 static DataBase *_dataBase = nil;
 
@@ -43,7 +44,7 @@ static DataBase *_dataBase = nil;
     if (self) {
         NSString *docPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
         _userId = [NSNumber numberWithInt:11111];
-        _userName = @"烘焙师";
+        _userName = @"红鲤鱼和绿鲤鱼";
         NSString *filePath = [docPath stringByAppendingPathComponent:[NSString stringWithFormat:@"%@_Coffee.sql",_userId]];
         NSLog(@"%@",filePath);
         _queueDB = [FMDatabaseQueue databaseQueueWithPath:filePath];
@@ -89,7 +90,7 @@ static DataBase *_dataBase = nil;
         }else{
             NSLog(@"创建表curve_event失败");
         }
-        result = [db executeUpdate:@"CREATE TABLE IF NOT EXISTS cup (cupId integer PRIMARY KEY AUTOINCREMENT,curveId integer NOT NULL,bakeDegree text NOT NULL,dryAndWet text NOT NULL,flavor text NOT NULL,aftermath text NOT NULL,acid text NOT NULL,taste text NOT NULL,sweet text NOT NULL,balance text NOT NULL,overFeel text NOT NULL,deveUnfull text NOT NULL,overDeve text NOT NULL,bakePaste text NOT NULL,injure text NOT NULL,germInjure text NOT NULL,beanFaceInjure text NOT NULL)"];
+        result = [db executeUpdate:@"CREATE TABLE IF NOT EXISTS cup (cupId integer PRIMARY KEY AUTOINCREMENT,cupName text NOT NULL,curveId integer NOT NULL,bakeDegree REAL NOT NULL,dryAndWet REAL NOT NULL,flavor REAL NOT NULL,aftermath REAL NOT NULL,acid REAL NOT NULL,taste REAL NOT NULL,sweet REAL NOT NULL,balance REAL NOT NULL,overFeel REAL NOT NULL,deveUnfull REAL NOT NULL,overDeve REAL NOT NULL,bakePaste REAL NOT NULL,injure REAL NOT NULL,germInjure REAL NOT NULL,beanFaceInjure REAL NOT NULL,date text NOT NULL,light REAL NOT NULL)"];
         if (result) {
             NSLog(@"创建表cup成功");
         }else{
@@ -341,6 +342,37 @@ static DataBase *_dataBase = nil;
     return isContain;
 }
 
+- (NSMutableArray *)queryAllCup{
+    NSMutableArray *cupArray = [[NSMutableArray alloc] init];
+    [_queueDB inDatabase:^(FMDatabase * _Nonnull db) {
+        FMResultSet *set = [db executeQuery:@"SELECT * FROM cup"];
+        while ([set next]) {
+            CupModel *cup = [[CupModel alloc] init];
+            cup.cupId = [set intForColumn:@"cupId"];
+            cup.name = [set stringForColumn:@"cupName"];
+            cup.curveId = [set intForColumn:@"curveId"];
+            cup.bakeDegree = [set doubleForColumn:@"bakeDegree"];
+            cup.dryAndWet = [set doubleForColumn:@"dryAndWet"];
+            cup.flavor = [set doubleForColumn:@"flavor"];
+            cup.aftermath = [set doubleForColumn:@"aftermath"];
+            cup.acid = [set doubleForColumn:@"acid"];
+            cup.taste = [set doubleForColumn:@"taste"];
+            cup.sweet = [set doubleForColumn:@"sweet"];
+            cup.balance = [set doubleForColumn:@"balance"];
+            cup.overFeel = [set doubleForColumn:@"overFeel"];
+            cup.deveUnfull = [set doubleForColumn:@"deveUnfull"];
+            cup.overDeve = [set doubleForColumn:@"overDeve"];
+            cup.bakePaste = [set doubleForColumn:@"bakePaste"];
+            cup.injure = [set doubleForColumn:@"injure"];
+            cup.germInjure = [set doubleForColumn:@"germInjure"];
+            cup.beanFaceInjure = [set doubleForColumn:@"beanFaceInjure"];
+            cup.date = [NSDate YMDDateFromLocalString:[set stringForColumn:@"date"]];
+            cup.light = [set doubleForColumn:@"light"];
+            [cupArray addObject:cup];
+        }
+    }];
+    return cupArray;
+}
 #pragma mark - 增
 - (void)insertBaseEvent{
     NSArray *eventTextArray = @[@"开始烘焙",@"脱水结束",@"一爆开始",@"一爆结束",@"二爆开始",@"二爆结束",@"烘焙结束"];
@@ -369,8 +401,21 @@ static DataBase *_dataBase = nil;
 - (BOOL)insertNewBean:(BeanModel *)bean{
     static BOOL result = YES;
     [_queueDB inDatabase:^(FMDatabase * _Nonnull db) {
-        result = [db executeUpdate:@"REPLACE INTO beanInfo (beanId,beanName,nation,area,manor,altitude,beanSpecies,grade,process,water,supplier,price,stock,time) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)",[NSNumber numberWithInteger:bean.beanId],bean.name,bean.nation,bean.area,bean.manor,[NSNumber numberWithFloat:bean.altitude],bean.beanSpecies,bean.grade,bean.process,[NSNumber numberWithFloat:bean.water],bean.supplier,[NSNumber numberWithFloat:bean.price],[NSNumber numberWithFloat:bean.stock],[NSDate YMDStringFromDate:bean.time]];
+        result = [db executeUpdate:@"INSERT INTO beanInfo (beanName,nation,area,manor,altitude,beanSpecies,grade,process,water,supplier,price,stock,time) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)",bean.name,bean.nation,bean.area,bean.manor,[NSNumber numberWithFloat:bean.altitude],bean.beanSpecies,bean.grade,bean.process,[NSNumber numberWithFloat:bean.water],bean.supplier,[NSNumber numberWithFloat:bean.price],[NSNumber numberWithFloat:bean.stock],[NSDate YMDStringFromDate:bean.time]];
         NSLog(@"%@",bean.name);
+        if (!result) {
+            NSLog(@"添加咖啡豆失败");
+        }
+    }];
+    return result;
+}
+
+- (BOOL)insertNewCup:(CupModel *)cup{
+    static BOOL result = YES;
+    [_queueDB inDatabase:^(FMDatabase * _Nonnull db) {
+//        result = [db executeUpdate:@"INSERT INTO cup (cupName,curveId,bakeDegree,dryAndWet,flavor ,aftermath,acid,taste,sweet,balance,overFeel,deveUnfull,overDeve,bakePaste,injure,germInjure ,beanFaceInjure,date,light) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",cup.name,[NSNumber numberWithInteger:cup.curveId],[NSNumber numberWithFloat:cup.bakeDegree],[NSNumber numberWithFloat:cup.dryAndWet],[NSNumber numberWithFloat:cup.flavor],[NSNumber numberWithFloat:cup.aftermath],[NSNumber numberWithFloat:cup.acid],[NSNumber numberWithFloat:cup.taste],[NSNumber numberWithFloat:cup.sweet],[NSNumber numberWithFloat:cup.balance],[NSNumber numberWithFloat:cup.overFeel],[NSNumber numberWithFloat:cup.deveUnfull],[NSNumber numberWithFloat:cup.overDeve],[NSNumber numberWithFloat:cup.bakePaste],[NSNumber numberWithFloat:cup.injure],[NSNumber numberWithFloat:cup.germInjure],[NSNumber numberWithFloat:cup.beanFaceInjure],[NSDate YMDStringFromDate:cup.date],[NSNumber numberWithFloat:cup.light]];
+        result = [db executeUpdate:@"INSERT INTO cup (cupName,curveId,bakeDegree,dryAndWet,flavor ,aftermath,acid,taste,sweet,balance,overFeel,deveUnfull,overDeve,bakePaste,injure,germInjure ,beanFaceInjure,date,light) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",@"样品豆",@11,@5.5,@5.1,@3.2,@2.3,@2.3,@2.3,@2.3,@2.3,@2.3,@2.3,@2.3,@2.3,@2.3,@2.3,@2.3,[NSDate YMDStringFromDate:[NSDate date]],@0.0];
+        NSLog(@"%@",cup.name);
         if (!result) {
             NSLog(@"添加咖啡豆失败");
         }
@@ -391,6 +436,14 @@ static DataBase *_dataBase = nil;
     static BOOL result = YES;
     [_queueDB inDatabase:^(FMDatabase *db) {
         result = [db executeUpdate:@"delete from curveInfo where curveId = ?",[NSNumber numberWithInteger:report.curveId]];
+    }];
+    return result;
+}
+
+- (BOOL)deleteqCup:(CupModel *)cup{
+    static BOOL result = YES;
+    [_queueDB inDatabase:^(FMDatabase *db) {
+        result = [db executeUpdate:@"delete from cup where cupId = ?",[NSNumber numberWithInteger:cup.cupId]];
     }];
     return result;
 }
@@ -423,10 +476,34 @@ static DataBase *_dataBase = nil;
     return isSucc;
 }
 
+- (BOOL)updateBean:(BeanModel *)bean{
+    static BOOL result = YES;
+    [_queueDB inDatabase:^(FMDatabase * _Nonnull db) {
+        result = [db executeUpdate:@"UPDATE beanInfo SET beanName = ?,nation = ?,area = ?,manor = ?,altitude = ?,beanSpecies = ?,grade = ?,process = ?,water = ?,supplier = ?,price = ?,stock = ?,time = ? WHERE beanId = ?",bean.name,bean.nation,bean.area,bean.manor,[NSNumber numberWithFloat:bean.altitude],bean.beanSpecies,bean.grade,bean.process,[NSNumber numberWithFloat:bean.water],bean.supplier,[NSNumber numberWithFloat:bean.price],[NSNumber numberWithFloat:bean.stock],[NSDate YMDStringFromDate:bean.time],[NSNumber numberWithInteger:bean.beanId]];
+        NSLog(@"%@",bean.name);
+        if (!result) {
+            NSLog(@"更新咖啡豆失败");
+        }
+    }];
+    return result;
+}
+
+- (BOOL)updateCup:(CupModel *)cup{
+    static BOOL result = YES;
+    [_queueDB inDatabase:^(FMDatabase * _Nonnull db) {
+        result = [db executeUpdate:@"UPDATE cup SET cupName = ?,curveId = ?,bakeDegree = ?,dryAndWet = ?,flavor = ?,aftermath = ?,acid = ?,taste = ?,sweet = ?,balance = ?,overFeel = ?,deveUnfull = ?,overDeve = ?,bakePaste = ?,injure = ?,germInjure = ?,beanFaceInjure = ?,date = ?,light = ? WHERE cupId = ?",cup.name,[NSNumber numberWithInteger:cup.curveId],[NSNumber numberWithFloat:cup.bakeDegree],[NSNumber numberWithFloat:cup.dryAndWet],[NSNumber numberWithFloat:cup.flavor],[NSNumber numberWithFloat:cup.aftermath],[NSNumber numberWithFloat:cup.acid],[NSNumber numberWithFloat:cup.taste],[NSNumber numberWithFloat:cup.sweet],[NSNumber numberWithFloat:cup.balance],[NSNumber numberWithFloat:cup.overFeel],[NSNumber numberWithFloat:cup.deveUnfull],[NSNumber numberWithFloat:cup.overDeve],[NSNumber numberWithFloat:cup.bakePaste],[NSNumber numberWithFloat:cup.injure],[NSNumber numberWithFloat:cup.germInjure],[NSNumber numberWithFloat:cup.beanFaceInjure],[NSDate YMDStringFromDate:cup.date],[NSNumber numberWithFloat:cup.light],[NSNumber numberWithInteger:cup.cupId]];
+        NSLog(@"%@",cup.name);
+        if (!result) {
+            NSLog(@"修改咖啡豆失败");
+        }
+    }];
+    return result;
+}
+
 #pragma mark - 删表(用来重新生成表格)
 - (void)deleteTable{
     [_queueDB inDatabase:^(FMDatabase * _Nonnull db) {
-        BOOL result = [db executeUpdate:@"DROP TABLE bean_curve"];
+        BOOL result = [db executeUpdate:@"DROP TABLE cup"];
         if (result) {
                         NSLog(@"Drop table success");
                     }

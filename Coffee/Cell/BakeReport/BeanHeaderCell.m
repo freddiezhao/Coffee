@@ -15,6 +15,7 @@
     if (self) {
         if (!_beanImage) {
             _beanImage = [[UIImageView alloc] initWithFrame:CGRectMake(15/WScale, 19/HScale, 32/WScale, 32/HScale)];
+            _beanImage.image = [UIImage imageNamed:@"img_coffee_beans"];
             [self.contentView addSubview:_beanImage];
         }
         if (!_beanNameLabel) {

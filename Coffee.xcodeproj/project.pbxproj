@@ -26,7 +26,14 @@
 		BB2912122106D8D5001B9448 /* GeneralViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB2912112106D8D5001B9448 /* GeneralViewController.m */; };
 		BB2912152106FB43001B9448 /* SubtitileCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BB2912142106FB43001B9448 /* SubtitileCell.m */; };
 		BB29121821071B1E001B9448 /* SettingModel.m in Sources */ = {isa = PBXBuildFile; fileRef = BB29121721071B1E001B9448 /* SettingModel.m */; };
+		BB2DF8022150FE6400BC8DFB /* MineNormalCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BB2DF8012150FE6400BC8DFB /* MineNormalCell.m */; };
 		BB3811FA20EA1C3C00F0B2B7 /* BakeCurveViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB3811F920EA1C3C00F0B2B7 /* BakeCurveViewController.m */; };
+		BB4A4C78214F474E0010A9A1 /* DetailGradeCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BB4A4C77214F474E0010A9A1 /* DetailGradeCell.m */; };
+		BB4A4C7B214F4A0B0010A9A1 /* ArcProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = BB4A4C7A214F4A0B0010A9A1 /* ArcProgressView.m */; };
+		BB4A4C7E214F82F90010A9A1 /* CupLightCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BB4A4C7D214F82F90010A9A1 /* CupLightCell.m */; };
+		BB4A4C81214F8F210010A9A1 /* CupTestEditController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB4A4C80214F8F210010A9A1 /* CupTestEditController.m */; };
+		BB4A4C84214FA2DB0010A9A1 /* EditCupNameCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BB4A4C83214FA2DB0010A9A1 /* EditCupNameCell.m */; };
+		BB4A4C87214FB07F0010A9A1 /* ReportSelectController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB4A4C86214FB07F0010A9A1 /* ReportSelectController.m */; };
 		BB4C906E2105C4200023EE9B /* DataBase.m in Sources */ = {isa = PBXBuildFile; fileRef = BB4C906D2105C4200023EE9B /* DataBase.m */; };
 		BB525E35212CFF47003484E9 /* img_signal_light_hongbei2@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = BB525D4A212CFF46003484E9 /* img_signal_light_hongbei2@2x.png */; };
 		BB525E36212CFF47003484E9 /* img_hb_l2_small@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = BB525D4B212CFF46003484E9 /* img_hb_l2_small@3x.png */; };
@@ -270,6 +277,7 @@
 		BB593FA9210F172D007ECB1D /* NSDate+Common.m in Sources */ = {isa = PBXBuildFile; fileRef = BB593FA8210F172D007ECB1D /* NSDate+Common.m */; };
 		BB593FAC210F324C007ECB1D /* EventModel.m in Sources */ = {isa = PBXBuildFile; fileRef = BB593FAB210F324C007ECB1D /* EventModel.m */; };
 		BB5A3BF1211193180030ACA5 /* DeviceModel.m in Sources */ = {isa = PBXBuildFile; fileRef = BB5A3BF0211193180030ACA5 /* DeviceModel.m */; };
+		BB6144DD214D056900592210 /* CupTestDetailController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB6144DC214D056900592210 /* CupTestDetailController.m */; };
 		BB61D757210D619E0068A0A6 /* BakeReportController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB61D756210D619E0068A0A6 /* BakeReportController.m */; };
 		BB61D75A210DC31C0068A0A6 /* ReportModel.m in Sources */ = {isa = PBXBuildFile; fileRef = BB61D759210DC31C0068A0A6 /* ReportModel.m */; };
 		BB635D1F210862E8005F42D6 /* FastEventViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB635D1E210862E8005F42D6 /* FastEventViewController.m */; };
@@ -320,6 +328,9 @@
 		BB7835E52147643B000E2FCB /* EditLightCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BB7835E42147643B000E2FCB /* EditLightCell.m */; };
 		BB7835E821476D20000E2FCB /* EditBakeBeanCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BB7835E721476D20000E2FCB /* EditBakeBeanCell.m */; };
 		BB7835EB2147E898000E2FCB /* EditBeanController_bakeAdd.m in Sources */ = {isa = PBXBuildFile; fileRef = BB7835EA2147E898000E2FCB /* EditBeanController_bakeAdd.m */; };
+		BB813E6B214BA49D00D68F7B /* CupTestMainController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB813E6A214BA49D00D68F7B /* CupTestMainController.m */; };
+		BB813E6E214BAABE00D68F7B /* CupModel.m in Sources */ = {isa = PBXBuildFile; fileRef = BB813E6D214BAABE00D68F7B /* CupModel.m */; };
+		BB813E72214BB5CB00D68F7B /* CupNormalCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BB813E71214BB5CB00D68F7B /* CupNormalCell.m */; };
 		BB8AA20B20DE3F5200610316 /* ic_navbar_bean.png in Resources */ = {isa = PBXBuildFile; fileRef = BB8A9F7A20DE3F5100610316 /* ic_navbar_bean.png */; };
 		BB8AA21F20DE3F5200610316 /* ic_navbar_bake_selected.png in Resources */ = {isa = PBXBuildFile; fileRef = BB8A9F8E20DE3F5100610316 /* ic_navbar_bake_selected.png */; };
 		BB8AA23420DE3F5200610316 /* ic_navbar_cup_selected.png in Resources */ = {isa = PBXBuildFile; fileRef = BB8A9FA320DE3F5100610316 /* ic_navbar_cup_selected.png */; };
@@ -462,8 +473,22 @@
 		BB2912142106FB43001B9448 /* SubtitileCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SubtitileCell.m; sourceTree = "<group>"; };
 		BB29121621071B1E001B9448 /* SettingModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SettingModel.h; sourceTree = "<group>"; };
 		BB29121721071B1E001B9448 /* SettingModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SettingModel.m; sourceTree = "<group>"; };
+		BB2DF8002150FE6400BC8DFB /* MineNormalCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MineNormalCell.h; sourceTree = "<group>"; };
+		BB2DF8012150FE6400BC8DFB /* MineNormalCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MineNormalCell.m; sourceTree = "<group>"; };
 		BB3811F820EA1C3C00F0B2B7 /* BakeCurveViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BakeCurveViewController.h; sourceTree = "<group>"; };
 		BB3811F920EA1C3C00F0B2B7 /* BakeCurveViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BakeCurveViewController.m; sourceTree = "<group>"; };
+		BB4A4C76214F474E0010A9A1 /* DetailGradeCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DetailGradeCell.h; sourceTree = "<group>"; };
+		BB4A4C77214F474E0010A9A1 /* DetailGradeCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DetailGradeCell.m; sourceTree = "<group>"; };
+		BB4A4C79214F4A0B0010A9A1 /* ArcProgressView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ArcProgressView.h; sourceTree = "<group>"; };
+		BB4A4C7A214F4A0B0010A9A1 /* ArcProgressView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ArcProgressView.m; sourceTree = "<group>"; };
+		BB4A4C7C214F82F90010A9A1 /* CupLightCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CupLightCell.h; sourceTree = "<group>"; };
+		BB4A4C7D214F82F90010A9A1 /* CupLightCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CupLightCell.m; sourceTree = "<group>"; };
+		BB4A4C7F214F8F210010A9A1 /* CupTestEditController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CupTestEditController.h; sourceTree = "<group>"; };
+		BB4A4C80214F8F210010A9A1 /* CupTestEditController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CupTestEditController.m; sourceTree = "<group>"; };
+		BB4A4C82214FA2DB0010A9A1 /* EditCupNameCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EditCupNameCell.h; sourceTree = "<group>"; };
+		BB4A4C83214FA2DB0010A9A1 /* EditCupNameCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EditCupNameCell.m; sourceTree = "<group>"; };
+		BB4A4C85214FB07F0010A9A1 /* ReportSelectController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ReportSelectController.h; sourceTree = "<group>"; };
+		BB4A4C86214FB07F0010A9A1 /* ReportSelectController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ReportSelectController.m; sourceTree = "<group>"; };
 		BB4C906C2105C4200023EE9B /* DataBase.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DataBase.h; sourceTree = "<group>"; };
 		BB4C906D2105C4200023EE9B /* DataBase.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DataBase.m; sourceTree = "<group>"; };
 		BB525D4A212CFF46003484E9 /* img_signal_light_hongbei2@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "img_signal_light_hongbei2@2x.png"; sourceTree = "<group>"; };
@@ -714,6 +739,8 @@
 		BB5A3BEF211193180030ACA5 /* DeviceModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DeviceModel.h; sourceTree = "<group>"; };
 		BB5A3BF0211193180030ACA5 /* DeviceModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DeviceModel.m; sourceTree = "<group>"; };
 		BB5E91A120FEDA3400416EE2 /* WMPageController.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = WMPageController.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		BB6144DB214D056900592210 /* CupTestDetailController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CupTestDetailController.h; sourceTree = "<group>"; };
+		BB6144DC214D056900592210 /* CupTestDetailController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CupTestDetailController.m; sourceTree = "<group>"; };
 		BB61D755210D619E0068A0A6 /* BakeReportController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BakeReportController.h; sourceTree = "<group>"; };
 		BB61D756210D619E0068A0A6 /* BakeReportController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BakeReportController.m; sourceTree = "<group>"; };
 		BB61D758210DC31C0068A0A6 /* ReportModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ReportModel.h; sourceTree = "<group>"; };
@@ -802,6 +829,12 @@
 		BB7835E721476D20000E2FCB /* EditBakeBeanCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EditBakeBeanCell.m; sourceTree = "<group>"; };
 		BB7835E92147E898000E2FCB /* EditBeanController_bakeAdd.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EditBeanController_bakeAdd.h; sourceTree = "<group>"; };
 		BB7835EA2147E898000E2FCB /* EditBeanController_bakeAdd.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EditBeanController_bakeAdd.m; sourceTree = "<group>"; };
+		BB813E69214BA49D00D68F7B /* CupTestMainController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CupTestMainController.h; sourceTree = "<group>"; };
+		BB813E6A214BA49D00D68F7B /* CupTestMainController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CupTestMainController.m; sourceTree = "<group>"; };
+		BB813E6C214BAABE00D68F7B /* CupModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CupModel.h; sourceTree = "<group>"; };
+		BB813E6D214BAABE00D68F7B /* CupModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CupModel.m; sourceTree = "<group>"; };
+		BB813E70214BB5CB00D68F7B /* CupNormalCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CupNormalCell.h; sourceTree = "<group>"; };
+		BB813E71214BB5CB00D68F7B /* CupNormalCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CupNormalCell.m; sourceTree = "<group>"; };
 		BB8A9F7A20DE3F5100610316 /* ic_navbar_bean.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ic_navbar_bean.png; sourceTree = "<group>"; };
 		BB8A9F8E20DE3F5100610316 /* ic_navbar_bake_selected.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ic_navbar_bake_selected.png; sourceTree = "<group>"; };
 		BB8A9FA320DE3F5100610316 /* ic_navbar_cup_selected.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ic_navbar_cup_selected.png; sourceTree = "<group>"; };
@@ -1039,6 +1072,15 @@
 				BB635D272108781C005F42D6 /* CurveColorViewController.m */,
 			);
 			path = General;
+			sourceTree = "<group>";
+		};
+		BB2DF7FF2150FE3F00BC8DFB /* Mine */ = {
+			isa = PBXGroup;
+			children = (
+				BB2DF8002150FE6400BC8DFB /* MineNormalCell.h */,
+				BB2DF8012150FE6400BC8DFB /* MineNormalCell.m */,
+			);
+			path = Mine;
 			sourceTree = "<group>";
 		};
 		BB4C906B2105C4010023EE9B /* DataBase */ = {
@@ -1430,6 +1472,8 @@
 				BB5A3BF0211193180030ACA5 /* DeviceModel.m */,
 				BB73BA28212FE6F2001D9258 /* SortModel.h */,
 				BB73BA29212FE6F2001D9258 /* SortModel.m */,
+				BB813E6C214BAABE00D68F7B /* CupModel.h */,
+				BB813E6D214BAABE00D68F7B /* CupModel.m */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -1448,6 +1492,8 @@
 			children = (
 				BB6E0B7C2122D5B0008F20FC /* YAlertViewController.h */,
 				BB6E0B7D2122D5B0008F20FC /* YAlertViewController.m */,
+				BB4A4C79214F4A0B0010A9A1 /* ArcProgressView.h */,
+				BB4A4C7A214F4A0B0010A9A1 /* ArcProgressView.m */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -1472,6 +1518,36 @@
 				BB7835E721476D20000E2FCB /* EditBakeBeanCell.m */,
 			);
 			path = EditReport;
+			sourceTree = "<group>";
+		};
+		BB813E68214BA47400D68F7B /* Cup */ = {
+			isa = PBXGroup;
+			children = (
+				BB813E69214BA49D00D68F7B /* CupTestMainController.h */,
+				BB813E6A214BA49D00D68F7B /* CupTestMainController.m */,
+				BB6144DB214D056900592210 /* CupTestDetailController.h */,
+				BB6144DC214D056900592210 /* CupTestDetailController.m */,
+				BB4A4C7F214F8F210010A9A1 /* CupTestEditController.h */,
+				BB4A4C80214F8F210010A9A1 /* CupTestEditController.m */,
+				BB4A4C85214FB07F0010A9A1 /* ReportSelectController.h */,
+				BB4A4C86214FB07F0010A9A1 /* ReportSelectController.m */,
+			);
+			path = Cup;
+			sourceTree = "<group>";
+		};
+		BB813E6F214BB59100D68F7B /* cup */ = {
+			isa = PBXGroup;
+			children = (
+				BB813E70214BB5CB00D68F7B /* CupNormalCell.h */,
+				BB813E71214BB5CB00D68F7B /* CupNormalCell.m */,
+				BB4A4C76214F474E0010A9A1 /* DetailGradeCell.h */,
+				BB4A4C77214F474E0010A9A1 /* DetailGradeCell.m */,
+				BB4A4C7C214F82F90010A9A1 /* CupLightCell.h */,
+				BB4A4C7D214F82F90010A9A1 /* CupLightCell.m */,
+				BB4A4C82214FA2DB0010A9A1 /* EditCupNameCell.h */,
+				BB4A4C83214FA2DB0010A9A1 /* EditCupNameCell.m */,
+			);
+			path = cup;
 			sourceTree = "<group>";
 		};
 		BB8A9F7720DE3F5100610316 /* Image */ = {
@@ -1620,6 +1696,7 @@
 		BB8AA4D320DFBFA400610316 /* OC_Category */ = {
 			isa = PBXGroup;
 			children = (
+				BB6E0B782122D49A008F20FC /* View */,
 				BB6CD7D9214A50DE0046A792 /* Charts */,
 				BB8AA4D420DFBFA400610316 /* TableView+Touch */,
 				BB69CA7120ECBB490032F126 /* NSObject+Common.h */,
@@ -1653,6 +1730,8 @@
 				BB6AA237212A529E0043716E /* CommonCell */,
 				BB6AD0E52126CB620010458A /* BakeReport */,
 				BB7835DF21475856000E2FCB /* EditReport */,
+				BB813E6F214BB59100D68F7B /* cup */,
+				BB2DF7FF2150FE3F00BC8DFB /* Mine */,
 			);
 			path = Cell;
 			sourceTree = "<group>";
@@ -1691,7 +1770,6 @@
 				BB94EA9920DB8CE700370A95 /* RDVTabbarController */,
 				BB6AD2222100C09B008C8763 /* Model */,
 				BB8AA4D820DFC23300610316 /* Cell */,
-				BB6E0B782122D49A008F20FC /* View */,
 				BB8F7C0120DA51A600BE5CFC /* Main */,
 				BB8F7BCF20DA513B00BE5CFC /* AppDelegate.h */,
 				BB8F7BD020DA513B00BE5CFC /* AppDelegate.m */,
@@ -1731,6 +1809,7 @@
 				BBC31F9A20E713730011360E /* Bake */,
 				BB65C25A20FE120200BB684E /* Curve */,
 				BB25E7A6212E60FD003568BD /* Bean */,
+				BB813E68214BA47400D68F7B /* Cup */,
 				BB6AD20C21007BCE008C8763 /* Mine */,
 				BB8AA49B20DFAFA500610316 /* EspTouch */,
 				BB94EAA320DBA9C800370A95 /* MainViewController.h */,
@@ -2304,8 +2383,11 @@
 				BB593FA9210F172D007ECB1D /* NSDate+Common.m in Sources */,
 				BBA7B968212ACAB2004943DC /* TempPer30sCell.m in Sources */,
 				BB8AA4E820DFD18D00610316 /* UIColor+ColorChange.m in Sources */,
+				BB813E6E214BAABE00D68F7B /* CupModel.m in Sources */,
+				BB813E6B214BA49D00D68F7B /* CupTestMainController.m in Sources */,
 				BB68B60121282262001CABE5 /* ReportCurveCell.m in Sources */,
 				BB6A784B20E36E7200EE3E2E /* BaseViewController.m in Sources */,
+				BB4A4C7B214F4A0B0010A9A1 /* ArcProgressView.m in Sources */,
 				BB25E7AC212E63A2003568BD /* beanCell.m in Sources */,
 				BB8AA4E420DFCA1C00610316 /* PasswordTableViewCell.m in Sources */,
 				BB8AA4DF20DFC96A00610316 /* SSIDTableViewCell.m in Sources */,
@@ -2340,8 +2422,12 @@
 				BB2912022106BA65001B9448 /* UsernameViewController.m in Sources */,
 				BB29121821071B1E001B9448 /* SettingModel.m in Sources */,
 				BB25E7A9212E611A003568BD /* BeanViewController.m in Sources */,
+				BB813E72214BB5CB00D68F7B /* CupNormalCell.m in Sources */,
+				BB4A4C78214F474E0010A9A1 /* DetailGradeCell.m in Sources */,
 				BBA7B965212AC531004943DC /* CollectEventCell.m in Sources */,
+				BB4A4C84214FA2DB0010A9A1 /* EditCupNameCell.m in Sources */,
 				BB6CD7E0214A561D0046A792 /* BalloonMarker.swift in Sources */,
+				BB2DF8022150FE6400BC8DFB /* MineNormalCell.m in Sources */,
 				BB6E0B7E2122D5B0008F20FC /* YAlertViewController.m in Sources */,
 				BB7835E821476D20000E2FCB /* EditBakeBeanCell.m in Sources */,
 				BB26A97B21339E0C000F225C /* BeanViewController_bakeAdd.m in Sources */,
@@ -2350,6 +2436,7 @@
 				BBFE861520E62FF3005C6CE5 /* DeviceConfirmView.m in Sources */,
 				BB6AD0E82126CC0C0010458A /* ReportLightCell.m in Sources */,
 				BB73BA2D212FE903001D9258 /* SpicesSelController.m in Sources */,
+				BB6144DD214D056900592210 /* CupTestDetailController.m in Sources */,
 				BB593FAC210F324C007ECB1D /* EventModel.m in Sources */,
 				BB94EAA520DBA9C800370A95 /* MainViewController.m in Sources */,
 				BB21D6092134470B009FCB66 /* CurrentCurveCell.m in Sources */,
@@ -2358,6 +2445,7 @@
 				BB73BA24212FB4CF001D9258 /* AddBeanInfoCell2.m in Sources */,
 				BB712ABD20E47F49005FF10F /* NetWork.m in Sources */,
 				BB94EAA120DB8CE700370A95 /* RDVTabBarController.m in Sources */,
+				BB4A4C81214F8F210010A9A1 /* CupTestEditController.m in Sources */,
 				BB7835E22147588D000E2FCB /* EditNameCell.m in Sources */,
 				BB8AA4A520DFB25900610316 /* EspViewController.m in Sources */,
 				BB63B40221490EB500EAC364 /* EditBeanController.m in Sources */,
@@ -2366,6 +2454,7 @@
 				BB73BA21212FA333001D9258 /* AddBeanInfoCell1.m in Sources */,
 				BB23E563210964C20074C61B /* FeedbackViewController.m in Sources */,
 				BB73BA30212FEA44001D9258 /* ProcessSelController.m in Sources */,
+				BB4A4C7E214F82F90010A9A1 /* CupLightCell.m in Sources */,
 				BB8F7BDF20DA513B00BE5CFC /* main.m in Sources */,
 				BB18D5B521358597006CA5A7 /* CurveController_bakeRela.m in Sources */,
 				BB73BA1E212F9CF7001D9258 /* AddNewBeanController.m in Sources */,
@@ -2373,6 +2462,7 @@
 				BB61D75A210DC31C0068A0A6 /* ReportModel.m in Sources */,
 				BB8AA4D220DFB9CA00610316 /* ESPDatumCode.m in Sources */,
 				BB68B5FE2128124D001CABE5 /* BeanInfoCell.m in Sources */,
+				BB4A4C87214FB07F0010A9A1 /* ReportSelectController.m in Sources */,
 				BB2912152106FB43001B9448 /* SubtitileCell.m in Sources */,
 				BB8AA4C620DFB9CA00610316 /* ESPTouchResult.m in Sources */,
 				BB73BA33212FED92001D9258 /* BuyDateSelController.m in Sources */,

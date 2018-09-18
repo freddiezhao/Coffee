@@ -13,6 +13,7 @@
 #import "CurveViewController.h"
 #import "MineViewController.h"
 #import "BeanViewController.h"
+#import "CupTestMainController.h"
 
 @interface MainViewController ()<RDVTabBarControllerDelegate>
 
@@ -33,8 +34,8 @@
     BeanViewController *beanVC = [[BeanViewController alloc] init];
     UINavigationController *NAV3 = [[UINavigationController alloc] initWithRootViewController:beanVC];
     
-    UIViewController *fourthVc = [[UIViewController alloc] init];
-    UINavigationController *NAV4 = [[UINavigationController alloc] initWithRootViewController:fourthVc];
+    CupTestMainController *cupVC = [[CupTestMainController alloc] init];
+    UINavigationController *NAV4 = [[UINavigationController alloc] initWithRootViewController:cupVC];
     
     MineViewController *mineVC = [[MineViewController alloc] init];
     UINavigationController *NAV5 = [[UINavigationController alloc] initWithRootViewController:mineVC];
