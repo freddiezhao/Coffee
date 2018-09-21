@@ -42,20 +42,21 @@ static DataBase *_dataBase = nil;
 - (instancetype)init{
     self = [super init];
     if (self) {
-        NSString *docPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
-        _userId = [NSNumber numberWithInt:11111];
-        _userName = @"红鲤鱼和绿鲤鱼";
-        NSString *filePath = [docPath stringByAppendingPathComponent:[NSString stringWithFormat:@"%@_Coffee.sql",_userId]];
-        NSLog(@"%@",filePath);
-        _queueDB = [FMDatabaseQueue databaseQueueWithPath:filePath];
-        [self createTable];
-        [self insertBaseEvent];
-        _setting = [self querySetting];
         
-        //[self deleteTable];
-        //[self insertNewReport:nil];
     }
     return self;
+}
+
+- (void)initDB{
+    NSString *docPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
+    NSString *filePath = [docPath stringByAppendingPathComponent:[NSString stringWithFormat:@"%@_Coffee.sql",_userId]];
+    NSLog(@"%@",filePath);
+    _queueDB = [FMDatabaseQueue databaseQueueWithPath:filePath];
+    [self createTable];
+    //[self insertBaseEvent];
+    //_setting = [self querySetting];
+    //[self deleteTable];
+    //[self insertNewReport:nil];
 }
 
 - (void)createTable{
@@ -118,7 +119,7 @@ static DataBase *_dataBase = nil;
     [_queueDB inDatabase:^(FMDatabase * _Nonnull db) {
         FMResultSet *set = [db executeQuery:@"SELECT * FROM user_setting"];
         model.weightUnit = [set stringForColumn:@"weightUnit"];
-        model.timeAxis = [set stringForColumn:@"timeAxis"];
+        model.timeAxis = [set intForColumn:@"timeAxis"];
         FMResultSet *set1 = [db executeQuery:@"SELECT * FROM user_setting_events"];
         while ([set1 next]) {
             [model.events addObject:[set1 stringForColumn:@"event"]];
@@ -501,16 +502,22 @@ static DataBase *_dataBase = nil;
 }
 
 #pragma mark - 删表(用来重新生成表格)
-- (void)deleteTable{
+- (void)deleteAllTable{
     [_queueDB inDatabase:^(FMDatabase * _Nonnull db) {
         BOOL result = [db executeUpdate:@"DROP TABLE cup"];
+        result = [db executeUpdate:@"DROP TABLE beanInfo"];
+        result = [db executeUpdate:@"DROP TABLE curveInfo"];
+        result = [db executeUpdate:@"DROP TABLE bean_curve"];
+        result = [db executeUpdate:@"DROP TABLE user_setting_events"];
+        result = [db executeUpdate:@"DROP TABLE curve_event"];
+        result = [db executeUpdate:@"DROP TABLE user_setting"];
+        result = [db executeUpdate:@"DROP TABLE device"];
         if (result) {
-                        NSLog(@"Drop table success");
-                    }
-                    else
-                    {
-                        NSLog(@"Drop table Failure");
-                    }  
+            NSLog(@"Drop table success");
+        }else
+        {
+            NSLog(@"Drop table Failure");
+        }
     }];
 }
 

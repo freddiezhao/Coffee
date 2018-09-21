@@ -18,7 +18,8 @@
 @interface DataBase : NSObject
 ///@brief User Information
 @property (nonatomic, strong) NSString *userName;
-@property (nonatomic, strong) NSNumber *userId;
+@property (nonatomic, strong) NSString *userId;
+@property (nonatomic, strong) NSString *token;
 
 ///@brief Settings
 @property (nonatomic, strong) SettingModel *setting;
@@ -28,6 +29,7 @@
 
 
 + (instancetype)shareDataBase;
+- (void)initDB;
 
 ///@brief DB action
 - (NSMutableArray *)queryAllReport;
@@ -52,4 +54,7 @@
 - (BOOL)insertNewCup:(CupModel *)cup;
 - (BOOL)updateCup:(CupModel *)cup;
 - (BOOL)deleteqCup:(CupModel *)cup;
+
+- (void)createTable;
+- (void)deleteAllTable;
 @end

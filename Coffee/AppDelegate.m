@@ -9,6 +9,7 @@
 #import "AppDelegate.h"
 #import "MainViewController.h"
 #import "ESP_NetUtil.h"
+#import "LoginViewController.h"
 
 @interface AppDelegate ()
 
@@ -24,8 +25,11 @@
     self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
     self.window.backgroundColor = [UIColor whiteColor];
     
-    MainViewController *mainVC = [[MainViewController alloc] init];
-    self.window.rootViewController = mainVC;
+    LoginViewController *loginVC = [[LoginViewController alloc] init];
+    UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:loginVC];
+    self.window.rootViewController = nav;
+//    MainViewController *mainVC = [[MainViewController alloc] init];
+//    self.window.rootViewController = mainVC;
     
     [self.window makeKeyAndVisible];
     

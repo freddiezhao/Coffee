@@ -63,6 +63,7 @@
         _userNameTF.autocorrectionType = UITextAutocorrectionTypeNo;
         _userNameTF.delegate = self;
         [_userNameTF becomeFirstResponder];
+        _userNameTF.autocorrectionType = UITextAutocorrectionTypeNo;
         _userNameTF.frame = CGRectMake(0, 20, ScreenWidth, cellHeight);
         [_userNameTF addTarget:self action:@selector(textFieldTextChange:) forControlEvents:UIControlEventEditingChanged];
         [self.view addSubview:_userNameTF];

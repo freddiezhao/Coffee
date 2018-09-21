@@ -11,7 +11,6 @@
 @interface DeviceModel : NSObject
 
 @property (nonatomic) NSInteger deviceId;
-@property (nonatomic, strong) NSString *deviceMac;
 @property (nonatomic, strong) NSString *sn;
 @property (nonatomic, strong) NSString *deviceName;
 @property (nonatomic, strong) NSString *ipAddress;

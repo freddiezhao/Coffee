@@ -22,7 +22,7 @@
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
     //去掉返回键的文字
-    self.navigationController.navigationBar.topItem.title = @"";
+    //self.navigationController.navigationBar.topItem.title = @"";
 }
 
 @end

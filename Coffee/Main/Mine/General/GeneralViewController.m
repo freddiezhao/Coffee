@@ -12,6 +12,7 @@
 #import "FastEventViewController.h"
 #import "CurveColorViewController.h"
 #import "SettingModel.h"
+#import "YPickerAlertController.h"
 
 NSString *const CellIdentifier_GeneralSub = @"CellID_GeneralSub";
 NSString *const CellIdentifier_GeneralLR = @"CellID_GeneralLR";
@@ -27,6 +28,9 @@ NSString *const CellIdentifier_GeneralLR = @"CellID_GeneralLR";
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    self.view.layer.backgroundColor = [UIColor colorWithRed:246/255.0 green:246/255.0 blue:246/255.0 alpha:1].CGColor;
+    self.navigationItem.title = LocalString(@"通用设置");
+    
     _generalTable = [self generalTable];
     _myData = [DataBase shareDataBase];
 }
@@ -45,22 +49,14 @@ NSString *const CellIdentifier_GeneralLR = @"CellID_GeneralLR";
             tableView.backgroundColor = [UIColor clearColor];
             tableView.dataSource = self;
             tableView.delegate = self;
-            //tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+            tableView.separatorColor = [UIColor colorWithRed:0/255.0 green:0/255.0 blue:0/255.0 alpha:0.08];
             [tableView registerClass:[SubtitileCell class] forCellReuseIdentifier:CellIdentifier_GeneralSub];
             [tableView registerClass:[LlabelRlabelCell class] forCellReuseIdentifier:CellIdentifier_GeneralLR];
             
             [self.view addSubview:tableView];
-            //tableView.estimatedRowHeight = 0;
-            //tableView.estimatedSectionHeaderHeight = 0;
-            //tableView.estimatedSectionFooterHeight = 0;
             
-            tableView.scrollEnabled = NO;
-            if ([tableView respondsToSelector:@selector(setSeparatorInset:)]) {
-                [tableView setSeparatorInset:UIEdgeInsetsZero];
-            }
-            if ([tableView respondsToSelector:@selector(setLayoutMargins:)])  {
-                [tableView setLayoutMargins:UIEdgeInsetsZero];
-            }
+            //tableView.scrollEnabled = NO;
+            tableView.tableFooterView = [[UIView alloc] init];
             tableView;
         });
     }
@@ -80,7 +76,8 @@ NSString *const CellIdentifier_GeneralLR = @"CellID_GeneralLR";
     }else if (section == 2){
         return 2;
     }else if (section == 3){
-        return 3;
+        return 2;
+        //return 3;曲线颜色好像不需要了
     }else if (section == 4){
         return 1;
     }else{
@@ -148,7 +145,7 @@ NSString *const CellIdentifier_GeneralLR = @"CellID_GeneralLR";
             if (!_myData.setting.timeAxis) {
                 cell.rightLabel.text = @"10分钟";
             }else{
-                cell.rightLabel.text = _myData.setting.timeAxis;
+                cell.rightLabel.text = [NSString stringWithFormat:@"%ld分钟",_myData.setting.timeAxis];
             }
             return cell;
         }else{
@@ -156,7 +153,7 @@ NSString *const CellIdentifier_GeneralLR = @"CellID_GeneralLR";
             if (!_myData.setting.tempAxis) {
                 cell.rightLabel.text = @"300℃";
             }else{
-                cell.rightLabel.text = _myData.setting.tempAxis;
+                cell.rightLabel.text = [NSString stringWithFormat:@"%ld℃",_myData.setting.tempAxis];
             }
             return cell;
         }
@@ -173,7 +170,7 @@ NSString *const CellIdentifier_GeneralLR = @"CellID_GeneralLR";
             if (!_myData.setting.tempCurveSmooth) {
                 cell.rightLabel.text = @"5";
             }else{
-                cell.rightLabel.text = _myData.setting.tempCurveSmooth;
+                cell.rightLabel.text = [NSString stringWithFormat:@"%ld",_myData.setting.tempCurveSmooth];
             }
             return cell;
         }else if (indexPath.row == 1){
@@ -181,7 +178,7 @@ NSString *const CellIdentifier_GeneralLR = @"CellID_GeneralLR";
             if (!_myData.setting.tempRateSmooth) {
                 cell.rightLabel.text = @"6";
             }else{
-                cell.rightLabel.text = _myData.setting.tempRateSmooth;
+                cell.rightLabel.text = [NSString stringWithFormat:@"%ld",_myData.setting.tempRateSmooth];
             }
             return cell;
         }else{
@@ -212,9 +209,86 @@ NSString *const CellIdentifier_GeneralLR = @"CellID_GeneralLR";
     if (indexPath.section == 0) {
         FastEventViewController *eventVC = [[FastEventViewController alloc] init];
         [self.navigationController pushViewController:eventVC animated:YES];
-    }else if (indexPath.section == 3 && indexPath.row == 2){
-        CurveColorViewController *ccVC = [[CurveColorViewController alloc] init];
-        [self.navigationController pushViewController:ccVC animated:YES];
+    }
+    if (indexPath.section == 1) {
+        if (indexPath.row == 0) {
+            [self showSheetWithTitle:LocalString(@"请选择重量单位") actions:@[@"g",@"kg",@"lb"] indexpath:indexPath];
+        }
+        if (indexPath.row == 1) {
+            [self showSheetWithTitle:LocalString(@"请选择温度单位") actions:@[@"℃",@"℉"] indexpath:indexPath];
+        }
+        if (indexPath.row == 2) {
+            [self showSheetWithTitle:LocalString(@"请选择烘焙色度参考标准") actions:@[@"Agron",@"colortrack",@"lighttell",@"tonino",@"javalytics"] indexpath:indexPath];
+        }
+    }
+    if (indexPath.section == 4) {
+        [self showSheetWithTitle:LocalString(@"请选择语言") actions:@[@"中文",@"英文"] indexpath:indexPath];
+    }
+    if (indexPath.section == 2) {
+        if (indexPath.row == 0) {
+            NSMutableArray *array = [[NSMutableArray alloc] init];
+            for (int i = 0; i < 30; i++) {
+                [array addObject:[NSNumber numberWithInt:i]];
+            }
+            YPickerAlertController *VC = [[YPickerAlertController alloc] init];
+            VC.pickerArr = [array mutableCopy];
+            VC.pickerBlock = ^(NSInteger picker) {
+                _myData.setting.timeAxis = picker;
+                [_generalTable reloadData];
+            };
+            VC.modalPresentationStyle = UIModalPresentationOverCurrentContext;
+            VC.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+            [self presentViewController:VC animated:YES completion:nil];
+            VC.titleLabel.text = LocalString(@"选择时间轴(min)");
+        }else{
+            NSMutableArray *array = [[NSMutableArray alloc] init];
+            for (int i = 0; i < 20; i++) {
+                [array addObject:[NSNumber numberWithInt:i*50]];
+            }
+            YPickerAlertController *VC = [[YPickerAlertController alloc] init];
+            VC.pickerArr = [array mutableCopy];
+            VC.pickerBlock = ^(NSInteger picker) {
+                _myData.setting.tempAxis = picker;
+                [_generalTable reloadData];
+            };
+            VC.modalPresentationStyle = UIModalPresentationOverCurrentContext;
+            VC.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+            [self presentViewController:VC animated:YES completion:nil];
+            VC.titleLabel.text = LocalString(@"选择温度轴(°C)");
+        }
+    }
+    if (indexPath.section == 3) {
+        if (indexPath.row == 0) {
+            NSMutableArray *array = [[NSMutableArray alloc] init];
+            for (int i = 0; i < 30; i++) {
+                [array addObject:[NSNumber numberWithInt:i]];
+            }
+            YPickerAlertController *VC = [[YPickerAlertController alloc] init];
+            VC.pickerArr = [array mutableCopy];
+            VC.pickerBlock = ^(NSInteger picker) {
+                _myData.setting.tempCurveSmooth = picker;
+                [_generalTable reloadData];
+            };
+            VC.modalPresentationStyle = UIModalPresentationOverCurrentContext;
+            VC.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+            [self presentViewController:VC animated:YES completion:nil];
+            VC.titleLabel.text = LocalString(@"温度平滑系数");
+        }else{
+            NSMutableArray *array = [[NSMutableArray alloc] init];
+            for (int i = 0; i < 30; i++) {
+                [array addObject:[NSNumber numberWithInt:i]];
+            }
+            YPickerAlertController *VC = [[YPickerAlertController alloc] init];
+            VC.pickerArr = [array mutableCopy];
+            VC.pickerBlock = ^(NSInteger picker) {
+                _myData.setting.tempRateSmooth = picker;
+                [_generalTable reloadData];
+            };
+            VC.modalPresentationStyle = UIModalPresentationOverCurrentContext;
+            VC.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+            [self presentViewController:VC animated:YES completion:nil];
+            VC.titleLabel.text = LocalString(@"升温速率平滑系数");
+        }
     }
 }
 
@@ -230,7 +304,7 @@ NSString *const CellIdentifier_GeneralLR = @"CellID_GeneralLR";
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
 {
-    return 0;//section头部高度
+    return 15;//section头部高度
 }
 //section头部视图
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
@@ -242,7 +316,7 @@ NSString *const CellIdentifier_GeneralLR = @"CellID_GeneralLR";
 //section底部间距
 - (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
 {
-    return 20;
+    return 0;
 }
 //section底部视图
 - (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section
@@ -252,5 +326,45 @@ NSString *const CellIdentifier_GeneralLR = @"CellID_GeneralLR";
     return view;
 }
 
+#pragma mark - Actions
+- (void)showSheetWithTitle:(NSString *)title actions:(NSArray *)actions indexpath:(NSIndexPath *)indexpath{
+    //显示弹出框列表选择
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:title
+                                                                   message:nil
+                                                            preferredStyle:UIAlertControllerStyleActionSheet];
+    
+    for (int i = 0; i < actions.count; i++) {
+        NSString *title = actions[i];
+        UIAlertAction *alertAction = [UIAlertAction actionWithTitle:title style:UIAlertActionStyleDefault
+                                                            handler:^(UIAlertAction * action) {
+                                                                //响应事件
+                                                                NSLog(@"action = %@", action);
+                                                                dispatch_async(dispatch_get_main_queue(), ^{
+                                                                    if (indexpath.section == 1) {
+                                                                        if (indexpath.row == 0) {
+                                                                            _myData.setting.weightUnit = title;
+                                                                        }else if (indexpath.row == 1){
+                                                                            _myData.setting.tempUnit = title;
+                                                                        }else if (indexpath.row == 2){
+                                                                            _myData.setting.bakeChromaReferStandard = title;
+                                                                        }
+                                                                    }else if (indexpath.section == 4){
+                                                                        _myData.setting.language = title;
+                                                                    }
+                                                                    
+                                                                    [_generalTable reloadData];
+                                                                });
+                                                            }];
+        [alertAction setValue:[UIColor colorWithHexString:@"333333"] forKey:@"_titleTextColor"];
+        [alert addAction:alertAction];
+    }
+    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel
+                                                         handler:^(UIAlertAction * action) {
+                                                             //响应事件
+                                                             NSLog(@"action = %@", action);
+                                                         }];
+    [alert addAction:cancelAction];
+    [self presentViewController:alert animated:YES completion:nil];
+}
 
 @end

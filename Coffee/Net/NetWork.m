@@ -11,7 +11,6 @@
 #import "BeanModel.h"
 #import "FMDB.h"
 #import "EventModel.h"
-#import <SVProgressHUD/SVProgressHUD.h>
 #import "DeviceModel.h"
 #import "BakeReportController.h"
 #import "MainViewController.h"

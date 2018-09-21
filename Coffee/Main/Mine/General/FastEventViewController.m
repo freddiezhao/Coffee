@@ -8,6 +8,7 @@
 
 #import "FastEventViewController.h"
 #import "SettingModel.h"
+#import "AddFastEventController.h"
 
 NSString *const CellIdentifier_fastEvent = @"CellID_fastEvent";
 
@@ -22,15 +23,31 @@ NSString *const CellIdentifier_fastEvent = @"CellID_fastEvent";
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    self.view.layer.backgroundColor = [UIColor colorWithRed:246/255.0 green:246/255.0 blue:246/255.0 alpha:1].CGColor;
+    
+    [self setNavItem];
+
     _eventArray = [[DataBase shareDataBase].setting.events copy];
     _fastEventTable = [self fastEventTable];
 }
 
 #pragma mark - Lazyload
+- (void)setNavItem{
+    self.navigationItem.title = LocalString(@"快速事件");
+
+    UIButton *rightButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    rightButton.frame = CGRectMake(0, 0, 30, 30);
+    [rightButton setImage:[UIImage imageNamed:@"ic_nav_add_black"] forState:UIControlStateNormal];
+    [rightButton addTarget:self action:@selector(addFastEvent) forControlEvents:UIControlEventTouchUpInside];
+    UIBarButtonItem *rightBarButton = [[UIBarButtonItem alloc] initWithCustomView:rightButton];
+    self.navigationItem.rightBarButtonItem = rightBarButton;
+}
+
 - (UITableView *)fastEventTable{
     if (!_fastEventTable) {
         _fastEventTable = ({
             UITableView *tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, ScreenWidth, ScreenHeight)];
+            tableView.separatorColor = [UIColor colorWithRed:0/255.0 green:0/255.0 blue:0/255.0 alpha:0.08];
             tableView.backgroundColor = [UIColor clearColor];
             tableView.dataSource = self;
             tableView.delegate = self;
@@ -38,10 +55,7 @@ NSString *const CellIdentifier_fastEvent = @"CellID_fastEvent";
             [tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:CellIdentifier_fastEvent];
             
             [self.view addSubview:tableView];
-            //tableView.estimatedRowHeight = 0;
-            //tableView.estimatedSectionHeaderHeight = 0;
-            //tableView.estimatedSectionFooterHeight = 0;
-            
+            tableView.tableFooterView = [[UIView alloc] init];
             tableView;
         });
     }
@@ -50,7 +64,7 @@ NSString *const CellIdentifier_fastEvent = @"CellID_fastEvent";
 
 #pragma mark - UITableView Delegate
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
-    return _eventArray.count + 1;
+    return _eventArray.count;
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView{
@@ -66,13 +80,46 @@ NSString *const CellIdentifier_fastEvent = @"CellID_fastEvent";
     if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_fastEvent];
     }
-    if (indexPath.row == _eventArray.count) {
-        cell.textLabel.text = LocalString(@"自定义添加选择");
-        cell.imageView.image = [UIImage imageNamed:@"ic_quick_event_add"];
-        return cell;
-    }
+    cell.textLabel.font = [UIFont systemFontOfSize:16.f];
+    cell.textLabel.textColor = [UIColor colorWithRed:34/255.0 green:34/255.0 blue:34/255.0 alpha:1];
     cell.textLabel.text = _eventArray[indexPath.row];
     return cell;
+}
+
+-(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+}
+
+//section头部间距
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+{
+    return 15;//section头部高度
+}
+//section头部视图
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
+{
+    UIView *view=[[UIView alloc] initWithFrame:CGRectMake(0, 0, ScreenWidth, 0)];
+    view.backgroundColor = [UIColor clearColor];
+    return view ;
+}
+
+- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath{
+    return YES;
+}
+
+- (UITableViewCellEditingStyle)tableView:(UITableView *)tableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath{
+    return UITableViewCellEditingStyleDelete;
+}
+
+- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath{
+    if (editingStyle == UITableViewCellEditingStyleDelete) {
+        
+    }
+}
+#pragma mark - Actions
+- (void)addFastEvent{
+    AddFastEventController *addVC = [[AddFastEventController alloc] init];
+    [self.navigationController pushViewController:addVC animated:YES];
 }
 
 @end

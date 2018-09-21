@@ -20,9 +20,10 @@ NSString *const CellIdentifier_bean = @"CellID_bean";
 
 
 @interface BeanViewController ()<UITableViewDelegate,UITableViewDataSource>
-
+@property (nonatomic, strong) DataBase *myDB;
 @property (nonatomic, strong) NSTimer *timer;
 @property (nonatomic, strong) NSLock *lock;
+
 
 @property (nonatomic, strong) UIButton *sort_generalBtn;
 @property (nonatomic, strong) UIButton *sort_nameBtn;
@@ -53,7 +54,8 @@ static float HEIGHT_HEADER = 36.f;
     [self.view setBackgroundColor:[UIColor colorWithRed:250/255.0 green:250/255.0 blue:250/255.0 alpha:1]];
     [self setNavItem];
     
-    
+    _myDB = [DataBase shareDataBase];
+
     _noBeanView = [self noBeanView];
     _beanTable = [self beanTable];
     _sort_nameBtn = [self sort_nameBtn];
@@ -62,6 +64,8 @@ static float HEIGHT_HEADER = 36.f;
     _headerView = [self headerView];
     _timer = [self timer];
     
+    [self getAllBean];
+
 //    NSArray *array = @[@"李娜", @"林丹", @"张学友", @"孙燕姿", @"Sammi", @"Tanya", @"东野圭吾", @"周树人", @"张大千", @"阿新"];
 //    NSArray *weightArray = @[@20, @40, @10, @20, @30, @15, @11, @31, @41, @51];
 //    _beanArr = [NSMutableArray array];
@@ -92,8 +96,6 @@ static float HEIGHT_HEADER = 36.f;
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
     [self.rdv_tabBarController setTabBarHidden:NO animated:YES];
-    
-    [self getAllBean];
 }
 
 - (void)viewWillDisappear:(BOOL)animated{
@@ -634,7 +636,51 @@ sectionForSectionIndexTitle:(NSString *)title
 #pragma mark - Data Source
 - (void)getAllBean{
     _beanArr = [[DataBase shareDataBase] queryAllBean];
+    if (_beanArr.count == 0) {
+        [self getAllBeanByApi];
+    }
+    [self afterGetBeanArr];
+}
+
+- (void)getAllBeanByApi{
+    [SVProgressHUD show];
+    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
     
+    [manager.requestSerializer willChangeValueForKey:@"timeoutInterval"];
+    manager.requestSerializer.timeoutInterval = 6.f;
+    [manager.requestSerializer didChangeValueForKey:@"timeoutInterval"];
+
+    NSString *url = [NSString stringWithFormat:@"http://139.196.90.97:8080/coffee/bean/list"];
+    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet characterSetWithCharactersInString:@"`#%^{}\"[]|\\<> "].invertedSet];
+    
+    [manager.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+    [manager.requestSerializer setValue:_myDB.userId forHTTPHeaderField:@"userId"];
+    [manager.requestSerializer setValue:[NSString stringWithFormat:@"bearer %@",_myDB.token] forHTTPHeaderField:@"Authorization"];
+    [manager GET:url parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableContainers|NSJSONReadingMutableLeaves error:nil];
+        NSData * data = [NSJSONSerialization dataWithJSONObject:responseDic options:(NSJSONWritingOptions)0 error:nil];
+        NSString * daetr = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
+        if ([[responseDic objectForKey:@"errno"] intValue] == 0) {
+            NSLog(@"success:%@",daetr);
+            NSDictionary *beansDic = [responseDic objectForKey:@"data"];
+            [beansDic[@"beans"] enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+#warning todo 把获得的信息插入本地数据库
+            }];
+            _beanArr = [[DataBase shareDataBase] queryAllBean];
+            [self afterGetBeanArr];
+        }else{
+            [NSObject showHudTipStr:LocalString(@"从服务器获取生豆信息失败")];
+        }
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [SVProgressHUD dismiss];
+        });
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        NSLog(@"Error:%@",error);
+        [NSObject showHudTipStr:LocalString(@"从服务器获取生豆信息失败")];
+    }];
+}
+
+- (void)afterGetBeanArr{
     if (_beanArr.count == 0) {
         _sort_nameBtn.hidden = YES;
         _sort_generalBtn.hidden = YES;

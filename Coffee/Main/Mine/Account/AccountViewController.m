@@ -9,7 +9,8 @@
 #import "AccountViewController.h"
 #import "LlabelRlabelCell.h"
 #import "UsernameViewController.h"
-#import "PasswordViewController.h"
+#import "UserPasswordController.h"
+#import "UserPhoneController.h"
 
 NSString *const CellIdentifier_Accountll = @"CellID_Accountll";
 
@@ -159,9 +160,11 @@ static float HEIGHT_CELL = 50.f;
         [self presentViewController:nav animated:YES completion:nil];
     }else{
         if (indexPath.row == 0){
-            PasswordViewController *pwVc = [[UIStoryboard storyboardWithName:@"Password" bundle:nil] instantiateViewControllerWithIdentifier:@"PasswordViewController"];
-            UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:pwVc];
-            [self presentViewController:nav animated:YES completion:nil];
+            UserPasswordController *pwVC = [[UserPasswordController alloc] init];
+            [self.navigationController pushViewController:pwVC animated:YES];
+        }else if (indexPath.row == 1){
+            UserPhoneController *phoneVC = [[UserPhoneController alloc] init];
+            [self.navigationController pushViewController:phoneVC animated:YES];
         }
     }
     

@@ -35,6 +35,8 @@ NSString *const CellIdentifier_device = @"CellID_device";
 @property (nonatomic, strong) NSTimer *timer;
 @property (nonatomic, strong) NSLock *lock;
 
+@property (nonatomic, strong) DataBase *myDB;
+
 @property (nonatomic, strong) UITableView *devieceTable;
 @property (nonatomic, strong) UIView *noDeviceView;
 
@@ -56,8 +58,8 @@ NSString *const CellIdentifier_device = @"CellID_device";
     [super viewDidLoad];
     [self.view setBackgroundColor:[UIColor colorWithRed:250/255.0 green:250/255.0 blue:250/255.0 alpha:1]];
 
+    _myDB = [DataBase shareDataBase];
     [self queryDevices];
-    
     self.navigationItem.title = LocalString(@"我的设备");
     
     UIButton *rightButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -84,7 +86,7 @@ NSString *const CellIdentifier_device = @"CellID_device";
 
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
-    [self sendSearchBroadcast];
+    NSLog(@"%@",_myDB.userId);
     [self.rdv_tabBarController setTabBarHidden:YES animated:YES];
 }
 
@@ -151,6 +153,7 @@ NSString *const CellIdentifier_device = @"CellID_device";
         _noDeviceView = [[UIView alloc] init];
         _noDeviceView.frame = CGRectMake(0, 0, ScreenWidth, ScreenHeight);
         _noDeviceView.backgroundColor = [UIColor colorWithRed:250/255.0 green:250/255.0 blue:250/255.0 alpha:1];
+        _noDeviceView.hidden = YES;
         [self.view addSubview:_noDeviceView];
         
         UIImageView *deviceImage = [[UIImageView alloc] init];
@@ -295,9 +298,9 @@ NSString *const CellIdentifier_device = @"CellID_device";
             dModel.sn = [msg substringWithRange:NSMakeRange(0, 8)];
             
             //判断本地是否已经存储过，如果有则将_deviceArray中的该设备删除，如果没有则存储该设备
-            BOOL isStored = [[DataBase shareDataBase] queryDevice:[msg substringWithRange:NSMakeRange(0, 8)]];
+            BOOL isStored = [_myDB queryDevice:[msg substringWithRange:NSMakeRange(0, 8)]];
             if (!isStored) {
-                [[DataBase shareDataBase].queueDB inDatabase:^(FMDatabase * _Nonnull db) {
+                [_myDB.queueDB inDatabase:^(FMDatabase * _Nonnull db) {
                     BOOL result = [db executeUpdate:@"INSERT INTO device (sn,deviceName) VALUES (?,?)",[msg substringWithRange:NSMakeRange(0, 8)],[msg substringWithRange:NSMakeRange(0, 8)]];
                     if (result) {
                         NSLog(@"插入新设备到device成功");
@@ -305,6 +308,23 @@ NSString *const CellIdentifier_device = @"CellID_device";
                         NSLog(@"插入新设备到device失败");
                     }
                 }];
+                
+                AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+                [manager.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+                [manager.requestSerializer setValue:[NSString stringWithFormat:@"Bearer %@",_myDB.token] forHTTPHeaderField:@"Authorization"];
+                [manager.requestSerializer setValue:_myDB.userId forHTTPHeaderField:@"userId"];
+                NSDictionary *parameters = @{@"sn":[msg substringWithRange:NSMakeRange(0, 8)],@"name":[msg substringWithRange:NSMakeRange(0, 8)],@"userId":_myDB.userId};
+                [manager POST:@"http://139.196.90.97:8080/coffee/roaster" parameters:parameters progress:nil
+                      success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+                          NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableContainers|NSJSONReadingMutableLeaves error:nil];
+                          if ([[responseDic objectForKey:@"errno"] intValue] == 0) {
+                              [NSObject showHudTipStr:LocalString(@"插入新设备到服务器成功")];
+                          }else{
+                              [NSObject showHudTipStr:LocalString(@"插入新设备到服务器失败")];
+                          }
+                      } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+                          NSLog(@"Error:%@",error);
+                      }];
             }else{
                 for (int i = 0; i < _deviceArray.count; i++) {
                     DeviceModel *device = _deviceArray[i];
@@ -550,13 +570,65 @@ NSString *const CellIdentifier_device = @"CellID_device";
 }
 
 #pragma mark - Data Source
+- (void)queryDevicesByApi{
+    [SVProgressHUD show];
+    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+    
+    NSString *url = [NSString stringWithFormat:@"http://139.196.90.97:8080/coffee/roaster?userId=%@",_myDB.userId];
+    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet characterSetWithCharactersInString:@"`#%^{}\"[]|\\<> "].invertedSet];
+    
+    NSLog(@"%@",_myDB.userId);
+    [manager.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+    [manager.requestSerializer setValue:_myDB.userId forHTTPHeaderField:@"userId"];
+    [manager.requestSerializer setValue:[NSString stringWithFormat:@"bearer %@",_myDB.token] forHTTPHeaderField:@"Authorization"];
+    [manager GET:url parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableContainers|NSJSONReadingMutableLeaves error:nil];
+        NSData * data = [NSJSONSerialization dataWithJSONObject:responseDic options:(NSJSONWritingOptions)0 error:nil];
+        NSString * daetr = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
+        NSLog(@"success:%@",daetr);
+        [responseDic[@"data"] enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            DeviceModel *device = [[DeviceModel alloc] init];
+            device.sn = [obj objectForKey:@"sn"];
+            device.deviceName = [obj objectForKey:@"name"];
+            [_myDB.queueDB inDatabase:^(FMDatabase * _Nonnull db) {
+                BOOL result = [db executeUpdate:@"INSERT INTO device (sn,deviceName) VALUES (?,?)",device.sn,device.deviceName,device.sn];
+                if (result) {
+                    NSLog(@"插入服务器device成功");
+                }else{
+                    NSLog(@"插入服务器device失败");
+                }
+            }];
+        }];
+        
+        if (!_deviceArray.count && !_onlineDeviceArray.count && ![NetWork shareNetWork].connectedDevice) {
+            _devieceTable.hidden = YES;
+            _noDeviceView.hidden = NO;
+        }else{
+            _devieceTable.hidden = NO;
+            _noDeviceView.hidden = YES;
+        }
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [SVProgressHUD dismiss];
+            _deviceArray = [_myDB queryAllDevice];
+            [_devieceTable reloadData];
+            [self sendSearchBroadcast];
+        });
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        NSLog(@"Error:%@",error);
+    }];
+}
+
 - (void)queryDevices{
-    _deviceArray = [[DataBase shareDataBase] queryAllDevice];
-    if ([NetWork shareNetWork].connectedDevice) {
-        for (DeviceModel *device in _deviceArray) {
-            if ([device.sn isEqualToString:[NetWork shareNetWork].connectedDevice.sn]) {
-                [_deviceArray removeObject:device];
-                break;
+    if (_deviceArray.count == 0) {
+        [self queryDevicesByApi];
+    }else{
+        [self sendSearchBroadcast];
+        if ([NetWork shareNetWork].connectedDevice) {
+            for (DeviceModel *device in _deviceArray) {
+                if ([device.sn isEqualToString:[NetWork shareNetWork].connectedDevice.sn]) {
+                    [_deviceArray removeObject:device];
+                    break;
+                }
             }
         }
     }

@@ -8,7 +8,6 @@
 
 #import "RightFuncController.h"
 #import "EventModel.h"
-#import <SVProgressHUD/SVProgressHUD.h>
 
 #define WScaleT (667.f / ScreenWidth)
 #define HScaleT (375.f / ScreenHeight)
