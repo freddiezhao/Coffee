@@ -57,6 +57,8 @@ static NSInteger tempCountVer = 1000;
 @property (nonatomic, strong) NSString *ssid;
 @property (nonatomic, strong) NSString *bssid;
 @property (nonatomic, strong) NSString *apPwd;
+@property (nonatomic, strong) NSNumber *deviceType;//咖啡机机型
+@property (nonatomic, strong) NSString *ipAddr;
 
 ///@brief TCPSocket
 @property (nonatomic, strong) GCDAsyncSocket *mySocket;

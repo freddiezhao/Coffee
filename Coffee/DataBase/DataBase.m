@@ -61,7 +61,7 @@ static DataBase *_dataBase = nil;
 
 - (void)createTable{
     [_queueDB inDatabase:^(FMDatabase * _Nonnull db) {
-        BOOL result = [db executeUpdate:@"CREATE TABLE IF NOT EXISTS beanInfo (beanId integer PRIMARY KEY AUTOINCREMENT,beanName text NOT NULL,nation text NOT NULL,area text NOT NULL,manor text NOT NULL,altitude REAL NOT NULL,beanSpecies text NOT NULL,grade text NOT NULL,process text NOT NULL,water REAL NOT NULL,supplier text NOT NULL,price REAL NOT NULL,stock REAL NOT NULL,time text NOT NULL)"];
+        BOOL result = [db executeUpdate:@"CREATE TABLE IF NOT EXISTS beanInfo (beanId integer PRIMARY KEY AUTOINCREMENT,beanUid text NOT NULL,beanName text NOT NULL,nation text NOT NULL,area text NOT NULL,manor text NOT NULL,altitude REAL NOT NULL,beanSpecies text NOT NULL,grade text NOT NULL,process text NOT NULL,water REAL NOT NULL,supplier text NOT NULL,price REAL NOT NULL,stock REAL NOT NULL,time text NOT NULL,isNew integer NOT NULL)"];
         if (result) {
             NSLog(@"创建表bean成功");
         }else{
@@ -254,6 +254,7 @@ static DataBase *_dataBase = nil;
         while ([set next]) {
             BeanModel *beanModel = [[BeanModel alloc] init];
             beanModel.beanId = [set intForColumn:@"beanId"];
+            beanModel.beanUid = [set stringForColumn:@"beanUid"];
             beanModel.name = [set stringForColumn:@"beanName"];
             beanModel.nation = [set stringForColumn:@"nation"];
             beanModel.area = [set stringForColumn:@"area"];
@@ -267,6 +268,7 @@ static DataBase *_dataBase = nil;
             beanModel.price = [set doubleForColumn:@"price"];
             beanModel.stock = [set doubleForColumn:@"stock"];
             beanModel.time = [NSDate YMDDateFromLocalString:[set stringForColumn:@"time"]];
+            beanModel.isNew = [NSNumber numberWithInt:[set intForColumn:@"isNew"]];
             [beanArray addObject:beanModel];
         }
         [set close];
@@ -274,12 +276,12 @@ static DataBase *_dataBase = nil;
     return beanArray;
 }
 
-- (BeanModel *)queryBean:(NSNumber *)beanId{
+- (BeanModel *)queryBean:(NSString *)beanUid{
     BeanModel *beanModel = [[BeanModel alloc] init];
     [_queueDB inDatabase:^(FMDatabase * _Nonnull db) {
-        FMResultSet *set = [db executeQuery:@"SELECT * FROM beanInfo WHERE beanId = ?",beanId];
+        FMResultSet *set = [db executeQuery:@"SELECT * FROM beanInfo WHERE beanUid = ?",beanUid];
         while ([set next]) {
-            beanModel.beanId = [beanId integerValue];
+            beanModel.beanUid = beanUid;
             beanModel.name = [set stringForColumn:@"beanName"];
             beanModel.nation = [set stringForColumn:@"nation"];
             beanModel.area = [set stringForColumn:@"area"];
@@ -293,6 +295,7 @@ static DataBase *_dataBase = nil;
             beanModel.price = [set doubleForColumn:@"price"];
             beanModel.stock = [set doubleForColumn:@"stock"];
             beanModel.time = [NSDate YMDDateFromLocalString:[set stringForColumn:@"time"]];
+            beanModel.isNew = [NSNumber numberWithInt:[set intForColumn:@"isNew"]];;
         }
         [set close];
     }];
@@ -400,9 +403,53 @@ static DataBase *_dataBase = nil;
 }
 
 - (BOOL)insertNewBean:(BeanModel *)bean{
+    if (!bean.nation) {
+        bean.nation = @"";
+    }
+    
+    if (!bean.area) {
+        bean.area = @"";
+    }
+    
+    if (!bean.stock) {
+        bean.stock = 0;
+    }
+    
+    if (!bean.manor) {
+        bean.manor = @"";
+    }
+    
+    if (!bean.supplier) {
+        bean.supplier = @"";
+    }
+    
+    if (!bean.water) {
+        bean.water = 0;
+    }
+    
+    if (!bean.altitude) {
+        bean.altitude = 0;
+    }
+    
+    if (!bean.price) {
+        bean.price = 0;
+    }
+    
+    if (!bean.beanSpecies) {
+        bean.beanSpecies = @"";
+    }
+    if (!bean.grade) {
+        bean.grade = @"";
+    }
+    if (!bean.process) {
+        bean.process = @"";
+    }
+    if (!bean.time) {
+        bean.time = [NSDate date];
+    }
     static BOOL result = YES;
     [_queueDB inDatabase:^(FMDatabase * _Nonnull db) {
-        result = [db executeUpdate:@"INSERT INTO beanInfo (beanName,nation,area,manor,altitude,beanSpecies,grade,process,water,supplier,price,stock,time) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)",bean.name,bean.nation,bean.area,bean.manor,[NSNumber numberWithFloat:bean.altitude],bean.beanSpecies,bean.grade,bean.process,[NSNumber numberWithFloat:bean.water],bean.supplier,[NSNumber numberWithFloat:bean.price],[NSNumber numberWithFloat:bean.stock],[NSDate YMDStringFromDate:bean.time]];
+        result = [db executeUpdate:@"INSERT INTO beanInfo (beanUid,beanName,nation,area,manor,altitude,beanSpecies,grade,process,water,supplier,price,stock,time,isNew) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",bean.beanUid,bean.name,bean.nation,bean.area,bean.manor,[NSNumber numberWithFloat:bean.altitude],bean.beanSpecies,bean.grade,bean.process,[NSNumber numberWithFloat:bean.water],bean.supplier,[NSNumber numberWithFloat:bean.price],[NSNumber numberWithFloat:bean.stock],[NSDate YMDStringFromDate:bean.time],bean.isNew];
         NSLog(@"%@",bean.name);
         if (!result) {
             NSLog(@"添加咖啡豆失败");
@@ -480,7 +527,7 @@ static DataBase *_dataBase = nil;
 - (BOOL)updateBean:(BeanModel *)bean{
     static BOOL result = YES;
     [_queueDB inDatabase:^(FMDatabase * _Nonnull db) {
-        result = [db executeUpdate:@"UPDATE beanInfo SET beanName = ?,nation = ?,area = ?,manor = ?,altitude = ?,beanSpecies = ?,grade = ?,process = ?,water = ?,supplier = ?,price = ?,stock = ?,time = ? WHERE beanId = ?",bean.name,bean.nation,bean.area,bean.manor,[NSNumber numberWithFloat:bean.altitude],bean.beanSpecies,bean.grade,bean.process,[NSNumber numberWithFloat:bean.water],bean.supplier,[NSNumber numberWithFloat:bean.price],[NSNumber numberWithFloat:bean.stock],[NSDate YMDStringFromDate:bean.time],[NSNumber numberWithInteger:bean.beanId]];
+        result = [db executeUpdate:@"UPDATE beanInfo SET beanName = ?,nation = ?,area = ?,manor = ?,altitude = ?,beanSpecies = ?,grade = ?,process = ?,water = ?,supplier = ?,price = ?,stock = ?,time = ?,isNew = ? WHERE beanUid = ?",bean.name,bean.nation,bean.area,bean.manor,[NSNumber numberWithFloat:bean.altitude],bean.beanSpecies,bean.grade,bean.process,[NSNumber numberWithFloat:bean.water],bean.supplier,[NSNumber numberWithFloat:bean.price],[NSNumber numberWithFloat:bean.stock],[NSDate YMDStringFromDate:bean.time],bean.isNew,bean.beanUid];
         NSLog(@"%@",bean.name);
         if (!result) {
             NSLog(@"更新咖啡豆失败");

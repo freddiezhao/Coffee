@@ -17,12 +17,17 @@
 #import "EditLightCell.h"
 #import "ReportSelectController.h"
 #import "CupModel.h"
+#import "ScoreTitleCell.h"
+#import "AllScoreCell.h"
 
 NSString *const CellIdentifier_cupEditCupName = @"CellID_cupEditCupName";
 NSString *const CellIdentifier_cupEditLight = @"CellID_cupEditLight";
 NSString *const CellIdentifier_cupEditBeanHeader = @"CellID_cupEditBeanHeader";
 NSString *const CellIdentifier_cupEditBeanInfo = @"CellID_cupEditBeanInfo";
 NSString *const CellIdentifier_cupEditCurve = @"CellID_cupEditCurve";
+NSString *const CellIdentifier_cupEditScoreTitle = @"CellID_cupEditScoreTitle";
+NSString *const CellIdentifier_cupEditGoodScore = @"CellID_cupEditGoodScore";
+NSString *const CellIdentifier_cupEditBadScore = @"CellID_cupEditBadScore";
 
 @interface CupTestEditController () <UITableViewDelegate, UITableViewDataSource>
 
@@ -110,7 +115,8 @@ static float HEIGHT_HEADER = 36.f;
         _cupEditTable = ({
             TouchTableView *tableView = [[TouchTableView alloc] initWithFrame:CGRectMake(0, 44/HScale, ScreenWidth, ScreenHeight - 64 - 44/HScale) style:UITableViewStylePlain];
             tableView.backgroundColor = [UIColor clearColor];
-            tableView.separatorColor = [UIColor colorWithRed:0/255.0 green:0/255.0 blue:0/255.0 alpha:0.1];
+            //tableView.separatorColor = [UIColor colorWithRed:0/255.0 green:0/255.0 blue:0/255.0 alpha:0.1];
+            tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
             tableView.dataSource = self;
             tableView.delegate = self;
             [self.view addSubview:tableView];
@@ -119,6 +125,9 @@ static float HEIGHT_HEADER = 36.f;
             tableView.estimatedSectionFooterHeight = 0;
             [tableView registerClass:[EditCupNameCell class] forCellReuseIdentifier:CellIdentifier_cupEditCupName];
             [tableView registerClass:[EditLightCell class] forCellReuseIdentifier:CellIdentifier_cupEditLight];
+            [tableView registerClass:[ScoreTitleCell class] forCellReuseIdentifier:CellIdentifier_cupEditScoreTitle];
+            [tableView registerClass:[AllScoreCell class] forCellReuseIdentifier:CellIdentifier_cupEditGoodScore];
+            [tableView registerClass:[AllScoreCell class] forCellReuseIdentifier:CellIdentifier_cupEditBadScore];
             tableView;
         });
     }
@@ -237,7 +246,7 @@ static float HEIGHT_HEADER = 36.f;
 #pragma mark - uitableview
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView{
     if (tableView == _cupEditTable) {
-        return 2;
+        return 4;
     }else{
         return 2;
     }
@@ -253,6 +262,14 @@ static float HEIGHT_HEADER = 36.f;
                 
             case 1:
                 return 1;
+                break;
+                
+            case 2:
+                return 9;
+                break;
+                
+            case 3:
+                return 7;
                 break;
                 
             default:
@@ -288,6 +305,16 @@ static float HEIGHT_HEADER = 36.f;
             case 1:
                 return 256.f/HScale;
                 break;
+                
+            case 2:
+            case 3:
+            {
+                if (indexPath.row == 0) {
+                    return 50.f/HScale;
+                }else{
+                    return 98/HScale;
+                }
+            }
                 
             default:
                 return 0;
@@ -349,6 +376,178 @@ static float HEIGHT_HEADER = 36.f;
                 _cup.light = value;
             };
             return cell;
+        }else if (indexPath.section == 2){
+            if (indexPath.row == 0) {
+                ScoreTitleCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_cupEditScoreTitle];
+                if (cell == nil) {
+                    cell = [[ScoreTitleCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_cupEditScoreTitle];
+                }
+                cell.nameLabel.text = LocalString(@"咖啡杯测");
+                return cell;
+            }else{
+                AllScoreCell *cell = [tableView cellForRowAtIndexPath:indexPath];
+                if (cell == nil) {
+                    cell = [[AllScoreCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_cupEditGoodScore];
+                }
+                switch (indexPath.row) {
+                    case 1:
+                    {
+                        cell.nameLabel.text = LocalString(@"干湿香");
+                        [cell setSliderValue:_cup.dryAndWet];
+                        cell.SliderBlock = ^(float value) {
+                            _cup.dryAndWet = value/10.f;
+                        };
+                    }
+                        break;
+                    case 2:
+                    {
+                        cell.nameLabel.text = LocalString(@"风味");
+                        [cell setSliderValue:_cup.flavor];
+                        cell.SliderBlock = ^(float value) {
+                            _cup.flavor = value/10.f;
+                        };
+                    }
+                        break;
+                    case 3:
+                    {
+                        cell.nameLabel.text = LocalString(@"余韵");
+                        [cell setSliderValue:_cup.aftermath];
+                        cell.SliderBlock = ^(float value) {
+                            _cup.aftermath = value/10.f;
+                        };
+                    }
+                        break;
+                    case 4:
+                    {
+                        cell.nameLabel.text = LocalString(@"酸质");
+                        [cell setSliderValue:_cup.acid];
+                        cell.SliderBlock = ^(float value) {
+                            _cup.acid = value/10.f;
+                        };
+                    }
+                        break;
+                    case 5:
+                    {
+                        cell.nameLabel.text = LocalString(@"口感");
+                        [cell setSliderValue:_cup.taste];
+                        cell.SliderBlock = ^(float value) {
+                            _cup.taste = value/10.f;
+                        };
+
+                    }
+                        break;
+                    case 6:
+                    {
+                        cell.nameLabel.text = LocalString(@"甜度");
+                        [cell setSliderValue:_cup.sweet];
+                        cell.SliderBlock = ^(float value) {
+                            _cup.sweet = value/10.f;
+                        };
+                    }
+                        break;
+                    case 7:
+                    {
+                        cell.nameLabel.text = LocalString(@"均匀度");
+                        [cell setSliderValue:_cup.balance];
+                        cell.SliderBlock = ^(float value) {
+                            _cup.balance = value/10.f;
+                        };
+                    }
+                        break;
+                    case 8:
+                    {
+                        cell.nameLabel.text = LocalString(@"整体感受");
+                        [cell setSliderValue:_cup.overFeel];
+                        cell.SliderBlock = ^(float value) {
+                            _cup.overFeel = value/10.f;
+                        };
+                    }
+                        break;
+                    default:
+                        break;
+                }
+                NSArray *colors = @[[UIColor colorWithRed:255/255.0 green:232/255.0 blue:159/255.0 alpha:1], [UIColor colorWithRed:255/255.0 green:204/255.0 blue:102/255.0 alpha:1]];
+                UIImage *image = [cell getGradientImageWithColors:colors imgSize:cell.scoreSlider.bounds.size];
+                [cell.scoreSlider setMinimumTrackImage:image forState:UIControlStateNormal];
+
+                return cell;
+            }
+        }else if (indexPath.section == 3){
+            if (indexPath.row == 0) {
+                ScoreTitleCell *cell = [tableView cellForRowAtIndexPath:indexPath];
+                if (cell == nil) {
+                    cell = [[ScoreTitleCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_cupEditScoreTitle];
+                }
+                cell.nameLabel.text = LocalString(@"烘焙瑕疵");
+                return cell;
+            }else{
+                AllScoreCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_cupEditBadScore];
+                if (cell == nil) {
+                    cell = [[AllScoreCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_cupEditBadScore];
+                }
+                switch (indexPath.row) {
+                    case 1:
+                    {
+                        cell.nameLabel.text = LocalString(@"发展不充分");
+                        [cell setSliderValue:_cup.deveUnfull];
+                        cell.SliderBlock = ^(float value) {
+                            _cup.deveUnfull = value/10.f;
+                        };
+                    }
+                        break;
+                    case 2:
+                    {
+                        cell.nameLabel.text = LocalString(@"过度发展");
+                        [cell setSliderValue:_cup.overDeve];
+                        cell.SliderBlock = ^(float value) {
+                            _cup.overDeve = value/10.f;
+                        };
+                    }
+                        break;
+                    case 3:
+                    {
+                        cell.nameLabel.text = LocalString(@"烤焙味");
+                        [cell setSliderValue:_cup.bakePaste];
+                        cell.SliderBlock = ^(float value) {
+                            _cup.bakePaste = value/10.f;
+                        };
+                    }
+                        break;
+                    case 4:
+                    {
+                        cell.nameLabel.text = LocalString(@"自焙烫伤");
+                        [cell setSliderValue:_cup.injure];
+                        cell.SliderBlock = ^(float value) {
+                            _cup.injure = value/10.f;
+                        };
+                    }
+                        break;
+                    case 5:
+                    {
+                        cell.nameLabel.text = LocalString(@"胚芽烫伤");
+                        [cell setSliderValue:_cup.germInjure];
+                        cell.SliderBlock = ^(float value) {
+                            _cup.germInjure = value/10.f;
+                        };
+                    }
+                        break;
+                    case 6:
+                    {
+                        cell.nameLabel.text = LocalString(@"豆表烫伤");
+                        [cell setSliderValue:_cup.beanFaceInjure];
+                        cell.SliderBlock = ^(float value) {
+                            _cup.beanFaceInjure = value/10.f;
+                        };
+                    }
+                        break;
+                    default:
+                        break;
+                }
+                NSArray *colors = @[[UIColor colorWithRed:236/255.0 green:224/255.0 blue:203/255.0 alpha:1], [UIColor colorWithRed:214/255.0 green:181/255.0 blue:128/255.0 alpha:1]];;
+                UIImage *image = [cell getGradientImageWithColors:colors imgSize:cell.scoreSlider.bounds.size];
+                [cell.scoreSlider setMinimumTrackImage:image forState:UIControlStateNormal];
+                return cell;
+            }
         }else{
             EditCupNameCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_cupEditCupName];
             if (cell == nil) {
@@ -465,26 +664,11 @@ static float HEIGHT_HEADER = 36.f;
         switch (section) {
             case 0:
             case 1:
+            case 2:
+            case 3:
             {
                 UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, ScreenWidth, 15.f/HScale)];
                 headerView.layer.backgroundColor = [UIColor colorWithRed:246/255.0 green:246/255.0 blue:246/255.0 alpha:1].CGColor;
-                return headerView;
-            }
-                break;
-                
-            case 2:
-            {
-                UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, ScreenWidth, HEIGHT_HEADER/HScale)];
-                headerView.layer.backgroundColor = [UIColor colorWithRed:246/255.0 green:246/255.0 blue:246/255.0 alpha:1].CGColor;
-                
-                UILabel *textLabel = [[UILabel alloc] initWithFrame:CGRectMake(11/WScale, 0, 200/WScale, HEIGHT_HEADER/HScale)];
-                textLabel.textColor = [UIColor colorWithHexString:@"999999"];
-                textLabel.font = [UIFont systemFontOfSize:14.f];
-                textLabel.textAlignment = NSTextAlignmentLeft;
-                textLabel.backgroundColor = [UIColor clearColor];
-                [headerView addSubview:textLabel];
-                textLabel.text = LocalString(@"烘焙度");
-                
                 return headerView;
             }
                 break;
@@ -506,11 +690,9 @@ static float HEIGHT_HEADER = 36.f;
         switch (section) {
             case 0:
             case 1:
-                return 15.f/HScale;
-                break;
-                
             case 2:
-                return HEIGHT_HEADER/HScale;
+            case 3:
+                return 15.f/HScale;
                 break;
                 
             default:
@@ -528,32 +710,34 @@ static float HEIGHT_HEADER = 36.f;
     _reportModel = [[DataBase shareDataBase] queryReport:[NSNumber numberWithInteger:_cup.curveId]];
     _reportModel.curveId = _cup.curveId;
     NSLog(@"%@",_reportModel.date);
-    NSData *curveData = [_reportModel.curveValueJson dataUsingEncoding:NSUTF8StringEncoding];
-    NSDictionary *curveDic = [NSJSONSerialization JSONObjectWithData:curveData options:NSJSONReadingMutableLeaves error:nil];
-    
-    NSArray *Bean = [curveDic objectForKey:@"bean"];
-    NSArray *Out = [curveDic objectForKey:@"out"];
-    NSArray *In = [curveDic objectForKey:@"in"];
-    NSArray *Environment = [curveDic objectForKey:@"environment"];
-    //NSArray *Diff = [curveDic objectForKey:@"diff"];
-    NSLog(@"%lu",(unsigned long)Bean.count);
-    NSLog(@"%lu",Out.count);
-    NSLog(@"%lu",In.count);
-    NSLog(@"%lu",Environment.count);
-    
-    for (int i = 0; i<Bean.count; i++) {
-        [_yVals_Bean addObject:[[ChartDataEntry alloc] initWithX:i y:[Bean[i] doubleValue]]];
+    if (_reportModel.curveValueJson) {
+        NSData *curveData = [_reportModel.curveValueJson dataUsingEncoding:NSUTF8StringEncoding];
+        NSDictionary *curveDic = [NSJSONSerialization JSONObjectWithData:curveData options:NSJSONReadingMutableLeaves error:nil];
+        
+        NSArray *Bean = [curveDic objectForKey:@"bean"];
+        NSArray *Out = [curveDic objectForKey:@"out"];
+        NSArray *In = [curveDic objectForKey:@"in"];
+        NSArray *Environment = [curveDic objectForKey:@"environment"];
+        //NSArray *Diff = [curveDic objectForKey:@"diff"];
+        NSLog(@"%lu",(unsigned long)Bean.count);
+        NSLog(@"%lu",Out.count);
+        NSLog(@"%lu",In.count);
+        NSLog(@"%lu",Environment.count);
+        
+        for (int i = 0; i<Bean.count; i++) {
+            [_yVals_Bean addObject:[[ChartDataEntry alloc] initWithX:i y:[Bean[i] doubleValue]]];
+        }
+        for (int i = 0; i<Out.count; i++) {
+            [_yVals_Out addObject:[[ChartDataEntry alloc] initWithX:i y:[Out[i] doubleValue]]];
+        }
+        for (int i = 0; i<In.count; i++) {
+            [_yVals_In addObject:[[ChartDataEntry alloc] initWithX:i y:[In[i] doubleValue]]];
+        }
+        for (int i = 0; i<Environment.count; i++) {
+            [_yVals_Environment addObject:[[ChartDataEntry alloc] initWithX:i y:[Environment[i] doubleValue]]];
+        }
+        //_yVals_Diff = [curveDic objectForKey:@"diff"];
     }
-    for (int i = 0; i<Out.count; i++) {
-        [_yVals_Out addObject:[[ChartDataEntry alloc] initWithX:i y:[Out[i] doubleValue]]];
-    }
-    for (int i = 0; i<In.count; i++) {
-        [_yVals_In addObject:[[ChartDataEntry alloc] initWithX:i y:[In[i] doubleValue]]];
-    }
-    for (int i = 0; i<Environment.count; i++) {
-        [_yVals_Environment addObject:[[ChartDataEntry alloc] initWithX:i y:[Environment[i] doubleValue]]];
-    }
-    //_yVals_Diff = [curveDic objectForKey:@"diff"];
     [self queryBeanInfo];
 }
 

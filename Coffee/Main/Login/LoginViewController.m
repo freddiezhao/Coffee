@@ -75,7 +75,7 @@
         _phoneTF.font = [UIFont systemFontOfSize:15.f];
         _phoneTF.placeholder = LocalString(@"请输入手机号");
         _phoneTF.tintColor = [UIColor colorWithHexString:@"333333"];
-        _phoneTF.clearButtonMode = UITextFieldViewModeAlways;
+        _phoneTF.clearButtonMode = UITextFieldViewModeWhileEditing;
         _phoneTF.autocorrectionType = UITextAutocorrectionTypeNo;
         _phoneTF.delegate = self;
         _phoneTF.autocorrectionType = UITextAutocorrectionTypeNo;
@@ -99,10 +99,10 @@
 - (UITextField *)passwordTF{
     if (!_passwordTF) {
         _passwordTF = [[UITextField alloc] init];
-        _passwordTF.backgroundColor = [UIColor whiteColor];
+        _passwordTF.backgroundColor = [UIColor clearColor];
         _passwordTF.font = [UIFont systemFontOfSize:15.f];
         _passwordTF.tintColor = [UIColor blackColor];
-        _passwordTF.clearButtonMode = UITextFieldViewModeAlways;
+        _passwordTF.clearButtonMode = UITextFieldViewModeWhileEditing;
         _passwordTF.autocorrectionType = UITextAutocorrectionTypeNo;
         _passwordTF.delegate = self;
         _passwordTF.secureTextEntry = YES;

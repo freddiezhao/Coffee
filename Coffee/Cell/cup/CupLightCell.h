@@ -10,6 +10,7 @@
 
 @interface CupLightCell : UITableViewCell
 
+@property (nonatomic, strong) UILabel *nameLabel;
 @property (nonatomic, strong) UIView *circleView;
 @property (nonatomic, strong) UILabel *lightValue;
 

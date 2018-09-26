@@ -71,7 +71,8 @@ NSString *const CellIdentifier_deviceSelect = @"CellID_deviceSelect";
         [_nextBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
         [_nextBtn setTitle:LocalString(@"下一步") forState:UIControlStateNormal];
         [_nextBtn.titleLabel setFont:[UIFont fontWithName:@"PingFangSC-Medium" size:16]];
-        [_nextBtn setBackgroundColor:[UIColor colorWithRed:71/255.0 green:120/255.0 blue:204/255.0 alpha:1]];
+        [_nextBtn setBackgroundColor:[UIColor colorWithRed:71/255.0 green:120/255.0 blue:204/255.0 alpha:0.4]];
+        _nextBtn.enabled = NO;
         [_nextBtn setButtonStyle1];
         [_nextBtn addTarget:self action:@selector(goNextView) forControlEvents:UIControlEventTouchUpInside];
         [self.view addSubview:_nextBtn];
@@ -92,7 +93,7 @@ NSString *const CellIdentifier_deviceSelect = @"CellID_deviceSelect";
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return 1;
+    return 4;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -104,14 +105,70 @@ NSString *const CellIdentifier_deviceSelect = @"CellID_deviceSelect";
     if (cell == nil) {
         cell = [[DeviceSelectCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_deviceSelect];
     }
-    cell.deviceName.text = LocalString(@"HB-M6G咖啡烘焙机");
-    cell.image.image = [UIImage imageNamed:@"img_peak_edmund_small"];
+    switch (indexPath.row) {
+        case 0:
+        {
+            cell.deviceName.text = LocalString(@"HB-M6G咖啡烘焙机");
+            cell.image.image = [UIImage imageNamed:@"img_hb_m6g_small"];
+            cell.tag = unselect;
+        }
+            break;
+            
+        case 1:
+        {
+            cell.deviceName.text = LocalString(@"HB-M6E咖啡烘焙机");
+            cell.image.image = [UIImage imageNamed:@"img_hb_m6g_small"];
+            cell.tag = unselect;
+        }
+            break;
+            
+        case 2:
+        {
+            cell.deviceName.text = LocalString(@"HB-L2咖啡烘焙机");
+            cell.image.image = [UIImage imageNamed:@"img_hb_l2_small"];
+            cell.tag = unselect;
+        }
+            break;
+            
+        case 3:
+        {
+            cell.deviceName.text = LocalString(@"PEAK-Edmund咖啡烘焙机");
+            cell.image.image = [UIImage imageNamed:@"img_peak_edmund_small"];
+            cell.tag = unselect;
+        }
+            break;
+            
+        default:
+            break;
+    }
     return cell;
     
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    NSArray *indexpathArr = [tableView indexPathsForVisibleRows];
+    for (NSIndexPath *perIndexPath in indexpathArr) {
+        DeviceSelectCell *cell = [tableView cellForRowAtIndexPath:perIndexPath];
+        if (perIndexPath.row == indexPath.row) {
+            if (cell.tag == unselect) {
+                cell.tag = select;
+                [cell.checkBtn setImage:[UIImage imageNamed:@"ic_selected"] forState:UIControlStateNormal];
+                [NetWork shareNetWork].deviceType = [NSNumber numberWithInteger:indexPath.row];
+                [_nextBtn setBackgroundColor:[UIColor colorWithRed:71/255.0 green:120/255.0 blue:204/255.0 alpha:1]];
+                _nextBtn.enabled = YES;
+            }else{
+                cell.tag = unselect;
+                [cell.checkBtn setImage:[UIImage imageNamed:@"ic_select"] forState:UIControlStateNormal];
+                [NetWork shareNetWork].deviceType = @0;
+                [_nextBtn setBackgroundColor:[UIColor colorWithRed:71/255.0 green:120/255.0 blue:204/255.0 alpha:0.4]];
+                _nextBtn.enabled = NO;
+            }
+        }else{
+            cell.tag = unselect;
+            [cell.checkBtn setImage:[UIImage imageNamed:@"ic_select"] forState:UIControlStateNormal];
+        }
+    }
 }
 
 @end

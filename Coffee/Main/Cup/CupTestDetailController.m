@@ -17,6 +17,8 @@
 #import "BeanModel.h"
 #import "CupTestEditController.h"
 #import "CupModel.h"
+#import "ScoreTitleCell.h"
+#import "DetailScoreCell.h"
 
 
 NSString *const CellIdentifier_cupDetailGrade = @"CellID_cupDetailGrade";
@@ -24,6 +26,9 @@ NSString *const CellIdentifier_cupDetailLight = @"CellID_cupDetailLight";
 NSString *const CellIdentifier_cupBeanHeader = @"CellID_cupDetailBeanHeader";
 NSString *const CellIdentifier_cupBeanInfo = @"CellID_cupDetailBeanInfo";
 NSString *const CellIdentifier_cupCurve = @"CellID_cupDetailCurve";
+NSString *const CellIdentifier_cupScoreTitle = @"CellID_cupScoreTitle";
+NSString *const CellIdentifier_cupGoodScore = @"CellID_cupGoodScore";
+NSString *const CellIdentifier_cupBadScore = @"CellID_cupBadScore";
 
 @interface CupTestDetailController () <UITableViewDelegate, UITableViewDataSource>
 
@@ -44,7 +49,7 @@ NSString *const CellIdentifier_cupCurve = @"CellID_cupDetailCurve";
 @end
 
 @implementation CupTestDetailController
-static float HEIGHT_HEADER = 36.f;
+static float HEIGHT_HEADER = 15.f;
 
 - (void)viewDidLoad{
     [super viewDidLoad];
@@ -124,6 +129,9 @@ static float HEIGHT_HEADER = 36.f;
             tableView.estimatedSectionFooterHeight = 0;
             [tableView registerClass:[DetailGradeCell class] forCellReuseIdentifier:CellIdentifier_cupDetailGrade];
             [tableView registerClass:[CupLightCell class] forCellReuseIdentifier:CellIdentifier_cupDetailLight];
+            [tableView registerClass:[ScoreTitleCell class] forCellReuseIdentifier:CellIdentifier_cupScoreTitle];
+            [tableView registerClass:[DetailScoreCell class] forCellReuseIdentifier:CellIdentifier_cupGoodScore];
+            [tableView registerClass:[DetailScoreCell class] forCellReuseIdentifier:CellIdentifier_cupBadScore];
             tableView;
         });
     }
@@ -182,7 +190,7 @@ static float HEIGHT_HEADER = 36.f;
 #pragma mark - uitableview
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView{
     if (tableView == _cupDetailTable) {
-        return 2;
+        return 4;
     }else{
         return 2;
     }
@@ -198,6 +206,14 @@ static float HEIGHT_HEADER = 36.f;
                 
             case 1:
                 return 1;
+                break;
+                
+            case 2:
+                return 9;
+                break;
+                
+            case 3:
+                return 7;
                 break;
                 
             default:
@@ -231,8 +247,18 @@ static float HEIGHT_HEADER = 36.f;
                 break;
                 
             case 1:
-                return 175.f/HScale;
+                return 214.f/HScale;
                 break;
+                
+            case 2:
+            case 3:
+            {
+                if (indexPath.row == 0) {
+                    return 50.f/HScale;
+                }else{
+                    return 98/HScale;
+                }
+            }
                 
             default:
                 return 0;
@@ -298,6 +324,130 @@ static float HEIGHT_HEADER = 36.f;
                 cell.lightValue.text = @"0";
             }
             return cell;
+        }else if (indexPath.section == 2){
+            if (indexPath.row == 0) {
+                ScoreTitleCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_cupScoreTitle];
+                if (cell == nil) {
+                    cell = [[ScoreTitleCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_cupScoreTitle];
+                }
+                cell.nameLabel.text = LocalString(@"咖啡杯测");
+                return cell;
+            }else{
+                DetailScoreCell *cell = [tableView cellForRowAtIndexPath:indexPath];
+                if (cell == nil) {
+                    cell = [[DetailScoreCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_cupGoodScore];
+                }
+                NSArray *colors = @[(__bridge id)[UIColor colorWithRed:255/255.0 green:232/255.0 blue:159/255.0 alpha:1].CGColor, (__bridge id)[UIColor colorWithRed:255/255.0 green:204/255.0 blue:102/255.0 alpha:1].CGColor];
+                switch (indexPath.row) {
+                    case 1:
+                    {
+                        cell.nameLabel.text = LocalString(@"干湿香");
+                        [cell addGradientLayerWithValue:_cup.dryAndWet colors:colors];
+                    }
+                        break;
+                    case 2:
+                    {
+                        cell.nameLabel.text = LocalString(@"风味");
+                        [cell addGradientLayerWithValue:_cup.flavor colors:colors];
+                    }
+                        break;
+                    case 3:
+                    {
+                        cell.nameLabel.text = LocalString(@"余韵");
+                        [cell addGradientLayerWithValue:_cup.aftermath colors:colors];
+                    }
+                        break;
+                    case 4:
+                    {
+                        cell.nameLabel.text = LocalString(@"酸质");
+                        [cell addGradientLayerWithValue:_cup.acid colors:colors];
+                    }
+                        break;
+                    case 5:
+                    {
+                        cell.nameLabel.text = LocalString(@"口感");
+                        [cell addGradientLayerWithValue:_cup.taste colors:colors];
+                    }
+                        break;
+                    case 6:
+                    {
+                        cell.nameLabel.text = LocalString(@"甜度");
+                        [cell addGradientLayerWithValue:_cup.sweet colors:colors];
+                    }
+                        break;
+                    case 7:
+                    {
+                        cell.nameLabel.text = LocalString(@"均匀度");
+                        [cell addGradientLayerWithValue:_cup.balance colors:colors];
+                    }
+                        break;
+                    case 8:
+                    {
+                        cell.nameLabel.text = LocalString(@"整体感受");
+                        [cell addGradientLayerWithValue:_cup.overFeel colors:colors];
+                    }
+                        break;
+                    default:
+                        break;
+                }
+                return cell;
+            }
+        }else if (indexPath.section == 3){
+            if (indexPath.row == 0) {
+                ScoreTitleCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_cupScoreTitle];
+                if (cell == nil) {
+                    cell = [[ScoreTitleCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_cupScoreTitle];
+                }
+                cell.nameLabel.text = LocalString(@"烘焙瑕疵");
+                return cell;
+            }else{
+                DetailScoreCell *cell = [tableView cellForRowAtIndexPath:indexPath];
+                if (cell == nil) {
+                    cell = [[DetailScoreCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_cupBadScore];
+                }
+                NSArray *colors = @[(__bridge id)[UIColor colorWithRed:236/255.0 green:224/255.0 blue:203/255.0 alpha:1].CGColor, (__bridge id)[UIColor colorWithRed:214/255.0 green:181/255.0 blue:128/255.0 alpha:1].CGColor];
+                switch (indexPath.row) {
+                    case 1:
+                    {
+                        cell.nameLabel.text = LocalString(@"发展不充分");
+                        [cell addGradientLayerWithValue:_cup.deveUnfull colors:colors];
+                    }
+                        break;
+                    case 2:
+                    {
+                        cell.nameLabel.text = LocalString(@"过度发展");
+                        [cell addGradientLayerWithValue:_cup.overDeve colors:colors];
+                    }
+                        break;
+                    case 3:
+                    {
+                        cell.nameLabel.text = LocalString(@"烤焙味");
+                        [cell addGradientLayerWithValue:_cup.bakePaste colors:colors];
+                    }
+                        break;
+                    case 4:
+                    {
+                        cell.nameLabel.text = LocalString(@"自焙烫伤");
+                        [cell addGradientLayerWithValue:_cup.injure colors:colors];
+                    }
+                        break;
+                    case 5:
+                    {
+                        cell.nameLabel.text = LocalString(@"胚芽烫伤");
+                        [cell addGradientLayerWithValue:_cup.germInjure colors:colors];
+                    }
+                        break;
+                    case 6:
+                    {
+                        cell.nameLabel.text = LocalString(@"豆表烫伤");
+                        [cell addGradientLayerWithValue:_cup.beanFaceInjure colors:colors];
+                    }
+                        break;
+                    default:
+                        break;
+                }
+                return cell;
+            }
         }else{
             DetailGradeCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_cupDetailGrade];
             if (cell == nil) {
@@ -414,30 +564,16 @@ static float HEIGHT_HEADER = 36.f;
     if (tableView == _cupDetailTable) {
         switch (section) {
             case 0:
+            case 1:
+            case 2:
+            case 3:
             {
                 UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, ScreenWidth, 0.5/HScale)];
-                headerView.layer.backgroundColor = [UIColor colorWithRed:0/255.0 green:0/255.0 blue:0/255.0 alpha:0.1].CGColor;
+                headerView.layer.backgroundColor = [UIColor colorWithRed:246/255.0 green:246/255.0 blue:246/255.0 alpha:0.1].CGColor;
                 return headerView;
             }
                 break;
-                
-            case 1:
-            {
-                UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, ScreenWidth, HEIGHT_HEADER/HScale)];
-                headerView.layer.backgroundColor = [UIColor colorWithRed:246/255.0 green:246/255.0 blue:246/255.0 alpha:1].CGColor;
-                
-                UILabel *textLabel = [[UILabel alloc] initWithFrame:CGRectMake(11/WScale, 0, 200/WScale, HEIGHT_HEADER/HScale)];
-                textLabel.textColor = [UIColor colorWithHexString:@"999999"];
-                textLabel.font = [UIFont systemFontOfSize:14.f];
-                textLabel.textAlignment = NSTextAlignmentLeft;
-                textLabel.backgroundColor = [UIColor clearColor];
-                [headerView addSubview:textLabel];
-                textLabel.text = LocalString(@"烘焙度");
-                
-                return headerView;
-            }
-                break;
-                
+                                
             default:
                 return nil;
                 break;
@@ -458,6 +594,8 @@ static float HEIGHT_HEADER = 36.f;
                 break;
                 
             case 1:
+            case 2:
+            case 3:
                 return HEIGHT_HEADER/HScale;
                 break;
                 
@@ -476,32 +614,34 @@ static float HEIGHT_HEADER = 36.f;
     _reportModel = [[DataBase shareDataBase] queryReport:[NSNumber numberWithInteger:_cup.curveId]];
     _reportModel.curveId = _cup.curveId;
     NSLog(@"%@",_reportModel.date);
-    NSData *curveData = [_reportModel.curveValueJson dataUsingEncoding:NSUTF8StringEncoding];
-    NSDictionary *curveDic = [NSJSONSerialization JSONObjectWithData:curveData options:NSJSONReadingMutableLeaves error:nil];
-    
-    NSArray *Bean = [curveDic objectForKey:@"bean"];
-    NSArray *Out = [curveDic objectForKey:@"out"];
-    NSArray *In = [curveDic objectForKey:@"in"];
-    NSArray *Environment = [curveDic objectForKey:@"environment"];
-    //NSArray *Diff = [curveDic objectForKey:@"diff"];
-    NSLog(@"%lu",(unsigned long)Bean.count);
-    NSLog(@"%lu",Out.count);
-    NSLog(@"%lu",In.count);
-    NSLog(@"%lu",Environment.count);
-    
-    for (int i = 0; i<Bean.count; i++) {
-        [_yVals_Bean addObject:[[ChartDataEntry alloc] initWithX:i y:[Bean[i] doubleValue]]];
+    if (_reportModel.curveValueJson) {
+        NSData *curveData = [_reportModel.curveValueJson dataUsingEncoding:NSUTF8StringEncoding];
+        NSDictionary *curveDic = [NSJSONSerialization JSONObjectWithData:curveData options:NSJSONReadingMutableLeaves error:nil];
+        
+        NSArray *Bean = [curveDic objectForKey:@"bean"];
+        NSArray *Out = [curveDic objectForKey:@"out"];
+        NSArray *In = [curveDic objectForKey:@"in"];
+        NSArray *Environment = [curveDic objectForKey:@"environment"];
+        //NSArray *Diff = [curveDic objectForKey:@"diff"];
+        NSLog(@"%lu",(unsigned long)Bean.count);
+        NSLog(@"%lu",Out.count);
+        NSLog(@"%lu",In.count);
+        NSLog(@"%lu",Environment.count);
+        
+        for (int i = 0; i<Bean.count; i++) {
+            [_yVals_Bean addObject:[[ChartDataEntry alloc] initWithX:i y:[Bean[i] doubleValue]]];
+        }
+        for (int i = 0; i<Out.count; i++) {
+            [_yVals_Out addObject:[[ChartDataEntry alloc] initWithX:i y:[Out[i] doubleValue]]];
+        }
+        for (int i = 0; i<In.count; i++) {
+            [_yVals_In addObject:[[ChartDataEntry alloc] initWithX:i y:[In[i] doubleValue]]];
+        }
+        for (int i = 0; i<Environment.count; i++) {
+            [_yVals_Environment addObject:[[ChartDataEntry alloc] initWithX:i y:[Environment[i] doubleValue]]];
+        }
+        //_yVals_Diff = [curveDic objectForKey:@"diff"];
     }
-    for (int i = 0; i<Out.count; i++) {
-        [_yVals_Out addObject:[[ChartDataEntry alloc] initWithX:i y:[Out[i] doubleValue]]];
-    }
-    for (int i = 0; i<In.count; i++) {
-        [_yVals_In addObject:[[ChartDataEntry alloc] initWithX:i y:[In[i] doubleValue]]];
-    }
-    for (int i = 0; i<Environment.count; i++) {
-        [_yVals_Environment addObject:[[ChartDataEntry alloc] initWithX:i y:[Environment[i] doubleValue]]];
-    }
-    //_yVals_Diff = [curveDic objectForKey:@"diff"];
     [self queryBeanInfo];
 }
 

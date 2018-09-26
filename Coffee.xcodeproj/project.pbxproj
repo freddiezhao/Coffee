@@ -326,6 +326,10 @@
 		BB68B5FB21280A42001CABE5 /* BeanHeaderCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BB68B5FA21280A42001CABE5 /* BeanHeaderCell.m */; };
 		BB68B5FE2128124D001CABE5 /* BeanInfoCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BB68B5FD2128124D001CABE5 /* BeanInfoCell.m */; };
 		BB68B60121282262001CABE5 /* ReportCurveCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BB68B60021282262001CABE5 /* ReportCurveCell.m */; };
+		BB68F2EC2159D49800D40336 /* AllScoreCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BB68F2EB2159D49800D40336 /* AllScoreCell.m */; };
+		BB68F2EF2159D4F900D40336 /* ScoreTitleCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BB68F2EE2159D4F900D40336 /* ScoreTitleCell.m */; };
+		BB68F2F22159E5CC00D40336 /* HeightSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = BB68F2F12159E5CC00D40336 /* HeightSlider.m */; };
+		BB68F2F5215A115500D40336 /* DetailScoreCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BB68F2F4215A115500D40336 /* DetailScoreCell.m */; };
 		BB69CA7320ECBB490032F126 /* NSObject+Common.m in Sources */ = {isa = PBXBuildFile; fileRef = BB69CA7220ECBB490032F126 /* NSObject+Common.m */; };
 		BB6A555E20FCCA3D0013C3C1 /* AddBeanTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BB6A555D20FCCA3D0013C3C1 /* AddBeanTableViewCell.m */; };
 		BB6A556020FCCD8E0013C3C1 /* ic_bake_dialog_delete@1x.png in Resources */ = {isa = PBXBuildFile; fileRef = BB6A555F20FCCD8E0013C3C1 /* ic_bake_dialog_delete@1x.png */; };
@@ -542,6 +546,7 @@
 		BB345C352153C7D6000537DD /* NSString+Common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+Common.h"; sourceTree = "<group>"; };
 		BB3811F820EA1C3C00F0B2B7 /* BakeCurveViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BakeCurveViewController.h; sourceTree = "<group>"; };
 		BB3811F920EA1C3C00F0B2B7 /* BakeCurveViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BakeCurveViewController.m; sourceTree = "<group>"; };
+		BB41EAB6215B7E2900A58DFA /* Coffee.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Coffee.entitlements; sourceTree = "<group>"; };
 		BB4A4C76214F474E0010A9A1 /* DetailGradeCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DetailGradeCell.h; sourceTree = "<group>"; };
 		BB4A4C77214F474E0010A9A1 /* DetailGradeCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DetailGradeCell.m; sourceTree = "<group>"; };
 		BB4A4C79214F4A0B0010A9A1 /* ArcProgressView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ArcProgressView.h; sourceTree = "<group>"; };
@@ -857,6 +862,14 @@
 		BB68B5FD2128124D001CABE5 /* BeanInfoCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeanInfoCell.m; sourceTree = "<group>"; };
 		BB68B5FF21282262001CABE5 /* ReportCurveCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ReportCurveCell.h; sourceTree = "<group>"; };
 		BB68B60021282262001CABE5 /* ReportCurveCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ReportCurveCell.m; sourceTree = "<group>"; };
+		BB68F2EA2159D49800D40336 /* AllScoreCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AllScoreCell.h; sourceTree = "<group>"; };
+		BB68F2EB2159D49800D40336 /* AllScoreCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AllScoreCell.m; sourceTree = "<group>"; };
+		BB68F2ED2159D4F900D40336 /* ScoreTitleCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ScoreTitleCell.h; sourceTree = "<group>"; };
+		BB68F2EE2159D4F900D40336 /* ScoreTitleCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ScoreTitleCell.m; sourceTree = "<group>"; };
+		BB68F2F02159E5CC00D40336 /* HeightSlider.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HeightSlider.h; sourceTree = "<group>"; };
+		BB68F2F12159E5CC00D40336 /* HeightSlider.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HeightSlider.m; sourceTree = "<group>"; };
+		BB68F2F3215A115500D40336 /* DetailScoreCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DetailScoreCell.h; sourceTree = "<group>"; };
+		BB68F2F4215A115500D40336 /* DetailScoreCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DetailScoreCell.m; sourceTree = "<group>"; };
 		BB69CA7120ECBB490032F126 /* NSObject+Common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+Common.h"; sourceTree = "<group>"; };
 		BB69CA7220ECBB490032F126 /* NSObject+Common.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+Common.m"; sourceTree = "<group>"; };
 		BB6A555C20FCCA3D0013C3C1 /* AddBeanTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AddBeanTableViewCell.h; sourceTree = "<group>"; };
@@ -1639,6 +1652,8 @@
 				BB56101C215267C5008433B1 /* YPickerAlertController.m */,
 				BB4A4C79214F4A0B0010A9A1 /* ArcProgressView.h */,
 				BB4A4C7A214F4A0B0010A9A1 /* ArcProgressView.m */,
+				BB68F2F02159E5CC00D40336 /* HeightSlider.h */,
+				BB68F2F12159E5CC00D40336 /* HeightSlider.m */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -1691,6 +1706,12 @@
 				BB4A4C7D214F82F90010A9A1 /* CupLightCell.m */,
 				BB4A4C82214FA2DB0010A9A1 /* EditCupNameCell.h */,
 				BB4A4C83214FA2DB0010A9A1 /* EditCupNameCell.m */,
+				BB68F2ED2159D4F900D40336 /* ScoreTitleCell.h */,
+				BB68F2EE2159D4F900D40336 /* ScoreTitleCell.m */,
+				BB68F2EA2159D49800D40336 /* AllScoreCell.h */,
+				BB68F2EB2159D49800D40336 /* AllScoreCell.m */,
+				BB68F2F3215A115500D40336 /* DetailScoreCell.h */,
+				BB68F2F4215A115500D40336 /* DetailScoreCell.m */,
 			);
 			path = cup;
 			sourceTree = "<group>";
@@ -1908,6 +1929,7 @@
 		BB8F7BCE20DA513B00BE5CFC /* Coffee */ = {
 			isa = PBXGroup;
 			children = (
+				BB41EAB6215B7E2900A58DFA /* Coffee.entitlements */,
 				BB345C022153A4A9000537DD /* AFNetworking */,
 				BB345C102153A4A9000537DD /* UIKit+AFNetworking */,
 				BB8A9F7720DE3F5100610316 /* Image */,
@@ -2093,6 +2115,11 @@
 						CreatedOnToolsVersion = 9.2;
 						LastSwiftMigration = 0940;
 						ProvisioningStyle = Automatic;
+						SystemCapabilities = {
+							com.apple.AccessWiFi = {
+								enabled = 1;
+							};
+						};
 					};
 					BB8F7BE320DA513C00BE5CFC = {
 						CreatedOnToolsVersion = 9.2;
@@ -2547,15 +2574,18 @@
 				BB8AA49E20DFAFC600610316 /* DeviceViewController.m in Sources */,
 				BB6AD2212100C058008C8763 /* LlabelRlabelCell.m in Sources */,
 				BB8AA49A20DE475200610316 /* BakeViewController.m in Sources */,
+				BB68F2F5215A115500D40336 /* DetailScoreCell.m in Sources */,
 				BB8AA4C920DFB9CA00610316 /* ESP_WifiUtil.m in Sources */,
 				BB63B3FC2148FE8F00EAC364 /* BeanDetailController.m in Sources */,
 				BB94EAA220DB8CE700370A95 /* RDVTabBarItem.m in Sources */,
 				BB345BFE21534F99000537DD /* RegisterController.m in Sources */,
+				BB68F2EF2159D4F900D40336 /* ScoreTitleCell.m in Sources */,
 				BB6AD21E2100B706008C8763 /* AccountViewController.m in Sources */,
 				BB68B5FB21280A42001CABE5 /* BeanHeaderCell.m in Sources */,
 				BB56101121522D25008433B1 /* UserPhoneController.m in Sources */,
 				BB63B40521491CC600EAC364 /* BeanRelaCurveController.m in Sources */,
 				BB635D2B2108794B005F42D6 /* CurveColorCell.m in Sources */,
+				BB68F2EC2159D49800D40336 /* AllScoreCell.m in Sources */,
 				BB65C25920FDF00000BB684E /* BeanModel.m in Sources */,
 				BBA7B95B212AA0A0004943DC /* CollectInfoCell.m in Sources */,
 				BB8AA4D120DFB9CA00610316 /* ESPTouchTask.m in Sources */,
@@ -2608,6 +2638,7 @@
 				BB7835E22147588D000E2FCB /* EditNameCell.m in Sources */,
 				BB8AA4A520DFB25900610316 /* EspViewController.m in Sources */,
 				BB63B40221490EB500EAC364 /* EditBeanController.m in Sources */,
+				BB68F2F22159E5CC00D40336 /* HeightSlider.m in Sources */,
 				BB56100821521F8A008433B1 /* UserPasswordController.m in Sources */,
 				BB345C2B2153A4AA000537DD /* UIProgressView+AFNetworking.m in Sources */,
 				BB2912122106D8D5001B9448 /* GeneralViewController.m in Sources */,
@@ -2824,6 +2855,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = Coffee/Coffee.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 5FAMV3D32N;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -2848,6 +2880,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = Coffee/Coffee.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 5FAMV3D32N;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;

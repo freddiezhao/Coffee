@@ -52,7 +52,8 @@
         [_nextButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
         [_nextButton setTitle:LocalString(@"下一步") forState:UIControlStateNormal];
         [_nextButton.titleLabel setFont:[UIFont fontWithName:@"PingFangSC-Medium" size:16]];
-        [_nextButton setBackgroundColor:[UIColor colorWithRed:71/255.0 green:120/255.0 blue:204/255.0 alpha:1]];
+        [_nextButton setBackgroundColor:[UIColor colorWithRed:71/255.0 green:120/255.0 blue:204/255.0 alpha:0.4]];
+        _nextButton.enabled = NO;
         [_nextButton setButtonStyle1];
         [_nextButton addTarget:self action:@selector(goNextView) forControlEvents:UIControlEventTouchUpInside];
         [self.view addSubview:_nextButton];
@@ -105,6 +106,7 @@
         _checkBtn = [UIButton buttonWithType:UIButtonTypeCustom];
         [_checkBtn setImage:[UIImage imageNamed:@"untick"] forState:UIControlStateNormal];
         [_checkBtn addTarget:self action:@selector(checkDevice) forControlEvents:UIControlEventTouchUpInside];
+        _checkBtn.tag = unselect;
         [self.view addSubview:_checkBtn];
         [_checkBtn mas_makeConstraints:^(MASConstraintMaker *make) {
             make.size.mas_equalTo(CGSizeMake(18 / WScale, 18 / HScale));
@@ -129,6 +131,20 @@
 - (void)goNextView{
     DeviceConnectView *connectVC = [[DeviceConnectView alloc] init];
     [self.navigationController pushViewController:connectVC animated:YES];
+}
+
+- (void)checkDevice{
+    if (_checkBtn.tag == unselect) {
+        _checkBtn.tag = select;
+        [_checkBtn setImage:[UIImage imageNamed:@"tick"] forState:UIControlStateNormal];
+        [_nextButton setBackgroundColor:[UIColor colorWithRed:71/255.0 green:120/255.0 blue:204/255.0 alpha:1]];
+        _nextButton.enabled = YES;
+    }else{
+        _checkBtn.tag = unselect;
+        [_checkBtn setImage:[UIImage imageNamed:@"untick"] forState:UIControlStateNormal];
+        [_nextButton setBackgroundColor:[UIColor colorWithRed:71/255.0 green:120/255.0 blue:204/255.0 alpha:0.4]];
+        _nextButton.enabled = NO;
+    }
 }
 
 @end

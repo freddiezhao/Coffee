@@ -163,6 +163,8 @@ static float HEIGHT_HEADER = 36.f;
             tableView.sectionIndexColor = [UIColor colorWithHexString:@"4778CC"];//修改右边索引字体的颜色
             //tableView.sectionIndexTrackingBackgroundColor = [UIColor orangeColor];//修改右边索引点击时候的背景色
             
+            tableView.tableFooterView = [[UIView alloc] init];
+            
             MJRefreshGifHeader *header = [MJRefreshGifHeader headerWithRefreshingTarget:self refreshingAction:@selector(getAllCup)];
             // Set title
             [header setTitle:LocalString(@"下拉刷新") forState:MJRefreshStateIdle];

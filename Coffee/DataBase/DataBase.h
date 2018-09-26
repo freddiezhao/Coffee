@@ -39,7 +39,7 @@
 - (NSMutableArray *)queryBeanRelaReport:(NSNumber *)beanId;
 - (NSArray *)queryReportRelaBean:(NSNumber *)curveId;
 - (NSMutableArray *)queryAllBean;
-- (BeanModel *)queryBean:(NSNumber *)beanId;
+- (BeanModel *)queryBean:(NSString *)beanUid;
 - (NSArray *)queryEvent:(NSNumber *)curveId;
 - (NSMutableArray *)queryAllDevice;
 - (BOOL)queryDevice:(NSString *)sn;

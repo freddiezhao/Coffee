@@ -14,6 +14,7 @@
 #import "ESP_NetUtil.h"
 #import "ESPTouchDelegate.h"
 #import "ESPAES.h"
+#import "DeviceViewController.h"
 
 @interface EspTouchDelegateImpl : NSObject<ESPTouchDelegate>
 
@@ -57,7 +58,7 @@
     _spinner = [self spinner];
     _image =[self image];
     _cancelBtn = [self cancelBtn];
-    //[self startEsptouchConnect];
+    [self startEsptouchConnect];
     //[self fail];
 }
 
@@ -182,27 +183,29 @@
                 const int maxDisplayCount = 5;
                 if ([firstResult isSuc])
                 {
-                    /**多个设备同时esptouch连接
                      for (int i = 0; i < [esptouchResultArray count]; ++i)
                      {
-                     ESPTouchResult *resultInArray = [esptouchResultArray objectAtIndex:i];
-                     [mutableStr appendString:[resultInArray description]];
-                     [mutableStr appendString:@"\n"];
-                     count++;
-                     if (count >= maxDisplayCount)
-                     {
-                     break;
-                     }
+                         ESPTouchResult *resultInArray = [esptouchResultArray objectAtIndex:i];
+                         [mutableStr appendString:[resultInArray description]];
+                         [mutableStr appendString:@"\n"];
+                         count++;
+                         if (count >= maxDisplayCount){
+                             break;
+                         }
                      }
                      
-                     if (count < [esptouchResultArray count])
-                     {
-                     [mutableStr appendString:[NSString stringWithFormat:@"\nthere's %lu more result(s) without showing\n",(unsigned long)([esptouchResultArray count] - count)]];
-                     }
-                     **/
+                    if (count < [esptouchResultArray count]){
+                        [mutableStr appendString:[NSString stringWithFormat:@"\nthere's %lu more result(s) without showing\n",(unsigned long)([esptouchResultArray count] - count)]];
+                    }
+                    NSLog(@"esp信息%@",mutableStr);
+                    for (UIViewController *controller in self.navigationController.viewControllers) {
+                        if ([controller isKindOfClass:[DeviceViewController class]]) {
+                            [self.navigationController popToViewController:controller animated:YES];
+                        }
+                    }
+                    [NetWork shareNetWork].ipAddr = [[NSString alloc] initWithData:firstResult.ipAddrData encoding:NSUTF8StringEncoding];
                     [NSObject showHudTipStr:LocalString(@"连接成功，请进行设备的选择")];
                 }
-                
                 else
                 {
                     [self fail];
@@ -211,14 +214,6 @@
             
         });
     });
-    
-    
-//    else
-//    {
-//        [self.spinner stopAnimating];
-//        NSLog(@"ESPViewController do cancel action...");
-//        [self cancel];
-//    }
 }
 
 #pragma mark - the example of how to use executeForResults

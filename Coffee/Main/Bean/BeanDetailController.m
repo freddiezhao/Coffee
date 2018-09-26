@@ -40,8 +40,11 @@ static float HEIGHT_HEADER = 15.f;
     [super viewWillAppear:animated];
     [self.rdv_tabBarController setTabBarHidden:YES animated:YES];
     
-    _myBean = [[DataBase shareDataBase] queryBean:[NSNumber numberWithInteger:_myBean.beanId]];
+    _myBean = [[DataBase shareDataBase] queryBean:_myBean.beanUid];
     [self setNavItem];
+    if ([_myBean.isNew integerValue] == 1) {
+        [self getBeanInfoByAPI];
+    }
     if (_beanDetailTable) {
         [_beanDetailTable reloadData];
     }
@@ -221,5 +224,65 @@ static float HEIGHT_HEADER = 15.f;
     BeanRelaCurveController *relaVC = [[BeanRelaCurveController alloc] init];
     relaVC.beanId = [NSNumber numberWithInteger:_myBean.beanId];
     [self.navigationController pushViewController:relaVC animated:YES];
+}
+
+#pragma mark - API data
+- (void)getBeanInfoByAPI{
+    [SVProgressHUD show];
+    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+    
+    [manager.requestSerializer willChangeValueForKey:@"timeoutInterval"];
+    manager.requestSerializer.timeoutInterval = 6.f;
+    [manager.requestSerializer didChangeValueForKey:@"timeoutInterval"];
+    
+    NSString *url = [NSString stringWithFormat:@"http://139.196.90.97:8080/coffee/bean?beanUid=%@",_myBean.beanUid];
+    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet characterSetWithCharactersInString:@"`#%^{}\"[]|\\<> "].invertedSet];
+    
+    [manager.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+    [manager.requestSerializer setValue:[DataBase shareDataBase].userId forHTTPHeaderField:@"userId"];
+    [manager.requestSerializer setValue:[NSString stringWithFormat:@"bearer %@",[DataBase shareDataBase].token] forHTTPHeaderField:@"Authorization"];
+    [manager GET:url parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableContainers|NSJSONReadingMutableLeaves error:nil];
+        NSData * data = [NSJSONSerialization dataWithJSONObject:responseDic options:(NSJSONWritingOptions)0 error:nil];
+        NSString * daetr = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
+        if ([[responseDic objectForKey:@"errno"] intValue] == 0) {
+            NSLog(@"success:%@",daetr);
+            if ([responseDic objectForKey:@"data"]) {
+                NSDictionary *beansDic = [responseDic objectForKey:@"data"];
+                _myBean.name = [beansDic objectForKey:@"name"];
+                _myBean.nation = [beansDic objectForKey:@"country"];
+                _myBean.area = [beansDic objectForKey:@"origin"];
+                _myBean.grade = [beansDic objectForKey:@"grade"];
+                _myBean.process = [beansDic objectForKey:@"processingMethod"];
+                _myBean.stock = [[beansDic objectForKey:@"stock"] floatValue];
+                _myBean.manor = [beansDic objectForKey:@"farm"];
+                _myBean.altitude = [[beansDic objectForKey:@"altitude"] floatValue];
+                _myBean.beanSpecies = [beansDic objectForKey:@"species"];
+                _myBean.water = [[beansDic objectForKey:@"waterContent"] floatValue];
+                _myBean.supplier = [beansDic objectForKey:@"supplier"];
+                _myBean.price = [[beansDic objectForKey:@"price"] floatValue];
+                _myBean.time = [NSDate UTCDateFromLocalString:[beansDic objectForKey:@"purchaseTime"]];
+                _myBean.isNew = @0;
+                BOOL result = [[DataBase shareDataBase] updateBean:_myBean];
+                if (result) {
+                    _myBean = [[DataBase shareDataBase] queryBean:_myBean.beanUid];
+                    [_beanDetailTable reloadData];
+                }else{
+                    [NSObject showHudTipStr:@"从服务器获取生豆信息失败"];
+                }
+            }
+        }else{
+            [NSObject showHudTipStr:LocalString(@"从服务器获取生豆信息失败")];
+        }
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [SVProgressHUD dismiss];
+        });
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        NSLog(@"Error:%@",error);
+        [NSObject showHudTipStr:LocalString(@"从服务器获取生豆信息失败")];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [SVProgressHUD dismiss];
+        });
+    }];
 }
 @end

@@ -13,11 +13,10 @@
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier{
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
-        self.selectionStyle = UITableViewCellSelectionStyleNone;
         if (!_checkBtn) {
             _checkBtn = [UIButton buttonWithType:UIButtonTypeCustom];
             [_checkBtn setImage:[UIImage imageNamed:@"ic_select"] forState:UIControlStateNormal];
-            [_checkBtn addTarget:self action:@selector(checkDevice) forControlEvents:UIControlEventTouchUpInside];
+            //[_checkBtn addTarget:self action:@selector(checkDeviceType) forControlEvents:UIControlEventTouchUpInside];
             [self.contentView addSubview:_checkBtn];
             [_checkBtn mas_makeConstraints:^(MASConstraintMaker *make) {
                 make.size.mas_equalTo(CGSizeMake(18 / WScale, 18 / HScale));

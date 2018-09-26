@@ -143,8 +143,11 @@ static float HEIGHT_HEADER = 36.f;
                 cell = [[AddBeanInfoCell1 alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_addNewBean1];
             }
             cell.nameLabel.text = LocalString(@"生豆名称");
+            cell.contentTF.enabled = YES;
             if (_myBean.name) {
                 cell.contentTF.text = _myBean.name;
+            }else{
+                cell.contentTF.text = @"";
             }
             cell.TFBlock = ^(NSString *text) {
                 _myBean.name = text;
@@ -164,8 +167,11 @@ static float HEIGHT_HEADER = 36.f;
                     case 0:
                     {
                         cell.nameLabel.text = LocalString(@"国家");
+                        cell.contentTF.enabled = YES;
                         if (_myBean.nation) {
                             cell.contentTF.text = _myBean.nation;
+                        }else{
+                            cell.contentTF.text = @"";
                         }
                         cell.TFBlock = ^(NSString *text) {
                             _myBean.nation = text;
@@ -176,8 +182,11 @@ static float HEIGHT_HEADER = 36.f;
                     case 1:
                     {
                         cell.nameLabel.text = LocalString(@"产区");
+                        cell.contentTF.enabled = YES;
                         if (_myBean.area) {
                             cell.contentTF.text = _myBean.area;
+                        }else{
+                            cell.contentTF.text = @"";
                         }
                         cell.TFBlock = ^(NSString *text) {
                             _myBean.area = text;
@@ -191,6 +200,8 @@ static float HEIGHT_HEADER = 36.f;
                         cell.contentTF.enabled = NO;
                         if (_myBean.grade) {
                             cell.contentTF.text = _myBean.grade;
+                        }else{
+                            cell.contentTF.text = @"";
                         }
                         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
                     }
@@ -202,6 +213,8 @@ static float HEIGHT_HEADER = 36.f;
                         cell.contentTF.enabled = NO;
                         if (_myBean.process) {
                             cell.contentTF.text = _myBean.process;
+                        }else{
+                            cell.contentTF.text = @"";
                         }
                         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
                     }
@@ -241,8 +254,11 @@ static float HEIGHT_HEADER = 36.f;
                     case 0:
                     {
                         cell.nameLabel.text = LocalString(@"庄园");
+                        cell.contentTF.enabled = YES;
                         if (_myBean.manor) {
                             cell.contentTF.text = _myBean.manor;
+                        }else{
+                            cell.contentTF.text = @"";
                         }
                         cell.TFBlock = ^(NSString *text) {
                             _myBean.manor = text;
@@ -253,8 +269,11 @@ static float HEIGHT_HEADER = 36.f;
                     case 1:
                     {
                         cell.nameLabel.text = LocalString(@"供应商");
+                        cell.contentTF.enabled = YES;
                         if (_myBean.supplier) {
                             cell.contentTF.text = _myBean.supplier;
+                        }else{
+                            cell.contentTF.text = @"";
                         }
                         cell.TFBlock = ^(NSString *text) {
                             _myBean.supplier = text;
@@ -268,6 +287,8 @@ static float HEIGHT_HEADER = 36.f;
                         cell.contentTF.enabled = NO;
                         if (_myBean.beanSpecies) {
                             cell.contentTF.text = _myBean.beanSpecies;
+                        }else{
+                            cell.contentTF.text = @"";
                         }
                         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
                     }
@@ -283,6 +304,8 @@ static float HEIGHT_HEADER = 36.f;
                             NSString *date = [dateFormatter stringFromDate:_myBean.time];
                             
                             cell.contentTF.text = date;
+                        }else{
+                            cell.contentTF.text = @"";
                         }
 
                         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
@@ -487,57 +510,54 @@ static float HEIGHT_HEADER = 36.f;
         [NSObject showHudTipStr:LocalString(@"名字不能为空")];
         return;
     }
-    if (!_myBean.nation) {
-        _myBean.nation = @"";
-    }
+    [SVProgressHUD show];
+    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
     
-    if (!_myBean.area) {
-        _myBean.area = @"";
-    }
+    [manager.requestSerializer willChangeValueForKey:@"timeoutInterval"];
+    manager.requestSerializer.timeoutInterval = 6.f;
+    [manager.requestSerializer didChangeValueForKey:@"timeoutInterval"];
     
-    if (!_myBean.stock) {
-        _myBean.stock = 0;
-    }
+    NSString *url = [NSString stringWithFormat:@"http://139.196.90.97:8080/coffee/bean"];
+    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet characterSetWithCharactersInString:@"`#%^{}\"[]|\\<> "].invertedSet];
     
-    if (!_myBean.manor) {
-        _myBean.manor = @"";
-    }
+    [manager.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+    [manager.requestSerializer setValue:[DataBase shareDataBase].userId forHTTPHeaderField:@"userId"];
+    [manager.requestSerializer setValue:[NSString stringWithFormat:@"bearer %@",[DataBase shareDataBase].token] forHTTPHeaderField:@"Authorization"];
     
-    if (!_myBean.supplier) {
-        _myBean.supplier = @"";
-    }
-    
-    if (!_myBean.water) {
-        _myBean.water = 0;
-    }
-    
-    if (!_myBean.altitude) {
-        _myBean.altitude = 0;
-    }
-    
-    if (!_myBean.price) {
-        _myBean.price = 0;
-    }
-    
-    if (!_myBean.beanSpecies) {
-        _myBean.beanSpecies = @"";
-    }
-    if (!_myBean.grade) {
-        _myBean.grade = @"";
-    }
-    if (!_myBean.process) {
-        _myBean.process = @"";
-    }
-    if (!_myBean.time) {
-        _myBean.time = [NSDate date];
-    }
-    BOOL result = [[DataBase shareDataBase] insertNewBean:_myBean];
-    if (result) {
-        [self dismissViewControllerAnimated:YES completion:nil];
-        [NSObject showHudTipStr:LocalString(@"添加咖啡豆成功")];
-    }else{
-        [NSObject showHudTipStr:LocalString(@"添加咖啡豆失败")];
-    }
+    NSDictionary *parameters = @{@"name":_myBean.name,@"country":_myBean.nation,@"origin":_myBean.area,@"grade":_myBean.grade,@"processingMethod":_myBean.process,@"stock":[NSNumber numberWithFloat:_myBean.stock],@"farm":_myBean.manor,@"altitude":[NSNumber numberWithFloat:_myBean.altitude],@"species":_myBean.beanSpecies,@"waterContent":[NSNumber numberWithFloat:_myBean.water],@"supplier":_myBean.supplier,@"price":[NSNumber numberWithFloat:_myBean.price],@"purchaseTime":[NSDate localStringFromUTCDate:_myBean.time]};
+
+    [manager POST:url parameters:parameters progress:nil
+          success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableContainers|NSJSONReadingMutableLeaves error:nil];
+        NSData * data = [NSJSONSerialization dataWithJSONObject:responseDic options:(NSJSONWritingOptions)0 error:nil];
+        NSString * daetr = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
+        if ([[responseDic objectForKey:@"errno"] intValue] == 0) {
+            NSLog(@"success:%@",daetr);
+            if ([responseDic objectForKey:@"data"]) {
+                NSDictionary *beansDic = [responseDic objectForKey:@"data"];
+                _myBean.beanUid = [beansDic objectForKey:@"beanUid"];
+                BOOL result = [[DataBase shareDataBase] insertNewBean:_myBean];
+                if (result) {
+                    [self dismissViewControllerAnimated:YES completion:nil];
+                    [NSObject showHudTipStr:LocalString(@"添加本地咖啡豆成功")];
+                }else{
+                    [NSObject showHudTipStr:LocalString(@"添加本地咖啡豆失败")];
+                }
+
+            }
+        }else{
+            [NSObject showHudTipStr:LocalString(@"生豆信息插入服务器失败")];
+        }
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [SVProgressHUD dismiss];
+        });
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        NSLog(@"Error:%@",error);
+        [NSObject showHudTipStr:LocalString(@"生豆信息插入服务器失败")];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [SVProgressHUD dismiss];
+        });
+    }];
     
 }
 

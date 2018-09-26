@@ -155,6 +155,8 @@ static float HEIGHT_HEADER = 36.f;
             tableView.sectionIndexColor = [UIColor colorWithHexString:@"4778CC"];//修改右边索引字体的颜色
             //tableView.sectionIndexTrackingBackgroundColor = [UIColor orangeColor];//修改右边索引点击时候的背景色
             
+            tableView.tableFooterView = [[UIView alloc] init];
+            
 
             //tableView.scrollEnabled = NO;
 //            if ([tableView respondsToSelector:@selector(setSeparatorInset:)]) {
@@ -164,7 +166,7 @@ static float HEIGHT_HEADER = 36.f;
 //                [tableView setLayoutMargins:UIEdgeInsetsZero];
 //            }
 
-            MJRefreshGifHeader *header = [MJRefreshGifHeader headerWithRefreshingTarget:self refreshingAction:@selector(getAllBean)];
+            MJRefreshGifHeader *header = [MJRefreshGifHeader headerWithRefreshingTarget:self refreshingAction:@selector(getAllBeanByApi)];
             // Set title
             [header setTitle:LocalString(@"下拉刷新") forState:MJRefreshStateIdle];
             [header setTitle:LocalString(@"松开刷新") forState:MJRefreshStatePulling];
@@ -406,9 +408,8 @@ static float HEIGHT_HEADER = 36.f;
     }else if (_sort_nameBtn.tag != sortUnselect){//名字排序
         bean = [_mutableSections[indexPath.section] objectAtIndex:indexPath.row];
     }
-    detailVC.myBean = bean;
+    detailVC.myBean = [_myDB queryBean:bean.beanUid];
     [self.navigationController pushViewController:detailVC animated:YES];
-    //NetWork *net = [NetWork shareNetWork];
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
@@ -638,8 +639,9 @@ sectionForSectionIndexTitle:(NSString *)title
     _beanArr = [[DataBase shareDataBase] queryAllBean];
     if (_beanArr.count == 0) {
         [self getAllBeanByApi];
+    }else{
+        [self afterGetBeanArr];
     }
-    [self afterGetBeanArr];
 }
 
 - (void)getAllBeanByApi{
@@ -662,12 +664,36 @@ sectionForSectionIndexTitle:(NSString *)title
         NSString * daetr = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
         if ([[responseDic objectForKey:@"errno"] intValue] == 0) {
             NSLog(@"success:%@",daetr);
-            NSDictionary *beansDic = [responseDic objectForKey:@"data"];
-            [beansDic[@"beans"] enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-#warning todo 把获得的信息插入本地数据库
-            }];
-            _beanArr = [[DataBase shareDataBase] queryAllBean];
-            [self afterGetBeanArr];
+            if ([responseDic objectForKey:@"data"]) {
+                NSDictionary *beansDic = [responseDic objectForKey:@"data"];
+                [[beansDic objectForKey:@"beans"] enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                    BeanModel *bean = [[BeanModel alloc] init];
+                    bean.beanUid = [obj objectForKey:@"beanUid"];
+                    bean.name = [obj objectForKey:@"name"];
+                    bean.stock = [[obj objectForKey:@"stock"] floatValue];
+                    bean.time = [NSDate UTCDateFromLocalString:[obj objectForKey:@"purchaseTime"]];
+                    bean.isNew = @1;
+                    static BOOL isStored = NO;
+                    [_myDB.queueDB inDatabase:^(FMDatabase * _Nonnull db) {
+                        FMResultSet *set = [db executeQuery:@"SELECT beanId FROM beanInfo WHERE beanUid = ?",[obj objectForKey:@"beanUid"]];
+                        while ([set next]) {
+                            isStored = YES;
+                            NSLog(@"1");
+                        }
+                        [set close];
+                    }];
+                    if (!isStored) {
+                        BOOL result = [_myDB insertNewBean:bean];
+                        if (result) {
+                            NSLog(@"咖啡豆移入数据库成功");
+                        }else{
+                            NSLog(@"咖啡豆移入数据库失败");
+                        }
+                    }
+                }];
+                _beanArr = [[DataBase shareDataBase] queryAllBean];
+                [self afterGetBeanArr];
+            }
         }else{
             [NSObject showHudTipStr:LocalString(@"从服务器获取生豆信息失败")];
         }
@@ -677,6 +703,9 @@ sectionForSectionIndexTitle:(NSString *)title
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         NSLog(@"Error:%@",error);
         [NSObject showHudTipStr:LocalString(@"从服务器获取生豆信息失败")];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [SVProgressHUD dismiss];
+        });
     }];
 }
 

@@ -11,6 +11,7 @@
 @interface BeanModel : NSObject
 
 @property (nonatomic) NSInteger beanId;
+@property (nonatomic, strong) NSString *beanUid;
 @property (nonatomic, strong) NSString *name;
 @property (nonatomic) float weight;//烘焙中生豆添加重量
 @property (nonatomic, strong) NSString *nation;
@@ -25,5 +26,6 @@
 @property (nonatomic) float price;
 @property (nonatomic) float stock;
 @property (nonatomic, strong) NSDate *time;
+@property (nonatomic, strong) NSNumber *isNew;
 
 @end
