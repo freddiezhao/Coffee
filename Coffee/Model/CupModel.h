@@ -9,13 +9,15 @@
 #import <Foundation/Foundation.h>
 
 @interface CupModel : NSObject
+//isNew用来判断是否已经从服务器读取了详细信息，从服务器获取列表时只会获得部分信息
+@property (nonatomic, strong) NSNumber *isNew;//1是需要从服务器继续获取其他信息
 
 @property (nonatomic) NSInteger cupId;
+@property (nonatomic, strong) NSString *cupUid;
 @property (nonatomic, strong) NSString *name;
-@property (nonatomic) NSInteger curveId;
+@property (nonatomic, strong) NSString *curveUid;
 @property (nonatomic, strong) NSDate *date;
 @property (nonatomic) float light;
-@property (nonatomic) float bakeDegree;
 @property (nonatomic) float dryAndWet;
 @property (nonatomic) float flavor;
 @property (nonatomic) float aftermath;
@@ -35,4 +37,5 @@
 @property (nonatomic) float defectGrade;//缺点分
 @property (nonatomic) float grade;//优点减缺点
 
+- (void)caculateGrade;
 @end

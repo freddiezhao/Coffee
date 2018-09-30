@@ -35,18 +35,20 @@
 - (NSMutableArray *)queryAllReport;
 - (NSMutableArray *)queryAllReport:(DeviceModel *)device;
 - (NSMutableArray *)queryAllSharedReport;
-- (ReportModel *)queryReport:(NSNumber *)curveId;
+- (ReportModel *)queryReport:(NSString *)curveUid;
 - (NSMutableArray *)queryBeanRelaReport:(NSNumber *)beanId;
-- (NSArray *)queryReportRelaBean:(NSNumber *)curveId;
+- (NSArray *)queryReportRelaBean:(NSString *)curveUid;
 - (NSMutableArray *)queryAllBean;
 - (BeanModel *)queryBean:(NSString *)beanUid;
 - (NSArray *)queryEvent:(NSNumber *)curveId;
 - (NSMutableArray *)queryAllDevice;
 - (BOOL)queryDevice:(NSString *)sn;
 - (NSMutableArray *)queryAllCup;
+- (CupModel *)queryCupWithCupUid:(NSString *)cupUid;
 
 
 - (BOOL)insertNewBean:(BeanModel *)bean;
+- (BOOL)insertNewReport:(ReportModel *)report;
 - (BOOL)deleteqBean:(BeanModel *)bean;
 - (BOOL)deleteqReport:(ReportModel *)report;
 - (BOOL)updateReportWithReport:(ReportModel *)report WithBean:(NSMutableArray *)beanArr;
@@ -54,6 +56,8 @@
 - (BOOL)insertNewCup:(CupModel *)cup;
 - (BOOL)updateCup:(CupModel *)cup;
 - (BOOL)deleteqCup:(CupModel *)cup;
+- (BOOL)insertSetting;
+- (BOOL)deleteSetting;
 
 - (void)createTable;
 - (void)deleteAllTable;

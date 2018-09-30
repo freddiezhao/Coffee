@@ -187,7 +187,7 @@ static float HEIGHT_HEADER = 36.f;
     //NSLog(@"%ld",[_currentReportArr[0] count]);
     ReportModel *report = _currentReportArr[indexPath.section][indexPath.row];
     if (self.selBlock) {
-        self.selBlock(report.curveId);
+        self.selBlock(report.curveUid);
     }
     
     [self.navigationController popViewControllerAnimated:YES];

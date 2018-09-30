@@ -226,7 +226,7 @@ static float HEIGHT_HEADER = 36.f;
         case 1:
         {
             _cupEditTable.hidden = YES;
-            if (!_cup.curveId) {
+            if (!_cup.curveUid) {
                 _bakeEditTable.hidden = YES;
                 _noReportView.hidden = NO;
             }else{
@@ -707,8 +707,8 @@ static float HEIGHT_HEADER = 36.f;
 
 #pragma mark - DataSource
 - (void)queryReportInfo{
-    _reportModel = [[DataBase shareDataBase] queryReport:[NSNumber numberWithInteger:_cup.curveId]];
-    _reportModel.curveId = _cup.curveId;
+    _reportModel = [[DataBase shareDataBase] queryReport:_cup.curveUid];
+    _reportModel.curveUid = _cup.curveUid;
     NSLog(@"%@",_reportModel.date);
     if (_reportModel.curveValueJson) {
         NSData *curveData = [_reportModel.curveValueJson dataUsingEncoding:NSUTF8StringEncoding];
@@ -743,10 +743,10 @@ static float HEIGHT_HEADER = 36.f;
 
 - (void)queryBeanInfo{
     DataBase *db = [DataBase shareDataBase];
-    NSMutableArray *beanMutaArray = [[db queryReportRelaBean:[NSNumber numberWithInteger:_cup.curveId]] mutableCopy];
+    NSMutableArray *beanMutaArray = [[db queryReportRelaBean:_cup.curveUid] mutableCopy];
     for (int i = 0; i < [beanMutaArray count]; i++) {
         BeanModel *beanModelOld = beanMutaArray[i];
-        BeanModel *beanModelNew = [db queryBean:[NSNumber numberWithInteger:beanModelOld.beanId]];
+        BeanModel *beanModelNew = [db queryBean:beanModelOld.beanUid];
         beanModelNew.weight = beanModelOld.weight;
         beanModelNew.beanId = beanModelOld.beanId;
         [beanMutaArray replaceObjectAtIndex:i withObject:beanModelNew];
@@ -758,25 +758,62 @@ static float HEIGHT_HEADER = 36.f;
 
 #pragma mark - Action
 - (void)saveCup{
-    BOOL result = [[DataBase shareDataBase] updateCup:_cup];
-    if (result) {
-        if (self.editBlock) {
-            self.editBlock(_cup);
+    [SVProgressHUD show];
+    [_cup caculateGrade];
+    
+    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+    
+    [manager.requestSerializer willChangeValueForKey:@"timeoutInterval"];
+    manager.requestSerializer.timeoutInterval = 6.f;
+    [manager.requestSerializer didChangeValueForKey:@"timeoutInterval"];
+    
+    NSString *url = [NSString stringWithFormat:@"http://139.196.90.97:8080/coffee/cupping?cupUid=%@",_cup.cupUid];
+    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet characterSetWithCharactersInString:@"`#%^{}\"[]|\\<> "].invertedSet];
+    
+    [manager.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+    [manager.requestSerializer setValue:[DataBase shareDataBase].userId forHTTPHeaderField:@"userId"];
+    [manager.requestSerializer setValue:[NSString stringWithFormat:@"bearer %@",[DataBase shareDataBase].token] forHTTPHeaderField:@"Authorization"];
+    
+    NSDictionary *parameters = @{@"name":_cup.name,@"curveUid":@"",@"roastDegree":[NSNumber numberWithFloat:_cup.light],@"aroma":[NSNumber numberWithFloat:_cup.dryAndWet],@"flavor":[NSNumber numberWithFloat:_cup.flavor],@"aftertaste":[NSNumber numberWithFloat:_cup.aftermath],@"acidity":[NSNumber numberWithFloat:_cup.acid],@"taste":[NSNumber numberWithFloat:_cup.taste],@"sweetness":[NSNumber numberWithFloat:_cup.sweet],@"balance":[NSNumber numberWithFloat:_cup.balance],@"overall":[NSNumber numberWithFloat:_cup.overFeel],@"undevelopment":[NSNumber numberWithFloat:_cup.deveUnfull],@"overdevelopment":[NSNumber numberWithFloat:_cup.overDeve],@"baked":[NSNumber numberWithFloat:_cup.bakePaste],@"scorched":[NSNumber numberWithFloat:_cup.injure],@"tipped":[NSNumber numberWithFloat:_cup.germInjure],@"faced":[NSNumber numberWithFloat:_cup.beanFaceInjure],@"score":[NSNumber numberWithFloat:_cup.bakeGrade],@"defects":[NSNumber numberWithFloat:_cup.defectGrade],@"total":[NSNumber numberWithFloat:_cup.grade]};
+
+    [manager PUT:url parameters:parameters success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableContainers|NSJSONReadingMutableLeaves error:nil];
+        NSData * data = [NSJSONSerialization dataWithJSONObject:responseDic options:(NSJSONWritingOptions)0 error:nil];
+        NSString * daetr = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
+        NSLog(@"%@",daetr);
+        if ([[responseDic objectForKey:@"errno"] intValue] == 0) {
+            BOOL result = [[DataBase shareDataBase] updateCup:_cup];
+            if (result) {
+                if (self.editBlock) {
+                    self.editBlock(_cup);
+                }
+                [self.navigationController popViewControllerAnimated:YES];
+                [NSObject showHudTipStr:LocalString(@"编辑杯测成功")];
+            }else{
+                [NSObject showHudTipStr:LocalString(@"编辑杯测失败")];
+            }
+        }else{
+            [NSObject showHudTipStr:[responseDic objectForKey:@"error"]];
         }
-        [self.navigationController popViewControllerAnimated:YES];
-    }else{
-        [NSObject showHudTipStr:LocalString(@"保存失败")];
-    }
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [SVProgressHUD dismiss];
+        });
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [NSObject showHudTipStr:LocalString(@"编辑杯测失败")];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [SVProgressHUD dismiss];
+        });
+    }];
 }
 
 - (void)selectCurve{
     ReportSelectController *selectVC =[[ReportSelectController alloc] init];
-    selectVC.selBlock = ^(NSInteger curveId) {
+    selectVC.selBlock = ^(NSString *curveUid) {
         if (_mySegment.selectedSegmentIndex == 1) {
             self.bakeEditTable.hidden = NO;
             self.noReportView.hidden = YES;
         }
-        _cup.curveId = curveId;
+        _cup.curveUid = curveUid;
         [self queryReportInfo];
     };
     [self.navigationController pushViewController:selectVC animated:YES];

@@ -26,6 +26,8 @@
 @property (nonatomic) float price;
 @property (nonatomic) float stock;
 @property (nonatomic, strong) NSDate *time;
+
+//isNew用来判断是否已经从服务器读取了详细信息，从服务器获取列表时只会获得部分信息
 @property (nonatomic, strong) NSNumber *isNew;
 
 @end

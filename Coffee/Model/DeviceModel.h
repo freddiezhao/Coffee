@@ -14,5 +14,6 @@
 @property (nonatomic, strong) NSString *sn;
 @property (nonatomic, strong) NSString *deviceName;
 @property (nonatomic, strong) NSString *ipAddress;
+@property (nonatomic, strong) NSNumber *deviceType;
 
 @end

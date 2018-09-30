@@ -11,6 +11,7 @@
 @interface ReportModel : NSObject
 
 @property (nonatomic) NSInteger curveId;
+@property (nonatomic, strong) NSString *curveUid;
 @property (nonatomic, strong) NSString *curveName;
 @property (nonatomic, strong) NSDate *date;
 @property (nonatomic, strong) NSString *deviceName;
@@ -30,5 +31,9 @@
 @property (nonatomic, strong) NSString *endTemp;
 @property (nonatomic, strong) NSString *sharerName;
 @property (nonatomic) NSInteger isShare;
+
+//isNew用来判断是否已经从服务器读取了详细信息，从服务器获取列表时只会获得部分信息
+@property (nonatomic, strong) NSNumber *isNew;
+
 
 @end

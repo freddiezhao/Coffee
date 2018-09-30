@@ -12,6 +12,8 @@
 #import "CupModel.h"
 #import "CupNormalCell.h"
 #import "CupTestDetailController.h"
+#import "AddCupTextController.h"
+#import "FMDB.h"
 
 NSString *const CellIdentifier_cup = @"CellID_cup";
 
@@ -31,7 +33,6 @@ NSString *const CellIdentifier_cup = @"CellID_cup";
 
 @implementation CupTestMainController
 static float HEIGHT_CELL = 60.f;
-static float HEIGHT_HEADER = 36.f;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -165,7 +166,7 @@ static float HEIGHT_HEADER = 36.f;
             
             tableView.tableFooterView = [[UIView alloc] init];
             
-            MJRefreshGifHeader *header = [MJRefreshGifHeader headerWithRefreshingTarget:self refreshingAction:@selector(getAllCup)];
+            MJRefreshGifHeader *header = [MJRefreshGifHeader headerWithRefreshingTarget:self refreshingAction:@selector(getAllCupByApi)];
             // Set title
             [header setTitle:LocalString(@"下拉刷新") forState:MJRefreshStateIdle];
             [header setTitle:LocalString(@"松开刷新") forState:MJRefreshStatePulling];
@@ -353,8 +354,11 @@ sectionForSectionIndexTitle:(NSString *)title
 
 #pragma mark - Actions
 - (void)addCupTest{
-    [[DataBase shareDataBase] insertNewCup:nil];
-    [self getAllCup];
+    AddCupTextController *addVC = [[AddCupTextController alloc] init];
+    addVC.disBlock = ^{
+        [self getAllCup];
+    };
+    [self.navigationController pushViewController:addVC animated:YES];
 }
 
 - (void)searchCup{
@@ -473,9 +477,80 @@ sectionForSectionIndexTitle:(NSString *)title
 }
 
 #pragma mark - Data Source
+- (void)getAllCupByApi{
+    [SVProgressHUD show];
+    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+    
+    [manager.requestSerializer willChangeValueForKey:@"timeoutInterval"];
+    manager.requestSerializer.timeoutInterval = 6.f;
+    [manager.requestSerializer didChangeValueForKey:@"timeoutInterval"];
+    
+    NSString *url = [NSString stringWithFormat:@"http://139.196.90.97:8080/coffee/cupping/list"];
+    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet characterSetWithCharactersInString:@"`#%^{}\"[]|\\<> "].invertedSet];
+    
+    [manager.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+    [manager.requestSerializer setValue:[DataBase shareDataBase].userId forHTTPHeaderField:@"userId"];
+    [manager.requestSerializer setValue:[NSString stringWithFormat:@"bearer %@",[DataBase shareDataBase].token] forHTTPHeaderField:@"Authorization"];
+    [manager GET:url parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableContainers|NSJSONReadingMutableLeaves error:nil];
+        NSData * data = [NSJSONSerialization dataWithJSONObject:responseDic options:(NSJSONWritingOptions)0 error:nil];
+        NSString * daetr = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
+        if ([[responseDic objectForKey:@"errno"] intValue] == 0) {
+            NSLog(@"success:%@",daetr);
+            if ([responseDic objectForKey:@"data"]) {
+                [[responseDic objectForKey:@"data"] enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                    CupModel *cup = [[CupModel alloc] init];
+                    cup.cupUid = [obj objectForKey:@"cupUid"];
+                    cup.name = [obj objectForKey:@"name"];
+                    cup.date = [NSDate YMDDateFromLocalString:[obj objectForKey:@"createTime"]];
+                    cup.grade = [[obj objectForKey:@"total"] floatValue];
+                    cup.isNew = @1;
+                    static BOOL isStored = NO;
+                    [[DataBase shareDataBase].queueDB inDatabase:^(FMDatabase * _Nonnull db) {
+                        FMResultSet *set = [db executeQuery:@"SELECT cupId FROM cup WHERE cupUid = ?",[obj objectForKey:@"cupUid"]];
+                        while ([set next]) {
+                            isStored = YES;
+                            NSLog(@"1");
+                        }
+                        [set close];
+                    }];
+                    if (!isStored) {
+                        BOOL result = [[DataBase shareDataBase] insertNewCup:cup];
+                        if (result) {
+                            NSLog(@"杯测移入数据库成功");
+                        }else{
+                            NSLog(@"杯测移入数据库失败");
+                        }
+                    }
+                }];
+                _cupArr = [[DataBase shareDataBase] queryAllCup];
+            }
+            [self afterGetCupArr];
+        }else{
+            [NSObject showHudTipStr:LocalString(@"从服务器获取杯测信息失败")];
+        }
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [SVProgressHUD dismiss];
+        });
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        NSLog(@"Error:%@",error);
+        [NSObject showHudTipStr:LocalString(@"从服务器获取杯测信息失败")];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [SVProgressHUD dismiss];
+        });
+    }];
+}
+
 - (void)getAllCup{
     _cupArr = [[DataBase shareDataBase] queryAllCup];
-    
+    if (_cupArr.count == 0) {
+        [self getAllCupByApi];
+    }else{
+        [self afterGetCupArr];
+    }
+}
+
+- (void)afterGetCupArr{
     if (_sort_nameBtn.tag == sortUp) {
         [self setObjects:_cupArr];
     }else if(_sort_gradeBtn.tag == sortUp){

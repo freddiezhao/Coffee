@@ -1,42 +1,41 @@
 //
-//  cupTestDetailController.m
+//  AddCupTextController.m
 //  Coffee
 //
-//  Created by 杭州轨物科技有限公司 on 2018/9/15.
+//  Created by 杭州轨物科技有限公司 on 2018/9/27.
 //  Copyright © 2018年 杭州轨物科技有限公司. All rights reserved.
 //
 
-#import "CupTestDetailController.h"
+#import "AddCupTextController.h"
 #import "TouchTableView.h"
-#import "DetailGradeCell.h"
-#import "CupLightCell.h"
 #import "BeanHeaderCell.h"
 #import "BeanInfoCell.h"
 #import "ReportCurveCell.h"
 #import "ReportModel.h"
 #import "BeanModel.h"
-#import "CupTestEditController.h"
+#import "EditCupNameCell.h"
+#import "EditLightCell.h"
+#import "ReportSelectController.h"
 #import "CupModel.h"
 #import "ScoreTitleCell.h"
-#import "DetailScoreCell.h"
+#import "AllScoreCell.h"
 
+NSString *const CellIdentifier_cupAddCupName = @"CellID_cupAddCupName";
+NSString *const CellIdentifier_cupAddLight = @"CellID_cupAddLight";
+NSString *const CellIdentifier_cupAddBeanHeader = @"CellID_cupAddBeanHeader";
+NSString *const CellIdentifier_cupAddBeanInfo = @"CellID_cupAddBeanInfo";
+NSString *const CellIdentifier_cupAddCurve = @"CellID_cupAddCurve";
+NSString *const CellIdentifier_cupAddScoreTitle = @"CellID_cupAddScoreTitle";
+NSString *const CellIdentifier_cupAddGoodScore = @"CellID_cupAddGoodScore";
+NSString *const CellIdentifier_cupAddBadScore = @"CellID_cupAddBadScore";
 
-NSString *const CellIdentifier_cupDetailGrade = @"CellID_cupDetailGrade";
-NSString *const CellIdentifier_cupDetailLight = @"CellID_cupDetailLight";
-NSString *const CellIdentifier_cupBeanHeader = @"CellID_cupDetailBeanHeader";
-NSString *const CellIdentifier_cupBeanInfo = @"CellID_cupDetailBeanInfo";
-NSString *const CellIdentifier_cupCurve = @"CellID_cupDetailCurve";
-NSString *const CellIdentifier_cupScoreTitle = @"CellID_cupScoreTitle";
-NSString *const CellIdentifier_cupGoodScore = @"CellID_cupGoodScore";
-NSString *const CellIdentifier_cupBadScore = @"CellID_cupBadScore";
-
-@interface CupTestDetailController () <UITableViewDelegate, UITableViewDataSource>
+@interface AddCupTextController () <UITableViewDelegate, UITableViewDataSource>
 
 @property (nonatomic, strong) UISegmentedControl *mySegment;
 
-@property (nonatomic, strong) UITableView *cupDetailTable;
-@property (nonatomic, strong) UITableView *bakeDetailTable;
-
+@property (nonatomic, strong) UITableView *cupAddTable;
+@property (nonatomic, strong) UITableView *bakeAddTable;
+@property (nonatomic, strong) UIView *noReportView;
 //report
 @property (nonatomic, strong) ReportModel *reportModel;
 @property (nonatomic, strong) NSArray *beanArray;
@@ -46,13 +45,15 @@ NSString *const CellIdentifier_cupBadScore = @"CellID_cupBadScore";
 @property (nonatomic, strong) NSMutableArray *yVals_Environment;
 @property (nonatomic, strong) NSMutableArray *yVals_Diff;
 
+@property (nonatomic, strong) CupModel *cup;
+
 @end
 
-@implementation CupTestDetailController
-static float HEIGHT_HEADER = 15.f;
+@implementation AddCupTextController
 
-- (void)viewDidLoad{
+- (void)viewDidLoad {
     [super viewDidLoad];
+    
     self.view.layer.backgroundColor = [UIColor colorWithRed:246/255.0 green:246/255.0 blue:246/255.0 alpha:1].CGColor;
     [self setNavItem];
     
@@ -64,14 +65,11 @@ static float HEIGHT_HEADER = 15.f;
     _yVals_Environment = [[NSMutableArray alloc] init];
     
     self.mySegment = [self mySegment];
-    self.cupDetailTable = [self cupDetailTable];
-    self.bakeDetailTable = [self bakeDetailTable];
-    _cup = [[DataBase shareDataBase] queryCupWithCupUid:_cup.cupUid];
-    if ([_cup.isNew integerValue] == 1) {
-        [self getCupInfoByAPI];
-    }
-    [_cup caculateGrade];
-    [self.cupDetailTable reloadData];
+    self.cupAddTable = [self cupAddTable];
+    self.bakeAddTable = [self bakeAddTable];
+    self.noReportView = [self noReportView];
+    
+    _cup = [[CupModel alloc] init];
     [self queryReportInfo];
 }
 
@@ -79,15 +77,12 @@ static float HEIGHT_HEADER = 15.f;
     [super viewWillAppear:animated];
     [self.rdv_tabBarController setTabBarHidden:YES animated:YES];
 }
+
 #pragma mark - Lazyload
 - (void)setNavItem{
-    if (_cup) {
-        self.navigationItem.title = _cup.name;
-    }else{
-        self.navigationItem.title = LocalString(@"杯测名称");
-    }
+    self.navigationItem.title = LocalString(@"添加杯测");
     
-    UIBarButtonItem *rightBar = [[UIBarButtonItem alloc] initWithTitle:LocalString(@"编辑") style:UIBarButtonItemStylePlain target:self action:@selector(editCup)];
+    UIBarButtonItem *rightBar = [[UIBarButtonItem alloc] initWithTitle:LocalString(@"保存") style:UIBarButtonItemStylePlain target:self action:@selector(saveCupInfo)];
     self.navigationItem.rightBarButtonItem = rightBar;
 }
 
@@ -121,51 +116,107 @@ static float HEIGHT_HEADER = 15.f;
     return _mySegment;
 }
 
-- (UITableView *)cupDetailTable{
-    if (!_cupDetailTable) {
-        _cupDetailTable = ({
+- (UITableView *)cupAddTable{
+    if (!_cupAddTable) {
+        _cupAddTable = ({
             TouchTableView *tableView = [[TouchTableView alloc] initWithFrame:CGRectMake(0, 44/HScale, ScreenWidth, ScreenHeight - 64 - 44/HScale) style:UITableViewStylePlain];
             tableView.backgroundColor = [UIColor clearColor];
-            tableView.separatorColor = [UIColor colorWithRed:0/255.0 green:0/255.0 blue:0/255.0 alpha:0.1];
+            //tableView.separatorColor = [UIColor colorWithRed:0/255.0 green:0/255.0 blue:0/255.0 alpha:0.1];
+            tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
             tableView.dataSource = self;
             tableView.delegate = self;
             [self.view addSubview:tableView];
             tableView.estimatedRowHeight = 0;
             tableView.estimatedSectionHeaderHeight = 0;
             tableView.estimatedSectionFooterHeight = 0;
-            [tableView registerClass:[DetailGradeCell class] forCellReuseIdentifier:CellIdentifier_cupDetailGrade];
-            [tableView registerClass:[CupLightCell class] forCellReuseIdentifier:CellIdentifier_cupDetailLight];
-            [tableView registerClass:[ScoreTitleCell class] forCellReuseIdentifier:CellIdentifier_cupScoreTitle];
-            [tableView registerClass:[DetailScoreCell class] forCellReuseIdentifier:CellIdentifier_cupGoodScore];
-            [tableView registerClass:[DetailScoreCell class] forCellReuseIdentifier:CellIdentifier_cupBadScore];
+            [tableView registerClass:[EditCupNameCell class] forCellReuseIdentifier:CellIdentifier_cupAddCupName];
+            [tableView registerClass:[EditLightCell class] forCellReuseIdentifier:CellIdentifier_cupAddLight];
+            [tableView registerClass:[ScoreTitleCell class] forCellReuseIdentifier:CellIdentifier_cupAddScoreTitle];
+            [tableView registerClass:[AllScoreCell class] forCellReuseIdentifier:CellIdentifier_cupAddGoodScore];
+            [tableView registerClass:[AllScoreCell class] forCellReuseIdentifier:CellIdentifier_cupAddBadScore];
             tableView;
         });
     }
-    return _cupDetailTable;
+    return _cupAddTable;
 }
 
-- (UITableView *)bakeDetailTable{
-    if (!_bakeDetailTable) {
-        _bakeDetailTable = ({
+- (UITableView *)bakeAddTable{
+    if (!_bakeAddTable) {
+        _bakeAddTable = ({
             TouchTableView *tableView = [[TouchTableView alloc] initWithFrame:CGRectMake(0, 44.f/HScale, ScreenWidth, ScreenHeight - 64 - 44.f/HScale) style:UITableViewStylePlain];
             tableView.backgroundColor = [UIColor clearColor];
             tableView.separatorColor = [UIColor colorWithRed:0/255.0 green:0/255.0 blue:0/255.0 alpha:0.1];
             tableView.dataSource = self;
             tableView.delegate = self;
             tableView.hidden = YES;
-            [tableView registerClass:[BeanHeaderCell class] forCellReuseIdentifier:CellIdentifier_cupBeanHeader];
-            [tableView registerClass:[BeanInfoCell class] forCellReuseIdentifier:CellIdentifier_cupBeanInfo];
-            [tableView registerClass:[ReportCurveCell class] forCellReuseIdentifier:CellIdentifier_cupCurve];
+            [tableView registerClass:[BeanHeaderCell class] forCellReuseIdentifier:CellIdentifier_cupAddBeanHeader];
+            [tableView registerClass:[BeanInfoCell class] forCellReuseIdentifier:CellIdentifier_cupAddBeanInfo];
+            [tableView registerClass:[ReportCurveCell class] forCellReuseIdentifier:CellIdentifier_cupAddCurve];
             [self.view addSubview:tableView];
             tableView.estimatedRowHeight = 0;
             tableView.estimatedSectionHeaderHeight = 0;
             tableView.estimatedSectionFooterHeight = 0;
             
+            UIView *footView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, ScreenWidth, 86/HScale)];
+            footView.backgroundColor = [UIColor clearColor];
+            UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
+            [button setTitle:LocalString(@"重新选择曲线") forState:UIControlStateNormal];
+            button.frame = CGRectMake(0, 0, 156/WScale, 36/HScale);
+            [button.titleLabel setFont:[UIFont systemFontOfSize:16.f]];
+            [button setTitleColor:[UIColor colorWithHexString:@"4778CC"] forState:UIControlStateNormal];
+            [button addTarget:self action:@selector(selectCurve) forControlEvents:UIControlEventTouchUpInside];
+            button.center = footView.center;
+            button.layer.borderWidth = 0.5;
+            button.layer.borderColor = [UIColor colorWithHexString:@"4778CC"].CGColor;
+            button.layer.cornerRadius = 18.f;
+            [footView addSubview:button];
+            
+            tableView.tableFooterView = footView;
+            
             tableView;
         });
     }
-    return _bakeDetailTable;
+    return _bakeAddTable;
 }
+
+- (UIView *)noReportView{
+    if (!_noReportView) {
+        _noReportView = [[UIView alloc] initWithFrame:CGRectMake(0, 44.f/HScale, ScreenWidth, ScreenHeight - 64 - 44.f/HScale)];
+        _noReportView.backgroundColor = [UIColor clearColor];
+        _noReportView.hidden = YES;
+        [self.view addSubview:_noReportView];
+        
+        UIImageView *imageView = [[UIImageView alloc] init];
+        [self.noReportView addSubview:imageView];
+        imageView.image = [UIImage imageNamed:@"img_logo_gray"];
+        [imageView mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.size.mas_equalTo(CGSizeMake(140/WScale, 112/HScale));
+            make.centerX.equalTo(self.view.mas_centerX);
+            make.top.equalTo(_noReportView.mas_top).offset(85/HScale);
+        }];
+        
+        UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
+        [button setTitle:LocalString(@"选择烘焙曲线") forState:UIControlStateNormal];
+        [button.titleLabel setFont:[UIFont systemFontOfSize:16.f]];
+        [button setTitleColor:[UIColor colorWithHexString:@"FFFFFF"] forState:UIControlStateNormal];
+        [button addTarget:self action:@selector(selectCurve) forControlEvents:UIControlEventTouchUpInside];
+        [button setBackgroundColor:[UIColor colorWithHexString:@"4778CC"]];
+        button.layer.borderWidth = 0.5;
+        button.layer.borderColor = [UIColor colorWithHexString:@"4778CC"].CGColor;
+        button.layer.cornerRadius = 25.f/HScale;
+        [_noReportView addSubview:button];
+        
+        [button mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.size.mas_equalTo(CGSizeMake(345/WScale, 50/HScale));
+            make.centerX.equalTo(self.view.mas_centerX);
+            make.top.equalTo(imageView.mas_bottom).offset(20/HScale);
+            
+        }];
+        
+    }
+    return _noReportView;
+}
+
 #pragma mark - UISegment delegate
 -(void)didClickMySegmentAction:(UISegmentedControl *)Seg{
     NSInteger Index = Seg.selectedSegmentIndex;
@@ -173,17 +224,21 @@ static float HEIGHT_HEADER = 15.f;
     switch (Index) {
         case 0:
         {
-            _cupDetailTable.hidden = NO;
-            _bakeDetailTable.hidden = YES;
+            _cupAddTable.hidden = NO;
+            _bakeAddTable.hidden = YES;
+            _noReportView.hidden = YES;
         }
             break;
         case 1:
         {
-            _cupDetailTable.hidden = YES;
-            if (_reportModel == nil) {
-                _bakeDetailTable.hidden = YES;
+            _cupAddTable.hidden = YES;
+            if (!_cup.curveUid) {
+                _bakeAddTable.hidden = YES;
+                _noReportView.hidden = NO;
             }else{
-                _bakeDetailTable.hidden = NO;
+                _bakeAddTable.hidden = NO;
+                _noReportView.hidden = YES;
+                [self queryReportInfo];
             }
         }
             break;
@@ -193,9 +248,10 @@ static float HEIGHT_HEADER = 15.f;
     }
 }
 
+
 #pragma mark - uitableview
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView{
-    if (tableView == _cupDetailTable) {
+    if (tableView == _cupAddTable) {
         return 4;
     }else{
         return 2;
@@ -204,7 +260,7 @@ static float HEIGHT_HEADER = 15.f;
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    if (tableView == _cupDetailTable) {
+    if (tableView == _cupAddTable) {
         switch (section) {
             case 0:
                 return 1;
@@ -246,14 +302,14 @@ static float HEIGHT_HEADER = 15.f;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
-    if (tableView == _cupDetailTable) {
+    if (tableView == _cupAddTable) {
         switch (indexPath.section) {
             case 0:
-                return 160.f/HScale;
+                return 50.f/HScale;
                 break;
                 
             case 1:
-                return 214.f/HScale;
+                return 256.f/HScale;
                 break;
                 
             case 2:
@@ -295,170 +351,222 @@ static float HEIGHT_HEADER = 15.f;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
-    if (tableView == _cupDetailTable) {
+    if (tableView == _cupAddTable) {
         if (indexPath.section == 0) {
-            DetailGradeCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_cupDetailGrade];
+            EditCupNameCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_cupAddCupName];
             if (cell == nil) {
-                cell = [[DetailGradeCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_cupDetailGrade];
+                cell = [[EditCupNameCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_cupAddCupName];
             }
-            
-            cell.gradeProgress = _cup.bakeGrade/100;
-            cell.defectProgress = _cup.defectGrade/100;
-            cell.resultProgress = _cup.grade/100;
-            cell.bakeGrade.text = [NSString stringWithFormat:@"%.1f",_cup.bakeGrade];
-            cell.bakeDefect.text = [NSString stringWithFormat:@"%.1f",_cup.defectGrade];
-            cell.result.text = [NSString stringWithFormat:@"%.1f",_cup.grade];
-            NSLog(@"%f",_cup.bakeGrade);
-            [cell setProgress];
+            cell.nameLabel.text = LocalString(@"杯测名称");
+            if (_cup.name) {
+                cell.contentTF.text = _cup.name;
+            }else{
+                cell.contentTF.text = @"";
+            }
+            cell.TFBlock = ^(NSString *text) {
+                _cup.name = text;
+            };
             return cell;
         }else if (indexPath.section == 1){
-            CupLightCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_cupDetailLight];
+            EditLightCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_cupAddLight];
             if (cell == nil) {
-                cell = [[CupLightCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_cupDetailLight];
+                cell = [[EditLightCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_cupAddLight];
             }
             if (_cup.light) {
                 cell.lightValue.text = [NSString stringWithFormat:@"%d",(int)_cup.light];
             }else{
                 cell.lightValue.text = @"0";
             }
+            cell.lightSlider.value = _cup.light;
+            cell.SliderBlock = ^(float value) {
+                _cup.light = value;
+            };
             return cell;
         }else if (indexPath.section == 2){
             if (indexPath.row == 0) {
-                ScoreTitleCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_cupScoreTitle];
+                ScoreTitleCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_cupAddScoreTitle];
                 if (cell == nil) {
-                    cell = [[ScoreTitleCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_cupScoreTitle];
+                    cell = [[ScoreTitleCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_cupAddScoreTitle];
                 }
                 cell.nameLabel.text = LocalString(@"咖啡杯测");
                 return cell;
             }else{
-                DetailScoreCell *cell = [tableView cellForRowAtIndexPath:indexPath];
+                AllScoreCell *cell = [tableView cellForRowAtIndexPath:indexPath];
                 if (cell == nil) {
-                    cell = [[DetailScoreCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_cupGoodScore];
+                    cell = [[AllScoreCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_cupAddGoodScore];
                 }
-                NSArray *colors = @[(__bridge id)[UIColor colorWithRed:255/255.0 green:232/255.0 blue:159/255.0 alpha:1].CGColor, (__bridge id)[UIColor colorWithRed:255/255.0 green:204/255.0 blue:102/255.0 alpha:1].CGColor];
                 switch (indexPath.row) {
                     case 1:
                     {
                         cell.nameLabel.text = LocalString(@"干湿香");
-                        [cell addGradientLayerWithValue:_cup.dryAndWet colors:colors];
+                        [cell setSliderValue:_cup.dryAndWet];
+                        cell.SliderBlock = ^(float value) {
+                            _cup.dryAndWet = value/10.f;
+                        };
                     }
                         break;
                     case 2:
                     {
                         cell.nameLabel.text = LocalString(@"风味");
-                        [cell addGradientLayerWithValue:_cup.flavor colors:colors];
+                        [cell setSliderValue:_cup.flavor];
+                        cell.SliderBlock = ^(float value) {
+                            _cup.flavor = value/10.f;
+                        };
                     }
                         break;
                     case 3:
                     {
                         cell.nameLabel.text = LocalString(@"余韵");
-                        [cell addGradientLayerWithValue:_cup.aftermath colors:colors];
+                        [cell setSliderValue:_cup.aftermath];
+                        cell.SliderBlock = ^(float value) {
+                            _cup.aftermath = value/10.f;
+                        };
                     }
                         break;
                     case 4:
                     {
                         cell.nameLabel.text = LocalString(@"酸质");
-                        [cell addGradientLayerWithValue:_cup.acid colors:colors];
+                        [cell setSliderValue:_cup.acid];
+                        cell.SliderBlock = ^(float value) {
+                            _cup.acid = value/10.f;
+                        };
                     }
                         break;
                     case 5:
                     {
                         cell.nameLabel.text = LocalString(@"口感");
-                        [cell addGradientLayerWithValue:_cup.taste colors:colors];
+                        [cell setSliderValue:_cup.taste];
+                        cell.SliderBlock = ^(float value) {
+                            _cup.taste = value/10.f;
+                        };
+                        
                     }
                         break;
                     case 6:
                     {
                         cell.nameLabel.text = LocalString(@"甜度");
-                        [cell addGradientLayerWithValue:_cup.sweet colors:colors];
+                        [cell setSliderValue:_cup.sweet];
+                        cell.SliderBlock = ^(float value) {
+                            _cup.sweet = value/10.f;
+                        };
                     }
                         break;
                     case 7:
                     {
                         cell.nameLabel.text = LocalString(@"均匀度");
-                        [cell addGradientLayerWithValue:_cup.balance colors:colors];
+                        [cell setSliderValue:_cup.balance];
+                        cell.SliderBlock = ^(float value) {
+                            _cup.balance = value/10.f;
+                        };
                     }
                         break;
                     case 8:
                     {
                         cell.nameLabel.text = LocalString(@"整体感受");
-                        [cell addGradientLayerWithValue:_cup.overFeel colors:colors];
+                        [cell setSliderValue:_cup.overFeel];
+                        cell.SliderBlock = ^(float value) {
+                            _cup.overFeel = value/10.f;
+                        };
                     }
                         break;
                     default:
                         break;
                 }
+                NSArray *colors = @[[UIColor colorWithRed:255/255.0 green:232/255.0 blue:159/255.0 alpha:1], [UIColor colorWithRed:255/255.0 green:204/255.0 blue:102/255.0 alpha:1]];
+                UIImage *image = [cell getGradientImageWithColors:colors imgSize:cell.scoreSlider.bounds.size];
+                [cell.scoreSlider setMinimumTrackImage:image forState:UIControlStateNormal];
+                
                 return cell;
             }
         }else if (indexPath.section == 3){
             if (indexPath.row == 0) {
-                ScoreTitleCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_cupScoreTitle];
+                ScoreTitleCell *cell = [tableView cellForRowAtIndexPath:indexPath];
                 if (cell == nil) {
-                    cell = [[ScoreTitleCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_cupScoreTitle];
+                    cell = [[ScoreTitleCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_cupAddScoreTitle];
                 }
                 cell.nameLabel.text = LocalString(@"烘焙瑕疵");
                 return cell;
             }else{
-                DetailScoreCell *cell = [tableView cellForRowAtIndexPath:indexPath];
+                AllScoreCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_cupAddBadScore];
                 if (cell == nil) {
-                    cell = [[DetailScoreCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_cupBadScore];
+                    cell = [[AllScoreCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_cupAddBadScore];
                 }
-                NSArray *colors = @[(__bridge id)[UIColor colorWithRed:236/255.0 green:224/255.0 blue:203/255.0 alpha:1].CGColor, (__bridge id)[UIColor colorWithRed:214/255.0 green:181/255.0 blue:128/255.0 alpha:1].CGColor];
                 switch (indexPath.row) {
                     case 1:
                     {
                         cell.nameLabel.text = LocalString(@"发展不充分");
-                        [cell addGradientLayerWithValue:_cup.deveUnfull colors:colors];
+                        [cell setSliderValue:_cup.deveUnfull];
+                        cell.SliderBlock = ^(float value) {
+                            _cup.deveUnfull = value/10.f;
+                        };
                     }
                         break;
                     case 2:
                     {
                         cell.nameLabel.text = LocalString(@"过度发展");
-                        [cell addGradientLayerWithValue:_cup.overDeve colors:colors];
+                        [cell setSliderValue:_cup.overDeve];
+                        cell.SliderBlock = ^(float value) {
+                            _cup.overDeve = value/10.f;
+                        };
                     }
                         break;
                     case 3:
                     {
                         cell.nameLabel.text = LocalString(@"烤焙味");
-                        [cell addGradientLayerWithValue:_cup.bakePaste colors:colors];
+                        [cell setSliderValue:_cup.bakePaste];
+                        cell.SliderBlock = ^(float value) {
+                            _cup.bakePaste = value/10.f;
+                        };
                     }
                         break;
                     case 4:
                     {
                         cell.nameLabel.text = LocalString(@"自焙烫伤");
-                        [cell addGradientLayerWithValue:_cup.injure colors:colors];
+                        [cell setSliderValue:_cup.injure];
+                        cell.SliderBlock = ^(float value) {
+                            _cup.injure = value/10.f;
+                        };
                     }
                         break;
                     case 5:
                     {
                         cell.nameLabel.text = LocalString(@"胚芽烫伤");
-                        [cell addGradientLayerWithValue:_cup.germInjure colors:colors];
+                        [cell setSliderValue:_cup.germInjure];
+                        cell.SliderBlock = ^(float value) {
+                            _cup.germInjure = value/10.f;
+                        };
                     }
                         break;
                     case 6:
                     {
                         cell.nameLabel.text = LocalString(@"豆表烫伤");
-                        [cell addGradientLayerWithValue:_cup.beanFaceInjure colors:colors];
+                        [cell setSliderValue:_cup.beanFaceInjure];
+                        cell.SliderBlock = ^(float value) {
+                            _cup.beanFaceInjure = value/10.f;
+                        };
                     }
                         break;
                     default:
                         break;
                 }
+                NSArray *colors = @[[UIColor colorWithRed:236/255.0 green:224/255.0 blue:203/255.0 alpha:1], [UIColor colorWithRed:214/255.0 green:181/255.0 blue:128/255.0 alpha:1]];;
+                UIImage *image = [cell getGradientImageWithColors:colors imgSize:cell.scoreSlider.bounds.size];
+                [cell.scoreSlider setMinimumTrackImage:image forState:UIControlStateNormal];
                 return cell;
             }
         }else{
-            DetailGradeCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_cupDetailGrade];
+            EditCupNameCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_cupAddCupName];
             if (cell == nil) {
-                cell = [[DetailGradeCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_cupDetailGrade];
+                cell = [[EditCupNameCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_cupAddCupName];
             }
             return cell;
         }
     }else{
         if (indexPath.section == 0){
             if (indexPath.row == 0) {
-                BeanHeaderCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_cupBeanHeader];
+                BeanHeaderCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_cupAddBeanHeader];
                 if (cell == nil) {
-                    cell = [[BeanHeaderCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_cupBeanHeader];
+                    cell = [[BeanHeaderCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_cupAddBeanHeader];
                 }
                 if (_beanArray.count>0) {
                     NSString *nameString = LocalString(@"");
@@ -477,9 +585,9 @@ static float HEIGHT_HEADER = 15.f;
                 }
                 return cell;
             }else{
-                BeanInfoCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_cupBeanInfo];
+                BeanInfoCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_cupAddBeanInfo];
                 if (cell == nil) {
-                    cell = [[BeanInfoCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_cupBeanInfo];
+                    cell = [[BeanInfoCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_cupAddBeanInfo];
                 }
                 BeanModel *bean = _beanArray[indexPath.row - 1];
                 if (bean.name) {
@@ -535,9 +643,9 @@ static float HEIGHT_HEADER = 15.f;
                 return cell;
             }
         }else{
-            ReportCurveCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_cupCurve];
+            ReportCurveCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_cupAddCurve];
             if (cell == nil) {
-                cell = [[ReportCurveCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_cupCurve];
+                cell = [[ReportCurveCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_cupAddCurve];
             }
             if (_yVals_In.count > 0 && _yVals_Out.count > 0 && _yVals_Bean.count > 0 && _yVals_Environment.count > 0) {
                 cell.yVals_In = _yVals_In;
@@ -550,28 +658,27 @@ static float HEIGHT_HEADER = 15.f;
             return cell;
         }
     }
-
+    
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
-    if (tableView == _cupDetailTable) {
+    if (tableView == _cupAddTable) {
         switch (section) {
             case 0:
             case 1:
             case 2:
             case 3:
             {
-                UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, ScreenWidth, 0.5/HScale)];
-                headerView.layer.backgroundColor = [UIColor colorWithRed:246/255.0 green:246/255.0 blue:246/255.0 alpha:0.1].CGColor;
+                UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, ScreenWidth, 15.f/HScale)];
+                headerView.layer.backgroundColor = [UIColor colorWithRed:246/255.0 green:246/255.0 blue:246/255.0 alpha:1].CGColor;
                 return headerView;
             }
                 break;
-                                
+                
             default:
                 return nil;
                 break;
@@ -585,16 +692,13 @@ static float HEIGHT_HEADER = 15.f;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
-    if (tableView == _cupDetailTable) {
+    if (tableView == _cupAddTable) {
         switch (section) {
             case 0:
-                return 0.5/HScale;
-                break;
-                
             case 1:
             case 2:
             case 3:
-                return HEIGHT_HEADER/HScale;
+                return 15.f/HScale;
                 break;
                 
             default:
@@ -655,23 +759,19 @@ static float HEIGHT_HEADER = 15.f;
     }
     //可能没有添加生豆数据
     _beanArray = [beanMutaArray copy];
-    [self.bakeDetailTable reloadData];
+    [self.bakeAddTable reloadData];
 }
 
-#pragma mark - Actions
-- (void)editCup{
-    CupTestEditController *editVC = [[CupTestEditController alloc] init];
-    editVC.cup = _cup;
-    editVC.editBlock = ^(CupModel *cup) {
-        self.cup = cup;
-        [self.cupDetailTable reloadData];
-        [self queryReportInfo];
-    };
-    [self.navigationController pushViewController:editVC animated:YES];
-}
-
-#pragma mark - API data
-- (void)getCupInfoByAPI{
+#pragma mark - Action
+- (void)saveCupInfo{
+    if (!_cup.name) {
+        [NSObject showHudTipStr:LocalString(@"名字不能为空")];
+        return;
+    }
+    if (_cup.curveUid == nil) {
+        _cup.curveUid = @"";
+    }
+    [_cup caculateGrade];
     [SVProgressHUD show];
     AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
     
@@ -679,63 +779,63 @@ static float HEIGHT_HEADER = 15.f;
     manager.requestSerializer.timeoutInterval = 6.f;
     [manager.requestSerializer didChangeValueForKey:@"timeoutInterval"];
     
-    NSLog(@"%@",_cup.cupUid);
-    NSString *url = [NSString stringWithFormat:@"http://139.196.90.97:8080/coffee/cupping?cupUid=%@",_cup.cupUid];
+    NSString *url = [NSString stringWithFormat:@"http://139.196.90.97:8080/coffee/cupping"];
     url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet characterSetWithCharactersInString:@"`#%^{}\"[]|\\<> "].invertedSet];
     
     [manager.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
     [manager.requestSerializer setValue:[DataBase shareDataBase].userId forHTTPHeaderField:@"userId"];
     [manager.requestSerializer setValue:[NSString stringWithFormat:@"bearer %@",[DataBase shareDataBase].token] forHTTPHeaderField:@"Authorization"];
-    [manager GET:url parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableContainers|NSJSONReadingMutableLeaves error:nil];
-        NSData * data = [NSJSONSerialization dataWithJSONObject:responseDic options:(NSJSONWritingOptions)0 error:nil];
-        NSString * daetr = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
-        if ([[responseDic objectForKey:@"errno"] intValue] == 0) {
-            NSLog(@"success:%@",daetr);
-            if ([responseDic objectForKey:@"data"]) {
-                NSDictionary *beansDic = [responseDic objectForKey:@"data"];
-                _cup.name = [beansDic objectForKey:@"name"];
-                _cup.curveUid = [beansDic objectForKey:@"curveUid"];
-                _cup.date = [NSDate UTCDateFromLocalString:[beansDic objectForKey:@"createTime"]];
-                _cup.light = [[beansDic objectForKey:@"roastDegree"] floatValue];
-                _cup.dryAndWet = [[beansDic objectForKey:@"aroma"] floatValue];
-                _cup.flavor = [[beansDic objectForKey:@"flavor"] floatValue];
-                _cup.aftermath =[[beansDic objectForKey:@"aftertaste"] floatValue];
-                _cup.acid = [[beansDic objectForKey:@"acidity"] floatValue];
-                _cup.taste = [[beansDic objectForKey:@"taste"] floatValue];
-                _cup.sweet = [[beansDic objectForKey:@"sweetness"] floatValue];
-                _cup.balance = [[beansDic objectForKey:@"balance"] floatValue];
-                _cup.overFeel = [[beansDic objectForKey:@"overall"] floatValue];
-                _cup.deveUnfull = [[beansDic objectForKey:@"undevelopment"] floatValue];
-                _cup.overDeve = [[beansDic objectForKey:@"overdevelopment"] floatValue];
-                _cup.bakePaste = [[beansDic objectForKey:@"baked"] floatValue];
-                _cup.injure = [[beansDic objectForKey:@"scorched"] floatValue];
-                _cup.germInjure = [[beansDic objectForKey:@"tipped"] floatValue];
-                _cup.beanFaceInjure = [[beansDic objectForKey:@"faced"] floatValue];
-                _cup.isNew = @0;
-                [_cup caculateGrade];
-                BOOL result = [[DataBase shareDataBase] updateCup:_cup];
-                if (result) {
-                    
-                }else{
-                    [NSObject showHudTipStr:@"杯测信息更新到本地服务器失败"];
-                    NSLog(@"杯测信息更新到本地服务器失败");
-                }
-                [_cupDetailTable reloadData];
-            }
-        }else{
-            [NSObject showHudTipStr:LocalString(@"从服务器获取杯测信息失败")];
-            NSLog(@"从服务器获取杯测信息失败");
+    
+    NSDictionary *parameters = @{@"name":_cup.name,@"curveUid":_cup.curveUid,@"roastDegree":[NSNumber numberWithFloat:_cup.light],@"aroma":[NSNumber numberWithFloat:_cup.dryAndWet],@"flavor":[NSNumber numberWithFloat:_cup.flavor],@"aftertaste":[NSNumber numberWithFloat:_cup.aftermath],@"acidity":[NSNumber numberWithFloat:_cup.acid],@"taste":[NSNumber numberWithFloat:_cup.taste],@"sweetness":[NSNumber numberWithFloat:_cup.sweet],@"balance":[NSNumber numberWithFloat:_cup.balance],@"overall":[NSNumber numberWithFloat:_cup.overFeel],@"undevelopment":[NSNumber numberWithFloat:_cup.deveUnfull],@"overdevelopment":[NSNumber numberWithFloat:_cup.overDeve],@"baked":[NSNumber numberWithFloat:_cup.bakePaste],@"scorched":[NSNumber numberWithFloat:_cup.injure],@"tipped":[NSNumber numberWithFloat:_cup.germInjure],@"faced":[NSNumber numberWithFloat:_cup.beanFaceInjure],@"score":[NSNumber numberWithFloat:_cup.bakeGrade],@"defects":[NSNumber numberWithFloat:_cup.defectGrade],@"total":[NSNumber numberWithFloat:_cup.grade]};
+    
+    [manager POST:url parameters:parameters progress:nil
+          success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+              NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableContainers|NSJSONReadingMutableLeaves error:nil];
+              NSData * data = [NSJSONSerialization dataWithJSONObject:responseDic options:(NSJSONWritingOptions)0 error:nil];
+              NSString * daetr = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
+              if ([[responseDic objectForKey:@"errno"] intValue] == 0) {
+                  NSLog(@"success:%@",daetr);
+                  if ([responseDic objectForKey:@"data"]) {
+                      NSDictionary *beansDic = [responseDic objectForKey:@"data"];
+                      _cup.cupUid = [beansDic objectForKey:@"cupUid"];
+                      BOOL result = [[DataBase shareDataBase] insertNewCup:_cup];
+                      if (result) {
+                          if (self.disBlock) {
+                              self.disBlock();
+                          }
+                          [self dismissViewControllerAnimated:YES completion:nil];
+                          [NSObject showHudTipStr:LocalString(@"添加本地杯测成功")];
+                      }else{
+                          [NSObject showHudTipStr:LocalString(@"添加本地杯测失败")];
+                      }
+                  }
+              }else{
+                  [NSObject showHudTipStr:LocalString(@"杯测信息插入服务器失败")];
+              }
+              dispatch_async(dispatch_get_main_queue(), ^{
+                  [SVProgressHUD dismiss];
+              });
+          } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+              NSLog(@"Error:%@",error);
+              [NSObject showHudTipStr:LocalString(@"杯测信息插入服务器失败")];
+              dispatch_async(dispatch_get_main_queue(), ^{
+                  [SVProgressHUD dismiss];
+              });
+          }];
+    
+}
+
+- (void)selectCurve{
+    ReportSelectController *selectVC =[[ReportSelectController alloc] init];
+    selectVC.selBlock = ^(NSString *curveUid) {
+        if (_mySegment.selectedSegmentIndex == 1) {
+            self.bakeAddTable.hidden = NO;
+            self.noReportView.hidden = YES;
         }
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [SVProgressHUD dismiss];
-        });
-    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        NSLog(@"Error:%@",error);
-        [NSObject showHudTipStr:LocalString(@"从服务器获取杯测信息失败")];
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [SVProgressHUD dismiss];
-        });
-    }];
+        _cup.curveUid = curveUid;
+        [self queryReportInfo];
+    };
+    [self.navigationController pushViewController:selectVC animated:YES];
 }
 @end
+

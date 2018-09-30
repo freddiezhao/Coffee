@@ -10,4 +10,10 @@
 
 @implementation CupModel
 
+- (void)caculateGrade{
+    self.bakeGrade = self.dryAndWet + self.flavor + self.aftermath + self.acid + self.taste + self.sweet + self.balance + self.overFeel;
+    self.defectGrade = self.deveUnfull + self.overDeve + self.bakePaste + self.injure + self.germInjure + self.beanFaceInjure;
+    self.grade = self.bakeGrade - self.defectGrade;
+}
+
 @end

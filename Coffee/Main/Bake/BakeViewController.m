@@ -118,6 +118,29 @@
     
     if (_myNet.connectedDevice) {
         self.navigationItem.title = _myNet.connectedDevice.deviceName;
+        switch ([_myNet.connectedDevice.deviceType integerValue]) {
+            case 0:
+            case 1:
+            {
+                _deviceImage.image = [UIImage imageNamed:@"img_hb_m6g_small"];
+            }
+                break;
+             
+            case 2:
+            {
+                _deviceImage.image = [UIImage imageNamed:@"img_hb_l2_small"];
+            }
+                break;
+                
+            case 3:
+            {
+                _deviceImage.image = [UIImage imageNamed:@"img_peak_edmund"];
+            }
+                break;
+                
+            default:
+                break;
+        }
     }
     if (_beanNameView) {
         _beanNameView = [self beanNameView];

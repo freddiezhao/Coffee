@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-typedef void(^selBlock)(NSInteger curveId);
+typedef void(^selBlock)(NSString *curveUid);
 
 @interface ReportSelectController : UIViewController
 

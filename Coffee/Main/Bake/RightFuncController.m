@@ -8,6 +8,7 @@
 
 #import "RightFuncController.h"
 #import "EventModel.h"
+#import "BakeSliderAlertVC.h"
 
 #define WScaleT (667.f / ScreenWidth)
 #define HScaleT (375.f / ScreenHeight)
@@ -121,7 +122,7 @@
     [fireorwindPower setTitleColor:[UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1] forState:UIControlStateNormal];
     [fireorwindPower setButtonStyleWithColor:[UIColor clearColor] Width:1.0 cornerRadius:20/HScaleT];
     [fireorwindPower setBackgroundColor:[UIColor whiteColor]];
-    [fireorwindPower addTarget:self action:@selector(startBake) forControlEvents:UIControlEventTouchUpInside];
+    [fireorwindPower addTarget:self action:@selector(fireWindSlide) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:fireorwindPower];
     
     UIButton *remark = [[UIButton alloc] initWithFrame:CGRectMake(458/WScaleT,235/HScaleT,90/WScaleT,40/HScaleT)];
@@ -394,6 +395,17 @@
 - (void)saveCurve{
     [self dismissViewControllerAnimated:YES completion:nil];
     [[NetWork shareNetWork] showBakeOverAlertAction];
+}
+
+- (void)fireWindSlide{
+    BakeSliderAlertVC *sliderAlert = [[BakeSliderAlertVC alloc] init];
+    sliderAlert.modalPresentationStyle = UIModalPresentationOverCurrentContext;
+    [self presentViewController:sliderAlert animated:NO completion:^{
+        sliderAlert.WScale_alert = WScaleT;
+        NSLog(@"%f",sliderAlert.WScale_alert);
+        sliderAlert.HScale_alert = HScaleT;
+        [sliderAlert showView];
+    }];
 }
 
 - (void)dismissVC{
