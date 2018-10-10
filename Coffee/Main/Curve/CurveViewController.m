@@ -209,7 +209,7 @@ static float HEIGHT_HEADER = 36.f;
     ReportModel *report = _currentReportArr[indexPath.section][indexPath.row];
     
     BakeReportController *reportVC = [[BakeReportController alloc] init];
-    reportVC.curveId = report.curveId;
+    reportVC.curveUid = report.curveUid;
     [self.navigationController pushViewController:reportVC animated:YES];
 }
 
@@ -405,7 +405,7 @@ static float HEIGHT_HEADER = 36.f;
         });
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         NSLog(@"Error:%@",error);
-        [NSObject showHudTipStr:LocalString(@"从服务器获取生豆信息失败")];
+        [NSObject showHudTipStr:LocalString(@"从服务器获取烘焙报告失败")];
         dispatch_async(dispatch_get_main_queue(), ^{
             [SVProgressHUD dismiss];
         });

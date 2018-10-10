@@ -60,7 +60,7 @@ NSString *const CollectHeaderIdentifier_curve = @"CollectHeaderID_curve";
             break;
             
         case 4:
-            return 8;
+            return _eventArray.count + 1;
             break;
             
         default:
@@ -76,113 +76,22 @@ NSString *const CollectHeaderIdentifier_curve = @"CollectHeaderID_curve";
         CollectEventCell *cell = (CollectEventCell *)[collectionView dequeueReusableCellWithReuseIdentifier:CollectCellIdentifier_curveEvent forIndexPath:indexPath];
         cell.backgroundColor = [UIColor clearColor];
         
-        switch (indexPath.row) {
-            case 0:
-                {
-                    cell.leftLabel.text = LocalString(@"事件类型");
-                    cell.centerLabel.text = LocalString(@"发生时间");
-                    cell.rightLabel.text = LocalString(@"内容");
-                    cell.leftLabel.layer.borderWidth = 0.5;
-                    cell.leftLabel.layer.borderColor = [UIColor colorWithRed:0/255.0 green:0/255.0 blue:0/255.0 alpha:0.1].CGColor;
-                    cell.centerLabel.layer.borderWidth = 0.5;
-                    cell.centerLabel.layer.borderColor = [UIColor colorWithRed:0/255.0 green:0/255.0 blue:0/255.0 alpha:0.1].CGColor;
-                    cell.rightLabel.layer.borderWidth = 0.5;
-                    cell.rightLabel.layer.borderColor = [UIColor colorWithRed:0/255.0 green:0/255.0 blue:0/255.0 alpha:0.1].CGColor;
-                }
-                break;
-                
-            case 1:
-                {
-                    cell.leftLabel.text = LocalString(@"开始烘焙");
-                    cell.centerLabel.text = LocalString(@"空");
-                    cell.rightLabel.text = LocalString(@"空");
-                    for (EventModel *event in _eventArray) {
-                        if (event.eventId == 0) {
-                            cell.centerLabel.text = [NSString stringWithFormat:@"%ld:%02ld",event.eventTime/60,event.eventTime%60];
-                        }
-                    }
-                }
-                break;
-                
-            case 2:
-                {
-                    cell.leftLabel.text = LocalString(@"回温点");
-                    cell.centerLabel.text = LocalString(@"空");
-                    cell.rightLabel.text = LocalString(@"空");
-                }
-                break;
-                
-            case 3:
-                {
-                    cell.leftLabel.text = LocalString(@"脱水结束");
-                    cell.centerLabel.text = LocalString(@"空");
-                    cell.rightLabel.text = LocalString(@"空");
-                    for (EventModel *event in _eventArray) {
-                        if (event.eventId == 1) {
-                            cell.centerLabel.text = [NSString stringWithFormat:@"%ld:%02ld",event.eventTime/60,event.eventTime%60];
-                        }
-                    }
-                }
-                break;
-                
-            case 4:
-                {
-                    cell.leftLabel.text = LocalString(@"火力调节");
-                    cell.centerLabel.text = LocalString(@"空");
-                    cell.rightLabel.text = LocalString(@"空");
-                    for (EventModel *event in _eventArray) {
-                        if (event.eventId == 2) {
-                            cell.centerLabel.text = [NSString stringWithFormat:@"%ld:%02ld",event.eventTime/60,event.eventTime%60];
-                        }
-                    }
-                }
-                break;
-                
-            case 5:
-                {
-                    cell.leftLabel.text = LocalString(@"一爆开始");
-                    cell.centerLabel.text = LocalString(@"空");
-                    cell.rightLabel.text = LocalString(@"空");
-                    for (EventModel *event in _eventArray) {
-                        if (event.eventId == 3) {
-                            cell.centerLabel.text = [NSString stringWithFormat:@"%ld:%02ld",event.eventTime/60,event.eventTime%60];
-                        }
-                    }
-                }
-                break;
-                
-            case 6:
-                {
-                    cell.leftLabel.text = LocalString(@"一爆结束");
-                    cell.centerLabel.text = LocalString(@"空");
-                    cell.rightLabel.text = LocalString(@"空");
-                    for (EventModel *event in _eventArray) {
-                        if (event.eventId == 4) {
-                            cell.centerLabel.text = [NSString stringWithFormat:@"%ld:%02ld",event.eventTime/60,event.eventTime%60];
-                        }
-                    }
-                }
-                break;
-                
-            case 7:
-                {
-                    cell.leftLabel.text = LocalString(@"二爆开始");
-                    cell.centerLabel.text = LocalString(@"空");
-                    cell.rightLabel.text = LocalString(@"空");
-                    for (EventModel *event in _eventArray) {
-                        if (event.eventId == 5) {
-                            cell.centerLabel.text = [NSString stringWithFormat:@"%ld:%02ld",event.eventTime/60,event.eventTime%60];
-                        }
-                    }
-                }
-                break;
-            default:
-                {
-                    cell.leftLabel.text = LocalString(@"空");
-                    cell.centerLabel.text = LocalString(@"空");
-                    cell.rightLabel.text = LocalString(@"空");
-                }
-                break;
+        if (indexPath.row == 0) {
+            cell.leftLabel.text = LocalString(@"事件类型");
+            cell.centerLabel.text = LocalString(@"发生时间");
+            cell.rightLabel.text = LocalString(@"内容");
+            cell.leftLabel.layer.borderWidth = 0.5;
+            cell.leftLabel.layer.borderColor = [UIColor colorWithRed:0/255.0 green:0/255.0 blue:0/255.0 alpha:0.1].CGColor;
+            cell.centerLabel.layer.borderWidth = 0.5;
+            cell.centerLabel.layer.borderColor = [UIColor colorWithRed:0/255.0 green:0/255.0 blue:0/255.0 alpha:0.1].CGColor;
+            cell.rightLabel.layer.borderWidth = 0.5;
+            cell.rightLabel.layer.borderColor = [UIColor colorWithRed:0/255.0 green:0/255.0 blue:0/255.0 alpha:0.1].CGColor;
+        }else{
+            EventModel *event = _eventArray[indexPath.row - 1];
+            cell.leftLabel.text = event.eventText;
+            cell.centerLabel.text = [NSString stringWithFormat:@"%ld:%02ld",event.eventTime/60,event.eventTime%60];
+            cell.rightLabel.text = event.eventText;
+
         }
         return cell;
     }
@@ -239,7 +148,7 @@ NSString *const CollectHeaderIdentifier_curve = @"CollectHeaderID_curve";
             {
                 cell.titleLabel.text = LocalString(@"脱水率");
                 if (_reportModel.outWaterRate) {
-                    cell.valueLabel.text = _reportModel.outWaterRate;
+                    cell.valueLabel.text = [NSString stringWithFormat:@"%.1lf%%",_reportModel.outWaterRate];
                 }else{
                     cell.valueLabel.text = LocalString(@"空");
                 }
@@ -265,7 +174,7 @@ NSString *const CollectHeaderIdentifier_curve = @"CollectHeaderID_curve";
             {
                 cell.titleLabel.text = LocalString(@"一爆时间/温度");
                 for (EventModel *event in _eventArray) {
-                    if (event.eventId == 2) {
+                    if (event.eventId == 3) {
                         cell.valueLabel.text = [NSString stringWithFormat:@"%ld:%02ld/%.1f°C",event.eventTime/60,event.eventTime%60,event.eventBeanTemp];
                     }
                 }
@@ -285,7 +194,7 @@ NSString *const CollectHeaderIdentifier_curve = @"CollectHeaderID_curve";
             {
                 cell.titleLabel.text = LocalString(@"发展率");
                 if (_reportModel.developRate) {
-                    cell.valueLabel.text = _reportModel.developRate;
+                    cell.valueLabel.text = [NSString stringWithFormat:@"%.1lf%%",_reportModel.developRate];
                 }else{
                     cell.valueLabel.text = LocalString(@"空");
                 }
@@ -324,7 +233,7 @@ NSString *const CollectHeaderIdentifier_curve = @"CollectHeaderID_curve";
         for (EventModel *event in _eventArray) {
             if (event.eventId == 0) {
                 event1 = event;
-            }else if (event.eventId == 1){
+            }else if (event.eventId == 2){
                 event2 = event;
             }
         }
@@ -360,9 +269,9 @@ NSString *const CollectHeaderIdentifier_curve = @"CollectHeaderID_curve";
         EventModel *event1;
         EventModel *event2;
         for (EventModel *event in _eventArray) {
-            if (event.eventId == 1) {
+            if (event.eventId == 2) {
                 event1 = event;
-            }else if (event.eventId == 2){
+            }else if (event.eventId == 3){
                 event2 = event;
             }
         }
@@ -398,9 +307,9 @@ NSString *const CollectHeaderIdentifier_curve = @"CollectHeaderID_curve";
         EventModel *event1;
         EventModel *event2;
         for (EventModel *event in _eventArray) {
-            if (event.eventId == 2) {
+            if (event.eventId == 3) {
                 event1 = event;
-            }else if (event.eventId == 3){
+            }else if (event.eventId == 4){
                 event2 = event;
             }
         }

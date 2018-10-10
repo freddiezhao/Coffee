@@ -171,7 +171,7 @@
         [net setTimerStatusOn];
         
         EventModel *event = [[EventModel alloc] init];
-        event.eventId = 0;
+        event.eventId = 0;//类型为0
         event.eventTime = 0;
         event.eventText = LocalString(@"烘焙开始");
         for (EventModel *event in net.eventArray) {
@@ -203,11 +203,11 @@
     alert.rBlock = ^{
         NetWork *net = [NetWork shareNetWork];
         EventModel *event = [[EventModel alloc] init];
-        event.eventId = 1;
+        event.eventId = 2;//类型为2
         event.eventTime = net.timerValue;
         event.eventText = LocalString(@"脱水结束");
         for (EventModel *event in net.eventArray) {
-            if (event.eventId == 1) {
+            if (event.eventId == 2) {
                 [net.eventArray removeObject:event];
                 break;
             }
@@ -235,11 +235,11 @@
         NetWork *net = [NetWork shareNetWork];
         net.isDevelop = YES;
         EventModel *event = [[EventModel alloc] init];
-        event.eventId = 2;
+        event.eventId = 3;//类型为3
         event.eventTime = net.timerValue;
         event.eventText = LocalString(@"一爆开始");
         for (EventModel *event in net.eventArray) {
-            if (event.eventId == 2) {
+            if (event.eventId == 3) {
                 [net.eventArray removeObject:event];
                 break;
             }
@@ -266,11 +266,11 @@
     alert.rBlock = ^{
         NetWork *net = [NetWork shareNetWork];
         EventModel *event = [[EventModel alloc] init];
-        event.eventId = 3;
+        event.eventId = 4;//类型为4
         event.eventTime = net.timerValue;
         event.eventText = LocalString(@"一爆结束");
         for (EventModel *event in net.eventArray) {
-            if (event.eventId == 3) {
+            if (event.eventId == 4) {
                 [net.eventArray removeObject:event];
                 break;
             }
@@ -298,11 +298,11 @@
         NetWork *net = [NetWork shareNetWork];
         net.isDevelop = NO;
         EventModel *event = [[EventModel alloc] init];
-        event.eventId = 4;
+        event.eventId = 5;//类型为5
         event.eventTime = net.timerValue;
         event.eventText = LocalString(@"二爆开始");
         for (EventModel *event in net.eventArray) {
-            if (event.eventId == 4) {
+            if (event.eventId == 5) {
                 [net.eventArray removeObject:event];
                 break;
             }
@@ -329,11 +329,11 @@
     alert.rBlock = ^{
         NetWork *net = [NetWork shareNetWork];
         EventModel *event = [[EventModel alloc] init];
-        event.eventId = 5;
+        event.eventId = 6;//类型为6
         event.eventTime = net.timerValue;
         event.eventText = LocalString(@"二爆结束");
         for (EventModel *event in net.eventArray) {
-            if (event.eventId == 5) {
+            if (event.eventId == 6) {
                 [net.eventArray removeObject:event];
                 break;
             }
@@ -365,14 +365,14 @@
         [net setTimerStatusOff];
         net.deviceTimerStatus = 2;
         
-        net.developRate = [NSString stringWithFormat:@"%.1f%%",1.0*net.developTime/net.timerValue];
+        net.developRate = 1.0*net.developTime/net.timerValue;
 
         EventModel *event = [[EventModel alloc] init];
-        event.eventId = 6;
+        event.eventId = 7;//类型为7
         event.eventTime = net.timerValue;
         event.eventText = LocalString(@"烘焙结束");
         for (EventModel *event in net.eventArray) {
-            if (event.eventId == 6) {
+            if (event.eventId == 7) {
                 [net.eventArray removeObject:event];
                 break;
             }
@@ -398,6 +398,8 @@
 }
 
 - (void)fireWindSlide{
+    NetWork *net = [NetWork shareNetWork];
+
     BakeSliderAlertVC *sliderAlert = [[BakeSliderAlertVC alloc] init];
     sliderAlert.modalPresentationStyle = UIModalPresentationOverCurrentContext;
     [self presentViewController:sliderAlert animated:NO completion:^{
@@ -405,6 +407,20 @@
         NSLog(@"%f",sliderAlert.WScale_alert);
         sliderAlert.HScale_alert = HScaleT;
         [sliderAlert showView];
+        sliderAlert.sliderBlock = ^(int value) {
+            EventModel *event = [[EventModel alloc] init];
+            event.eventId = 8;//类型为8
+            event.eventTime = net.timerValue;
+            event.eventText = [NSString stringWithFormat:@"%@%d",LocalString(@"风力/火力调整为"),value];
+            //风力火力调整可能有多次，不需要删除
+//            for (EventModel *event in net.eventArray) {
+//                if (event.eventId == 8) {
+//                    [net.eventArray removeObject:event];
+//                    break;
+//                }
+//            }
+            [net.eventArray addObject:event];
+        };
     }];
 }
 

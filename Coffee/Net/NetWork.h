@@ -97,7 +97,7 @@ static NSInteger tempCountVer = 1000;
 ///@brief 发展时间发展率
 @property (nonatomic, assign) BOOL isDevelop;
 @property (nonatomic, assign) int developTime;
-@property (nonatomic, strong) NSString *developRate;
+@property (nonatomic, assign) float developRate;
 ///@brief 计时器数据,app中所有计时都以秒为单位
 @property (nonatomic, assign) int timerValue;
 ///@brief 计时器状态

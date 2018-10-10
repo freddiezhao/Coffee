@@ -133,7 +133,7 @@ static float HEIGHT_HEADER = 36.f;
     ReportModel *report = _currentReportArr[indexPath.section][indexPath.row];
     
     BakeReportController *reportVC = [[BakeReportController alloc] init];
-    reportVC.curveId = report.curveId;
+    reportVC.curveUid = report.curveUid;
     [self.navigationController pushViewController:reportVC animated:YES];
 }
 

@@ -8,6 +8,8 @@
 
 #import <UIKit/UIKit.h>
 
+typedef void(^sliderBlock)(int value);
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface BakeSliderAlertVC : UIViewController
@@ -16,6 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, strong) UISlider *mySlider;
 @property (nonatomic, strong) UILabel *sliderValue;
+@property (nonatomic) sliderBlock sliderBlock;
 
 - (void)showView;
 @end

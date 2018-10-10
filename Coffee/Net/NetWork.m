@@ -23,7 +23,7 @@
 
 static NetWork *_netWork = nil;
 static NSInteger gotTempCount = 0;
-static NSInteger curveId;
+static NSString *curveUid;
 
 @implementation NetWork
 
@@ -139,7 +139,7 @@ static NSInteger curveId;
     _relaCurve = nil;
     _isDevelop = NO;
     _developTime = 0;
-    _developRate = @"";
+    _developRate = 0.0;
     _deviceTimerStatus = 0;
     _eventCount = 0;
     
@@ -1153,7 +1153,7 @@ static NSInteger curveId;
 - (void)showBakeOverAlertAction{
     YAlertViewController *alert = [[YAlertViewController alloc] init];
     alert.rBlock = ^{
-        [self bakeCompelete];
+        [self getCurveUidByApi];
     };
     alert.modalPresentationStyle = UIModalPresentationOverCurrentContext;
     [[self getCurrentVC] presentViewController:alert animated:NO completion:^{
@@ -1173,8 +1173,6 @@ static NSInteger curveId;
 }
 
 - (void)bakeCompelete{
-    [SVProgressHUD showWithStatus:LocalString(@"生成烘焙报告中")];
-    
     DataBase *myDB = [DataBase shareDataBase];
     
     //曲线名字
@@ -1210,7 +1208,7 @@ static NSInteger curveId;
     static BOOL isSucc = NO;
     //添加报告并更新数据的事务
     [myDB.queueDB inTransaction:^(FMDatabase * _Nonnull db, BOOL * _Nonnull rollback) {
-        BOOL result = [db executeUpdate:@"INSERT INTO curveInfo (curveName,date,deviceName,sn,rawBeanWeight,bakeBeanWeight,light,bakeTime,developTime,developRate,bakerName,curveValue,shareName,isShare) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)",curveName,[NSDate localStringFromUTCDate:[NSDate date]],_connectedDevice.deviceName,_connectedDevice.sn,[NSNumber numberWithDouble:totolWeight],@0,@0,[NSNumber numberWithInt:_timerValue],[NSNumber numberWithInt:_developTime],_developRate,myDB.userName,curveValueJson,@"",@0];
+        BOOL result = [db executeUpdate:@"INSERT INTO curveInfo (curveName,date,deviceName,sn,rawBeanWeight,bakeBeanWeight,light,bakeTime,developTime,developRate,bakerName,curveValue,shareName,isShare) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)",curveName,[NSDate localStringFromUTCDate:[NSDate date]],_connectedDevice.deviceName,_connectedDevice.sn,[NSNumber numberWithDouble:totolWeight],@0,@0,[NSNumber numberWithInt:_timerValue],[NSNumber numberWithInt:_developTime],[NSNumber numberWithFloat:_developRate],myDB.userName,curveValueJson,@"",@0];
         //test
         //BOOL result = [db executeUpdate:@"INSERT INTO curveInfo (curveName,date,deviceName,rawBeanWeight,bakeBeanWeight,light,bakeTime,developTime,developRate,bakerName,curveValue) VALUES (?,?,?,?,?,?,?,?,?,?,?)",@"",[NSDate localStringFromUTCDate:[NSDate date]],@"",@0,@0,@0,@0,@0,@"",@"",@""];
         if (!result) {
@@ -1220,17 +1218,18 @@ static NSInteger curveId;
             [NSObject showHudTipStr:@"插入曲线失败"];
             return;
         }
-        FMResultSet *set = [db executeQuery:@"SELECT last_insert_rowid() FROM curveInfo"];
-        while ([set next]) {
-            curveId = [set intForColumnIndex:0];
-        }
-        NSLog(@"%ld",(long)curveId);
-        [set close];
+        //本来是获取最后存储的数据的主键值的，现在用curveUid，不需要了
+//        FMResultSet *set = [db executeQuery:@"SELECT last_insert_rowid() FROM curveInfo"];
+//        while ([set next]) {
+//            curveId = [set intForColumnIndex:0];
+//        }
+//        NSLog(@"%ld",(long)curveId);
+//        [set close];
         
         //插入曲线事件关联
         for (int i = 0; i < _eventArray.count; i++) {
             EventModel *event = _eventArray[i];
-            result = [db executeUpdate:@"INSERT INTO curve_event (curveId,eventId,eventTime,eventBeanTemp) VALUES (?,?,?,?)",[NSNumber numberWithInteger:curveId],[NSNumber numberWithInteger:event.eventId],[NSNumber numberWithInteger:event.eventTime],[NSNumber numberWithDouble:event.eventBeanTemp]];
+            result = [db executeUpdate:@"INSERT INTO curve_event (curveUid,eventId,eventText,eventTime,eventBeanTemp) VALUES (?,?,?,?)",curveUid,[NSNumber numberWithInteger:event.eventId],event.eventText,[NSNumber numberWithInteger:event.eventTime],[NSNumber numberWithDouble:event.eventBeanTemp]];
             if (!result) {
                 *rollback = YES;
                 [SVProgressHUD dismiss];
@@ -1243,7 +1242,7 @@ static NSInteger curveId;
         //插入曲线生豆关联
         for (int i = 0; i < _beanArray.count; i++) {
             BeanModel *bean = _beanArray[i];
-            result = [db executeUpdate:@"INSERT INTO bean_curve (beanId,curveId,beanWeight) VALUES (?,?,?)",[NSNumber numberWithInteger:bean.beanId],[NSNumber numberWithInteger:curveId],[NSNumber numberWithFloat:bean.weight]];
+            result = [db executeUpdate:@"INSERT INTO bean_curve (beanId,curveUid,beanWeight) VALUES (?,?,?)",[NSNumber numberWithInteger:bean.beanId],curveUid,[NSNumber numberWithFloat:bean.weight]];
             if (!result) {
                 *rollback = YES;
                 [SVProgressHUD dismiss];
@@ -1281,7 +1280,7 @@ static NSInteger curveId;
         _relaCurve = nil;
         _isDevelop = YES;
         _developTime = 0;
-        _developRate = @"";
+        _developRate = 0.0;
         _deviceTimerStatus = 0;
         _eventCount = 0;
         
@@ -1296,12 +1295,50 @@ static NSInteger curveId;
         mainVC.selectedIndex = 1;
         
         BakeReportController *reportVC = [[BakeReportController alloc] init];
-        reportVC.curveId = curveId;
+        reportVC.curveUid = curveUid;
         //因为mainVC.selectedViewController是一个自己生成的UINavigationController，所以要获得根vc
         UINavigationController *nav = (UINavigationController *)mainVC.selectedViewController;
         [[nav viewControllers][0].navigationController pushViewController:reportVC animated:YES];
     }
 }
+
+- (void)getCurveUidByApi{
+    [SVProgressHUD showWithStatus:LocalString(@"生成烘焙报告中")];
+
+    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+    
+    [manager.requestSerializer willChangeValueForKey:@"timeoutInterval"];
+    manager.requestSerializer.timeoutInterval = 6.f;
+    [manager.requestSerializer didChangeValueForKey:@"timeoutInterval"];
+    
+    NSString *url = [NSString stringWithFormat:@"http://139.196.90.97:8080/coffee/roastCurve/id"];
+    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet characterSetWithCharactersInString:@"`#%^{}\"[]|\\<> "].invertedSet];
+    
+    [manager.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+    [manager.requestSerializer setValue:[DataBase shareDataBase].userId forHTTPHeaderField:@"userId"];
+    [manager.requestSerializer setValue:[NSString stringWithFormat:@"bearer %@",[DataBase shareDataBase].token] forHTTPHeaderField:@"Authorization"];
+    [manager GET:url parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableContainers|NSJSONReadingMutableLeaves error:nil];
+        NSData * data = [NSJSONSerialization dataWithJSONObject:responseDic options:(NSJSONWritingOptions)0 error:nil];
+        NSString * daetr = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
+        if ([[responseDic objectForKey:@"errno"] intValue] == 0) {
+            NSLog(@"success:%@",daetr);
+            if ([responseDic objectForKey:@"data"]) {
+                NSDictionary *data = [responseDic objectForKey:@"data"];
+                curveUid = [data objectForKey:@"curveUid"];
+                NSLog(@"%@",curveUid);
+                [self bakeCompelete];
+            }else{
+                [SVProgressHUD dismiss];
+                [NSObject showHudTipStr:@"后台出现问题，存储曲线失败"];
+            }
+        }
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        NSLog(@"Error:%@",error);
+    }];
+}
+
+#pragma mark - VC的操作
 
 //获取当前屏幕显示的viewcontroller
 - (UIViewController *)getCurrentVC

@@ -76,6 +76,9 @@
 - (void)sliderValueChanged:(id)sender {
     UISlider *slider = (UISlider *)sender;
     _sliderValue.text = [NSString stringWithFormat:@"%d",(int)slider.value];
+    if (self.sliderBlock) {
+        self.sliderBlock((int)slider.value);
+    }
 }
 
 - (void)showView{

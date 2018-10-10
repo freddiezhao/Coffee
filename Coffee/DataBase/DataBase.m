@@ -86,13 +86,13 @@ static DataBase *_dataBase = nil;
         }else{
             NSLog(@"创建表bean失败");
         }
-        result = [db executeUpdate:@"CREATE TABLE IF NOT EXISTS curveInfo (curveId integer PRIMARY KEY AUTOINCREMENT,curveUid text NOT NULL,curveName text NOT NULL,date text,deviceName text,sn text NOT NULL,rawBeanWeight REAL,bakeBeanWeight REAL,light REAL,curveValue text,bakeTime integer,developTime integer,developRate text,bakerName text,shareName text,isShare integer NOT NULL,isNew integer NOT NULL)"];
+        result = [db executeUpdate:@"CREATE TABLE IF NOT EXISTS curveInfo (curveId integer PRIMARY KEY AUTOINCREMENT,curveUid text NOT NULL,curveName text NOT NULL,date text,deviceName text,sn text NOT NULL,rawBeanWeight REAL,bakeBeanWeight REAL,light REAL,curveValue text,bakeTime integer,developTime integer,developRate REAL,bakerName text,shareName text,isShare integer NOT NULL,isNew integer NOT NULL)"];
         if (result) {
             NSLog(@"创建表curve成功");
         }else{
             NSLog(@"创建表curve失败");
         }
-        result = [db executeUpdate:@"CREATE TABLE IF NOT EXISTS bean_curve (beanUid text NOT NULl,curveUid text NOT NULL,beanWeight REAL NOT NULL)"];
+        result = [db executeUpdate:@"CREATE TABLE IF NOT EXISTS bean_curve (beanUid text NOT NULl,curveUid text NOT NULL,beanWeight REAL NOT NULL,beanName text NOT NULL,nation text,area text,manor text,altitude REAL,beanSpecies text,grade text,process text,water REAL)"];
         if (result) {
             NSLog(@"创建表bean_curve成功");
         }else{
@@ -104,7 +104,7 @@ static DataBase *_dataBase = nil;
         }else{
             NSLog(@"创建表user_setting_events失败");
         }
-        result = [db executeUpdate:@"CREATE TABLE IF NOT EXISTS curve_event (id integer PRIMARY KEY AUTOINCREMENT,curveId integer NOT NULL,eventId integer NOT NULL,eventTime integer NOT NULL,eventBeanTemp REAL NOT NULL)"];
+        result = [db executeUpdate:@"CREATE TABLE IF NOT EXISTS curve_event (id integer PRIMARY KEY AUTOINCREMENT,curveUid text NOT NULL,eventId integer NOT NULL,eventText text NOT NULL,eventTime integer NOT NULL,eventBeanTemp REAL NOT NULL)"];
         if (result) {
             NSLog(@"创建表curve_event成功");
         }else{
@@ -277,6 +277,7 @@ static DataBase *_dataBase = nil;
         FMResultSet *set = [db executeQuery:@"SELECT * FROM curveInfo WHERE curveUid = ?",curveUid];
         while ([set next]) {
             reportModel.curveId = [set intForColumn:@"curveId"];
+            reportModel.curveUid = [set stringForColumn:@"curveUid"];
             reportModel.curveName = [set stringForColumn:@"curveName"];
             reportModel.date = [NSDate UTCDateFromLocalString:[set stringForColumn:@"date"]];
             reportModel.deviceName = [set stringForColumn:@"deviceName"];
@@ -286,12 +287,9 @@ static DataBase *_dataBase = nil;
             reportModel.curveValueJson = [set stringForColumn:@"curveValue"];
             reportModel.bakeTime = [set intForColumn:@"bakeTime"];
             reportModel.developTime = [set intForColumn:@"developTime"];
-            reportModel.developRate = [set stringForColumn:@"developRate"];
+            reportModel.developRate = [set doubleForColumn:@"developRate"];
             reportModel.bakerName = [set stringForColumn:@"bakerName"];
-//            reportModel.tempBake_event = [set stringForColumn:@"tempBake_event"];
-//            reportModel.firstBoom_event = [set stringForColumn:@"firstBoom_event"];
-//            reportModel.startTemp = [set stringForColumn:@"startTemp"];
-//            reportModel.endTemp = [set stringForColumn:@"endTemp"];
+            reportModel.isNew = [NSNumber numberWithInt:[set intForColumn:@"isNew"]];
         }
         [set close];
     }];
@@ -301,10 +299,11 @@ static DataBase *_dataBase = nil;
 - (NSMutableArray *)queryBeanRelaReport:(NSNumber *)beanId{//device为nil就查全部
     NSMutableArray *reportArr = [[NSMutableArray alloc] init];
     [_queueDB inDatabase:^(FMDatabase * _Nonnull db) {
-        FMResultSet *set = [db executeQuery:@"SELECT curve.curveId,curve.curveName,curve.date,curve.deviceName FROM bean_curve AS bc,curveInfo AS curve WHERE bc.beanId = ? AND bc.curveId = curve.curveId",beanId];
+        FMResultSet *set = [db executeQuery:@"SELECT curve.curveId,curve.curveUid,curve.curveName,curve.date,curve.deviceName FROM bean_curve AS bc,curveInfo AS curve WHERE bc.beanId = ? AND bc.curveId = curve.curveId",beanId];
         while ([set next]) {
             ReportModel *reportModel = [[ReportModel alloc] init];
             reportModel.curveId = [set intForColumn:@"curveId"];
+            reportModel.curveUid = [set stringForColumn:@"curveUid"];
             reportModel.curveName = [set stringForColumn:@"curveName"];
             reportModel.date = [NSDate UTCDateFromLocalString:[set stringForColumn:@"date"]];
             reportModel.deviceName = [set stringForColumn:@"deviceName"];
@@ -323,6 +322,15 @@ static DataBase *_dataBase = nil;
             BeanModel *beanModel = [[BeanModel alloc] init];
             beanModel.beanId = [set intForColumn:@"beanId"];
             beanModel.weight = [set intForColumn:@"beanWeight"];
+            beanModel.name = [set stringForColumn:@"beanName"];
+            beanModel.nation = [set stringForColumn:@"nation"];
+            beanModel.area = [set stringForColumn:@"area"];
+            beanModel.altitude = [set doubleForColumn:@"altitude"];
+            beanModel.manor = [set stringForColumn:@"manor"];
+            beanModel.beanSpecies = [set stringForColumn:@"beanSpecies"];
+            beanModel.grade = [set stringForColumn:@"grade"];
+            beanModel.process = [set stringForColumn:@"process"];
+            beanModel.water = [set doubleForColumn:@"water"];
             [beanArray addObject:beanModel];
         }
         [set close];
@@ -386,16 +394,16 @@ static DataBase *_dataBase = nil;
 }
 
 //user_setting_events中1-8都是基本事件，快速事件id从10后面开始
-- (NSArray *)queryEvent:(NSNumber *)curveId{
+- (NSArray *)queryEvent:(NSString *)curveUid{
     NSMutableArray *eventArray = [[NSMutableArray alloc] init];
     [_queueDB inDatabase:^(FMDatabase * _Nonnull db) {
-        FMResultSet *set = [db executeQuery:@"SELECT bc.*,use.event FROM curve_event AS bc,user_setting_events AS use WHERE bc.curveId = ? AND bc.eventId = use.eventId ORDER BY bc.eventId",curveId];
+        FMResultSet *set = [db executeQuery:@"SELECT bc.*,use.event FROM curve_event AS bc,user_setting_events AS use WHERE bc.curveUid = ? AND bc.eventId = use.eventId ORDER BY bc.eventId",curveUid];
         while ([set next]) {
             EventModel *eventModel = [[EventModel alloc] init];//每次循环都必须新建对象，不然都是在同一个对象（内存地址）操作
             eventModel.eventId = [set intForColumn:@"eventId"];
             eventModel.eventTime = [set intForColumn:@"eventTime"];
             eventModel.eventBeanTemp = [set doubleForColumn:@"eventBeanTemp"];
-            eventModel.eventText = [set stringForColumn:@"event"];
+            eventModel.eventText = [set stringForColumn:@"eventText"];
             [eventArray addObject:eventModel];
         }
         [set close];
@@ -495,22 +503,22 @@ static DataBase *_dataBase = nil;
     return cup;
 }
 #pragma mark - 增
-- (void)insertBaseEvent{
-    NSArray *eventTextArray = @[@"开始烘焙",@"脱水结束",@"一爆开始",@"一爆结束",@"二爆开始",@"二爆结束",@"烘焙结束"];
-    [_queueDB inDatabase:^(FMDatabase * _Nonnull db) {
-        for (int i = 0; i < eventTextArray.count; i++) {
-            BOOL result = [db executeUpdate:@"REPLACE INTO user_setting_events (eventId,event) VALUES (?,?)",[NSNumber numberWithInt:i],eventTextArray[i]];
-            if (!result) {
-                NSLog(@"插入失败");
-            }
-        }
-    }];
-}
+//- (void)insertBaseEvent{
+//    NSArray *eventTextArray = @[@"开始烘焙",@"脱水结束",@"一爆开始",@"一爆结束",@"二爆开始",@"二爆结束",@"烘焙结束"];
+//    [_queueDB inDatabase:^(FMDatabase * _Nonnull db) {
+//        for (int i = 0; i < eventTextArray.count; i++) {
+//            BOOL result = [db executeUpdate:@"REPLACE INTO user_setting_events (eventId,event) VALUES (?,?)",[NSNumber numberWithInt:i],eventTextArray[i]];
+//            if (!result) {
+//                NSLog(@"插入失败");
+//            }
+//        }
+//    }];
+//}
 
 - (BOOL)insertNewReport:(ReportModel *)report{
     static BOOL result = YES;
     [_queueDB inDatabase:^(FMDatabase * _Nonnull db) {
-        result = [db executeUpdate:@"INSERT INTO beanInfo (curveName,date,deviceName,sn,rawBeanWeight,bakeBeanWeight,light,curveValue,bakeTime,developTime,developRate,bakerName,shareName,isShare,isNew) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",report.curveName,[NSDate YMDHMStringFromUTCDate:report.date],report.deviceName,report.sn,[NSNumber numberWithDouble:report.rawBeanWeight],[NSNumber numberWithDouble:report.bakeBeanWeight],[NSNumber numberWithFloat:report.light],report.curveValueJson,[NSNumber numberWithInteger:report.bakeTime],[NSNumber numberWithInteger:report.developTime],report.developRate,report.bakerName,report.sharerName,[NSNumber numberWithInteger:report.isShare],report.isNew];
+        result = [db executeUpdate:@"INSERT INTO beanInfo (curveName,date,deviceName,sn,rawBeanWeight,bakeBeanWeight,light,curveValue,bakeTime,developTime,developRate,bakerName,shareName,isShare,isNew) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",report.curveName,[NSDate YMDHMStringFromUTCDate:report.date],report.deviceName,report.sn,[NSNumber numberWithDouble:report.rawBeanWeight],[NSNumber numberWithDouble:report.bakeBeanWeight],[NSNumber numberWithFloat:report.light],report.curveValueJson,[NSNumber numberWithInteger:report.bakeTime],[NSNumber numberWithInteger:report.developTime],[NSNumber numberWithFloat:report.developRate],report.bakerName,report.sharerName,[NSNumber numberWithInteger:report.isShare],report.isNew];
         //result = [db executeUpdate:@"INSERT INTO curveInfo (curveUid,curveName,date,deviceName,sn,rawBeanWeight,bakeBeanWeight,light,curveValue,bakeTime,developTime,developRate,bakerName,shareName,isShare) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)",@"yangpin",@"样品豆",[NSDate localStringFromUTCDate:[NSDate dateWithTimeInterval:3*24*60*60 sinceDate:[NSDate date]]],@"HR型烘焙机",@"fcc",@0,@0,@0,@"",@0,@0,@"",@"",@"",@0];
         if (!result) {
             NSLog(@"添加报告失败");

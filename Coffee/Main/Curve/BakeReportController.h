@@ -11,6 +11,6 @@
 @interface BakeReportController : BaseViewController
 
 ///@brief 该页面的唯一入口,整个页面的数据都通过这个键值获得
-@property (nonatomic) NSInteger curveId;
+@property (nonatomic, strong) NSString *curveUid;
 
 @end

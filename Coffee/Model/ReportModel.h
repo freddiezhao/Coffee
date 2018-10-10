@@ -18,12 +18,12 @@
 @property (nonatomic, strong) NSString *sn;//设备sn码
 @property (nonatomic) double rawBeanWeight;
 @property (nonatomic) double bakeBeanWeight;
-@property (nonatomic, strong) NSString *outWaterRate;
+@property (nonatomic) double outWaterRate;
 @property (nonatomic) double light;
 @property (nonatomic, strong) NSString *curveValueJson;
 @property (nonatomic) NSInteger bakeTime;
 @property (nonatomic) NSInteger developTime;
-@property (nonatomic, strong) NSString *developRate;
+@property (nonatomic) float developRate;
 @property (nonatomic, strong) NSString *bakerName;
 @property (nonatomic, strong) NSString *tempBake_event;
 @property (nonatomic, strong) NSString *firstBoom_event;
