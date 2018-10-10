@@ -376,6 +376,8 @@
 		BB7835E52147643B000E2FCB /* EditLightCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BB7835E42147643B000E2FCB /* EditLightCell.m */; };
 		BB7835E821476D20000E2FCB /* EditBakeBeanCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BB7835E721476D20000E2FCB /* EditBakeBeanCell.m */; };
 		BB7835EB2147E898000E2FCB /* EditBeanController_bakeAdd.m in Sources */ = {isa = PBXBuildFile; fileRef = BB7835EA2147E898000E2FCB /* EditBeanController_bakeAdd.m */; };
+		BB7845DE216DDC83000CDD3A /* DataWithApi.m in Sources */ = {isa = PBXBuildFile; fileRef = BB7845DD216DDC83000CDD3A /* DataWithApi.m */; };
+		BB7845E1216DFADA000CDD3A /* SearchCurveController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB7845E0216DFADA000CDD3A /* SearchCurveController.m */; };
 		BB813E6B214BA49D00D68F7B /* CupTestMainController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB813E6A214BA49D00D68F7B /* CupTestMainController.m */; };
 		BB813E6E214BAABE00D68F7B /* CupModel.m in Sources */ = {isa = PBXBuildFile; fileRef = BB813E6D214BAABE00D68F7B /* CupModel.m */; };
 		BB813E72214BB5CB00D68F7B /* CupNormalCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BB813E71214BB5CB00D68F7B /* CupNormalCell.m */; };
@@ -961,6 +963,10 @@
 		BB7835E721476D20000E2FCB /* EditBakeBeanCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EditBakeBeanCell.m; sourceTree = "<group>"; };
 		BB7835E92147E898000E2FCB /* EditBeanController_bakeAdd.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EditBeanController_bakeAdd.h; sourceTree = "<group>"; };
 		BB7835EA2147E898000E2FCB /* EditBeanController_bakeAdd.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EditBeanController_bakeAdd.m; sourceTree = "<group>"; };
+		BB7845DC216DDC83000CDD3A /* DataWithApi.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DataWithApi.h; sourceTree = "<group>"; };
+		BB7845DD216DDC83000CDD3A /* DataWithApi.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DataWithApi.m; sourceTree = "<group>"; };
+		BB7845DF216DFADA000CDD3A /* SearchCurveController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SearchCurveController.h; sourceTree = "<group>"; };
+		BB7845E0216DFADA000CDD3A /* SearchCurveController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SearchCurveController.m; sourceTree = "<group>"; };
 		BB813E69214BA49D00D68F7B /* CupTestMainController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CupTestMainController.h; sourceTree = "<group>"; };
 		BB813E6A214BA49D00D68F7B /* CupTestMainController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CupTestMainController.m; sourceTree = "<group>"; };
 		BB813E6C214BAABE00D68F7B /* CupModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CupModel.h; sourceTree = "<group>"; };
@@ -1298,6 +1304,8 @@
 			children = (
 				BB4C906C2105C4200023EE9B /* DataBase.h */,
 				BB4C906D2105C4200023EE9B /* DataBase.m */,
+				BB7845DC216DDC83000CDD3A /* DataWithApi.h */,
+				BB7845DD216DDC83000CDD3A /* DataWithApi.m */,
 			);
 			path = DataBase;
 			sourceTree = "<group>";
@@ -1615,6 +1623,8 @@
 				BB28E73F2146832B005B884C /* ReportEditController.m */,
 				BB7835E92147E898000E2FCB /* EditBeanController_bakeAdd.h */,
 				BB7835EA2147E898000E2FCB /* EditBeanController_bakeAdd.m */,
+				BB7845DF216DFADA000CDD3A /* SearchCurveController.h */,
+				BB7845E0216DFADA000CDD3A /* SearchCurveController.m */,
 			);
 			path = Curve;
 			sourceTree = "<group>";
@@ -1757,8 +1767,8 @@
 				BB4A4C80214F8F210010A9A1 /* CupTestEditController.m */,
 				BB254E90215D0A8A004A29D3 /* AddCupTextController.h */,
 				BB254E91215D0A8A004A29D3 /* AddCupTextController.m */,
-				BB4A4C86214FB07F0010A9A1 /* ReportSelectController.m */,
 				BB4A4C85214FB07F0010A9A1 /* ReportSelectController.h */,
+				BB4A4C86214FB07F0010A9A1 /* ReportSelectController.m */,
 			);
 			path = Cup;
 			sourceTree = "<group>";
@@ -2670,6 +2680,7 @@
 				BB68B5FB21280A42001CABE5 /* BeanHeaderCell.m in Sources */,
 				BB56101121522D25008433B1 /* UserPhoneController.m in Sources */,
 				BB63B40521491CC600EAC364 /* BeanRelaCurveController.m in Sources */,
+				BB7845E1216DFADA000CDD3A /* SearchCurveController.m in Sources */,
 				BB635D2B2108794B005F42D6 /* CurveColorCell.m in Sources */,
 				BB68F2EC2159D49800D40336 /* AllScoreCell.m in Sources */,
 				BB65C25920FDF00000BB684E /* BeanModel.m in Sources */,
@@ -2696,6 +2707,7 @@
 				BB345C2D2153A4AA000537DD /* AFNetworkActivityIndicatorManager.m in Sources */,
 				BB345C272153A4A9000537DD /* AFURLSessionManager.m in Sources */,
 				BB345C312153A4AA000537DD /* UIWebView+AFNetworking.m in Sources */,
+				BB7845DE216DDC83000CDD3A /* DataWithApi.m in Sources */,
 				BB25E7A9212E611A003568BD /* BeanViewController.m in Sources */,
 				BB345C2C2153A4AA000537DD /* UIRefreshControl+AFNetworking.m in Sources */,
 				BB813E72214BB5CB00D68F7B /* CupNormalCell.m in Sources */,

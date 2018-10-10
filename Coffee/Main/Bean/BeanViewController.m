@@ -65,16 +65,6 @@ static float HEIGHT_HEADER = 36.f;
     _timer = [self timer];
     
     [self getAllBean];
-
-//    NSArray *array = @[@"李娜", @"林丹", @"张学友", @"孙燕姿", @"Sammi", @"Tanya", @"东野圭吾", @"周树人", @"张大千", @"阿新"];
-//    NSArray *weightArray = @[@20, @40, @10, @20, @30, @15, @11, @31, @41, @51];
-//    _beanArr = [NSMutableArray array];
-//    for (int i = 0; i<array.count; i++) {
-//        BeanModel *bean = [[BeanModel alloc] init];
-//        bean.name = array[i];
-//        bean.weight = [weightArray[i] floatValue];
-//        [_beanArr addObject:bean];
-//    }
     
     if (_beanArr.count == 0) {
         _sort_nameBtn.hidden = YES;
@@ -96,6 +86,10 @@ static float HEIGHT_HEADER = 36.f;
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
     [self.rdv_tabBarController setTabBarHidden:NO animated:YES];
+    
+    if (_beanTable) {
+        [self getAllBean];
+    }
 }
 
 - (void)viewWillDisappear:(BOOL)animated{
@@ -157,29 +151,21 @@ static float HEIGHT_HEADER = 36.f;
             
             tableView.tableFooterView = [[UIView alloc] init];
             
-
-            //tableView.scrollEnabled = NO;
-//            if ([tableView respondsToSelector:@selector(setSeparatorInset:)]) {
-//                [tableView setSeparatorInset:UIEdgeInsetsZero];
-//            }
-//            if ([tableView respondsToSelector:@selector(setLayoutMargins:)])  {
-//                [tableView setLayoutMargins:UIEdgeInsetsZero];
-//            }
-
-            MJRefreshGifHeader *header = [MJRefreshGifHeader headerWithRefreshingTarget:self refreshingAction:@selector(getAllBeanByApi)];
-            // Set title
-            [header setTitle:LocalString(@"下拉刷新") forState:MJRefreshStateIdle];
-            [header setTitle:LocalString(@"松开刷新") forState:MJRefreshStatePulling];
-            [header setTitle:LocalString(@"加载中") forState:MJRefreshStateRefreshing];
-            
-            // Set font
-            header.stateLabel.font = [UIFont systemFontOfSize:15];
-            header.lastUpdatedTimeLabel.font = [UIFont systemFontOfSize:14];
-            
-            // Set textColor
-            header.stateLabel.textColor = [UIColor lightGrayColor];
-            header.lastUpdatedTimeLabel.textColor = [UIColor lightGrayColor];
-            tableView.mj_header = header;
+            //不要刷新了，会对现在的后台逻辑造成混乱
+//            MJRefreshGifHeader *header = [MJRefreshGifHeader headerWithRefreshingTarget:self refreshingAction:@selector(getAllBeanByApi)];
+//            // Set title
+//            [header setTitle:LocalString(@"下拉刷新") forState:MJRefreshStateIdle];
+//            [header setTitle:LocalString(@"松开刷新") forState:MJRefreshStatePulling];
+//            [header setTitle:LocalString(@"加载中") forState:MJRefreshStateRefreshing];
+//
+//            // Set font
+//            header.stateLabel.font = [UIFont systemFontOfSize:15];
+//            header.lastUpdatedTimeLabel.font = [UIFont systemFontOfSize:14];
+//
+//            // Set textColor
+//            header.stateLabel.textColor = [UIColor lightGrayColor];
+//            header.lastUpdatedTimeLabel.textColor = [UIColor lightGrayColor];
+//            tableView.mj_header = header;
             tableView;
         });
     }
@@ -637,76 +623,7 @@ sectionForSectionIndexTitle:(NSString *)title
 #pragma mark - Data Source
 - (void)getAllBean{
     _beanArr = [[DataBase shareDataBase] queryAllBean];
-    if (_beanArr.count == 0) {
-        [self getAllBeanByApi];
-    }else{
-        [self afterGetBeanArr];
-    }
-}
-
-- (void)getAllBeanByApi{
-    [SVProgressHUD show];
-    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
-    
-    [manager.requestSerializer willChangeValueForKey:@"timeoutInterval"];
-    manager.requestSerializer.timeoutInterval = 6.f;
-    [manager.requestSerializer didChangeValueForKey:@"timeoutInterval"];
-
-    NSString *url = [NSString stringWithFormat:@"http://139.196.90.97:8080/coffee/bean/list"];
-    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet characterSetWithCharactersInString:@"`#%^{}\"[]|\\<> "].invertedSet];
-    
-    [manager.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
-    [manager.requestSerializer setValue:_myDB.userId forHTTPHeaderField:@"userId"];
-    [manager.requestSerializer setValue:[NSString stringWithFormat:@"bearer %@",_myDB.token] forHTTPHeaderField:@"Authorization"];
-    [manager GET:url parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableContainers|NSJSONReadingMutableLeaves error:nil];
-        NSData * data = [NSJSONSerialization dataWithJSONObject:responseDic options:(NSJSONWritingOptions)0 error:nil];
-        NSString * daetr = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
-        if ([[responseDic objectForKey:@"errno"] intValue] == 0) {
-            NSLog(@"success:%@",daetr);
-            if ([responseDic objectForKey:@"data"]) {
-                NSDictionary *beansDic = [responseDic objectForKey:@"data"];
-                [[beansDic objectForKey:@"beans"] enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-                    BeanModel *bean = [[BeanModel alloc] init];
-                    bean.beanUid = [obj objectForKey:@"beanUid"];
-                    bean.name = [obj objectForKey:@"name"];
-                    bean.stock = [[obj objectForKey:@"stock"] floatValue];
-                    bean.time = [NSDate UTCDateFromLocalString:[obj objectForKey:@"purchaseTime"]];
-                    bean.isNew = @1;
-                    static BOOL isStored = NO;
-                    [_myDB.queueDB inDatabase:^(FMDatabase * _Nonnull db) {
-                        FMResultSet *set = [db executeQuery:@"SELECT beanId FROM beanInfo WHERE beanUid = ?",[obj objectForKey:@"beanUid"]];
-                        while ([set next]) {
-                            isStored = YES;
-                            NSLog(@"1");
-                        }
-                        [set close];
-                    }];
-                    if (!isStored) {
-                        BOOL result = [_myDB insertNewBean:bean];
-                        if (result) {
-                            NSLog(@"咖啡豆移入数据库成功");
-                        }else{
-                            NSLog(@"咖啡豆移入数据库失败");
-                        }
-                    }
-                }];
-                _beanArr = [[DataBase shareDataBase] queryAllBean];
-                [self afterGetBeanArr];
-            }
-        }else{
-            [NSObject showHudTipStr:LocalString(@"从服务器获取生豆信息失败")];
-        }
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [SVProgressHUD dismiss];
-        });
-    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        NSLog(@"Error:%@",error);
-        [NSObject showHudTipStr:LocalString(@"从服务器获取生豆信息失败")];
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [SVProgressHUD dismiss];
-        });
-    }];
+    [self afterGetBeanArr];
 }
 
 - (void)afterGetBeanArr{
@@ -740,9 +657,6 @@ sectionForSectionIndexTitle:(NSString *)title
         [self downSortByWeight:_beanArr];
     }
     [self.beanTable reloadData];
-    if ([_beanTable.mj_header isRefreshing]) {
-        [_beanTable.mj_header endRefreshing];
-    }
 }
 
 @end

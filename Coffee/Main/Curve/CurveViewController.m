@@ -14,6 +14,7 @@
 #import "ReportModel.h"
 #import "DeviceModel.h"
 #import "FMDB.h"
+#import "SearchCurveController.h"
 
 NSString *const CellIdentifier_CurrentCurve = @"CellID_CurrentCurve";
 
@@ -42,9 +43,7 @@ static float HEIGHT_HEADER = 36.f;
     if (!_currentReportArr) {
         _currentReportArr = [[NSMutableArray alloc] init];
     }
-    if ([[DataBase shareDataBase] queryAllReport].count == 0) {
-        [self getAllReportByApi];
-    }
+    _currentReportArr = [self getAllReportWithCurrentDevice];
     _titleData = [self titleData];
     _mySegment = [self mySegment];
     _currentTable = [self currentTable];
@@ -145,20 +144,21 @@ static float HEIGHT_HEADER = 36.f;
             tableView.estimatedSectionFooterHeight = 0;
             tableView.tableFooterView = [[UIView alloc] init];
             
-            MJRefreshGifHeader *header = [MJRefreshGifHeader headerWithRefreshingTarget:self refreshingAction:@selector(refreshTable)];
-            // Set title
-            [header setTitle:LocalString(@"下拉刷新") forState:MJRefreshStateIdle];
-            [header setTitle:LocalString(@"松开刷新") forState:MJRefreshStatePulling];
-            [header setTitle:LocalString(@"加载中") forState:MJRefreshStateRefreshing];
-            
-            // Set font
-            header.stateLabel.font = [UIFont systemFontOfSize:15];
-            header.lastUpdatedTimeLabel.font = [UIFont systemFontOfSize:14];
-            
-            // Set textColor
-            header.stateLabel.textColor = [UIColor lightGrayColor];
-            header.lastUpdatedTimeLabel.textColor = [UIColor lightGrayColor];
-            tableView.mj_header = header;
+            //不要刷新了，会对现在的后台逻辑造成混乱
+//            MJRefreshGifHeader *header = [MJRefreshGifHeader headerWithRefreshingTarget:self refreshingAction:@selector(refreshTable)];
+//            // Set title
+//            [header setTitle:LocalString(@"下拉刷新") forState:MJRefreshStateIdle];
+//            [header setTitle:LocalString(@"松开刷新") forState:MJRefreshStatePulling];
+//            [header setTitle:LocalString(@"加载中") forState:MJRefreshStateRefreshing];
+//
+//            // Set font
+//            header.stateLabel.font = [UIFont systemFontOfSize:15];
+//            header.lastUpdatedTimeLabel.font = [UIFont systemFontOfSize:14];
+//
+//            // Set textColor
+//            header.stateLabel.textColor = [UIColor lightGrayColor];
+//            header.lastUpdatedTimeLabel.textColor = [UIColor lightGrayColor];
+//            tableView.mj_header = header;
             tableView;
         });
     }
@@ -339,77 +339,11 @@ static float HEIGHT_HEADER = 36.f;
 }
 
 - (void)searchCurve{
-    
-}
-
-- (void)getAllReportByApi{
-    [SVProgressHUD show];
-    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
-    
-    [manager.requestSerializer willChangeValueForKey:@"timeoutInterval"];
-    manager.requestSerializer.timeoutInterval = 6.f;
-    [manager.requestSerializer didChangeValueForKey:@"timeoutInterval"];
-    
-    NSString *url = [NSString stringWithFormat:@"http://139.196.90.97:8080/coffee/roastCurve/list"];
-    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet characterSetWithCharactersInString:@"`#%^{}\"[]|\\<> "].invertedSet];
-    
-    [manager.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
-    [manager.requestSerializer setValue:[DataBase shareDataBase].userId forHTTPHeaderField:@"userId"];
-    [manager.requestSerializer setValue:[NSString stringWithFormat:@"bearer %@",[DataBase shareDataBase].token] forHTTPHeaderField:@"Authorization"];
-    [manager GET:url parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableContainers|NSJSONReadingMutableLeaves error:nil];
-        NSData * data = [NSJSONSerialization dataWithJSONObject:responseDic options:(NSJSONWritingOptions)0 error:nil];
-        NSString * daetr = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
-        if ([[responseDic objectForKey:@"errno"] intValue] == 0) {
-            NSLog(@"success:%@",daetr);
-            if ([responseDic objectForKey:@"data"]) {
-                [[responseDic objectForKey:@"data"] enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-                    ReportModel *report = [[ReportModel alloc] init];
-                    report.curveUid = [obj objectForKey:@"curveUid"];
-                    report.curveName = [obj objectForKey:@"name"];
-                    report.date = [NSDate UTCDateFromLocalString:[obj objectForKey:@"createTime"]];
-                    report.sn = [obj objectForKey:@"sn"];
-                    report.sharerName = [obj objectForKey:@"sharedName"];
-                    if (report.sharerName) {
-                        report.isShare = 1;
-                    }else{
-                        report.isShare = 0;
-                    }
-                    report.isNew = @1;
-                    static BOOL isStored = NO;
-                    [[DataBase shareDataBase].queueDB inDatabase:^(FMDatabase * _Nonnull db) {
-                        FMResultSet *set = [db executeQuery:@"SELECT curveId FROM curveInfo WHERE curveUid = ?",[obj objectForKey:@"curveUid"]];
-                        while ([set next]) {
-                            isStored = YES;
-                            NSLog(@"1");
-                        }
-                        [set close];
-                    }];
-                    if (!isStored) {
-                        BOOL result = [[DataBase shareDataBase] insertNewReport:report];
-                        if (result) {
-                            NSLog(@"烘焙报告移入数据库成功");
-                        }else{
-                            NSLog(@"烘焙报告移入数据库失败");
-                        }
-                    }
-                }];
-                _currentReportArr = [self getAllReportWithCurrentDevice];
-                [_currentTable reloadData];
-            }
-        }else{
-            [NSObject showHudTipStr:LocalString(@"从服务器获取烘焙报告失败")];
-        }
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [SVProgressHUD dismiss];
-        });
-    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        NSLog(@"Error:%@",error);
-        [NSObject showHudTipStr:LocalString(@"从服务器获取烘焙报告失败")];
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [SVProgressHUD dismiss];
-        });
-    }];
+    SearchCurveController *searchVC = [[SearchCurveController alloc] init];
+    searchVC.curveArr = [self getAllReport];
+    //searchVC.modalPresentationStyle = UIModalPresentationOverCurrentContext;
+    searchVC.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+    [self presentViewController:searchVC animated:YES completion:nil];
 }
 
 - (NSMutableArray *)getAllReport{

@@ -67,9 +67,6 @@ static float HEIGHT_HEADER = 15.f;
     self.cupDetailTable = [self cupDetailTable];
     self.bakeDetailTable = [self bakeDetailTable];
     _cup = [[DataBase shareDataBase] queryCupWithCupUid:_cup.cupUid];
-    if ([_cup.isNew integerValue] == 1) {
-        [self getCupInfoByAPI];
-    }
     [_cup caculateGrade];
     [self.cupDetailTable reloadData];
     [self queryReportInfo];
@@ -650,7 +647,7 @@ static float HEIGHT_HEADER = 15.f;
         BeanModel *beanModelOld = beanMutaArray[i];
         BeanModel *beanModelNew = [db queryBean:beanModelOld.beanUid];
         beanModelNew.weight = beanModelOld.weight;
-        beanModelNew.beanId = beanModelOld.beanId;
+        beanModelNew.beanUid = beanModelOld.beanUid;
         [beanMutaArray replaceObjectAtIndex:i withObject:beanModelNew];
     }
     //可能没有添加生豆数据
@@ -670,72 +667,4 @@ static float HEIGHT_HEADER = 15.f;
     [self.navigationController pushViewController:editVC animated:YES];
 }
 
-#pragma mark - API data
-- (void)getCupInfoByAPI{
-    [SVProgressHUD show];
-    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
-    
-    [manager.requestSerializer willChangeValueForKey:@"timeoutInterval"];
-    manager.requestSerializer.timeoutInterval = 6.f;
-    [manager.requestSerializer didChangeValueForKey:@"timeoutInterval"];
-    
-    NSLog(@"%@",_cup.cupUid);
-    NSString *url = [NSString stringWithFormat:@"http://139.196.90.97:8080/coffee/cupping?cupUid=%@",_cup.cupUid];
-    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet characterSetWithCharactersInString:@"`#%^{}\"[]|\\<> "].invertedSet];
-    
-    [manager.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
-    [manager.requestSerializer setValue:[DataBase shareDataBase].userId forHTTPHeaderField:@"userId"];
-    [manager.requestSerializer setValue:[NSString stringWithFormat:@"bearer %@",[DataBase shareDataBase].token] forHTTPHeaderField:@"Authorization"];
-    [manager GET:url parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableContainers|NSJSONReadingMutableLeaves error:nil];
-        NSData * data = [NSJSONSerialization dataWithJSONObject:responseDic options:(NSJSONWritingOptions)0 error:nil];
-        NSString * daetr = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
-        if ([[responseDic objectForKey:@"errno"] intValue] == 0) {
-            NSLog(@"success:%@",daetr);
-            if ([responseDic objectForKey:@"data"]) {
-                NSDictionary *beansDic = [responseDic objectForKey:@"data"];
-                _cup.name = [beansDic objectForKey:@"name"];
-                _cup.curveUid = [beansDic objectForKey:@"curveUid"];
-                _cup.date = [NSDate UTCDateFromLocalString:[beansDic objectForKey:@"createTime"]];
-                _cup.light = [[beansDic objectForKey:@"roastDegree"] floatValue];
-                _cup.dryAndWet = [[beansDic objectForKey:@"aroma"] floatValue];
-                _cup.flavor = [[beansDic objectForKey:@"flavor"] floatValue];
-                _cup.aftermath =[[beansDic objectForKey:@"aftertaste"] floatValue];
-                _cup.acid = [[beansDic objectForKey:@"acidity"] floatValue];
-                _cup.taste = [[beansDic objectForKey:@"taste"] floatValue];
-                _cup.sweet = [[beansDic objectForKey:@"sweetness"] floatValue];
-                _cup.balance = [[beansDic objectForKey:@"balance"] floatValue];
-                _cup.overFeel = [[beansDic objectForKey:@"overall"] floatValue];
-                _cup.deveUnfull = [[beansDic objectForKey:@"undevelopment"] floatValue];
-                _cup.overDeve = [[beansDic objectForKey:@"overdevelopment"] floatValue];
-                _cup.bakePaste = [[beansDic objectForKey:@"baked"] floatValue];
-                _cup.injure = [[beansDic objectForKey:@"scorched"] floatValue];
-                _cup.germInjure = [[beansDic objectForKey:@"tipped"] floatValue];
-                _cup.beanFaceInjure = [[beansDic objectForKey:@"faced"] floatValue];
-                _cup.isNew = @0;
-                [_cup caculateGrade];
-                BOOL result = [[DataBase shareDataBase] updateCup:_cup];
-                if (result) {
-                    
-                }else{
-                    [NSObject showHudTipStr:@"杯测信息更新到本地服务器失败"];
-                    NSLog(@"杯测信息更新到本地服务器失败");
-                }
-                [_cupDetailTable reloadData];
-            }
-        }else{
-            [NSObject showHudTipStr:LocalString(@"从服务器获取杯测信息失败")];
-            NSLog(@"从服务器获取杯测信息失败");
-        }
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [SVProgressHUD dismiss];
-        });
-    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        NSLog(@"Error:%@",error);
-        [NSObject showHudTipStr:LocalString(@"从服务器获取杯测信息失败")];
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [SVProgressHUD dismiss];
-        });
-    }];
-}
 @end

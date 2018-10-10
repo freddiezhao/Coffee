@@ -10,6 +10,6 @@
 
 @interface BeanRelaCurveController : UIViewController
 
-@property (nonatomic, strong) NSNumber *beanId;
+@property (nonatomic, strong) NSString *beanUid;
 
 @end

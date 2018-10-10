@@ -80,19 +80,19 @@ static DataBase *_dataBase = nil;
 #pragma mark - Data 增删改查
 - (void)createTable{
     [_queueDB inDatabase:^(FMDatabase * _Nonnull db) {
-        BOOL result = [db executeUpdate:@"CREATE TABLE IF NOT EXISTS beanInfo (beanId integer PRIMARY KEY AUTOINCREMENT,beanUid text NOT NULL,beanName text NOT NULL,nation text,area text,manor text,altitude REAL,beanSpecies text,grade text,process text,water REAL,supplier text,price REAL,stock REAL,time text,isNew integer NOT NULL)"];
+        BOOL result = [db executeUpdate:@"CREATE TABLE IF NOT EXISTS beanInfo (beanUid text PRIMARY KEY,beanName text NOT NULL,nation text,area text,manor text,altitude REAL,beanSpecies text,grade text,process text,water REAL,supplier text,price REAL,stock REAL,time text)"];
         if (result) {
             NSLog(@"创建表bean成功");
         }else{
             NSLog(@"创建表bean失败");
         }
-        result = [db executeUpdate:@"CREATE TABLE IF NOT EXISTS curveInfo (curveId integer PRIMARY KEY AUTOINCREMENT,curveUid text NOT NULL,curveName text NOT NULL,date text,deviceName text,sn text NOT NULL,rawBeanWeight REAL,bakeBeanWeight REAL,light REAL,curveValue text,bakeTime integer,developTime integer,developRate REAL,bakerName text,shareName text,isShare integer NOT NULL,isNew integer NOT NULL)"];
+        result = [db executeUpdate:@"CREATE TABLE IF NOT EXISTS curveInfo (curveUid integer PRIMARY KEY,curveName text NOT NULL,date text,deviceName text,sn text NOT NULL,rawBeanWeight REAL,bakeBeanWeight REAL,light REAL,curveValue text,bakeTime integer,developTime integer,developRate REAL,bakerName text,shareName text,isShare integer NOT NULL)"];
         if (result) {
             NSLog(@"创建表curve成功");
         }else{
             NSLog(@"创建表curve失败");
         }
-        result = [db executeUpdate:@"CREATE TABLE IF NOT EXISTS bean_curve (beanUid text NOT NULl,curveUid text NOT NULL,beanWeight REAL NOT NULL,beanName text NOT NULL,nation text,area text,manor text,altitude REAL,beanSpecies text,grade text,process text,water REAL)"];
+        result = [db executeUpdate:@"CREATE TABLE IF NOT EXISTS bean_curve (beanUid text NOT NULl,curveUid text NOT NULL,beanWeight REAL NOT NULL)"];
         if (result) {
             NSLog(@"创建表bean_curve成功");
         }else{
@@ -110,7 +110,7 @@ static DataBase *_dataBase = nil;
         }else{
             NSLog(@"创建表curve_event失败");
         }
-        result = [db executeUpdate:@"CREATE TABLE IF NOT EXISTS cup (cupId integer PRIMARY KEY AUTOINCREMENT,cupUid text NOT NULL,cupName text NOT NULL,curveUid text,dryAndWet REAL,flavor REAL,aftermath REAL,acid REAL,taste REAL,sweet REAL,balance REAL,overFeel REAL,deveUnfull REAL,overDeve REAL,bakePaste REAL,injure REAL,germInjure REAL,beanFaceInjure REAL,date text,light REAL,isNew integer NOT NULL,total REAL)"];
+        result = [db executeUpdate:@"CREATE TABLE IF NOT EXISTS cup (cupUid text PRIMARY KEY,cupName text NOT NULL,curveUid text,dryAndWet REAL,flavor REAL,aftermath REAL,acid REAL,taste REAL,sweet REAL,balance REAL,overFeel REAL,deveUnfull REAL,overDeve REAL,bakePaste REAL,injure REAL,germInjure REAL,beanFaceInjure REAL,date text,light REAL,total REAL)"];
         if (result) {
             NSLog(@"创建表cup成功");
         }else{
@@ -130,59 +130,6 @@ static DataBase *_dataBase = nil;
         }
     }];
 }
-
-//- (void)createTable{
-//    [_queueDB inDatabase:^(FMDatabase * _Nonnull db) {
-//        BOOL result = [db executeUpdate:@"CREATE TABLE IF NOT EXISTS beanInfo (beanId integer PRIMARY KEY AUTOINCREMENT,beanUid text NOT NULL,beanName text NOT NULL,nation text NOT NULL,area text NOT NULL,manor text NOT NULL,altitude REAL NOT NULL,beanSpecies text NOT NULL,grade text NOT NULL,process text NOT NULL,water REAL NOT NULL,supplier text NOT NULL,price REAL NOT NULL,stock REAL NOT NULL,time text NOT NULL,isNew integer NOT NULL)"];
-//        if (result) {
-//            NSLog(@"创建表bean成功");
-//        }else{
-//            NSLog(@"创建表bean失败");
-//        }
-//        result = [db executeUpdate:@"CREATE TABLE IF NOT EXISTS curveInfo (curveId integer PRIMARY KEY AUTOINCREMENT,curveUid text NOT NULL,curveName text NOT NULL,date text NOT NULL,deviceName text NOT NULL,sn text NOT NULL,rawBeanWeight REAL NOT NULL,bakeBeanWeight REAL NOT NULL,light REAL NOT NULL,curveValue text NOT NULL,bakeTime integer NOT NULL,developTime integer NOT NULL,developRate text NOT NULL,bakerName text NOT NULL,shareName text NOT NULL,isShare integer NOT NULL)"];
-//        if (result) {
-//            NSLog(@"创建表curve成功");
-//        }else{
-//            NSLog(@"创建表curve失败");
-//        }
-//        result = [db executeUpdate:@"CREATE TABLE IF NOT EXISTS bean_curve (beanUid text NOT NULl,curveUid text NOT NULL,beanWeight REAL NOT NULL)"];
-//        if (result) {
-//            NSLog(@"创建表bean_curve成功");
-//        }else{
-//            NSLog(@"创建表bean_curve失败");
-//        }
-//        result = [db executeUpdate:@"CREATE TABLE IF NOT EXISTS user_setting_events (eventId integer PRIMARY KEY AUTOINCREMENT,event text NOT NULL)"];
-//        if (result) {
-//            NSLog(@"创建表user_setting_events成功");
-//        }else{
-//            NSLog(@"创建表user_setting_events失败");
-//        }
-//        result = [db executeUpdate:@"CREATE TABLE IF NOT EXISTS curve_event (id integer PRIMARY KEY AUTOINCREMENT,curveId integer NOT NULL,eventId integer NOT NULL,eventTime integer NOT NULL,eventBeanTemp REAL NOT NULL)"];
-//        if (result) {
-//            NSLog(@"创建表curve_event成功");
-//        }else{
-//            NSLog(@"创建表curve_event失败");
-//        }
-//        result = [db executeUpdate:@"CREATE TABLE IF NOT EXISTS cup (cupId integer PRIMARY KEY AUTOINCREMENT,cupUid text NOT NULL,cupName text NOT NULL,curveUid text NOT NULL,dryAndWet REAL NOT NULL,flavor REAL NOT NULL,aftermath REAL NOT NULL,acid REAL NOT NULL,taste REAL NOT NULL,sweet REAL NOT NULL,balance REAL NOT NULL,overFeel REAL NOT NULL,deveUnfull REAL NOT NULL,overDeve REAL NOT NULL,bakePaste REAL NOT NULL,injure REAL NOT NULL,germInjure REAL NOT NULL,beanFaceInjure REAL NOT NULL,date text NOT NULL,light REAL NOT NULL,isNew integer NOT NULL,total REAL NOT NULL)"];
-//        if (result) {
-//            NSLog(@"创建表cup成功");
-//        }else{
-//            NSLog(@"创建表cup失败");
-//        }
-//        result = [db executeUpdate:@"CREATE TABLE IF NOT EXISTS user_setting (id integer PRIMARY KEY AUTOINCREMENT,weightunit text NOT NULL,tempunit text NOT NULL,bakechromareferstandard text NOT NULL,timeaxis text NOT NULL,tempaxis text NOT NULL,tempcurvesmooth integer NOT NULL,tempratesmooth integer NOT NULL,language text NOT NULl)"];
-//        if (result) {
-//            NSLog(@"创建表user_setting成功");
-//        }else{
-//            NSLog(@"创建表user_setting失败");
-//        }
-//        result = [db executeUpdate:@"CREATE TABLE IF NOT EXISTS device (id integer PRIMARY KEY AUTOINCREMENT,sn text NOT NULL,deviceName text NOT NULL,deviceType integer NOT NULL)"];
-//        if (result) {
-//            NSLog(@"创建表device成功");
-//        }else{
-//            NSLog(@"创建表device失败");
-//        }
-//    }];
-//}
 
 #pragma mark - 查
 - (void)querySetting{
@@ -215,7 +162,6 @@ static DataBase *_dataBase = nil;
         FMResultSet *set = [db executeQuery:@"SELECT * FROM curveInfo WHERE isShare = 0"];
         while ([set next]) {
             ReportModel *reportModel = [[ReportModel alloc] init];
-            reportModel.curveId = [set intForColumn:@"curveId"];
             reportModel.curveUid = [set stringForColumn:@"curveUid"];
             reportModel.curveName = [set stringForColumn:@"curveName"];
             reportModel.date = [NSDate UTCDateFromLocalString:[set stringForColumn:@"date"]];
@@ -228,7 +174,7 @@ static DataBase *_dataBase = nil;
 }
 
 
-- (NSMutableArray *)queryAllReport:(DeviceModel *)device{//device为nil就查全部
+- (NSMutableArray *)queryAllReport:(DeviceModel *)device{
     NSMutableArray *reportArr = [[NSMutableArray alloc] init];
     [_queueDB inDatabase:^(FMDatabase * _Nonnull db) {
         FMResultSet *set;
@@ -239,7 +185,6 @@ static DataBase *_dataBase = nil;
         }
         while ([set next]) {
             ReportModel *reportModel = [[ReportModel alloc] init];
-            reportModel.curveId = [set intForColumn:@"curveId"];
             reportModel.curveUid = [set stringForColumn:@"curveUid"];
             reportModel.curveName = [set stringForColumn:@"curveName"];
             reportModel.date = [NSDate UTCDateFromLocalString:[set stringForColumn:@"date"]];
@@ -257,7 +202,6 @@ static DataBase *_dataBase = nil;
         FMResultSet *set = [db executeQuery:@"SELECT * FROM curveInfo WHERE isShare = 1"];
         while ([set next]) {
             ReportModel *reportModel = [[ReportModel alloc] init];
-            reportModel.curveId = [set intForColumn:@"curveId"];
             reportModel.curveUid = [set stringForColumn:@"curveUid"];
             reportModel.curveName = [set stringForColumn:@"curveName"];
             reportModel.date = [NSDate UTCDateFromLocalString:[set stringForColumn:@"date"]];
@@ -276,7 +220,6 @@ static DataBase *_dataBase = nil;
     [_queueDB inDatabase:^(FMDatabase * _Nonnull db) {
         FMResultSet *set = [db executeQuery:@"SELECT * FROM curveInfo WHERE curveUid = ?",curveUid];
         while ([set next]) {
-            reportModel.curveId = [set intForColumn:@"curveId"];
             reportModel.curveUid = [set stringForColumn:@"curveUid"];
             reportModel.curveName = [set stringForColumn:@"curveName"];
             reportModel.date = [NSDate UTCDateFromLocalString:[set stringForColumn:@"date"]];
@@ -289,20 +232,18 @@ static DataBase *_dataBase = nil;
             reportModel.developTime = [set intForColumn:@"developTime"];
             reportModel.developRate = [set doubleForColumn:@"developRate"];
             reportModel.bakerName = [set stringForColumn:@"bakerName"];
-            reportModel.isNew = [NSNumber numberWithInt:[set intForColumn:@"isNew"]];
         }
         [set close];
     }];
     return reportModel;
 }
 
-- (NSMutableArray *)queryBeanRelaReport:(NSNumber *)beanId{//device为nil就查全部
+- (NSMutableArray *)queryBeanRelaReport:(NSString *)beanUid{//device为nil就查全部
     NSMutableArray *reportArr = [[NSMutableArray alloc] init];
     [_queueDB inDatabase:^(FMDatabase * _Nonnull db) {
-        FMResultSet *set = [db executeQuery:@"SELECT curve.curveId,curve.curveUid,curve.curveName,curve.date,curve.deviceName FROM bean_curve AS bc,curveInfo AS curve WHERE bc.beanId = ? AND bc.curveId = curve.curveId",beanId];
+        FMResultSet *set = [db executeQuery:@"SELECT curve.curveUid,curve.curveName,curve.date,curve.deviceName FROM bean_curve AS bc,curveInfo AS curve WHERE beanUid = ? AND bc.curveUid = curve.curveUid",beanUid];
         while ([set next]) {
             ReportModel *reportModel = [[ReportModel alloc] init];
-            reportModel.curveId = [set intForColumn:@"curveId"];
             reportModel.curveUid = [set stringForColumn:@"curveUid"];
             reportModel.curveName = [set stringForColumn:@"curveName"];
             reportModel.date = [NSDate UTCDateFromLocalString:[set stringForColumn:@"date"]];
@@ -320,17 +261,8 @@ static DataBase *_dataBase = nil;
         FMResultSet *set = [db executeQuery:@"SELECT * FROM bean_curve WHERE curveUid = ?",curveUid];
         while ([set next]) {
             BeanModel *beanModel = [[BeanModel alloc] init];
-            beanModel.beanId = [set intForColumn:@"beanId"];
+            beanModel.beanUid = [set stringForColumn:@"beanUid"];
             beanModel.weight = [set intForColumn:@"beanWeight"];
-            beanModel.name = [set stringForColumn:@"beanName"];
-            beanModel.nation = [set stringForColumn:@"nation"];
-            beanModel.area = [set stringForColumn:@"area"];
-            beanModel.altitude = [set doubleForColumn:@"altitude"];
-            beanModel.manor = [set stringForColumn:@"manor"];
-            beanModel.beanSpecies = [set stringForColumn:@"beanSpecies"];
-            beanModel.grade = [set stringForColumn:@"grade"];
-            beanModel.process = [set stringForColumn:@"process"];
-            beanModel.water = [set doubleForColumn:@"water"];
             [beanArray addObject:beanModel];
         }
         [set close];
@@ -344,7 +276,6 @@ static DataBase *_dataBase = nil;
         FMResultSet *set = [db executeQuery:@"SELECT * FROM beanInfo"];
         while ([set next]) {
             BeanModel *beanModel = [[BeanModel alloc] init];
-            beanModel.beanId = [set intForColumn:@"beanId"];
             beanModel.beanUid = [set stringForColumn:@"beanUid"];
             beanModel.name = [set stringForColumn:@"beanName"];
             beanModel.nation = [set stringForColumn:@"nation"];
@@ -359,7 +290,6 @@ static DataBase *_dataBase = nil;
             beanModel.price = [set doubleForColumn:@"price"];
             beanModel.stock = [set doubleForColumn:@"stock"];
             beanModel.time = [NSDate YMDDateFromLocalString:[set stringForColumn:@"time"]];
-            beanModel.isNew = [NSNumber numberWithInt:[set intForColumn:@"isNew"]];
             [beanArray addObject:beanModel];
         }
         [set close];
@@ -386,7 +316,6 @@ static DataBase *_dataBase = nil;
             beanModel.price = [set doubleForColumn:@"price"];
             beanModel.stock = [set doubleForColumn:@"stock"];
             beanModel.time = [NSDate YMDDateFromLocalString:[set stringForColumn:@"time"]];
-            beanModel.isNew = [NSNumber numberWithInt:[set intForColumn:@"isNew"]];;
         }
         [set close];
     }];
@@ -444,7 +373,6 @@ static DataBase *_dataBase = nil;
         FMResultSet *set = [db executeQuery:@"SELECT * FROM cup"];
         while ([set next]) {
             CupModel *cup = [[CupModel alloc] init];
-            cup.cupId = [set intForColumn:@"cupId"];
             cup.cupUid = [set stringForColumn:@"cupUid"];
             cup.name = [set stringForColumn:@"cupName"];
             cup.curveUid = [set stringForColumn:@"curveUid"];
@@ -464,7 +392,6 @@ static DataBase *_dataBase = nil;
             cup.beanFaceInjure = [set doubleForColumn:@"beanFaceInjure"];
             cup.date = [NSDate YMDDateFromLocalString:[set stringForColumn:@"date"]];
             cup.light = [set doubleForColumn:@"light"];
-            cup.isNew = [NSNumber numberWithInt:[set intForColumn:@"isNew"]];
             cup.grade = [set doubleForColumn:@"total"];
             [cupArray addObject:cup];
         }
@@ -477,7 +404,6 @@ static DataBase *_dataBase = nil;
     [_queueDB inDatabase:^(FMDatabase * _Nonnull db) {
         FMResultSet *set = [db executeQuery:@"SELECT * FROM cup WHERE cupUid = ?",cupUid];
         while ([set next]) {
-            cup.cupId = [set intForColumn:@"cupId"];
             cup.cupUid = cupUid;
             cup.name = [set stringForColumn:@"cupName"];
             cup.curveUid = [set stringForColumn:@"curveUid"];
@@ -497,7 +423,6 @@ static DataBase *_dataBase = nil;
             cup.beanFaceInjure = [set doubleForColumn:@"beanFaceInjure"];
             cup.date = [NSDate YMDDateFromLocalString:[set stringForColumn:@"date"]];
             cup.light = [set doubleForColumn:@"light"];
-            cup.isNew = [NSNumber numberWithInt:[set intForColumn:@"isNew"]];
         }
     }];
     return cup;
@@ -518,7 +443,7 @@ static DataBase *_dataBase = nil;
 - (BOOL)insertNewReport:(ReportModel *)report{
     static BOOL result = YES;
     [_queueDB inDatabase:^(FMDatabase * _Nonnull db) {
-        result = [db executeUpdate:@"INSERT INTO beanInfo (curveName,date,deviceName,sn,rawBeanWeight,bakeBeanWeight,light,curveValue,bakeTime,developTime,developRate,bakerName,shareName,isShare,isNew) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",report.curveName,[NSDate YMDHMStringFromUTCDate:report.date],report.deviceName,report.sn,[NSNumber numberWithDouble:report.rawBeanWeight],[NSNumber numberWithDouble:report.bakeBeanWeight],[NSNumber numberWithFloat:report.light],report.curveValueJson,[NSNumber numberWithInteger:report.bakeTime],[NSNumber numberWithInteger:report.developTime],[NSNumber numberWithFloat:report.developRate],report.bakerName,report.sharerName,[NSNumber numberWithInteger:report.isShare],report.isNew];
+        result = [db executeUpdate:@"INSERT INTO beanInfo (curveUid,curveName,date,deviceName,sn,rawBeanWeight,bakeBeanWeight,light,curveValue,bakeTime,developTime,developRate,bakerName,shareName,isShare) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",report.curveUid,report.curveName,[NSDate YMDHMStringFromUTCDate:report.date],report.deviceName,report.sn,[NSNumber numberWithDouble:report.rawBeanWeight],[NSNumber numberWithDouble:report.bakeBeanWeight],[NSNumber numberWithFloat:report.light],report.curveValueJson,[NSNumber numberWithInteger:report.bakeTime],[NSNumber numberWithInteger:report.developTime],[NSNumber numberWithFloat:report.developRate],report.bakerName,report.sharerName,[NSNumber numberWithInteger:report.isShare]];
         //result = [db executeUpdate:@"INSERT INTO curveInfo (curveUid,curveName,date,deviceName,sn,rawBeanWeight,bakeBeanWeight,light,curveValue,bakeTime,developTime,developRate,bakerName,shareName,isShare) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)",@"yangpin",@"样品豆",[NSDate localStringFromUTCDate:[NSDate dateWithTimeInterval:3*24*60*60 sinceDate:[NSDate date]]],@"HR型烘焙机",@"fcc",@0,@0,@0,@"",@0,@0,@"",@"",@"",@0];
         if (!result) {
             NSLog(@"添加报告失败");
@@ -574,7 +499,7 @@ static DataBase *_dataBase = nil;
     }
     static BOOL result = YES;
     [_queueDB inDatabase:^(FMDatabase * _Nonnull db) {
-        result = [db executeUpdate:@"INSERT INTO beanInfo (beanUid,beanName,nation,area,manor,altitude,beanSpecies,grade,process,water,supplier,price,stock,time,isNew) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",bean.beanUid,bean.name,bean.nation,bean.area,bean.manor,[NSNumber numberWithFloat:bean.altitude],bean.beanSpecies,bean.grade,bean.process,[NSNumber numberWithFloat:bean.water],bean.supplier,[NSNumber numberWithFloat:bean.price],[NSNumber numberWithFloat:bean.stock],[NSDate YMDStringFromDate:bean.time],bean.isNew];
+        result = [db executeUpdate:@"INSERT INTO beanInfo (beanUid,beanName,nation,area,manor,altitude,beanSpecies,grade,process,water,supplier,price,stock,time) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)",bean.beanUid,bean.name,bean.nation,bean.area,bean.manor,[NSNumber numberWithFloat:bean.altitude],bean.beanSpecies,bean.grade,bean.process,[NSNumber numberWithFloat:bean.water],bean.supplier,[NSNumber numberWithFloat:bean.price],[NSNumber numberWithFloat:bean.stock],[NSDate YMDStringFromDate:bean.time]];
         NSLog(@"%@",bean.name);
         if (!result) {
             NSLog(@"添加咖啡豆失败");
@@ -586,7 +511,7 @@ static DataBase *_dataBase = nil;
 - (BOOL)insertNewCup:(CupModel *)cup{
     static BOOL result = YES;
     [_queueDB inDatabase:^(FMDatabase * _Nonnull db) {
-        result = [db executeUpdate:@"INSERT INTO cup (cupUid,cupName,curveUid,dryAndWet,flavor,aftermath,acid,taste,sweet,balance,overFeel,deveUnfull,overDeve,bakePaste,injure,germInjure ,beanFaceInjure,date,light,isNew,total) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",cup.cupUid,cup.name,cup.curveUid,[NSNumber numberWithFloat:cup.dryAndWet],[NSNumber numberWithFloat:cup.flavor],[NSNumber numberWithFloat:cup.aftermath],[NSNumber numberWithFloat:cup.acid],[NSNumber numberWithFloat:cup.taste],[NSNumber numberWithFloat:cup.sweet],[NSNumber numberWithFloat:cup.balance],[NSNumber numberWithFloat:cup.overFeel],[NSNumber numberWithFloat:cup.deveUnfull],[NSNumber numberWithFloat:cup.overDeve],[NSNumber numberWithFloat:cup.bakePaste],[NSNumber numberWithFloat:cup.injure],[NSNumber numberWithFloat:cup.germInjure],[NSNumber numberWithFloat:cup.beanFaceInjure],[NSDate YMDStringFromDate:[NSDate date]],[NSNumber numberWithFloat:cup.light],cup.isNew,[NSNumber numberWithFloat:cup.grade]];
+        result = [db executeUpdate:@"INSERT INTO cup (cupUid,cupName,curveUid,dryAndWet,flavor,aftermath,acid,taste,sweet,balance,overFeel,deveUnfull,overDeve,bakePaste,injure,germInjure ,beanFaceInjure,date,light,total) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",cup.cupUid,cup.name,cup.curveUid,[NSNumber numberWithFloat:cup.dryAndWet],[NSNumber numberWithFloat:cup.flavor],[NSNumber numberWithFloat:cup.aftermath],[NSNumber numberWithFloat:cup.acid],[NSNumber numberWithFloat:cup.taste],[NSNumber numberWithFloat:cup.sweet],[NSNumber numberWithFloat:cup.balance],[NSNumber numberWithFloat:cup.overFeel],[NSNumber numberWithFloat:cup.deveUnfull],[NSNumber numberWithFloat:cup.overDeve],[NSNumber numberWithFloat:cup.bakePaste],[NSNumber numberWithFloat:cup.injure],[NSNumber numberWithFloat:cup.germInjure],[NSNumber numberWithFloat:cup.beanFaceInjure],[NSDate YMDStringFromDate:[NSDate date]],[NSNumber numberWithFloat:cup.light],[NSNumber numberWithFloat:cup.grade]];
 //        result = [db executeUpdate:@"INSERT INTO cup (cupName,curveId,bakeDegree,dryAndWet,flavor ,aftermath,acid,taste,sweet,balance,overFeel,deveUnfull,overDeve,bakePaste,injure,germInjure ,beanFaceInjure,date,light) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",@"样品豆",@11,@5.5,@5.1,@3.2,@2.3,@2.3,@2.3,@2.3,@2.3,@2.3,@2.3,@2.3,@2.3,@2.3,@2.3,@2.3,[NSDate YMDStringFromDate:[NSDate date]],@0.0];
         NSLog(@"%@",cup.name);
         if (!result) {
@@ -611,7 +536,7 @@ static DataBase *_dataBase = nil;
 - (BOOL)deleteqBean:(BeanModel *)bean{
     static BOOL result = YES;
     [_queueDB inDatabase:^(FMDatabase *db) {
-        result = [db executeUpdate:@"delete from beanInfo where beanId = ?",[NSNumber numberWithInteger:bean.beanId]];
+        result = [db executeUpdate:@"delete from beanInfo where beanUid = ?",bean.beanUid];
     }];
     return result;
 }
@@ -619,7 +544,7 @@ static DataBase *_dataBase = nil;
 - (BOOL)deleteqReport:(ReportModel *)report{
     static BOOL result = YES;
     [_queueDB inDatabase:^(FMDatabase *db) {
-        result = [db executeUpdate:@"delete from curveInfo where curveId = ?",[NSNumber numberWithInteger:report.curveId]];
+        result = [db executeUpdate:@"delete from curveInfo where curveUid = ?",report.curveUid];
     }];
     return result;
 }
@@ -655,7 +580,7 @@ static DataBase *_dataBase = nil;
         //更新曲线生豆关联
         for (int i = 0; i < beanArr.count; i++) {
             BeanModel *bean = beanArr[i];
-            result = [db executeUpdate:@"REPLACE INTO bean_curve (beanId,curveId,beanWeight) VALUES (?,?,?)",[NSNumber numberWithInteger:bean.beanId],[NSNumber numberWithInteger:report.curveId],[NSNumber numberWithFloat:bean.weight]];
+            result = [db executeUpdate:@"REPLACE INTO bean_curve (beanUid,curveUid,beanWeight) VALUES (?,?,?)",bean.beanUid,report.curveUid,[NSNumber numberWithFloat:bean.weight]];
             if (!result) {
                 *rollback = YES;
                 NSLog(@"插入曲线失败，生豆信息有误");
@@ -671,7 +596,7 @@ static DataBase *_dataBase = nil;
 - (BOOL)updateBean:(BeanModel *)bean{
     static BOOL result = YES;
     [_queueDB inDatabase:^(FMDatabase * _Nonnull db) {
-        result = [db executeUpdate:@"UPDATE beanInfo SET beanName = ?,nation = ?,area = ?,manor = ?,altitude = ?,beanSpecies = ?,grade = ?,process = ?,water = ?,supplier = ?,price = ?,stock = ?,time = ?,isNew = ? WHERE beanUid = ?",bean.name,bean.nation,bean.area,bean.manor,[NSNumber numberWithFloat:bean.altitude],bean.beanSpecies,bean.grade,bean.process,[NSNumber numberWithFloat:bean.water],bean.supplier,[NSNumber numberWithFloat:bean.price],[NSNumber numberWithFloat:bean.stock],[NSDate YMDStringFromDate:bean.time],bean.isNew,bean.beanUid];
+        result = [db executeUpdate:@"UPDATE beanInfo SET beanName = ?,nation = ?,area = ?,manor = ?,altitude = ?,beanSpecies = ?,grade = ?,process = ?,water = ?,supplier = ?,price = ?,stock = ?,time = ? WHERE beanUid = ?",bean.name,bean.nation,bean.area,bean.manor,[NSNumber numberWithFloat:bean.altitude],bean.beanSpecies,bean.grade,bean.process,[NSNumber numberWithFloat:bean.water],bean.supplier,[NSNumber numberWithFloat:bean.price],[NSNumber numberWithFloat:bean.stock],[NSDate YMDStringFromDate:bean.time],bean.beanUid];
         NSLog(@"%@",bean.name);
         if (!result) {
             NSLog(@"更新咖啡豆失败");
@@ -683,7 +608,7 @@ static DataBase *_dataBase = nil;
 - (BOOL)updateCup:(CupModel *)cup{
     static BOOL result = YES;
     [_queueDB inDatabase:^(FMDatabase * _Nonnull db) {
-        result = [db executeUpdate:@"UPDATE cup SET cupName = ?,curveUid = ?,dryAndWet = ?,flavor = ?,aftermath = ?,acid = ?,taste = ?,sweet = ?,balance = ?,overFeel = ?,deveUnfull = ?,overDeve = ?,bakePaste = ?,injure = ?,germInjure = ?,beanFaceInjure = ?,date = ?,light = ?,isNew = ?,total = ? WHERE cupUid = ?",cup.name,cup.curveUid,[NSNumber numberWithFloat:cup.dryAndWet],[NSNumber numberWithFloat:cup.flavor],[NSNumber numberWithFloat:cup.aftermath],[NSNumber numberWithFloat:cup.acid],[NSNumber numberWithFloat:cup.taste],[NSNumber numberWithFloat:cup.sweet],[NSNumber numberWithFloat:cup.balance],[NSNumber numberWithFloat:cup.overFeel],[NSNumber numberWithFloat:cup.deveUnfull],[NSNumber numberWithFloat:cup.overDeve],[NSNumber numberWithFloat:cup.bakePaste],[NSNumber numberWithFloat:cup.injure],[NSNumber numberWithFloat:cup.germInjure],[NSNumber numberWithFloat:cup.beanFaceInjure],[NSDate YMDStringFromDate:cup.date],[NSNumber numberWithFloat:cup.light],cup.isNew,[NSNumber numberWithFloat:cup.grade],cup.cupUid];
+        result = [db executeUpdate:@"UPDATE cup SET cupName = ?,curveUid = ?,dryAndWet = ?,flavor = ?,aftermath = ?,acid = ?,taste = ?,sweet = ?,balance = ?,overFeel = ?,deveUnfull = ?,overDeve = ?,bakePaste = ?,injure = ?,germInjure = ?,beanFaceInjure = ?,date = ?,light = ?,total = ? WHERE cupUid = ?",cup.name,cup.curveUid,[NSNumber numberWithFloat:cup.dryAndWet],[NSNumber numberWithFloat:cup.flavor],[NSNumber numberWithFloat:cup.aftermath],[NSNumber numberWithFloat:cup.acid],[NSNumber numberWithFloat:cup.taste],[NSNumber numberWithFloat:cup.sweet],[NSNumber numberWithFloat:cup.balance],[NSNumber numberWithFloat:cup.overFeel],[NSNumber numberWithFloat:cup.deveUnfull],[NSNumber numberWithFloat:cup.overDeve],[NSNumber numberWithFloat:cup.bakePaste],[NSNumber numberWithFloat:cup.injure],[NSNumber numberWithFloat:cup.germInjure],[NSNumber numberWithFloat:cup.beanFaceInjure],[NSDate YMDStringFromDate:cup.date],[NSNumber numberWithFloat:cup.light],[NSNumber numberWithFloat:cup.grade],cup.cupUid];
         NSLog(@"%@",cup.name);
         if (!result) {
             NSLog(@"修改咖啡豆失败");

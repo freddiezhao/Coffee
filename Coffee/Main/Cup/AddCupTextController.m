@@ -754,7 +754,7 @@ NSString *const CellIdentifier_cupAddBadScore = @"CellID_cupAddBadScore";
         BeanModel *beanModelOld = beanMutaArray[i];
         BeanModel *beanModelNew = [db queryBean:beanModelOld.beanUid];
         beanModelNew.weight = beanModelOld.weight;
-        beanModelNew.beanId = beanModelOld.beanId;
+        beanModelNew.beanUid = beanModelOld.beanUid;
         [beanMutaArray replaceObjectAtIndex:i withObject:beanModelNew];
     }
     //可能没有添加生豆数据
@@ -800,10 +800,7 @@ NSString *const CellIdentifier_cupAddBadScore = @"CellID_cupAddBadScore";
                       _cup.cupUid = [beansDic objectForKey:@"cupUid"];
                       BOOL result = [[DataBase shareDataBase] insertNewCup:_cup];
                       if (result) {
-                          if (self.disBlock) {
-                              self.disBlock();
-                          }
-                          [self dismissViewControllerAnimated:YES completion:nil];
+                          [self.navigationController popViewControllerAnimated:YES];
                           [NSObject showHudTipStr:LocalString(@"添加本地杯测成功")];
                       }else{
                           [NSObject showHudTipStr:LocalString(@"添加本地杯测失败")];

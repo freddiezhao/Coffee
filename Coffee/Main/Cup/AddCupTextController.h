@@ -8,13 +8,11 @@
 
 #import <UIKit/UIKit.h>
 
-typedef void(^dismissBlock)(void);
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface AddCupTextController : UIViewController
 
-@property (nonatomic) dismissBlock disBlock;
 
 @end
 

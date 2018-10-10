@@ -203,7 +203,7 @@ NSString *const CellIdentifier_EditBakeBean = @"CellID_EditBakeBean";
         EditBeanController_bakeAdd *VC = [[EditBeanController_bakeAdd alloc] init];
         VC.VCBlock = ^(BeanModel *bean) {
             for (BeanModel *model in _beanArray) {
-                if (model.beanId == bean.beanId) {
+                if (model.beanUid == bean.beanUid) {
                     [NSObject showHudTipStr:@"你已经添加该生豆了"];
                     return;
                 }

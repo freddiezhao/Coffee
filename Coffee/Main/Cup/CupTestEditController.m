@@ -748,7 +748,7 @@ static float HEIGHT_HEADER = 36.f;
         BeanModel *beanModelOld = beanMutaArray[i];
         BeanModel *beanModelNew = [db queryBean:beanModelOld.beanUid];
         beanModelNew.weight = beanModelOld.weight;
-        beanModelNew.beanId = beanModelOld.beanId;
+        beanModelNew.beanUid = beanModelOld.beanUid;
         [beanMutaArray replaceObjectAtIndex:i withObject:beanModelNew];
     }
     //可能没有添加生豆数据
@@ -761,6 +761,9 @@ static float HEIGHT_HEADER = 36.f;
     [SVProgressHUD show];
     [_cup caculateGrade];
     
+    if (_cup.curveUid == nil) {
+        _cup.curveUid = @"";
+    }
     AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
     
     [manager.requestSerializer willChangeValueForKey:@"timeoutInterval"];
@@ -774,7 +777,7 @@ static float HEIGHT_HEADER = 36.f;
     [manager.requestSerializer setValue:[DataBase shareDataBase].userId forHTTPHeaderField:@"userId"];
     [manager.requestSerializer setValue:[NSString stringWithFormat:@"bearer %@",[DataBase shareDataBase].token] forHTTPHeaderField:@"Authorization"];
     
-    NSDictionary *parameters = @{@"name":_cup.name,@"curveUid":@"",@"roastDegree":[NSNumber numberWithFloat:_cup.light],@"aroma":[NSNumber numberWithFloat:_cup.dryAndWet],@"flavor":[NSNumber numberWithFloat:_cup.flavor],@"aftertaste":[NSNumber numberWithFloat:_cup.aftermath],@"acidity":[NSNumber numberWithFloat:_cup.acid],@"taste":[NSNumber numberWithFloat:_cup.taste],@"sweetness":[NSNumber numberWithFloat:_cup.sweet],@"balance":[NSNumber numberWithFloat:_cup.balance],@"overall":[NSNumber numberWithFloat:_cup.overFeel],@"undevelopment":[NSNumber numberWithFloat:_cup.deveUnfull],@"overdevelopment":[NSNumber numberWithFloat:_cup.overDeve],@"baked":[NSNumber numberWithFloat:_cup.bakePaste],@"scorched":[NSNumber numberWithFloat:_cup.injure],@"tipped":[NSNumber numberWithFloat:_cup.germInjure],@"faced":[NSNumber numberWithFloat:_cup.beanFaceInjure],@"score":[NSNumber numberWithFloat:_cup.bakeGrade],@"defects":[NSNumber numberWithFloat:_cup.defectGrade],@"total":[NSNumber numberWithFloat:_cup.grade]};
+    NSDictionary *parameters = @{@"name":_cup.name,@"curveUid":_cup.curveUid,@"roastDegree":[NSNumber numberWithFloat:_cup.light],@"aroma":[NSNumber numberWithFloat:_cup.dryAndWet],@"flavor":[NSNumber numberWithFloat:_cup.flavor],@"aftertaste":[NSNumber numberWithFloat:_cup.aftermath],@"acidity":[NSNumber numberWithFloat:_cup.acid],@"taste":[NSNumber numberWithFloat:_cup.taste],@"sweetness":[NSNumber numberWithFloat:_cup.sweet],@"balance":[NSNumber numberWithFloat:_cup.balance],@"overall":[NSNumber numberWithFloat:_cup.overFeel],@"undevelopment":[NSNumber numberWithFloat:_cup.deveUnfull],@"overdevelopment":[NSNumber numberWithFloat:_cup.overDeve],@"baked":[NSNumber numberWithFloat:_cup.bakePaste],@"scorched":[NSNumber numberWithFloat:_cup.injure],@"tipped":[NSNumber numberWithFloat:_cup.germInjure],@"faced":[NSNumber numberWithFloat:_cup.beanFaceInjure],@"score":[NSNumber numberWithFloat:_cup.bakeGrade],@"defects":[NSNumber numberWithFloat:_cup.defectGrade],@"total":[NSNumber numberWithFloat:_cup.grade]};
 
     [manager PUT:url parameters:parameters success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableContainers|NSJSONReadingMutableLeaves error:nil];

@@ -7,6 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
+
+
 @class BeanModel;
 
 @interface AddNewBeanController : BaseViewController

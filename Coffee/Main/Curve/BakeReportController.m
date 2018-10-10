@@ -437,10 +437,6 @@ NSString *const CellIdentifier_TempPer30 = @"CellID_TempPer30";
 - (void)queryReportInfo{
     _reportModel = [[DataBase shareDataBase] queryReport:_curveUid];
     _reportModel.curveUid = _curveUid;
-    if ([_reportModel.isNew integerValue] == 1) {
-        [self getFirstCurveInfoByApi];
-        return;
-    }
     NSLog(@"%@",_reportModel.date);
     NSData *curveData = [_reportModel.curveValueJson dataUsingEncoding:NSUTF8StringEncoding];
     NSDictionary *curveDic = [NSJSONSerialization JSONObjectWithData:curveData options:NSJSONReadingMutableLeaves error:nil];
@@ -473,7 +469,7 @@ NSString *const CellIdentifier_TempPer30 = @"CellID_TempPer30";
 }
 
 - (void)queryEventInfo{
-    _eventArray = [[DataBase shareDataBase] queryEvent:_curveUid];
+    _eventArray = [[[DataBase shareDataBase] queryEvent:_curveUid] mutableCopy];
     for (EventModel *event in _eventArray) {
         NSLog(@"%@",event.eventText);
         //NSLog(@"%ld",event.eventId);
@@ -485,14 +481,13 @@ NSString *const CellIdentifier_TempPer30 = @"CellID_TempPer30";
 - (void)queryBeanInfo{
     DataBase *db = [DataBase shareDataBase];
     NSMutableArray *beanMutaArray = [[db queryReportRelaBean:_curveUid] mutableCopy];
-    //之前在bean_curve表没有存储豆信息，现在因为API问题存储了
-//    for (int i = 0; i < [beanMutaArray count]; i++) {
-//        BeanModel *beanModelOld = beanMutaArray[i];
-//        BeanModel *beanModelNew = [db queryBean:_curveUid];
-//        beanModelNew.weight = beanModelOld.weight;
-//        beanModelNew.beanId = beanModelOld.beanId;
-//        [beanMutaArray replaceObjectAtIndex:i withObject:beanModelNew];
-//    }
+    for (int i = 0; i < [beanMutaArray count]; i++) {
+        BeanModel *beanModelOld = beanMutaArray[i];
+        BeanModel *beanModelNew = [db queryBean:_curveUid];
+        beanModelNew.weight = beanModelOld.weight;
+        beanModelNew.beanUid = beanModelOld.beanUid;
+        [beanMutaArray replaceObjectAtIndex:i withObject:beanModelNew];
+    }
     //可能没有添加生豆数据
     _beanArray = [beanMutaArray copy];
     
@@ -513,188 +508,6 @@ NSString *const CellIdentifier_TempPer30 = @"CellID_TempPer30";
     return [arr mutableCopy];
 }
 
-#pragma mark - API
-- (void)getFirstCurveInfoByApi{
-    [SVProgressHUD show];
-    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
-    
-    [manager.requestSerializer willChangeValueForKey:@"timeoutInterval"];
-    manager.requestSerializer.timeoutInterval = 6.f;
-    [manager.requestSerializer didChangeValueForKey:@"timeoutInterval"];
-    
-    NSString *url = [NSString stringWithFormat:@"http://139.196.90.97:8080/coffee/roastCurve/bean/message?curveUid=%@",_reportModel.curveUid];
-    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet characterSetWithCharactersInString:@"`#%^{}\"[]|\\<> "].invertedSet];
-    
-    [manager.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
-    [manager.requestSerializer setValue:[DataBase shareDataBase].userId forHTTPHeaderField:@"userId"];
-    [manager.requestSerializer setValue:[NSString stringWithFormat:@"bearer %@",[DataBase shareDataBase].token] forHTTPHeaderField:@"Authorization"];
-    [manager GET:url parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableContainers|NSJSONReadingMutableLeaves error:nil];
-        NSData * data = [NSJSONSerialization dataWithJSONObject:responseDic options:(NSJSONWritingOptions)0 error:nil];
-        NSString * daetr = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
-        if ([[responseDic objectForKey:@"errno"] intValue] == 0) {
-            NSLog(@"success:%@",daetr);
-            if ([responseDic objectForKey:@"data"]) {
-                //第一页信息获取
-                NSDictionary *dic = [responseDic objectForKey:@"data"];
-                _reportModel.deviceName = [dic objectForKey:@"roasterName"];
-                _reportModel.light = [[dic objectForKey:@"light"] floatValue];
-                _reportModel.rawBeanWeight = [[dic objectForKey:@"rawBean"] doubleValue];
-                _reportModel.bakeBeanWeight = [[dic objectForKey:@"cooked"] doubleValue];
-                _reportModel.outWaterRate = [[dic objectForKey:@"dryingRate"] doubleValue];
-                if ([dic objectForKey:@"beans"]) {
-                    [[dic objectForKey:@"beans"] enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-                        BeanModel *bean = [[BeanModel alloc] init];
-                        bean.name = [obj objectForKey:@"name"];
-                        bean.weight = [[obj objectForKey:@"used"] floatValue];
-                        bean.nation = [obj objectForKey:@"country"];
-                        bean.area = [obj objectForKey:@"origin"];
-                        bean.grade = [obj objectForKey:@"grade"];
-                        bean.process = [obj objectForKey:@"processingMethod"];
-                        bean.manor = [obj objectForKey:@"farm"];
-                        bean.altitude = [[obj objectForKey:@"altitude"] floatValue];
-                        [_beanArray addObject:bean];
-                    }];
-                }
-            }
-            [self getSecondCurveInfoByApi];
-        }else{
-            [NSObject showHudTipStr:LocalString(@"从服务器获取烘焙报告失败")];
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [SVProgressHUD dismiss];
-            });
-        }
-    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        NSLog(@"Error:%@",error);
-        [NSObject showHudTipStr:LocalString(@"从服务器获取烘焙报告失败")];
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [SVProgressHUD dismiss];
-        });
-    }];
-}
-
-- (void)getSecondCurveInfoByApi{
-    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
-    
-    [manager.requestSerializer willChangeValueForKey:@"timeoutInterval"];
-    manager.requestSerializer.timeoutInterval = 6.f;
-    [manager.requestSerializer didChangeValueForKey:@"timeoutInterval"];
-    
-    NSString *url = [NSString stringWithFormat:@"http://139.196.90.97:8080/coffee/roastCurve?curveUid=%@",_reportModel.curveUid];
-    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet characterSetWithCharactersInString:@"`#%^{}\"[]|\\<> "].invertedSet];
-    
-    [manager.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
-    [manager.requestSerializer setValue:[DataBase shareDataBase].userId forHTTPHeaderField:@"userId"];
-    [manager.requestSerializer setValue:[NSString stringWithFormat:@"bearer %@",[DataBase shareDataBase].token] forHTTPHeaderField:@"Authorization"];
-    [manager GET:url parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableContainers|NSJSONReadingMutableLeaves error:nil];
-        NSData * data = [NSJSONSerialization dataWithJSONObject:responseDic options:(NSJSONWritingOptions)0 error:nil];
-        NSString * daetr = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
-        if ([[responseDic objectForKey:@"errno"] intValue] == 0) {
-            NSLog(@"success:%@",daetr);
-            if ([responseDic objectForKey:@"data"]) {
-                //第二页信息获取
-                NSDictionary *dic = [responseDic objectForKey:@"data"];
-                _reportModel.bakeTime = [[dic objectForKey:@"roastedTime"] integerValue];
-                _reportModel.developRate = [[dic objectForKey:@"devRate"] floatValue];
-                _reportModel.developTime = [[dic objectForKey:@"devTime"] integerValue];
-                _In = [NSString toArrayOrNSDictionary:[[dic objectForKey:@"in"] dataUsingEncoding:NSUTF8StringEncoding]];
-                _Out = [NSString toArrayOrNSDictionary:[[dic objectForKey:@"out"] dataUsingEncoding:NSUTF8StringEncoding]];
-                _Bean = [NSString toArrayOrNSDictionary:[[dic objectForKey:@"bean"] dataUsingEncoding:NSUTF8StringEncoding]];
-                _Environment = [NSString toArrayOrNSDictionary:[[dic objectForKey:@"env"] dataUsingEncoding:NSUTF8StringEncoding]];
-                
-                NSLog(@"%lu",(unsigned long)_Bean.count);
-                NSLog(@"%lu",_Out.count);
-                NSLog(@"%lu",_In.count);
-                NSLog(@"%lu",_Environment.count);
-                
-                for (int i = 0; i<_Bean.count; i++) {
-                    [_yVals_Bean removeAllObjects];
-                    [_yVals_Bean addObject:[[ChartDataEntry alloc] initWithX:i y:[_Bean[i] doubleValue]]];
-                }
-                for (int i = 0; i<_Out.count; i++) {
-                    [_yVals_Out removeAllObjects];
-                    [_yVals_Out addObject:[[ChartDataEntry alloc] initWithX:i y:[_Out[i] doubleValue]]];
-                }
-                for (int i = 0; i<_In.count; i++) {
-                    [_yVals_In removeAllObjects];
-                    [_yVals_In addObject:[[ChartDataEntry alloc] initWithX:i y:[_In[i] doubleValue]]];
-                }
-                for (int i = 0; i<_Environment.count; i++) {
-                    [_yVals_Environment removeAllObjects];
-                    [_yVals_Environment addObject:[[ChartDataEntry alloc] initWithX:i y:[_Environment[i] doubleValue]]];
-                }
-            }
-            [self getCurveEventInfoByApi];
-        }else{
-            [NSObject showHudTipStr:LocalString(@"从服务器获取烘焙报告失败")];
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [SVProgressHUD dismiss];
-            });
-        }
-        
-    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        NSLog(@"Error:%@",error);
-        [NSObject showHudTipStr:LocalString(@"从服务器获取烘焙报告失败")];
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [SVProgressHUD dismiss];
-        });
-    }];
-}
-
-- (void)getCurveEventInfoByApi{
-    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
-    
-    [manager.requestSerializer willChangeValueForKey:@"timeoutInterval"];
-    manager.requestSerializer.timeoutInterval = 6.f;
-    [manager.requestSerializer didChangeValueForKey:@"timeoutInterval"];
-    
-    NSString *url = [NSString stringWithFormat:@"http://139.196.90.97:8080/coffee/roastCurve/event?curveUid=%@",_reportModel.curveUid];
-    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet characterSetWithCharactersInString:@"`#%^{}\"[]|\\<> "].invertedSet];
-    
-    [manager.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
-    [manager.requestSerializer setValue:[DataBase shareDataBase].userId forHTTPHeaderField:@"userId"];
-    [manager.requestSerializer setValue:[NSString stringWithFormat:@"bearer %@",[DataBase shareDataBase].token] forHTTPHeaderField:@"Authorization"];
-    [manager GET:url parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableContainers|NSJSONReadingMutableLeaves error:nil];
-        NSData * data = [NSJSONSerialization dataWithJSONObject:responseDic options:(NSJSONWritingOptions)0 error:nil];
-        NSString * daetr = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
-        if ([[responseDic objectForKey:@"errno"] intValue] == 0) {
-            NSLog(@"success:%@",daetr);
-            if ([responseDic objectForKey:@"data"]) {
-                //事件信息获取
-                [[responseDic objectForKey:@"data"] enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-                    EventModel *event = [[EventModel alloc] init];
-                    event.eventId = [[obj objectForKey:@"type"] integerValue];
-                    event.eventTime = [[obj objectForKey:@"time"] integerValue];
-                    event.eventText = [obj objectForKey:@"content"];
-                    event.eventBeanTemp = [[obj objectForKey:@"eventBeanTemp"] doubleValue];
-                    [_eventArray addObject:event];
-                }];
-            }
-            [self updateReportInfoAfterApi];
-        }else{
-            [NSObject showHudTipStr:LocalString(@"从服务器获取烘焙报告失败")];
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [SVProgressHUD dismiss];
-            });
-        }
-    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        NSLog(@"Error:%@",error);
-        [NSObject showHudTipStr:LocalString(@"从服务器获取烘焙报告失败")];
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [SVProgressHUD dismiss];
-        });
-    }];
-}
-
-/**
- *将信息存储到本地
- */
-- (void)updateReportInfoAfterApi{
-    
-}
-
 #pragma mark - Actions
 - (void)editReport{
     ReportEditController *editVC = [[ReportEditController alloc] init];
@@ -702,4 +515,5 @@ NSString *const CellIdentifier_TempPer30 = @"CellID_TempPer30";
     editVC.reportModel = _reportModel;
     [self.navigationController pushViewController:editVC animated:YES];
 }
+
 @end

@@ -384,7 +384,7 @@ static float HEIGHT_HEADER = 36.f;
         bean = [_mutableSections[indexPath.section] objectAtIndex:indexPath.row];
     }
     for (BeanModel *model in [NetWork shareNetWork].beanArray) {
-        if (model.beanId == bean.beanId) {
+        if (model.beanUid == bean.beanUid) {
             [NSObject showHudTipStr:@"你已经添加该生豆了"];
             return;
         }

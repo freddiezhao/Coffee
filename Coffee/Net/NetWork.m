@@ -1242,7 +1242,7 @@ static NSString *curveUid;
         //插入曲线生豆关联
         for (int i = 0; i < _beanArray.count; i++) {
             BeanModel *bean = _beanArray[i];
-            result = [db executeUpdate:@"INSERT INTO bean_curve (beanId,curveUid,beanWeight) VALUES (?,?,?)",[NSNumber numberWithInteger:bean.beanId],curveUid,[NSNumber numberWithFloat:bean.weight]];
+            result = [db executeUpdate:@"INSERT INTO bean_curve (beanUid,curveUid,beanWeight) VALUES (?,?,?)",bean.beanUid,curveUid,[NSNumber numberWithFloat:bean.weight]];
             if (!result) {
                 *rollback = YES;
                 [SVProgressHUD dismiss];

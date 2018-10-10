@@ -189,7 +189,7 @@ static float HEIGHT_HEADER = 36.f;
 #pragma mark - Actions
 
 - (NSMutableArray *)getRelaReport{
-    NSMutableArray *arr = [[DataBase shareDataBase] queryBeanRelaReport:_beanId];
+    NSMutableArray *arr = [[DataBase shareDataBase] queryBeanRelaReport:_beanUid];
     arr = [self sortByDate:arr];
     NSMutableArray *classArr = [self classArray:arr];
     return classArr;
