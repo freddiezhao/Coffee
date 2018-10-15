@@ -318,7 +318,7 @@ NSString *const CellIdentifier_device = @"CellID_device";
                       success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
                           NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableContainers|NSJSONReadingMutableLeaves error:nil];
                           if ([[responseDic objectForKey:@"errno"] intValue] == 0) {
-                              [NSObject showHudTipStr:LocalString(@"插入新设备到服务器成功")];
+                              [NSObject showHudTipStr:LocalString(@"添加新设备到服务器成功")];
 
                               [[DataBase shareDataBase].queueDB inDatabase:^(FMDatabase * _Nonnull db) {
                                   BOOL result = [db executeUpdate:@"INSERT INTO device (sn,deviceName,deviceType) VALUES (?,?,?)",[msg substringWithRange:NSMakeRange(0, 8)],[msg substringWithRange:NSMakeRange(0, 8)],deviceType];
@@ -329,7 +329,7 @@ NSString *const CellIdentifier_device = @"CellID_device";
                                   }
                               }];
                           }else{
-                              [NSObject showHudTipStr:LocalString(@"插入新设备到服务器失败")];
+                              [NSObject showHudTipStr:LocalString(@"添加新设备到服务器失败")];
                           }
                       } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
                           NSLog(@"Error:%@",error);

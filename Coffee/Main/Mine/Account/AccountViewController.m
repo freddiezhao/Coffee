@@ -144,7 +144,7 @@ static float HEIGHT_CELL = 50.f;
             return cell;
         }else if (indexPath.row == 1){
             cell.leftLabel.text = LocalString(@"修改手机号码");
-            cell.rightLabel.text = LocalString(@"138****7276");
+            cell.rightLabel.text = [[DataBase shareDataBase].mobile stringByReplacingCharactersInRange:NSMakeRange(3, 4) withString:@"****"];
             return cell;
         }else{
             return cell;

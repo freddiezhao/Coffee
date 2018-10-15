@@ -1,20 +1,20 @@
 //
-//  SearchCurveController.m
+//  SearchCupController.m
 //  Coffee
 //
-//  Created by 杭州轨物科技有限公司 on 2018/10/10.
+//  Created by 杭州轨物科技有限公司 on 2018/10/11.
 //  Copyright © 2018年 杭州轨物科技有限公司. All rights reserved.
 //
 
-#import "SearchCurveController.h"
+#import "SearchCupController.h"
 #import "TouchTableView.h"
-#import "CurrentCurveCell.h"
-#import "ReportModel.h"
-#import "BakeReportController.h"
+#import "CupModel.h"
+#import "CupNormalCell.h"
+#import "CupTestDetailController.h"
 
-NSString *const CellIdentifier_searchCurve = @"CellID_searchCurve";
+NSString *const CellIdentifier_searchCup = @"CellID_searchCup";
 
-@interface SearchCurveController () <UITableViewDelegate, UITableViewDataSource, UISearchResultsUpdating, UISearchBarDelegate, UISearchControllerDelegate>
+@interface SearchCupController () <UITableViewDelegate, UITableViewDataSource, UISearchResultsUpdating, UISearchBarDelegate, UISearchControllerDelegate>
 
 @property (nonatomic, strong) UITableView *myTableView;
 @property (nonatomic, strong) UISearchController *searchController;
@@ -23,12 +23,11 @@ NSString *const CellIdentifier_searchCurve = @"CellID_searchCurve";
 
 @end
 
-@implementation SearchCurveController
-static float HEIGHT_CELL = 50.f;
+@implementation SearchCupController
+static float HEIGHT_CELL = 60.f;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    //[self.view setBackgroundColor:[UIColor colorWithRed:0/255.0 green:0/255.0 blue:0/255.0 alpha:0.4]];
     
     _myTableView = [self myTableView];
     _searchController = [self searchController];
@@ -67,7 +66,7 @@ static float HEIGHT_CELL = 50.f;
             tableView.separatorColor = [UIColor colorWithRed:0/255.0 green:0/255.0 blue:0/255.0 alpha:0.08];
             tableView.dataSource = self;
             tableView.delegate = self;
-            [tableView registerClass:[CurrentCurveCell class] forCellReuseIdentifier:CellIdentifier_searchCurve];
+            [tableView registerClass:[CupNormalCell class] forCellReuseIdentifier:CellIdentifier_searchCup];
             [self.view addSubview:tableView];
             tableView.scrollEnabled = NO;
             tableView.estimatedRowHeight = 0;
@@ -137,36 +136,32 @@ static float HEIGHT_CELL = 50.f;
 
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    CurrentCurveCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_searchCurve];
+    CupNormalCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_searchCup];
     if (cell == nil) {
-        cell = [[CurrentCurveCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_searchCurve];
+        cell = [[CupNormalCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_searchCup];
     }
-    ReportModel *report = _resultArr[indexPath.row];
-    NSMutableAttributedString *str = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"%@  %@",report.curveName,report.deviceName]];
-    [str addAttribute:NSForegroundColorAttributeName value:[UIColor colorWithHexString:@"333333"] range:NSMakeRange(0,report.curveName.length)];
-    [str addAttribute:NSForegroundColorAttributeName value:[UIColor colorWithHexString:@"4778CC"] range:report.searchRange];
-    [str addAttribute:NSForegroundColorAttributeName value:[UIColor colorWithHexString:@"999999"] range:NSMakeRange(report.curveName.length + 2,report.deviceName.length)];
-    [str addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:16.f] range:NSMakeRange(0,report.curveName.length)];
-    [str addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:14.f] range:NSMakeRange(report.curveName.length + 2,report.deviceName.length)];
-    cell.beanDeviceName.attributedText = str;
-    
-    
-    cell.dateLabel.text = [NSDate YMDHMStringFromUTCDate:report.date];
-    
+    CupModel *cup = _resultArr[indexPath.row];
+    NSMutableAttributedString *str = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"%@  %.1f分",cup.name,cup.grade]];
+    [str addAttribute:NSForegroundColorAttributeName value:[UIColor colorWithHexString:@"333333"] range:NSMakeRange(0,cup.name.length)];
+    [str addAttribute:NSForegroundColorAttributeName value:[UIColor colorWithHexString:@"4778CC"] range:cup.searchRange];
+    [str addAttribute:NSForegroundColorAttributeName value:[UIColor colorWithHexString:@"999999"] range:NSMakeRange(cup.name.length + 2,str.length - cup.name.length - 2)];
+    [str addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:16.f] range:NSMakeRange(0,cup.name.length)];
+    [str addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:14.f] range:NSMakeRange(cup.name.length + 2, str.length - cup.name.length - 2)];
+    cell.beanGradeName.attributedText = str;
+    cell.dateLabel.text = [NSDate YMDStringFromDate:cup.date];
     return cell;
 }
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    //NSLog(@"%ld",[_currentReportArr[0] count]);
-    ReportModel *report = _resultArr[indexPath.row];
-    
-    BakeReportController *reportVC = [[BakeReportController alloc] init];
-    reportVC.curveUid = report.curveUid;
+    CupTestDetailController *detailVC = [[CupTestDetailController alloc] init];
+    CupModel *cup = _resultArr[indexPath.row];
+    detailVC.cup = cup;
     if (_searchController.active) {
         [_searchController dismissViewControllerAnimated:YES completion:nil];
     }
-    [self.navigationController pushViewController:reportVC animated:YES];
+    detailVC.hidesBottomBarWhenPushed = YES;
+    [self.navigationController pushViewController:detailVC animated:YES];
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -186,16 +181,16 @@ static float HEIGHT_CELL = 50.f;
     if (self.resultArr.count > 0) {
         [_resultArr removeAllObjects];
     }
-    for (ReportModel *report in self.curveArr) {
-        NSRange result = [report.curveName rangeOfString:inputStr options:NSCaseInsensitiveSearch];
+    for (CupModel *cup in self.cupArr) {
+        NSRange result = [cup.name rangeOfString:inputStr options:NSCaseInsensitiveSearch];
         if (result.length > 0)
         {
-            report.searchRange = result;
-            [self.resultArr addObject:report];
+            cup.searchRange = result;
+
+            [self.resultArr addObject:cup];
         }
     }
     [self.myTableView reloadData];
-
 }
 
 - (void)didPresentSearchController:(UISearchController *)searchController{
@@ -204,21 +199,26 @@ static float HEIGHT_CELL = 50.f;
     });
 }
 
+- (void)willPresentSearchController:(UISearchController *)searchController{
+    [self.searchController.rdv_tabBarController setTabBarHidden:YES animated:YES];
+}
+
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar{
     [self dismissVC];
 }
+
 #pragma mark - actions
 - (UIImage *)GetImageWithColor:(UIColor*)color andHeight:(CGFloat)height{
     
     CGRect r= CGRectMake(0.0f,
-               0.0f, 1.0f, height);
+                         0.0f, 1.0f, height);
     
     UIGraphicsBeginImageContext(r.size);
     
     CGContextRef context = UIGraphicsGetCurrentContext();
     
     CGContextSetFillColorWithColor(context, [color
-                                                 CGColor]);
+                                             CGColor]);
     
     CGContextFillRect(context, r);
     
@@ -239,4 +239,5 @@ static float HEIGHT_CELL = 50.f;
         self.dismissBlock();
     }
 }
+
 @end

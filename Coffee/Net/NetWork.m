@@ -784,6 +784,8 @@ static NSString *curveUid;
                 }
                 [_yVals_Bean addObject:entry];
                 [_yVals_Environment addObject:[[ChartDataEntry alloc] initWithX:[_yVals_Environment count] y:tempEnvironment]];
+                [_yVals_Diff removeAllObjects];
+                _yVals_Diff = [self getBeanTempRorWithArr:_BeanArr];
                 
                 
                 [self setTempData:_recivedData68];
@@ -818,6 +820,8 @@ static NSString *curveUid;
                     [_yVals_In addObject:[[ChartDataEntry alloc] initWithX:[_yVals_In count] y:tempIn]];
                     [_yVals_Bean addObject:[[ChartDataEntry alloc] initWithX:[_yVals_In count] y:tempBean]];
                     [_yVals_Environment addObject:[[ChartDataEntry alloc] initWithX:[_yVals_Environment count] y:tempEnvironment]];
+                    [_yVals_Diff removeAllObjects];
+                    _yVals_Diff = [self getBeanTempRorWithArr:_BeanArr];
                 }
                 
                 sendCount = 0;
@@ -1204,6 +1208,7 @@ static NSString *curveUid;
         NSDictionary *curveValueDic = @{@"out":outTArray,@"in":inTArray,@"bean":beanTArray,@"environment":enTArray};
         NSData *curveData = [NSJSONSerialization dataWithJSONObject:curveValueDic options:NSJSONWritingPrettyPrinted error:nil];
         curveValueJson = [[NSString alloc] initWithData:curveData encoding:NSUTF8StringEncoding];
+        
     }
     static BOOL isSucc = NO;
     //添加报告并更新数据的事务
@@ -1215,7 +1220,7 @@ static NSString *curveUid;
             *rollback = YES;
             [SVProgressHUD dismiss];
             NSLog(@"插入曲线失败");
-            [NSObject showHudTipStr:@"插入曲线失败"];
+            [NSObject showHudTipStr:@"添加曲线失败"];
             return;
         }
         //本来是获取最后存储的数据的主键值的，现在用curveUid，不需要了
@@ -1234,7 +1239,7 @@ static NSString *curveUid;
                 *rollback = YES;
                 [SVProgressHUD dismiss];
                 NSLog(@"插入曲线失败，事件信息有误");
-                [NSObject showHudTipStr:@"插入曲线失败，事件信息有误"];
+                [NSObject showHudTipStr:@"添加曲线失败，事件信息有误"];
                 return;
             }
         }
@@ -1246,8 +1251,8 @@ static NSString *curveUid;
             if (!result) {
                 *rollback = YES;
                 [SVProgressHUD dismiss];
-                NSLog(@"插入曲线失败，生豆信息有误");
-                [NSObject showHudTipStr:@"插入曲线失败，生豆信息有误"];
+                NSLog(@"添加曲线失败，生豆信息有误");
+                [NSObject showHudTipStr:@"添加曲线失败，生豆信息有误"];
                 return;
             }
         }
@@ -1289,6 +1294,7 @@ static NSString *curveUid;
         _apPwd = @"";
         
         [SVProgressHUD dismiss];
+        [NSObject showHudTipStr:@"烘焙信息本地添加成功"];
         
         MainViewController *mainVC = [[MainViewController alloc] init];
         [self restoreRootViewController:mainVC];
@@ -1300,6 +1306,110 @@ static NSString *curveUid;
         UINavigationController *nav = (UINavigationController *)mainVC.selectedViewController;
         [[nav viewControllers][0].navigationController pushViewController:reportVC animated:YES];
     }
+}
+
+- (void)insertCurveByApi{
+    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+    
+    //设置超时时间
+    [manager.requestSerializer willChangeValueForKey:@"timeoutInterval"];
+    manager.requestSerializer.timeoutInterval = 6.f;
+    [manager.requestSerializer didChangeValueForKey:@"timeoutInterval"];
+    
+    NSString *url = [NSString stringWithFormat:@"http://139.196.90.97:8080/coffee/roastCurve/allReport?curveUid=%@",curveUid];
+    NSLog(@"%@",curveUid);
+    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet characterSetWithCharactersInString:@"`#%^{}\"[]|\\<> "].invertedSet];
+
+    [manager.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+    [manager.requestSerializer setValue:[DataBase shareDataBase].userId forHTTPHeaderField:@"userId"];
+    [manager.requestSerializer setValue:[NSString stringWithFormat:@"bearer %@",[DataBase shareDataBase].token] forHTTPHeaderField:@"Authorization"];
+
+    //请求内容
+    NSMutableArray *eventArr = [[NSMutableArray alloc] init];
+    for (EventModel *event in _eventArray) {
+        NSDictionary *eventDic = @{@"type":[NSNumber numberWithInteger:event.eventId],@"time":[NSNumber numberWithInteger:event.eventTime],@"content":event.eventText,@"eventBeanTemp":[NSNumber numberWithDouble:event.eventBeanTemp]};
+        [eventArr addObject:eventDic];
+    }
+    
+    NSDictionary *curveDataDic;
+    if (self.OutArr && self.InArr && self.BeanArr && self.EnvironmentArr) {
+        NSArray *outTArray = [self.OutArr copy];
+        NSArray *inTArray = [self.InArr copy];
+        NSArray *beanTArray = [self.BeanArr copy];
+        NSArray *enTArray = [self.EnvironmentArr copy];
+        curveDataDic = @{@"in":inTArray,@"out":outTArray,@"bean":beanTArray,@"env":enTArray};
+    }
+
+    //曲线名字
+    NSString *curveName = @"";
+    if (_beanArray.count >= 2) {
+        curveName = [NSString stringWithFormat:@"拼配豆(%@)",_connectedDevice.deviceName];
+    }else if (_beanArray.count == 1){
+        BeanModel *bean = _beanArray[0];
+        curveName = [NSString stringWithFormat:@"%@(%@)",bean.name,_connectedDevice.deviceName];
+    }
+    
+    //生豆重量
+    double totolWeight = 0;
+    if (_beanArray) {
+        for (BeanModel *bean in _beanArray) {
+            totolWeight += bean.weight;
+        }
+    }
+    
+    //生豆
+    NSMutableArray *beanArr = [[NSMutableArray alloc] init];
+    for (BeanModel *bean in _beanArray) {
+        NSDictionary *beanDic = @{@"beanUid":bean.beanUid,@"used":[NSNumber numberWithDouble:bean.weight]};
+        [beanArr addObject:beanDic];
+    }
+    
+    NSMutableDictionary *roasterReportPageThree = [[NSMutableDictionary alloc] init];
+    if (_connectedDevice.sn) {
+        [roasterReportPageThree setObject:_connectedDevice.sn forKey:@"sn"];
+    }
+    [roasterReportPageThree setObject:curveName forKey:@"name"];
+    if (_connectedDevice.deviceName) {
+        [roasterReportPageThree setObject:_connectedDevice.deviceName forKey:@"roasterName"];
+    }
+    if ([DataBase shareDataBase].userName) {
+        [roasterReportPageThree setObject:[DataBase shareDataBase].userName forKey:@"userName"];
+    }
+    if (beanArr.count > 0) {
+        [roasterReportPageThree setObject:beanArr forKey:@"beans"];
+    }
+    [roasterReportPageThree setObject:@0.0 forKey:@"light"];
+    [roasterReportPageThree setObject:[NSNumber numberWithDouble:totolWeight] forKey:@"rawBean"];
+    [roasterReportPageThree setObject:@0.0 forKey:@"cooked"];
+    
+    NSDictionary *parameters = @{@"eventList":eventArr,@"curveData":curveDataDic,@"roasterReportPageThree":roasterReportPageThree};
+    
+    [manager POST:url parameters:parameters progress:nil
+          success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+              NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableContainers|NSJSONReadingMutableLeaves error:nil];
+              NSData * data = [NSJSONSerialization dataWithJSONObject:responseDic options:(NSJSONWritingOptions)0 error:nil];
+              NSString * daetr = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
+              NSLog(@"success:%@",daetr);
+              if ([[responseDic objectForKey:@"errno"] intValue] == 0) {
+                  [self bakeCompelete];
+                  [NSObject showHudTipStr:LocalString(@"服务器添加烘焙信息成功")];
+              }else{
+                  dispatch_async(dispatch_get_main_queue(), ^{
+                      [SVProgressHUD dismiss];
+                  });
+                  [NSObject showHudTipStr:LocalString(@"服务器添加烘焙信息失败")];
+              }
+          } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+              NSLog(@"Error:%@",error);
+              dispatch_async(dispatch_get_main_queue(), ^{
+                  [SVProgressHUD dismiss];
+              });
+              if (error.code == -1001) {
+                  [NSObject showHudTipStr:LocalString(@"当前网络状况不佳")];
+              }else{
+                  [NSObject showHudTipStr:LocalString(@"服务器添加烘焙信息失败")];
+              }
+          }];
 }
 
 - (void)getCurveUidByApi{
@@ -1327,13 +1437,19 @@ static NSString *curveUid;
                 NSDictionary *data = [responseDic objectForKey:@"data"];
                 curveUid = [data objectForKey:@"curveUid"];
                 NSLog(@"%@",curveUid);
-                [self bakeCompelete];
+                [self insertCurveByApi];
             }else{
-                [SVProgressHUD dismiss];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [SVProgressHUD dismiss];
+                });
                 [NSObject showHudTipStr:@"后台出现问题，存储曲线失败"];
             }
         }
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [SVProgressHUD dismiss];
+        });
+        [NSObject showHudTipStr:@"后台出现问题，存储曲线失败"];
         NSLog(@"Error:%@",error);
     }];
 }
@@ -1414,6 +1530,16 @@ static NSString *curveUid;
      
                     completion:nil];
     
+}
+
+#pragma mark - 生成ror
+- (NSMutableArray *)getBeanTempRorWithArr:(NSMutableArray *)arr{
+    NSMutableArray *rorArr = [[NSMutableArray alloc] init];
+    for (int i = beanRorDiffCount; i < [arr count]; i = i + beanRorDiffCount) {
+        [rorArr addObject:[[ChartDataEntry alloc] initWithX:i y:([arr[i] doubleValue] - [arr[i - beanRorDiffCount] doubleValue]) * 12.f]];
+    }
+    
+    return rorArr;
 }
 
 @end

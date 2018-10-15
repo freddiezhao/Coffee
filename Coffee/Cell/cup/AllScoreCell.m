@@ -81,7 +81,7 @@
         }
         
         if (!_scoreSlider) {
-            _scoreSlider = [[HeightSlider alloc] initWithFrame:CGRectMake(0, 0, 335/WScale, 15/HScale)];
+            _scoreSlider = [[HeightSlider alloc] initWithFrame:CGRectMake(0, 0, 335/WScale, 30/HScale)];
             [self.contentView addSubview:_scoreSlider];
             _scoreSlider.minimumValue = 0;
             _scoreSlider.maximumValue = 100;
@@ -92,7 +92,10 @@
             [_scoreSlider setMaximumTrackTintColor:[UIColor colorWithRed:240/255.0 green:240/255.0 blue:240/255.0 alpha:1]];
             [_scoreSlider addTarget:self action:@selector(sliderValueChanged:) forControlEvents:UIControlEventValueChanged];
             [self.contentView bringSubviewToFront:_scoreSlider];
-            
+            [_scoreSlider setMinimumTrackTintColor:[UIColor clearColor]];
+            [_scoreSlider setThumbImage:[UIImage imageNamed:@"img_slider"] forState:UIControlStateNormal];
+            [_scoreSlider setThumbImage:[UIImage imageNamed:@"img_slider"] forState:UIControlStateHighlighted];
+
             [_scoreSlider mas_makeConstraints:^(MASConstraintMaker *make) {
                 make.size.mas_equalTo(CGSizeMake(335/WScale, 15/HScale));
                 make.centerX.equalTo(self.contentView.mas_centerX);

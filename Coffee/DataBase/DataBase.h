@@ -18,7 +18,9 @@
 @interface DataBase : NSObject
 ///@brief User Information
 @property (nonatomic, strong) NSString *userName;
+@property (nonatomic, strong) NSString *mobile;
 @property (nonatomic, strong) NSString *userId;
+@property (nonatomic, strong) NSString *imageUrl;
 @property (nonatomic, strong) NSString *token;
 
 ///@brief Settings

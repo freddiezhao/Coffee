@@ -19,8 +19,6 @@
 NSString *const CellIdentifier_ssid = @"CellID_ssid";
 NSString *const CellNibName_ssid = @"SSIDTableViewCell";
 NSString *const CellIdentifier_password = @"CellID_password";
-NSString *const CellNibName_password = @"PasswordTableViewCell";
-
 
 #define HEIGHT_TEXT_FIELD 44
 
@@ -119,7 +117,7 @@ NSString *const CellNibName_password = @"PasswordTableViewCell";
         tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
         //[tableView registerClass:[WorktimeCell class] forCellReuseIdentifier:kCellIdentifier_WorkTime];
         [tableView registerNib:[UINib nibWithNibName:CellNibName_ssid bundle:nil] forCellReuseIdentifier:CellIdentifier_ssid];
-        [tableView registerNib:[UINib nibWithNibName:CellNibName_password bundle:nil] forCellReuseIdentifier:CellIdentifier_password];
+        [tableView registerClass:[PasswordTableViewCell class] forCellReuseIdentifier:CellIdentifier_password];
         [self.view addSubview:tableView];
         tableView.estimatedRowHeight = 0;
         tableView.estimatedSectionHeaderHeight = 0;
@@ -163,16 +161,20 @@ NSString *const CellNibName_password = @"PasswordTableViewCell";
     }else{
         PasswordTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_password];
         if (cell == nil) {
-            cell = [[[NSBundle mainBundle] loadNibNamed:CellNibName_password owner:self options:nil] lastObject];
+            cell = [[PasswordTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_password];
         }
-        [cell.passwordTF addTarget:self action:@selector(passwordTFTextChange:) forControlEvents:UIControlEventValueChanged];
+        [cell.passwordTF addTarget:self action:@selector(passwordTFTextChange:) forControlEvents:UIControlEventEditingChanged];
         return cell;
     }
 }
 
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+}
+
 #pragma mark - passwordTF value change
 - (void)passwordTFTextChange:(UITextField *)sender{
-    if (![sender.text isEqualToString:@""] && _ssid) {
+    if (sender.text.length > 6 && _ssid) {
         [_nextBtn setBackgroundColor:[UIColor colorWithRed:71/255.0 green:120/255.0 blue:204/255.0 alpha:1]];
         _nextBtn.enabled = YES;
     }else{

@@ -50,15 +50,16 @@
 #define yColor_back @"D8DADD"
 #define yColor_common @"996640"
 #define yColor_BtnBG @"4778CC"
-#define tabbarHeight ScreenHeight < 700 ? 44.f : 60.f
-#define HScale (667.f / ScreenHeight)
-#define WScale (375.f / ScreenWidth)
+#define tabbarHeight (ScreenHeight < 700 ? 44.f : 60.f)
+#define HScale (UI_IS_IPHONE6PLUS ? (667.f / ScreenHeight) : 1.f)
+#define WScale (UI_IS_IPHONE6PLUS ? (375.f / ScreenWidth) : 1.f)
 #define cellHeight 44
 #define yButtonHeight (50.f / HScale)
 #define viewWidth self.contentView.frame.size.width
 #define viewHeight self.contentView.frame.size.height
 #define select 100001
 #define unselect 100000
+#define beanRorDiffCount 5
 
 typedef enum : NSUInteger {
     sortUnselect = 1000,

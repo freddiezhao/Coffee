@@ -1,20 +1,20 @@
 //
-//  SearchCurveController.m
+//  SearchBeanController.m
 //  Coffee
 //
-//  Created by 杭州轨物科技有限公司 on 2018/10/10.
+//  Created by 杭州轨物科技有限公司 on 2018/10/11.
 //  Copyright © 2018年 杭州轨物科技有限公司. All rights reserved.
 //
 
-#import "SearchCurveController.h"
+#import "SearchBeanController.h"
 #import "TouchTableView.h"
-#import "CurrentCurveCell.h"
-#import "ReportModel.h"
-#import "BakeReportController.h"
+#import "beanCell.h"
+#import "BeanModel.h"
+#import "BeanDetailController.h"
 
-NSString *const CellIdentifier_searchCurve = @"CellID_searchCurve";
+NSString *const CellIdentifier_searchBean = @"CellID_searchBean";
 
-@interface SearchCurveController () <UITableViewDelegate, UITableViewDataSource, UISearchResultsUpdating, UISearchBarDelegate, UISearchControllerDelegate>
+@interface SearchBeanController () <UITableViewDelegate, UITableViewDataSource, UISearchResultsUpdating, UISearchBarDelegate, UISearchControllerDelegate>
 
 @property (nonatomic, strong) UITableView *myTableView;
 @property (nonatomic, strong) UISearchController *searchController;
@@ -23,12 +23,11 @@ NSString *const CellIdentifier_searchCurve = @"CellID_searchCurve";
 
 @end
 
-@implementation SearchCurveController
-static float HEIGHT_CELL = 50.f;
+@implementation SearchBeanController
+static float HEIGHT_CELL = 70.f;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    //[self.view setBackgroundColor:[UIColor colorWithRed:0/255.0 green:0/255.0 blue:0/255.0 alpha:0.4]];
     
     _myTableView = [self myTableView];
     _searchController = [self searchController];
@@ -43,6 +42,7 @@ static float HEIGHT_CELL = 50.f;
 
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
+
     if (@available(iOS 11.0, *)) {
         
     }else{
@@ -67,7 +67,7 @@ static float HEIGHT_CELL = 50.f;
             tableView.separatorColor = [UIColor colorWithRed:0/255.0 green:0/255.0 blue:0/255.0 alpha:0.08];
             tableView.dataSource = self;
             tableView.delegate = self;
-            [tableView registerClass:[CurrentCurveCell class] forCellReuseIdentifier:CellIdentifier_searchCurve];
+            [tableView registerClass:[beanCell class] forCellReuseIdentifier:CellIdentifier_searchBean];
             [self.view addSubview:tableView];
             tableView.scrollEnabled = NO;
             tableView.estimatedRowHeight = 0;
@@ -91,13 +91,14 @@ static float HEIGHT_CELL = 50.f;
             //[[self.searchController.searchBar.heightAnchor constraintEqualToConstant:44.0] setActive:YES];
             self.navigationItem.hidesSearchBarWhenScrolling = NO;
             _searchController.hidesNavigationBarDuringPresentation = YES;
-            
+
         } else {
             self.myTableView.tableHeaderView = self.searchController.searchBar;
         }
         
         _searchController.searchBar.showsCancelButton = YES;
         _searchController.searchBar.delegate = self;
+        _searchController.searchBar.searchBarStyle = UISearchBarStyleMinimal;
         UITextField *searchField = [_searchController.searchBar valueForKey:@"searchField"];
         searchField.backgroundColor = [UIColor colorWithRed:235/255.0 green:235/255.0 blue:235/255.0 alpha:1];
         
@@ -137,36 +138,31 @@ static float HEIGHT_CELL = 50.f;
 
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    CurrentCurveCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_searchCurve];
+    beanCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_searchBean];
     if (cell == nil) {
-        cell = [[CurrentCurveCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_searchCurve];
+        cell = [[beanCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_searchBean];
     }
-    ReportModel *report = _resultArr[indexPath.row];
-    NSMutableAttributedString *str = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"%@  %@",report.curveName,report.deviceName]];
-    [str addAttribute:NSForegroundColorAttributeName value:[UIColor colorWithHexString:@"333333"] range:NSMakeRange(0,report.curveName.length)];
-    [str addAttribute:NSForegroundColorAttributeName value:[UIColor colorWithHexString:@"4778CC"] range:report.searchRange];
-    [str addAttribute:NSForegroundColorAttributeName value:[UIColor colorWithHexString:@"999999"] range:NSMakeRange(report.curveName.length + 2,report.deviceName.length)];
-    [str addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:16.f] range:NSMakeRange(0,report.curveName.length)];
-    [str addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:14.f] range:NSMakeRange(report.curveName.length + 2,report.deviceName.length)];
-    cell.beanDeviceName.attributedText = str;
+    BeanModel *bean = _resultArr[indexPath.row];
+    cell.beanImage.image = [UIImage imageNamed:@"img_coffee_beans"];
     
+    NSMutableAttributedString *str = [[NSMutableAttributedString alloc] initWithString:bean.name];
+    [str addAttribute:NSForegroundColorAttributeName value:[UIColor colorWithHexString:@"4778CC"] range:bean.searchRange];
+    cell.beanLabel.attributedText = str;
     
-    cell.dateLabel.text = [NSDate YMDHMStringFromUTCDate:report.date];
-    
+    cell.infoLabel.text = [NSString stringWithFormat:@"%@等级 · 处理方式%@",bean.grade,bean.process];
+    cell.weightLabel.text = [NSString stringWithFormat:@"%.1fkg",bean.stock];
     return cell;
 }
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    BeanDetailController *detailVC = [[BeanDetailController alloc] init];
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    //NSLog(@"%ld",[_currentReportArr[0] count]);
-    ReportModel *report = _resultArr[indexPath.row];
-    
-    BakeReportController *reportVC = [[BakeReportController alloc] init];
-    reportVC.curveUid = report.curveUid;
+    BeanModel *bean = _resultArr[indexPath.row];
+    detailVC.myBean = [[DataBase shareDataBase] queryBean:bean.beanUid];
     if (_searchController.active) {
         [_searchController dismissViewControllerAnimated:YES completion:nil];
     }
-    [self.navigationController pushViewController:reportVC animated:YES];
+    [self.navigationController pushViewController:detailVC animated:YES];
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -186,16 +182,16 @@ static float HEIGHT_CELL = 50.f;
     if (self.resultArr.count > 0) {
         [_resultArr removeAllObjects];
     }
-    for (ReportModel *report in self.curveArr) {
-        NSRange result = [report.curveName rangeOfString:inputStr options:NSCaseInsensitiveSearch];
+    for (BeanModel *bean in self.beanArr) {
+        NSRange result = [bean.name rangeOfString:inputStr options:NSCaseInsensitiveSearch];
         if (result.length > 0)
         {
-            report.searchRange = result;
-            [self.resultArr addObject:report];
+            bean.searchRange = result;
+
+            [self.resultArr addObject:bean];
         }
     }
     [self.myTableView reloadData];
-
 }
 
 - (void)didPresentSearchController:(UISearchController *)searchController{
@@ -207,18 +203,19 @@ static float HEIGHT_CELL = 50.f;
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar{
     [self dismissVC];
 }
+
 #pragma mark - actions
 - (UIImage *)GetImageWithColor:(UIColor*)color andHeight:(CGFloat)height{
     
     CGRect r= CGRectMake(0.0f,
-               0.0f, 1.0f, height);
+                         0.0f, 1.0f, height);
     
     UIGraphicsBeginImageContext(r.size);
     
     CGContextRef context = UIGraphicsGetCurrentContext();
     
     CGContextSetFillColorWithColor(context, [color
-                                                 CGColor]);
+                                             CGColor]);
     
     CGContextFillRect(context, r);
     

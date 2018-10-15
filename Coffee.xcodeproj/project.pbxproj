@@ -364,6 +364,7 @@
 		BB6CD7E0214A561D0046A792 /* BalloonMarker.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB6CD7DF214A561C0046A792 /* BalloonMarker.swift */; };
 		BB6E0B7E2122D5B0008F20FC /* YAlertViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB6E0B7D2122D5B0008F20FC /* YAlertViewController.m */; };
 		BB712ABD20E47F49005FF10F /* NetWork.m in Sources */ = {isa = PBXBuildFile; fileRef = BB712ABC20E47F49005FF10F /* NetWork.m */; };
+		BB7300DB21743DEB00E80AFA /* ProdQRCodeView.m in Sources */ = {isa = PBXBuildFile; fileRef = BB7300DA21743DEB00E80AFA /* ProdQRCodeView.m */; };
 		BB73BA1E212F9CF7001D9258 /* AddNewBeanController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB73BA1D212F9CF7001D9258 /* AddNewBeanController.m */; };
 		BB73BA21212FA333001D9258 /* AddBeanInfoCell1.m in Sources */ = {isa = PBXBuildFile; fileRef = BB73BA20212FA333001D9258 /* AddBeanInfoCell1.m */; };
 		BB73BA24212FB4CF001D9258 /* AddBeanInfoCell2.m in Sources */ = {isa = PBXBuildFile; fileRef = BB73BA23212FB4CF001D9258 /* AddBeanInfoCell2.m */; };
@@ -378,6 +379,12 @@
 		BB7835EB2147E898000E2FCB /* EditBeanController_bakeAdd.m in Sources */ = {isa = PBXBuildFile; fileRef = BB7835EA2147E898000E2FCB /* EditBeanController_bakeAdd.m */; };
 		BB7845DE216DDC83000CDD3A /* DataWithApi.m in Sources */ = {isa = PBXBuildFile; fileRef = BB7845DD216DDC83000CDD3A /* DataWithApi.m */; };
 		BB7845E1216DFADA000CDD3A /* SearchCurveController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB7845E0216DFADA000CDD3A /* SearchCurveController.m */; };
+		BB79627A216EDD2A000373A3 /* SearchBeanController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB796279216EDD2A000373A3 /* SearchBeanController.m */; };
+		BB79627D216F2B25000373A3 /* SearchCupController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB79627C216F2B25000373A3 /* SearchCupController.m */; };
+		BB796280216F538F000373A3 /* AboutViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB79627F216F538F000373A3 /* AboutViewController.m */; };
+		BB7D08AC2170421B00FFBA4D /* FeedTextViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BB7D08AB2170421B00FFBA4D /* FeedTextViewCell.m */; };
+		BB7D08AF2170438A00FFBA4D /* FeedSelectCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BB7D08AE2170438A00FFBA4D /* FeedSelectCell.m */; };
+		BB7D08B22170490600FFBA4D /* FeedTextFieldCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BB7D08B12170490600FFBA4D /* FeedTextFieldCell.m */; };
 		BB813E6B214BA49D00D68F7B /* CupTestMainController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB813E6A214BA49D00D68F7B /* CupTestMainController.m */; };
 		BB813E6E214BAABE00D68F7B /* CupModel.m in Sources */ = {isa = PBXBuildFile; fileRef = BB813E6D214BAABE00D68F7B /* CupModel.m */; };
 		BB813E72214BB5CB00D68F7B /* CupNormalCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BB813E71214BB5CB00D68F7B /* CupNormalCell.m */; };
@@ -430,7 +437,6 @@
 		BB8AA4DF20DFC96A00610316 /* SSIDTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BB8AA4DD20DFC96A00610316 /* SSIDTableViewCell.m */; };
 		BB8AA4E020DFC96A00610316 /* SSIDTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = BB8AA4DE20DFC96A00610316 /* SSIDTableViewCell.xib */; };
 		BB8AA4E420DFCA1C00610316 /* PasswordTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BB8AA4E220DFCA1C00610316 /* PasswordTableViewCell.m */; };
-		BB8AA4E520DFCA1C00610316 /* PasswordTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = BB8AA4E320DFCA1C00610316 /* PasswordTableViewCell.xib */; };
 		BB8AA4E820DFD18D00610316 /* UIColor+ColorChange.m in Sources */ = {isa = PBXBuildFile; fileRef = BB8AA4E720DFD18D00610316 /* UIColor+ColorChange.m */; };
 		BB8F7BD120DA513B00BE5CFC /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = BB8F7BD020DA513B00BE5CFC /* AppDelegate.m */; };
 		BB8F7BD720DA513B00BE5CFC /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BB8F7BD520DA513B00BE5CFC /* Main.storyboard */; };
@@ -939,6 +945,8 @@
 		BB6E0B7D2122D5B0008F20FC /* YAlertViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YAlertViewController.m; sourceTree = "<group>"; };
 		BB712ABB20E47F49005FF10F /* NetWork.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NetWork.h; sourceTree = "<group>"; };
 		BB712ABC20E47F49005FF10F /* NetWork.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NetWork.m; sourceTree = "<group>"; };
+		BB7300D921743DEB00E80AFA /* ProdQRCodeView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ProdQRCodeView.h; sourceTree = "<group>"; };
+		BB7300DA21743DEB00E80AFA /* ProdQRCodeView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ProdQRCodeView.m; sourceTree = "<group>"; };
 		BB73BA1C212F9CF7001D9258 /* AddNewBeanController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AddNewBeanController.h; sourceTree = "<group>"; };
 		BB73BA1D212F9CF7001D9258 /* AddNewBeanController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AddNewBeanController.m; sourceTree = "<group>"; };
 		BB73BA1F212FA333001D9258 /* AddBeanInfoCell1.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AddBeanInfoCell1.h; sourceTree = "<group>"; };
@@ -967,6 +975,18 @@
 		BB7845DD216DDC83000CDD3A /* DataWithApi.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DataWithApi.m; sourceTree = "<group>"; };
 		BB7845DF216DFADA000CDD3A /* SearchCurveController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SearchCurveController.h; sourceTree = "<group>"; };
 		BB7845E0216DFADA000CDD3A /* SearchCurveController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SearchCurveController.m; sourceTree = "<group>"; };
+		BB796278216EDD2A000373A3 /* SearchBeanController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SearchBeanController.h; sourceTree = "<group>"; };
+		BB796279216EDD2A000373A3 /* SearchBeanController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SearchBeanController.m; sourceTree = "<group>"; };
+		BB79627B216F2B25000373A3 /* SearchCupController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SearchCupController.h; sourceTree = "<group>"; };
+		BB79627C216F2B25000373A3 /* SearchCupController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SearchCupController.m; sourceTree = "<group>"; };
+		BB79627E216F538F000373A3 /* AboutViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AboutViewController.h; sourceTree = "<group>"; };
+		BB79627F216F538F000373A3 /* AboutViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AboutViewController.m; sourceTree = "<group>"; };
+		BB7D08AA2170421B00FFBA4D /* FeedTextViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FeedTextViewCell.h; sourceTree = "<group>"; };
+		BB7D08AB2170421B00FFBA4D /* FeedTextViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FeedTextViewCell.m; sourceTree = "<group>"; };
+		BB7D08AD2170438A00FFBA4D /* FeedSelectCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FeedSelectCell.h; sourceTree = "<group>"; };
+		BB7D08AE2170438A00FFBA4D /* FeedSelectCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FeedSelectCell.m; sourceTree = "<group>"; };
+		BB7D08B02170490600FFBA4D /* FeedTextFieldCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FeedTextFieldCell.h; sourceTree = "<group>"; };
+		BB7D08B12170490600FFBA4D /* FeedTextFieldCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FeedTextFieldCell.m; sourceTree = "<group>"; };
 		BB813E69214BA49D00D68F7B /* CupTestMainController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CupTestMainController.h; sourceTree = "<group>"; };
 		BB813E6A214BA49D00D68F7B /* CupTestMainController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CupTestMainController.m; sourceTree = "<group>"; };
 		BB813E6C214BAABE00D68F7B /* CupModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CupModel.h; sourceTree = "<group>"; };
@@ -1045,7 +1065,6 @@
 		BB8AA4DE20DFC96A00610316 /* SSIDTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SSIDTableViewCell.xib; sourceTree = "<group>"; };
 		BB8AA4E120DFCA1C00610316 /* PasswordTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PasswordTableViewCell.h; sourceTree = "<group>"; };
 		BB8AA4E220DFCA1C00610316 /* PasswordTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PasswordTableViewCell.m; sourceTree = "<group>"; };
-		BB8AA4E320DFCA1C00610316 /* PasswordTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PasswordTableViewCell.xib; sourceTree = "<group>"; };
 		BB8AA4E620DFD18D00610316 /* UIColor+ColorChange.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIColor+ColorChange.h"; sourceTree = "<group>"; };
 		BB8AA4E720DFD18D00610316 /* UIColor+ColorChange.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIColor+ColorChange.m"; sourceTree = "<group>"; };
 		BB8F7BCC20DA513B00BE5CFC /* Coffee.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Coffee.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1171,6 +1190,8 @@
 				BB73BA32212FED92001D9258 /* BuyDateSelController.m */,
 				BB63B40321491CC600EAC364 /* BeanRelaCurveController.h */,
 				BB63B40421491CC600EAC364 /* BeanRelaCurveController.m */,
+				BB796278216EDD2A000373A3 /* SearchBeanController.h */,
+				BB796279216EDD2A000373A3 /* SearchBeanController.m */,
 			);
 			path = Bean;
 			sourceTree = "<group>";
@@ -1248,6 +1269,12 @@
 				BB56101321522FB8008433B1 /* PhoneVerifyCell.m */,
 				BB56101521522FC5008433B1 /* PhoneTFCell.h */,
 				BB56101621522FC5008433B1 /* PhoneTFCell.m */,
+				BB7D08AA2170421B00FFBA4D /* FeedTextViewCell.h */,
+				BB7D08AB2170421B00FFBA4D /* FeedTextViewCell.m */,
+				BB7D08AD2170438A00FFBA4D /* FeedSelectCell.h */,
+				BB7D08AE2170438A00FFBA4D /* FeedSelectCell.m */,
+				BB7D08B02170490600FFBA4D /* FeedTextFieldCell.h */,
+				BB7D08B12170490600FFBA4D /* FeedTextFieldCell.m */,
 			);
 			path = Mine;
 			sourceTree = "<group>";
@@ -1567,7 +1594,6 @@
 				BB8AA4DE20DFC96A00610316 /* SSIDTableViewCell.xib */,
 				BB8AA4E120DFCA1C00610316 /* PasswordTableViewCell.h */,
 				BB8AA4E220DFCA1C00610316 /* PasswordTableViewCell.m */,
-				BB8AA4E320DFCA1C00610316 /* PasswordTableViewCell.xib */,
 				BB6A784320E32A4D00EE3E2E /* DeviceTableViewCell.h */,
 				BB6A784420E32A4D00EE3E2E /* DeviceTableViewCell.m */,
 				BB149F2E21215B4C00E5C2BF /* DeviceSelectCell.h */,
@@ -1681,6 +1707,8 @@
 				BB6AD21621007D15008C8763 /* MineViewController.m */,
 				BB23E561210964C20074C61B /* FeedbackViewController.h */,
 				BB23E562210964C20074C61B /* FeedbackViewController.m */,
+				BB79627E216F538F000373A3 /* AboutViewController.h */,
+				BB79627F216F538F000373A3 /* AboutViewController.m */,
 				BB2912062106CC89001B9448 /* Account */,
 				BB29120F2106D8B1001B9448 /* General */,
 			);
@@ -1730,6 +1758,8 @@
 				BB68F2F12159E5CC00D40336 /* HeightSlider.m */,
 				BB254E8D215CC7F4004A29D3 /* BakeSliderAlertVC.h */,
 				BB254E8E215CC7F4004A29D3 /* BakeSliderAlertVC.m */,
+				BB7300D921743DEB00E80AFA /* ProdQRCodeView.h */,
+				BB7300DA21743DEB00E80AFA /* ProdQRCodeView.m */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -1769,6 +1799,8 @@
 				BB254E91215D0A8A004A29D3 /* AddCupTextController.m */,
 				BB4A4C85214FB07F0010A9A1 /* ReportSelectController.h */,
 				BB4A4C86214FB07F0010A9A1 /* ReportSelectController.m */,
+				BB79627B216F2B25000373A3 /* SearchCupController.h */,
+				BB79627C216F2B25000373A3 /* SearchCupController.m */,
 			);
 			path = Cup;
 			sourceTree = "<group>";
@@ -1883,7 +1915,7 @@
 			path = "@3x";
 			sourceTree = "<group>";
 		};
-		BB8AA49B20DFAFA500610316 /* EspTouch */ = {
+		BB8AA49B20DFAFA500610316 /* DeviceEspTouch */ = {
 			isa = PBXGroup;
 			children = (
 				BB8AA49C20DFAFC600610316 /* DeviceViewController.h */,
@@ -1897,7 +1929,7 @@
 				BBFE861620E63027005C6CE5 /* DeviceConnectView.h */,
 				BBFE861720E63027005C6CE5 /* DeviceConnectView.m */,
 			);
-			path = EspTouch;
+			path = DeviceEspTouch;
 			sourceTree = "<group>";
 		};
 		BB8AA4A620DFB9C900610316 /* EspTouch */ = {
@@ -2061,7 +2093,7 @@
 				BB25E7A6212E60FD003568BD /* Bean */,
 				BB813E68214BA47400D68F7B /* Cup */,
 				BB6AD20C21007BCE008C8763 /* Mine */,
-				BB8AA49B20DFAFA500610316 /* EspTouch */,
+				BB8AA49B20DFAFA500610316 /* DeviceEspTouch */,
 				BB94EAA320DBA9C800370A95 /* MainViewController.h */,
 				BB94EAA420DBA9C800370A95 /* MainViewController.m */,
 			);
@@ -2515,7 +2547,6 @@
 				BB525E49212CFF47003484E9 /* btn_add@2x.png in Resources */,
 				BB65C25120FD8F0400BB684E /* tick@1x.png in Resources */,
 				BB525E43212CFF47003484E9 /* btn_stir_off@2x.png in Resources */,
-				BB8AA4E520DFCA1C00610316 /* PasswordTableViewCell.xib in Resources */,
 				BB525EDA212CFF47003484E9 /* img_signal_light_off@2x.png in Resources */,
 				BB525F03212CFF47003484E9 /* img_guide1@3x.png in Resources */,
 				BB525ED3212CFF47003484E9 /* ic_tabbar_test_sel@2x.png in Resources */,
@@ -2584,6 +2615,7 @@
 				"${BUILT_PRODUCTS_DIR}/MBProgressHUD/MBProgressHUD.framework",
 				"${BUILT_PRODUCTS_DIR}/MJRefresh/MJRefresh.framework",
 				"${BUILT_PRODUCTS_DIR}/Masonry/Masonry.framework",
+				"${BUILT_PRODUCTS_DIR}/SDWebImage/SDWebImage.framework",
 				"${BUILT_PRODUCTS_DIR}/SVProgressHUD/SVProgressHUD.framework",
 				"${BUILT_PRODUCTS_DIR}/WMPageController/WMPageController.framework",
 			);
@@ -2596,6 +2628,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MBProgressHUD.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MJRefresh.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Masonry.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SDWebImage.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SVProgressHUD.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/WMPageController.framework",
 			);
@@ -2650,6 +2683,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				BB6AD2252100C182008C8763 /* LlabelRImageCell.m in Sources */,
+				BB79627A216EDD2A000373A3 /* SearchBeanController.m in Sources */,
 				BB3811FA20EA1C3C00F0B2B7 /* BakeCurveViewController.m in Sources */,
 				BB593FA9210F172D007ECB1D /* NSDate+Common.m in Sources */,
 				BBA7B968212ACAB2004943DC /* TempPer30sCell.m in Sources */,
@@ -2687,6 +2721,7 @@
 				BB254E8F215CC7F4004A29D3 /* BakeSliderAlertVC.m in Sources */,
 				BBA7B95B212AA0A0004943DC /* CollectInfoCell.m in Sources */,
 				BB8AA4D120DFB9CA00610316 /* ESPTouchTask.m in Sources */,
+				BB7D08B22170490600FFBA4D /* FeedTextFieldCell.m in Sources */,
 				BB7835E52147643B000E2FCB /* EditLightCell.m in Sources */,
 				BB56101A215242DA008433B1 /* AddFastEventController.m in Sources */,
 				BB73BA27212FE0E2001D9258 /* GradeSelController.m in Sources */,
@@ -2730,12 +2765,14 @@
 				BB94EAA520DBA9C800370A95 /* MainViewController.m in Sources */,
 				BB21D6092134470B009FCB66 /* CurrentCurveCell.m in Sources */,
 				BB525F2C212D742C003484E9 /* referCurveCell.m in Sources */,
+				BB79627D216F2B25000373A3 /* SearchCupController.m in Sources */,
 				BB94963F2125504F000A4A59 /* LeftFuncController.m in Sources */,
 				BB73BA24212FB4CF001D9258 /* AddBeanInfoCell2.m in Sources */,
 				BB712ABD20E47F49005FF10F /* NetWork.m in Sources */,
 				BB94EAA120DB8CE700370A95 /* RDVTabBarController.m in Sources */,
 				BB4A4C81214F8F210010A9A1 /* CupTestEditController.m in Sources */,
 				BB7835E22147588D000E2FCB /* EditNameCell.m in Sources */,
+				BB7D08AC2170421B00FFBA4D /* FeedTextViewCell.m in Sources */,
 				BB8AA4A520DFB25900610316 /* EspViewController.m in Sources */,
 				BB63B40221490EB500EAC364 /* EditBeanController.m in Sources */,
 				BB68F2F22159E5CC00D40336 /* HeightSlider.m in Sources */,
@@ -2750,6 +2787,7 @@
 				BB23E563210964C20074C61B /* FeedbackViewController.m in Sources */,
 				BB345C0121538EE7000537DD /* CompleteInfoController.m in Sources */,
 				BB73BA30212FEA44001D9258 /* ProcessSelController.m in Sources */,
+				BB7300DB21743DEB00E80AFA /* ProdQRCodeView.m in Sources */,
 				BB4A4C7E214F82F90010A9A1 /* CupLightCell.m in Sources */,
 				BB8F7BDF20DA513B00BE5CFC /* main.m in Sources */,
 				BB345C262153A4A9000537DD /* AFHTTPSessionManager.m in Sources */,
@@ -2773,12 +2811,14 @@
 				BB345C2A2153A4AA000537DD /* AFSecurityPolicy.m in Sources */,
 				BB73BA2A212FE6F2001D9258 /* SortModel.m in Sources */,
 				BB635D282108781C005F42D6 /* CurveColorViewController.m in Sources */,
+				BB796280216F538F000373A3 /* AboutViewController.m in Sources */,
 				BB635D1F210862E8005F42D6 /* FastEventViewController.m in Sources */,
 				BBFE861220E62FDF005C6CE5 /* DeviceSelectView.m in Sources */,
 				BB69CA7320ECBB490032F126 /* NSObject+Common.m in Sources */,
 				BB61D757210D619E0068A0A6 /* BakeReportController.m in Sources */,
 				BB345C302153A4AA000537DD /* UIActivityIndicatorView+AFNetworking.m in Sources */,
 				BB525F28212D6FCB003484E9 /* AddBeanTableController.m in Sources */,
+				BB7D08AF2170438A00FFBA4D /* FeedSelectCell.m in Sources */,
 				BB8AA4D720DFBFA400610316 /* TouchTableView.m in Sources */,
 				BB8AA4CD20DFB9CA00610316 /* ESPUDPSocketClient.m in Sources */,
 				BB5A3BF1211193180030ACA5 /* DeviceModel.m in Sources */,
@@ -2970,7 +3010,7 @@
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = 1;
-				USER_HEADER_SEARCH_PATHS = "$(PODS_ROOT)/FMDB/**";
+				USER_HEADER_SEARCH_PATHS = "$(PODS_ROOT)/FMDB/** $(PODS_ROOT)/SDWebImage/**";
 			};
 			name = Debug;
 		};
@@ -2994,7 +3034,7 @@
 				SWIFT_OBJC_INTERFACE_HEADER_NAME = "$(SWIFT_MODULE_NAME)-Swift.h";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = 1;
-				USER_HEADER_SEARCH_PATHS = "$(PODS_ROOT)/FMDB/**";
+				USER_HEADER_SEARCH_PATHS = "$(PODS_ROOT)/FMDB/** $(PODS_ROOT)/SDWebImage/**";
 			};
 			name = Release;
 		};

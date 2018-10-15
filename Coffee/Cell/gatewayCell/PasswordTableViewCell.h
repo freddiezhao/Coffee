@@ -8,7 +8,11 @@
 
 #import <UIKit/UIKit.h>
 
+typedef void(^TFBlock)(NSString *password);
+
 @interface PasswordTableViewCell : UITableViewCell
-@property (weak, nonatomic) IBOutlet UITextField *passwordTF;
+
+@property (strong, nonatomic) UITextField *passwordTF;
+@property (nonatomic) TFBlock TFBlock;
 
 @end

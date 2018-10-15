@@ -196,7 +196,7 @@ static float HEIGHT_CELL = 50.f;
     view.backgroundColor = [UIColor clearColor];
     if (tableView == _phoneTable1) {
         UILabel *label = [[UILabel alloc] init];
-        label.text = @"当前手机号码 187****1254";
+        label.text = [[DataBase shareDataBase].mobile stringByReplacingCharactersInRange:NSMakeRange(3, 4) withString:@"****"];;
         label.font = [UIFont systemFontOfSize:16.f];
         label.textColor = [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1];
         label.textAlignment = NSTextAlignmentLeft;

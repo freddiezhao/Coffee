@@ -393,7 +393,7 @@
 }
 
 - (void)saveCurve{
-    [self dismissViewControllerAnimated:YES completion:nil];
+    //[self dismissViewControllerAnimated:YES completion:nil];
     [[NetWork shareNetWork] showBakeOverAlertAction];
 }
 

@@ -14,7 +14,7 @@
 #import "BeanModel.h"
 #import "AddNewBeanController.h"
 #import "BeanDetailController.h"
-
+#import "SearchBeanController.h"
 
 NSString *const CellIdentifier_bean = @"CellID_bean";
 
@@ -507,7 +507,19 @@ sectionForSectionIndexTitle:(NSString *)title
 }
 
 - (void)searchBean{
-    
+    SearchBeanController *searchVC = [[SearchBeanController alloc] init];
+    searchVC.beanArr = _beanArr;
+//    searchVC.modalPresentationStyle = UIModalPresentationOverCurrentContext;
+//    searchVC.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+    UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:searchVC];
+    nav.modalPresentationStyle = UIModalPresentationOverCurrentContext;
+    nav.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+    [self.rdv_tabBarController setTabBarHidden:YES animated:YES];
+    searchVC.dismissBlock = ^{
+        [self.rdv_tabBarController setTabBarHidden:NO animated:YES];
+    };
+    [self presentViewController:nav animated:YES completion:nil];
+
 }
 
 - (void)generalSort:(UIButton *)sender{

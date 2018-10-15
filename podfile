@@ -10,5 +10,6 @@ pod 'CocoaAsyncSocket'
 pod 'Charts'
 pod 'WMPageController','~> 2.4.0'
 pod 'FMDB'
+pod 'SDWebImage','~> 4.0'
 end
 

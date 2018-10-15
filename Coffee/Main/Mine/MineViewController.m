@@ -10,6 +10,9 @@
 #import "AccountViewController.h"
 #import "GeneralViewController.h"
 #import "MineNormalCell.h"
+#import "AboutViewController.h"
+#import "FeedbackViewController.h"
+#import "UIButton+WebCache.h"
 
 NSString *const CellIdentifier_Mine = @"CellID_Mine";
 
@@ -32,6 +35,7 @@ static float HEIGHT_CELL = 51.f;
     
     _headerView = [self headerView];
     _mineTableView = [self mineTableView];
+    [self getUserInfoByApi];
 }
 
 - (void)viewWillAppear:(BOOL)animated{
@@ -54,10 +58,12 @@ static float HEIGHT_CELL = 51.f;
 -(UIView *)headerView{
     if (!_headerView) {
         _headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, ScreenWidth, 210/HScale)];
-        UIColor *bgColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"img_mine_bg"]];
-        [_headerView setBackgroundColor:bgColor];
         [self.view addSubview:_headerView];
-        
+        UIImageView *bgImg = [[UIImageView alloc] initWithFrame:_headerView.bounds];
+        [bgImg setImage:[UIImage imageNamed:@"img_mine_bg"]];
+        [_headerView addSubview:bgImg];
+        [_headerView sendSubviewToBack:bgImg];
+
         UIButton *scanBtn = [UIButton buttonWithType:UIButtonTypeCustom];
         [scanBtn setImage:[UIImage imageNamed:@"ic_nav_scan"] forState:UIControlStateNormal];
         [scanBtn addTarget:self action:@selector(scanAction) forControlEvents:UIControlEventTouchUpInside];
@@ -170,6 +176,14 @@ static float HEIGHT_CELL = 51.f;
             GeneralViewController *generalVC = [[GeneralViewController alloc] init];
             [self.navigationController pushViewController:generalVC animated:YES];
         }
+    }else if (indexPath.section == 1){
+        if (indexPath.row == 1) {
+            AboutViewController *aboutVC = [[AboutViewController alloc] init];
+            [self.navigationController pushViewController:aboutVC animated:YES];
+        }else if (indexPath.row == 0){
+            FeedbackViewController *feedVC = [[FeedbackViewController alloc] init];
+            [self.navigationController pushViewController:feedVC animated:YES];
+        }
     }
 }
 
@@ -211,6 +225,51 @@ static float HEIGHT_CELL = 51.f;
 
 - (void)scanAction{
     
+}
+
+#pragma mark - API
+- (void)getUserInfoByApi{
+    [SVProgressHUD show];
+    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+    
+    [manager.requestSerializer willChangeValueForKey:@"timeoutInterval"];
+    manager.requestSerializer.timeoutInterval = 6.f;
+    [manager.requestSerializer didChangeValueForKey:@"timeoutInterval"];
+    
+    NSString *url = [NSString stringWithFormat:@"http://139.196.90.97:8080/coffee/user?userId=%@",[DataBase shareDataBase].userId];
+    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet characterSetWithCharactersInString:@"`#%^{}\"[]|\\<> "].invertedSet];
+    
+    [manager.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+    [manager.requestSerializer setValue:[NSString stringWithFormat:@"bearer %@",[DataBase shareDataBase].token] forHTTPHeaderField:@"Authorization"];
+    [manager GET:url parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableContainers|NSJSONReadingMutableLeaves error:nil];
+        NSData * data = [NSJSONSerialization dataWithJSONObject:responseDic options:(NSJSONWritingOptions)0 error:nil];
+        NSString * daetr = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
+        if ([[responseDic objectForKey:@"errno"] intValue] == 0) {
+            NSLog(@"success:%@",daetr);
+            if ([responseDic objectForKey:@"data"]) {
+                NSDictionary *beansDic = [responseDic objectForKey:@"data"];
+                DataBase *db = [DataBase shareDataBase];
+                db.userName = [beansDic objectForKey:@"userName"];
+                db.mobile = [beansDic objectForKey:@"mobile"];
+                db.imageUrl = [beansDic objectForKey:@"image"];
+                _nickLabel.text = db.userName;
+                [_headButton sd_setImageWithURL:[NSURL URLWithString:db.imageUrl] forState:UIControlStateNormal placeholderImage:[UIImage imageNamed:@"ic_default_headportrait"]];
+            }
+        }else{
+            [NSObject showHudTipStr:LocalString(@"获取用户信息失败")];
+            NSLog(@"获取用户信息失败");
+        }
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [SVProgressHUD dismiss];
+        });
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        NSLog(@"Error:%@",error);
+        [NSObject showHudTipStr:LocalString(@"获取用户信息失败")];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [SVProgressHUD dismiss];
+        });
+    }];
 }
 
 @end

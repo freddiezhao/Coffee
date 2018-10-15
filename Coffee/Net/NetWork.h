@@ -133,4 +133,5 @@ static NSInteger tempCountVer = 1000;
 - (void)setTimerStatusOff;
 
 - (void)showBakeOverAlertAction;
+- (NSMutableArray *)getBeanTempRorWithArr:(NSMutableArray *)arr;
 @end

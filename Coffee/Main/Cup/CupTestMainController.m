@@ -14,6 +14,7 @@
 #import "CupTestDetailController.h"
 #import "AddCupTextController.h"
 #import "FMDB.h"
+#import "SearchCupController.h"
 
 NSString *const CellIdentifier_cup = @"CellID_cup";
 
@@ -364,7 +365,18 @@ sectionForSectionIndexTitle:(NSString *)title
 }
 
 - (void)searchCup{
-    
+    SearchCupController *searchVC = [[SearchCupController alloc] init];
+    searchVC.cupArr = _cupArr;
+    //    searchVC.modalPresentationStyle = UIModalPresentationOverCurrentContext;
+    //    searchVC.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+    UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:searchVC];
+    nav.modalPresentationStyle = UIModalPresentationOverCurrentContext;
+    nav.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+    [self.rdv_tabBarController setTabBarHidden:YES animated:YES];
+    searchVC.dismissBlock = ^{
+        [self.rdv_tabBarController setTabBarHidden:NO animated:YES];
+    };
+    [self presentViewController:nav animated:YES completion:nil];
 }
 
 - (void)generalSort:(UIButton *)sender{

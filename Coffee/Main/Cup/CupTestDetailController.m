@@ -55,7 +55,7 @@ static float HEIGHT_HEADER = 15.f;
     [super viewDidLoad];
     self.view.layer.backgroundColor = [UIColor colorWithRed:246/255.0 green:246/255.0 blue:246/255.0 alpha:1].CGColor;
     [self setNavItem];
-    
+
     _beanArray = [[NSMutableArray alloc] init];
     _yVals_In = [[NSMutableArray alloc] init];
     _yVals_Out = [[NSMutableArray alloc] init];
@@ -541,7 +541,7 @@ static float HEIGHT_HEADER = 15.f;
                 cell.yVals_Out = _yVals_Out;
                 cell.yVals_Bean = _yVals_Bean;
                 cell.yVals_Environment = _yVals_Environment;
-                //cell.yVals_Diff = _yVals_Diff;
+                cell.yVals_Diff = _yVals_Diff;
                 [cell setDataValue];
             }
             return cell;
@@ -635,7 +635,7 @@ static float HEIGHT_HEADER = 15.f;
         for (int i = 0; i<Environment.count; i++) {
             [_yVals_Environment addObject:[[ChartDataEntry alloc] initWithX:i y:[Environment[i] doubleValue]]];
         }
-        //_yVals_Diff = [curveDic objectForKey:@"diff"];
+        _yVals_Diff = [[NetWork shareNetWork] getBeanTempRorWithArr:[Bean mutableCopy]];
     }
     [self queryBeanInfo];
 }

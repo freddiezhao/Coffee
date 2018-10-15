@@ -26,4 +26,5 @@
 @property (nonatomic) float stock;
 @property (nonatomic, strong) NSDate *time;
 
+@property (nonatomic) NSRange searchRange;//用来改变搜索字体的颜色
 @end

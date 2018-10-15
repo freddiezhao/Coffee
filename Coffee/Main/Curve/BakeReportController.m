@@ -20,6 +20,7 @@
 #import "CollectInfoCell.h"
 #import "TempPer30sCell.h"
 #import "ReportEditController.h"
+#import "ProdQRCodeView.h"
 
 NSString *const CellIdentifier_reportLight = @"CellID_reportLight";
 NSString *const CellIdentifier_reportBeanHeader = @"CellID_reportBeanHeader";
@@ -312,7 +313,7 @@ NSString *const CellIdentifier_TempPer30 = @"CellID_TempPer30";
             cell.yVals_Out = _yVals_Out;
             cell.yVals_Bean = _yVals_Bean;
             cell.yVals_Environment = _yVals_Environment;
-            //cell.yVals_Diff = _yVals_Diff;
+            cell.yVals_Diff = _yVals_Diff;
             [cell setDataValue];
         }
         return cell;
@@ -362,10 +363,10 @@ NSString *const CellIdentifier_TempPer30 = @"CellID_TempPer30";
                 }else{
                     cell.Label5.text = @"?";
                 }
-                if (row * 30 < _Diff.count) {
-                    cell.Label6.text = [_Diff[row * 30] stringValue];
+                if (row * 30 / beanRorDiffCount< _Diff.count) {
+                    cell.Label6.text = [_Diff[row * 30 / beanRorDiffCount] stringValue];
                 }else{
-                    cell.Label6.text = @"?";
+                    cell.Label6.text = @"0.0";
                 }
             }
             
@@ -445,7 +446,14 @@ NSString *const CellIdentifier_TempPer30 = @"CellID_TempPer30";
     _Out = [curveDic objectForKey:@"out"];
     _In = [curveDic objectForKey:@"in"];
     _Environment = [curveDic objectForKey:@"environment"];
-    //NSArray *Diff = [curveDic objectForKey:@"diff"];
+    if (!_Diff) {
+        _Diff = [[NSMutableArray alloc] init];
+    }
+    [_Diff removeAllObjects];
+    for (int i = beanRorDiffCount; i < _Bean.count; i = i + beanRorDiffCount) {
+        [_Diff addObject:[NSNumber numberWithDouble:([_Bean[i] doubleValue] - [_Bean[i - beanRorDiffCount] doubleValue]) * 12.f]];
+    }
+    
     NSLog(@"%lu",(unsigned long)_Bean.count);
     NSLog(@"%lu",_Out.count);
     NSLog(@"%lu",_In.count);
@@ -463,7 +471,7 @@ NSString *const CellIdentifier_TempPer30 = @"CellID_TempPer30";
     for (int i = 0; i<_Environment.count; i++) {
         [_yVals_Environment addObject:[[ChartDataEntry alloc] initWithX:i y:[_Environment[i] doubleValue]]];
     }
-    //_yVals_Diff = [curveDic objectForKey:@"diff"];
+    _yVals_Diff = [[NetWork shareNetWork] getBeanTempRorWithArr:_Bean];
 
     [self queryEventInfo];
 }
@@ -516,4 +524,11 @@ NSString *const CellIdentifier_TempPer30 = @"CellID_TempPer30";
     [self.navigationController pushViewController:editVC animated:YES];
 }
 
+- (void)shareReport{
+    ProdQRCodeView *QRVC = [[ProdQRCodeView alloc] init];
+    QRVC.modalPresentationStyle = UIModalPresentationOverCurrentContext;
+    [self presentViewController:QRVC animated:YES completion:^{
+        QRVC.curveUid = _curveUid;
+    }];
+}
 @end

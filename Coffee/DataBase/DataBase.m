@@ -584,7 +584,7 @@ static DataBase *_dataBase = nil;
             if (!result) {
                 *rollback = YES;
                 NSLog(@"插入曲线失败，生豆信息有误");
-                [NSObject showHudTipStr:@"插入曲线失败，生豆信息有误"];
+                [NSObject showHudTipStr:@"添加曲线失败，生豆信息有误"];
                 return;
             }
         }

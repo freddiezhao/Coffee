@@ -31,4 +31,6 @@
 @property (nonatomic, strong) NSString *sharerName;
 @property (nonatomic) NSInteger isShare;
 
+@property (nonatomic) NSRange searchRange;//用来改变搜索字体的颜色
+
 @end

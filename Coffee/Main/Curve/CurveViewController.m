@@ -341,9 +341,14 @@ static float HEIGHT_HEADER = 36.f;
 - (void)searchCurve{
     SearchCurveController *searchVC = [[SearchCurveController alloc] init];
     searchVC.curveArr = [self getAllReport];
-    //searchVC.modalPresentationStyle = UIModalPresentationOverCurrentContext;
-    searchVC.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
-    [self presentViewController:searchVC animated:YES completion:nil];
+    UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:searchVC];
+    nav.modalPresentationStyle = UIModalPresentationOverCurrentContext;//可以保持本VC的UI显示
+    nav.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+    [self.rdv_tabBarController setTabBarHidden:YES animated:YES];
+    searchVC.dismissBlock = ^{
+        [self.rdv_tabBarController setTabBarHidden:NO animated:YES];
+    };
+    [self presentViewController:nav animated:YES completion:nil];
 }
 
 - (NSMutableArray *)getAllReport{

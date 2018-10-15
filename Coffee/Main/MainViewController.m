@@ -74,7 +74,7 @@
         index++;
     }
     
-    [self.tabBar setHeight:tabbarHeight + kSafeArea_Bottom];
+    [self.tabBar setHeight:tabbarHeight];
     
     self.tabBar.translucent = YES;
     

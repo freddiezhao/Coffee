@@ -9,6 +9,7 @@
 #import "VerifyCodeLoginController.h"
 #import "PhoneTFCell.h"
 #import "PhoneVerifyCell.h"
+#import "MainViewController.h"
 
 NSString *const CellIdentifier_VerifyLoginUserPhone = @"CellID_VerifyLoginuserPhone";
 NSString *const CellIdentifier_VerifyLoginUserPhoneVerify = @"CellID_VerifyLoginuserPhoneVerify";
@@ -68,6 +69,7 @@ static float HEIGHT_CELL = 50.f;
             _loginBtn.layer.borderWidth = 0.5;
             _loginBtn.layer.borderColor = [UIColor colorWithHexString:@"4778CC"].CGColor;
             _loginBtn.layer.cornerRadius = _loginBtn.bounds.size.height / 2.f;
+            _loginBtn.enabled = NO;
             [footView addSubview:_loginBtn];
             
             tableView.tableFooterView = footView;
@@ -96,6 +98,41 @@ static float HEIGHT_CELL = 50.f;
         cell.TFBlock = ^(NSString *text) {
             _code = text;
             [self textFieldChange];
+        };
+        cell.BtnBlock = ^BOOL{
+            AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+            //设置超时时间
+            [manager.requestSerializer willChangeValueForKey:@"timeoutInterval"];
+            manager.requestSerializer.timeoutInterval = 6.f;
+            [manager.requestSerializer didChangeValueForKey:@"timeoutInterval"];
+            
+            NSString *url;
+            if ([NSString validateMobile:_phone]){
+                url = [NSString stringWithFormat:@"http://139.196.90.97:8080/coffee/util/smsCode?mobile=%@",_phone];
+                url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet characterSetWithCharactersInString:@"`#%^{}\"[]|\\<> "].invertedSet];
+            }else {
+                [NSObject showHudTipStr:LocalString(@"手机号码不正确")];
+                return NO;
+            }
+            
+            [manager POST:url parameters:nil progress:nil
+                  success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+                      NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableContainers|NSJSONReadingMutableLeaves error:nil];
+                      NSData * data = [NSJSONSerialization dataWithJSONObject:responseDic options:(NSJSONWritingOptions)0 error:nil];
+                      NSString * daetr = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
+                      NSLog(@"success:%@",daetr);
+                      if ([[responseDic objectForKey:@"errno"] intValue] == 0) {
+                          [NSObject showHudTipStr:LocalString(@"已向您的手机发送验证码")];
+                      }else{
+                          [NSObject showHudTipStr:[responseDic objectForKey:@"error"]];
+                      }
+                  } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+                      NSLog(@"Error:%@",error);
+                      [NSObject showHudTipStr:LocalString(@"操作失败")];
+                      
+                  }
+             ];
+            return YES;
         };
         return cell;
     }else{
@@ -136,14 +173,56 @@ static float HEIGHT_CELL = 50.f;
 
 #pragma mark - Actions
 - (void)login{
+    NSLog(@"%@",[[UIDevice currentDevice] identifierForVendor]);
     
+    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+    
+    //设置超时时间
+    [manager.requestSerializer willChangeValueForKey:@"timeoutInterval"];
+    manager.requestSerializer.timeoutInterval = 6.f;
+    [manager.requestSerializer didChangeValueForKey:@"timeoutInterval"];
+    
+    [manager.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+    
+    NSDictionary *parameters = @{@"mobile":_phone,@"code":_code,@"nowMobile":[[[UIDevice currentDevice] identifierForVendor] UUIDString]};
+    
+    [manager POST:@"http://139.196.90.97:8080/coffee/user/login/code" parameters:parameters progress:nil
+          success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+              NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableContainers|NSJSONReadingMutableLeaves error:nil];
+              NSData * data = [NSJSONSerialization dataWithJSONObject:responseDic options:(NSJSONWritingOptions)0 error:nil];
+              NSString * daetr = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
+              NSLog(@"success:%@",daetr);
+              if ([[responseDic objectForKey:@"errno"] intValue] == 0) {
+                  DataBase *db = [DataBase shareDataBase];
+                  NSDictionary *dic = [responseDic objectForKey:@"data"];
+                  db.userId = [[dic objectForKey:@"userId"] copy];
+                  db.token = [[dic objectForKey:@"token"] copy];
+                  [db initDB];
+                  if (![[dic objectForKey:@"lastMobile"] isEqualToString:[[[UIDevice currentDevice] identifierForVendor] UUIDString]]) {
+                      [db deleteAllTable];
+                      [db createTable];
+                  }
+                  MainViewController *mainVC = [[MainViewController alloc] init];
+                  [self presentViewController:mainVC animated:NO completion:nil];
+              }else{
+                  [NSObject showHudTipStr:LocalString(@"登录失败，请确认验证码")];
+              }
+          } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+              NSLog(@"Error:%@",error);
+              if (error.code == -1001) {
+                  [NSObject showHudTipStr:LocalString(@"当前网络状况不佳") withTime:1.5];
+              }
+          }];
+
 }
 
 - (void)textFieldChange{
-    if (![_code isEqualToString:@""] && ![_phone isEqualToString:@""]) {
+    if ([NSString validateMobile:_phone] && _code.length == 6) {
         [_loginBtn setBackgroundColor:[UIColor colorWithRed:71/255.0 green:120/255.0 blue:204/255.0 alpha:1]];
+        _loginBtn.enabled = YES;
     }else{
         [_loginBtn setBackgroundColor:[UIColor colorWithRed:71/255.0 green:120/255.0 blue:204/255.0 alpha:0.4]];
+        _loginBtn.enabled = NO;
     }
 }
 @end

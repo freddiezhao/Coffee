@@ -34,5 +34,7 @@
 @property (nonatomic) float defectGrade;//缺点分
 @property (nonatomic) float grade;//优点减缺点
 
+@property (nonatomic) NSRange searchRange;//用来改变搜索字体的颜色
+
 - (void)caculateGrade;
 @end

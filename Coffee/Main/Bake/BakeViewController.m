@@ -251,7 +251,7 @@
 
 - (UIView *)mainView{
     if (!_mainView) {
-        _mainView = [[UIView alloc] initWithFrame:CGRectMake(0, 210/HScale, ScreenWidth, 420/HScale)];
+        _mainView = [[UIView alloc] initWithFrame:CGRectMake(0, (ScreenHeight - 64 - tabbarHeight - 400/HScale + 154/HScale - 90/HScale), ScreenWidth, 400/HScale)];//154是控制按钮view高度，刚好把控制按钮隐藏，90是bottonview高度
         _mainView.layer.backgroundColor = [UIColor colorWithRed:255/255.0 green:255/255.0 blue:255/255.0 alpha:1].CGColor;
         _mainView.layer.cornerRadius = 16;
         _mainView.layer.shadowColor = [UIColor colorWithRed:0/255.0 green:0/255.0 blue:0/255.0 alpha:0.03].CGColor;
@@ -653,7 +653,7 @@
 
 - (UIView *)bottomView{
     if (!_bottomView) {
-        _bottomView = [[UIView alloc] initWithFrame:CGRectMake(0, 461/HScale, ScreenWidth, 110/HScale)];
+        _bottomView = [[UIView alloc] initWithFrame:CGRectMake(0, (ScreenHeight - 64 - tabbarHeight - 90/HScale), ScreenWidth, 90/HScale)];
         _bottomView.layer.backgroundColor = [UIColor colorWithRed:255/255.0 green:255/255.0 blue:255/255.0 alpha:1].CGColor;
         [self.view addSubview:_bottomView];
     }
@@ -748,14 +748,14 @@
         sender.tag = select;
         [UIView animateWithDuration:0.5 animations:^{
             CGSize size = _mainView.frame.size;
-            _mainView.frame = CGRectMake(0, 50/HScale, size.width, size.height);
+            _mainView.frame = CGRectMake(0, (ScreenHeight - 64 - tabbarHeight - 400/HScale - 90/HScale), size.width, size.height);//154是控制按钮view高度，刚好把控制按钮隐藏，90是bottonview高度
             [sender setImage:[UIImage imageNamed:@"btn_collapse"] forState:UIControlStateNormal];
         }];
     }else{
         sender.tag = unselect;
         [UIView animateWithDuration:0.5 animations:^{
             CGSize size = _mainView.frame.size;
-            _mainView.frame = CGRectMake(0, 210/HScale, size.width, size.height);
+            _mainView.frame = CGRectMake(0, (ScreenHeight - 64 - tabbarHeight - 400/HScale + 154/HScale - 90/HScale), size.width, size.height);//154是控制按钮view高度，刚好把控制按钮隐藏，90是bottonview高度
             [sender setImage:[UIImage imageNamed:@"btn_expand"] forState:UIControlStateNormal];
         }];
     }
@@ -816,6 +816,7 @@
 
 #pragma mark - kvo
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context{
+    NetWork *net = [NetWork shareNetWork];
     if ([keyPath isEqualToString:@"tempData"]) {
         NSMutableArray *data = [_myNet.recivedData68 copy];
         double tempOut = ([data[6] intValue] * 256 + [data[7] intValue]) / 10.0;
@@ -831,6 +832,9 @@
             _inTempLabel.text = [NSString stringWithFormat:@"%.1f℃",tempIn];
             _outTempLabel.text = [NSString stringWithFormat:@"%.1f℃",tempOut];
             _environTempLabel.text = [NSString stringWithFormat:@"%.1f℃",tempEnvironment];
+            if (net.BeanArr.count > 5) {
+                _beanTempRateLabel.text = [NSString stringWithFormat:@"%.1f℃/min",[net.BeanArr[net.BeanArr.count-1] doubleValue] - [net.BeanArr[net.BeanArr.count-6] doubleValue]];
+            }
         });
         
     }else if ([keyPath isEqualToString:@"powerStatus"]){

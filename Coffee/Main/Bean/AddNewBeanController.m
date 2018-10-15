@@ -510,6 +510,8 @@ static float HEIGHT_HEADER = 36.f;
         [NSObject showHudTipStr:LocalString(@"名字不能为空")];
         return;
     }
+    [self checkBeanInfo];
+
     [SVProgressHUD show];
     AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
     
@@ -546,14 +548,14 @@ static float HEIGHT_HEADER = 36.f;
 
             }
         }else{
-            [NSObject showHudTipStr:LocalString(@"生豆信息插入服务器失败")];
+            [NSObject showHudTipStr:LocalString(@"生豆信息添加服务器失败")];
         }
         dispatch_async(dispatch_get_main_queue(), ^{
             [SVProgressHUD dismiss];
         });
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         NSLog(@"Error:%@",error);
-        [NSObject showHudTipStr:LocalString(@"生豆信息插入服务器失败")];
+        [NSObject showHudTipStr:LocalString(@"生豆信息添加服务器失败")];
         dispatch_async(dispatch_get_main_queue(), ^{
             [SVProgressHUD dismiss];
         });
@@ -561,4 +563,42 @@ static float HEIGHT_HEADER = 36.f;
     
 }
 
+- (void)checkBeanInfo{
+    if (!_myBean.nation) {
+        _myBean.nation = @"";
+    }
+    if (!_myBean.area) {
+        _myBean.area = @"";
+    }
+    if (!_myBean.stock) {
+        _myBean.stock = 0;
+    }
+    if (!_myBean.manor) {
+        _myBean.manor = @"";
+    }
+    if (!_myBean.supplier) {
+        _myBean.supplier = @"";
+    }
+    if (!_myBean.water) {
+        _myBean.water = 0;
+    }
+    if (!_myBean.altitude) {
+        _myBean.altitude = 0;
+    }
+    if (!_myBean.price) {
+        _myBean.price = 0;
+    }
+    if (!_myBean.beanSpecies) {
+        _myBean.beanSpecies = @"";
+    }
+    if (!_myBean.grade) {
+        _myBean.grade = @"";
+    }
+    if (!_myBean.process) {
+        _myBean.process = @"";
+    }
+    if (!_myBean.time) {
+        _myBean.time = [NSDate date];
+    }
+}
 @end

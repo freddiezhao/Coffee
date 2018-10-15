@@ -646,7 +646,7 @@ static float HEIGHT_HEADER = 36.f;
                 cell.yVals_Out = _yVals_Out;
                 cell.yVals_Bean = _yVals_Bean;
                 cell.yVals_Environment = _yVals_Environment;
-                //cell.yVals_Diff = _yVals_Diff;
+                cell.yVals_Diff = _yVals_Diff;
                 [cell setDataValue];
             }
             return cell;
@@ -736,7 +736,7 @@ static float HEIGHT_HEADER = 36.f;
         for (int i = 0; i<Environment.count; i++) {
             [_yVals_Environment addObject:[[ChartDataEntry alloc] initWithX:i y:[Environment[i] doubleValue]]];
         }
-        //_yVals_Diff = [curveDic objectForKey:@"diff"];
+        _yVals_Diff = [[NetWork shareNetWork] getBeanTempRorWithArr:[Bean mutableCopy]];
     }
     [self queryBeanInfo];
 }

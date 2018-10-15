@@ -652,7 +652,7 @@ NSString *const CellIdentifier_cupAddBadScore = @"CellID_cupAddBadScore";
                 cell.yVals_Out = _yVals_Out;
                 cell.yVals_Bean = _yVals_Bean;
                 cell.yVals_Environment = _yVals_Environment;
-                //cell.yVals_Diff = _yVals_Diff;
+                cell.yVals_Diff = _yVals_Diff;
                 [cell setDataValue];
             }
             return cell;
@@ -742,7 +742,7 @@ NSString *const CellIdentifier_cupAddBadScore = @"CellID_cupAddBadScore";
         for (int i = 0; i<Environment.count; i++) {
             [_yVals_Environment addObject:[[ChartDataEntry alloc] initWithX:i y:[Environment[i] doubleValue]]];
         }
-        //_yVals_Diff = [curveDic objectForKey:@"diff"];
+        _yVals_Diff = [[NetWork shareNetWork] getBeanTempRorWithArr:[Bean mutableCopy]];
     }
     [self queryBeanInfo];
 }
@@ -807,14 +807,14 @@ NSString *const CellIdentifier_cupAddBadScore = @"CellID_cupAddBadScore";
                       }
                   }
               }else{
-                  [NSObject showHudTipStr:LocalString(@"杯测信息插入服务器失败")];
+                  [NSObject showHudTipStr:LocalString(@"杯测信息添加服务器失败")];
               }
               dispatch_async(dispatch_get_main_queue(), ^{
                   [SVProgressHUD dismiss];
               });
           } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
               NSLog(@"Error:%@",error);
-              [NSObject showHudTipStr:LocalString(@"杯测信息插入服务器失败")];
+              [NSObject showHudTipStr:LocalString(@"杯测信息添加服务器失败")];
               dispatch_async(dispatch_get_main_queue(), ^{
                   [SVProgressHUD dismiss];
               });
