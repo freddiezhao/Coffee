@@ -20,6 +20,5 @@
 @property (nonatomic, assign) NSInteger tempRateSmooth;
 @property (nonatomic, strong) NSString *curveColorJson;
 @property (nonatomic, strong) NSString *language;
-@property (nonatomic) BOOL isInit;
 
 @end

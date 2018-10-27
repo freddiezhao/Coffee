@@ -37,7 +37,6 @@ NSString *const CellIdentifier_GeneralLR = @"CellID_GeneralLR";
 //    if (_myData.setting.isInit) {
 //        [self getSettingByApi];
 //    }
-    [self getSettingByApi];
 }
 
 - (void)viewWillAppear:(BOOL)animated{
@@ -344,95 +343,6 @@ NSString *const CellIdentifier_GeneralLR = @"CellID_GeneralLR";
 }
 
 #pragma mark - DataSource
-- (void)getSettingByApi{
-    [SVProgressHUD show];
-    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
-    
-    [manager.requestSerializer willChangeValueForKey:@"timeoutInterval"];
-    manager.requestSerializer.timeoutInterval = 4.f;
-    [manager.requestSerializer didChangeValueForKey:@"timeoutInterval"];
-
-    NSString *url = [NSString stringWithFormat:@"http://139.196.90.97:8080/coffee/setting"];
-    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet characterSetWithCharactersInString:@"`#%^{}\"[]|\\<> "].invertedSet];
-    
-    NSLog(@"%@",[DataBase shareDataBase].userId);
-    [manager.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
-    [manager.requestSerializer setValue:[DataBase shareDataBase].userId forHTTPHeaderField:@"userId"];
-    [manager.requestSerializer setValue:[NSString stringWithFormat:@"bearer %@",[DataBase shareDataBase].token] forHTTPHeaderField:@"Authorization"];
-    [manager GET:url parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableContainers|NSJSONReadingMutableLeaves error:nil];
-        NSData * data = [NSJSONSerialization dataWithJSONObject:responseDic options:(NSJSONWritingOptions)0 error:nil];
-        NSString * daetr = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
-        NSLog(@"success:%@",daetr);
-        
-        if ([[responseDic objectForKey:@"errno"] intValue] == 0) {
-            if ([responseDic objectForKey:@"data"]) {
-                NSDictionary *settingDic = [responseDic objectForKey:@"data"];
-                if (settingDic == nil) {
-        
-                }else{
-                    _myData.setting.weightUnit = [settingDic objectForKey:@"weightUnit"];
-                    _myData.setting.tempUnit = [settingDic objectForKey:@"tempUnit"];
-                    _myData.setting.bakeChromaReferStandard = [settingDic objectForKey:@"roasterChroma"];
-                    _myData.setting.timeAxis = [[settingDic objectForKey:@"temer"] integerValue];
-                    _myData.setting.tempAxis = [[settingDic objectForKey:@"temp"] integerValue];
-                    _myData.setting.tempCurveSmooth = [[settingDic objectForKey:@"tempCurveSmooth"] integerValue];
-                    _myData.setting.tempRateSmooth = [[settingDic objectForKey:@"tempRateSmooth"] integerValue];
-                    _myData.setting.language = [settingDic objectForKey:@"language"];
-                    [_myData deleteSetting];//删除之前可能存在的设置
-                    if (![_myData insertSetting]) {
-                        [NSObject showHudTipStr:@"通用设置本地同步失败"];
-                    }
-                }
-            }
-        }else{
-            [self addSettingByApi];
-        }
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [SVProgressHUD dismiss];
-        });
-    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        NSLog(@"Error:%@",error);
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [SVProgressHUD dismiss];
-            [NSObject showHudTipStr:@"从服务器获取通用设置信息失败"];
-        });
-    }];
-}
-
-- (void)addSettingByApi{
-    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
-    
-    [manager.requestSerializer willChangeValueForKey:@"timeoutInterval"];
-    manager.requestSerializer.timeoutInterval = 4.f;
-    [manager.requestSerializer didChangeValueForKey:@"timeoutInterval"];
-    
-    NSString *url = [NSString stringWithFormat:@"http://139.196.90.97:8080/coffee/setting"];
-    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet characterSetWithCharactersInString:@"`#%^{}\"[]|\\<> "].invertedSet];
-    
-    [manager.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
-    [manager.requestSerializer setValue:[DataBase shareDataBase].userId forHTTPHeaderField:@"userId"];
-    [manager.requestSerializer setValue:[NSString stringWithFormat:@"bearer %@",[DataBase shareDataBase].token] forHTTPHeaderField:@"Authorization"];
-    
-    NSDictionary *parameters = @{@"weightUnit":_myData.setting.weightUnit,@"tempUnit":_myData.setting.tempUnit,@"roasterChroma":_myData.setting.bakeChromaReferStandard,@"timer":[NSNumber numberWithInteger:_myData.setting.timeAxis],@"temp":[NSNumber numberWithInteger:_myData.setting.tempAxis],@"tempCurveSmooth":[NSNumber numberWithInteger:_myData.setting.tempCurveSmooth],@"tempRateSmooth":[NSNumber numberWithInteger:_myData.setting.tempRateSmooth],@"language":_myData.setting.language};
-    
-    [manager POST:url parameters:parameters progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableContainers|NSJSONReadingMutableLeaves error:nil];
-        NSData * data = [NSJSONSerialization dataWithJSONObject:responseDic options:(NSJSONWritingOptions)0 error:nil];
-        NSString * daetr = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
-        NSLog(@"%@",daetr);
-        if ([[responseDic objectForKey:@"errno"] intValue] == 0) {
-            [_myData insertSetting];
-        }else{
-            [NSObject showHudTipStr:[responseDic objectForKey:@"error"]];
-        }
-    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        
-    }];
-    
-}
-
 - (void)updateSetting{
     [SVProgressHUD show];
     AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];

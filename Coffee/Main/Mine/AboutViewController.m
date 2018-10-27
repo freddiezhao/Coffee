@@ -54,6 +54,7 @@
         _info.textAlignment = NSTextAlignmentLeft;
         _info.scrollEnabled = NO;
         _info.autoresizingMask = UIViewAutoresizingFlexibleHeight;
+        _info.editable = NO;
         [self.view addSubview:_info];
         [_info mas_makeConstraints:^(MASConstraintMaker *make) {
             make.size.mas_equalTo(CGSizeMake(345/WScale, 170/HScale));

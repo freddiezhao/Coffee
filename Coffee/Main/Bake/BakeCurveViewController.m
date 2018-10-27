@@ -15,11 +15,12 @@
 #import "EventModel.h"
 #import "LeftFuncController.h"
 #import "RightFuncController.h"
+#import "ReportModel.h"
 
 
 #define buttonHeight 30
 
-@interface BakeCurveViewController () <ChartViewDelegate>
+@interface BakeCurveViewController () <ChartViewDelegate,IChartAxisValueFormatter>
 
 @property (nonatomic, strong) LineChartView *chartView;
 
@@ -32,18 +33,35 @@
 @property (nonatomic, strong) UILabel *outTempLabel;
 @property (nonatomic, strong) UILabel *environTempLabel;
 @property (nonatomic, strong) UILabel *beanTempRateLabel;
+
+//温度颜色圆圈
+@property (nonatomic, strong) UIView *view1;
+@property (nonatomic, strong) UIView *view2;
+@property (nonatomic, strong) UIView *view3;
+@property (nonatomic, strong) UIView *view4;
+@property (nonatomic, strong) UIView *view5;
+
 @property (nonatomic, strong) UIButton *leftPopBtn;
 @property (nonatomic, strong) UIButton *rightPopBtn;
 @property (nonatomic, strong) UIButton *backBtn;
 
 @property (nonatomic, strong) NetWork *myNet;
 
+@property (nonatomic, strong) NSMutableArray *rela_Bean;
+@property (nonatomic, strong) NSMutableArray *rela_In;
+@property (nonatomic, strong) NSMutableArray *rela_Out;
+@property (nonatomic, strong) NSMutableArray *rela_Diff;
+@property (nonatomic, strong) NSMutableArray *rela_Environment;
+
 @end
 
 @implementation BakeCurveViewController
 {
     double leftAxisMax;
+    NSInteger xAxisMax;
+    
 }
+static BOOL isRelaOn = NO;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -66,6 +84,8 @@
     _rightPopBtn = [self rightPopBtn];
     _backBtn = [self backBtn];
     [self uiMasonry];
+    [self setRelaCurve];
+    [self setDataValue];
     
     [_myNet addObserver:self forKeyPath:@"tempData" options:NSKeyValueObservingOptionNew context:nil];
     [_myNet addObserver:self forKeyPath:@"timerValue" options:NSKeyValueObservingOptionNew context:nil];
@@ -94,18 +114,22 @@
 - (LineChartView *)chartView{
     if (!_chartView) {
         _chartView = [[LineChartView alloc] init];
-        _chartView.frame = CGRectMake(45/HScale, 87/WScale, ScreenHeight - 87/HScale, ScreenWidth - 100/WScale);
+        if (kDevice_Is_iPhoneX) {
+            _chartView.frame = CGRectMake((45+44)/HScale, 87/WScale, ScreenHeight - 87/HScale  - 44/WScale, ScreenWidth - 100/WScale);
+        }else{
+            _chartView.frame = CGRectMake(45/HScale, 87/WScale, ScreenHeight - 87/HScale, ScreenWidth - 100/WScale);
+        }
         [self.view addSubview:_chartView];
         
         UILabel *leftLabel = [[UILabel alloc] init];
-        leftLabel.text = LocalString(@"(℃)");
+        leftLabel.text = [DataBase shareDataBase].setting.tempUnit;
         leftLabel.font = [UIFont fontWithName:@"PingFangSC-Light" size:12];
         leftLabel.textColor = [UIColor colorWithRed:184/255.0 green:190/255.0 blue:204/255.0 alpha:1];
         leftLabel.textAlignment = NSTextAlignmentCenter;
         [self.view addSubview:leftLabel];
 
         UILabel *rightLabel = [[UILabel alloc] init];
-        rightLabel.text = LocalString(@"(℃/min)");
+        rightLabel.text = [NSString stringWithFormat:@"%@/min",[DataBase shareDataBase].setting.tempUnit];
         rightLabel.font = [UIFont fontWithName:@"PingFangSC-Light" size:12];
         rightLabel.textColor = [UIColor colorWithRed:184/255.0 green:190/255.0 blue:204/255.0 alpha:1];
         rightLabel.textAlignment = NSTextAlignmentCenter;
@@ -151,7 +175,7 @@
         _chartView.backgroundColor = [UIColor clearColor];
         
         
-        //_chartView.legend.enabled = NO;//不显示图例说明
+        _chartView.legend.enabled = NO;//不显示图例说明
         ChartLegend *l = _chartView.legend;
         l.form = ChartLegendFormLine;
         l.font = [UIFont fontWithName:@"HelveticaNeue-Light" size:11.f];
@@ -166,17 +190,23 @@
         xAxis.labelTextColor = [UIColor colorWithRed:184/255.0 green:190/255.0 blue:204/255.0 alpha:1];
         xAxis.drawGridLinesEnabled = NO;
         xAxis.drawAxisLineEnabled = NO;
+        xAxis.granularityEnabled = YES;
         xAxis.labelPosition = XAxisLabelPositionBottom;
-        //xAxis.axisRange = 30;
-        //xAxis.granularityEnabled = YES;
-        //xAxis.granularity = 10.0;
+        xAxis.valueFormatter = self;
+        xAxis.axisMinimum = 0;
+        xAxis.axisMaximum = 60 * [DataBase shareDataBase].setting.timeAxis;
+        [xAxis setLabelCount:[DataBase shareDataBase].setting.timeAxis + 1];
+        xAxisMax = [DataBase shareDataBase].setting.timeAxis;
+        xAxis.axisRange = 60 * [DataBase shareDataBase].setting.timeAxis;
+        xAxis.granularity = 60;
+        [_chartView setVisibleXRangeWithMinXRange:60 maxXRange:UI_IS_IPHONE5?500:600];//修改缩小放大最多显示数量
         
         
         ChartYAxis *leftAxis = _chartView.leftAxis;
         leftAxis.labelTextColor = [UIColor colorWithRed:184/255.0 green:190/255.0 blue:204/255.0 alpha:1];
         leftAxis.labelFont = [UIFont fontWithName:@"Avenir-Light" size:12];
-        leftAxis.axisMaximum = 300 - 0.5;
-        leftAxisMax = 300 - 0.5;
+        leftAxis.axisMaximum = [DataBase shareDataBase].setting.tempAxis - 0.5;
+        leftAxisMax = [DataBase shareDataBase].setting.tempAxis - 0.5;
         leftAxis.axisMinimum = 0.0;
         leftAxis.spaceTop = 30.f;
         leftAxis.drawGridLinesEnabled = YES;
@@ -189,7 +219,7 @@
         ChartYAxis *rightAxis = _chartView.rightAxis;
         rightAxis.labelFont = [UIFont fontWithName:@"Avenir-Light" size:12];
         rightAxis.labelTextColor = [UIColor colorWithRed:184/255.0 green:190/255.0 blue:204/255.0 alpha:1];
-        rightAxis.axisMaximum = 50;
+        rightAxis.axisMaximum = 30;
         rightAxis.axisMinimum = 0;
         rightAxis.drawGridLinesEnabled = NO;
         rightAxis.granularityEnabled = NO;
@@ -255,7 +285,7 @@
         _beanTempLabel = [[UILabel alloc] init];
         _beanTempLabel.textAlignment = NSTextAlignmentLeft;
         _beanTempLabel.font = [UIFont fontWithName:@"PingFangSC-Light" size:13];
-        _beanTempLabel.text = @"0.0℃";
+        _beanTempLabel.text = [NSString stringWithFormat:@"0.0%@",[DataBase shareDataBase].setting.tempUnit];
         _beanTempLabel.textColor = [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1];
         _beanTempLabel.adjustsFontSizeToFitWidth = YES;
         [self.view addSubview:_beanTempLabel];
@@ -268,7 +298,7 @@
         _inTempLabel = [[UILabel alloc] init];
         _inTempLabel.textAlignment = NSTextAlignmentLeft;
         _inTempLabel.font = [UIFont fontWithName:@"PingFangSC-Light" size:13];
-        _inTempLabel.text = @"0.0℃";
+        _inTempLabel.text = [NSString stringWithFormat:@"0.0%@",[DataBase shareDataBase].setting.tempUnit];
         _inTempLabel.textColor = [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1];
         _inTempLabel.adjustsFontSizeToFitWidth = YES;
         [self.view addSubview:_inTempLabel];
@@ -281,7 +311,7 @@
         _outTempLabel = [[UILabel alloc] init];
         _outTempLabel.textAlignment = NSTextAlignmentLeft;
         _outTempLabel.font = [UIFont fontWithName:@"PingFangSC-Light" size:13];
-        _outTempLabel.text = @"0.0℃";
+        _outTempLabel.text = [NSString stringWithFormat:@"0.0%@",[DataBase shareDataBase].setting.tempUnit];
         _outTempLabel.textColor = [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1];
         _outTempLabel.adjustsFontSizeToFitWidth = YES;
         [self.view addSubview:_outTempLabel];
@@ -294,7 +324,7 @@
         _environTempLabel = [[UILabel alloc] init];
         _environTempLabel.textAlignment = NSTextAlignmentLeft;
         _environTempLabel.font = [UIFont fontWithName:@"PingFangSC-Light" size:13];
-        _environTempLabel.text = @"0.0℃";
+        _environTempLabel.text = [NSString stringWithFormat:@"0.0%@",[DataBase shareDataBase].setting.tempUnit];
         _environTempLabel.textColor = [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1];
         _environTempLabel.adjustsFontSizeToFitWidth = YES;
         [self.view addSubview:_environTempLabel];
@@ -307,7 +337,7 @@
         _beanTempRateLabel = [[UILabel alloc] init];
         _beanTempRateLabel.textAlignment = NSTextAlignmentLeft;
         _beanTempRateLabel.font = [UIFont fontWithName:@"PingFangSC-Light" size:13];
-        _beanTempRateLabel.text = @"0.0℃/min";
+        _beanTempRateLabel.text = [NSString stringWithFormat:@"0.0%@/min",[DataBase shareDataBase].setting.tempUnit];
         _beanTempRateLabel.textColor = [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1];
         _beanTempRateLabel.adjustsFontSizeToFitWidth = YES;
         [self.view addSubview:_beanTempRateLabel];
@@ -318,7 +348,8 @@
 - (UIButton *)leftPopBtn{
     if (!_leftPopBtn) {
         _leftPopBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        [_leftPopBtn setImage:[UIImage imageNamed:@"btn_expand3"] forState:UIControlStateNormal];
+        [_leftPopBtn setImage:[UIImage imageNamed:@"btn_expand2"] forState:UIControlStateNormal];
+        _leftPopBtn.alpha = 0.6;
         [_leftPopBtn addTarget:self action:@selector(popLeftControlView) forControlEvents:UIControlEventTouchUpInside];
         [self.view addSubview:_leftPopBtn];
     }
@@ -328,7 +359,7 @@
 - (UIButton *)rightPopBtn{
     if (!_rightPopBtn) {
         _rightPopBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        [_rightPopBtn setImage:[UIImage imageNamed:@"btn_expand2"] forState:UIControlStateNormal];
+        [_rightPopBtn setImage:[UIImage imageNamed:@"btn_expand3"] forState:UIControlStateNormal];
         [_rightPopBtn addTarget:self action:@selector(popRightControlView) forControlEvents:UIControlEventTouchUpInside];
         [self.view addSubview:_rightPopBtn];
     }
@@ -376,11 +407,15 @@
     beanTempLabelL.textColor = [UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1];
     [self.view addSubview:beanTempLabelL];
     
-    UIView *view1 = [[UIView alloc] init];
-    view1.frame = CGRectMake(282/HScale,17/WScale,5/HScale,5/WScale);
-    view1.backgroundColor = [UIColor colorWithRed:71/255.0 green:120/255.0 blue:204/255.0 alpha:1];
-    view1.layer.cornerRadius = 2.5f/WScale;
-    [self.view addSubview:view1];
+    _view1 = [[UIView alloc] init];
+    if (kDevice_Is_iPhoneX) {
+        _view1.frame = CGRectMake((282+44)/HScale,17/WScale,5/HScale,5/WScale);
+    }else{
+        _view1.frame = CGRectMake(282/HScale,17/WScale,5/HScale,5/WScale);
+    }
+    _view1.backgroundColor = [UIColor colorWithRed:71/255.0 green:120/255.0 blue:204/255.0 alpha:1];
+    _view1.layer.cornerRadius = 2.5f/WScale;
+    [self.view addSubview:_view1];
     
     UILabel *inTempLabelL = [[UILabel alloc] init];
     inTempLabelL.textAlignment = NSTextAlignmentLeft;
@@ -389,11 +424,15 @@
     inTempLabelL.textColor = [UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1];
     [self.view addSubview:inTempLabelL];
     
-    UIView *view2 = [[UIView alloc] init];
-    view2.frame = CGRectMake(357/HScale,17/WScale,5/HScale,5/WScale);
-    view2.backgroundColor = [UIColor colorWithRed:123/255.0 green:179/255.0 blue:64/255.0 alpha:1];
-    view2.layer.cornerRadius = 2.5f/WScale;
-    [self.view addSubview:view2];
+    _view2 = [[UIView alloc] init];
+    if (kDevice_Is_iPhoneX) {
+        _view2.frame = CGRectMake((357+44)/HScale,17/WScale,5/HScale,5/WScale);
+    }else{
+        _view2.frame = CGRectMake(357/HScale,17/WScale,5/HScale,5/WScale);
+    }
+    _view2.backgroundColor = [UIColor colorWithRed:123/255.0 green:179/255.0 blue:64/255.0 alpha:1];
+    _view2.layer.cornerRadius = 2.5f/WScale;
+    [self.view addSubview:_view2];
     
     UILabel *outTempLabelL = [[UILabel alloc] init];
     outTempLabelL.textAlignment = NSTextAlignmentLeft;
@@ -402,11 +441,15 @@
     outTempLabelL.textColor = [UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1];
     [self.view addSubview:outTempLabelL];
     
-    UIView *view3 = [[UIView alloc] init];
-    view3.frame = CGRectMake(432/HScale,17/WScale,5/HScale,5/WScale);
-    view3.backgroundColor = [UIColor colorWithRed:80/255.0 green:227/255.0 blue:194/255.0 alpha:1];
-    view3.layer.cornerRadius = 2.5f/WScale;
-    [self.view addSubview:view3];
+    _view3 = [[UIView alloc] init];
+    if (kDevice_Is_iPhoneX) {
+        _view3.frame = CGRectMake((432+44)/HScale,17/WScale,5/HScale,5/WScale);
+    }else{
+        _view3.frame = CGRectMake(432/HScale,17/WScale,5/HScale,5/WScale);
+    }
+    _view3.backgroundColor = [UIColor colorWithRed:80/255.0 green:227/255.0 blue:194/255.0 alpha:1];
+    _view3.layer.cornerRadius = 2.5f/WScale;
+    [self.view addSubview:_view3];
     
     UILabel *environTempLabelL = [[UILabel alloc] init];
     environTempLabelL.textAlignment = NSTextAlignmentLeft;
@@ -415,11 +458,15 @@
     environTempLabelL.textColor = [UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1];
     [self.view addSubview:environTempLabelL];
     
-    UIView *view4 = [[UIView alloc] init];
-    view4.frame = CGRectMake(507/HScale,17/WScale,5/HScale,5/WScale);
-    view4.backgroundColor = [UIColor colorWithRed:245/255.0 green:166/255.0 blue:35/255.0 alpha:1];
-    view4.layer.cornerRadius = 2.5f/WScale;
-    [self.view addSubview:view4];
+    _view4 = [[UIView alloc] init];
+    if (kDevice_Is_iPhoneX) {
+        _view4.frame = CGRectMake((507+44)/HScale,17/WScale,5/HScale,5/WScale);
+    }else{
+        _view4.frame = CGRectMake(507/HScale,17/WScale,5/HScale,5/WScale);
+    }
+    _view4.backgroundColor = [UIColor colorWithRed:245/255.0 green:166/255.0 blue:35/255.0 alpha:1];
+    _view4.layer.cornerRadius = 2.5f/WScale;
+    [self.view addSubview:_view4];
     
     UILabel *beanTempRateLabelL = [[UILabel alloc] init];
     beanTempRateLabelL.textAlignment = NSTextAlignmentLeft;
@@ -428,21 +475,34 @@
     beanTempRateLabelL.textColor = [UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1];
     [self.view addSubview:beanTempRateLabelL];
     
-    UIView *view5 = [[UIView alloc] init];
-    view5.frame = CGRectMake(582/HScale,17/WScale,5/HScale,5/WScale);
-    view5.backgroundColor = [UIColor colorWithRed:255/255.0 green:71/255.0 blue:51/255.0 alpha:1];
-    view5.layer.cornerRadius = 2.5f/WScale;
-    [self.view addSubview:view5];
+    _view5 = [[UIView alloc] init];
+    if (kDevice_Is_iPhoneX) {
+        _view5.frame = CGRectMake((582+44)/HScale,17/WScale,5/HScale,5/WScale);
+    }else{
+        _view5.frame = CGRectMake(582/HScale,17/WScale,5/HScale,5/WScale);
+    }
+    _view5.backgroundColor = [UIColor colorWithRed:255/255.0 green:71/255.0 blue:51/255.0 alpha:1];
+    _view5.layer.cornerRadius = 2.5f/WScale;
+    [self.view addSubview:_view5];
+    
     
     [bakeTimeL mas_makeConstraints:^(MASConstraintMaker *make) {
         make.size.mas_equalTo(CGSizeMake(48/HScale, 13/WScale));
         make.top.mas_equalTo(self.view.mas_top).offset(13/WScale);
-        make.left.mas_equalTo(self.view.mas_left).offset(47/HScale);
+        if (kDevice_Is_iPhoneX) {
+            make.left.mas_equalTo(self.view.mas_left).offset((47+44)/HScale);
+        }else{
+            make.left.mas_equalTo(self.view.mas_left).offset(47/HScale);
+        }
     }];
     [_bakeTime mas_makeConstraints:^(MASConstraintMaker *make) {
         make.size.mas_equalTo(CGSizeMake(36/HScale, 13/WScale));
         make.top.mas_equalTo(bakeTimeL.mas_bottom).offset(8/WScale);
-        make.left.mas_equalTo(self.view.mas_left).offset(47/HScale);
+        if (kDevice_Is_iPhoneX) {
+            make.left.mas_equalTo(self.view.mas_left).offset((47+44)/HScale);
+        }else{
+            make.left.mas_equalTo(self.view.mas_left).offset(47/HScale);
+        }
     }];
     
     [developTimeL mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -534,7 +594,11 @@
     
     [_leftPopBtn mas_makeConstraints:^(MASConstraintMaker *make) {
         make.size.mas_equalTo(CGSizeMake(32/WScale, 32/WScale));
-        make.left.equalTo(self.view.mas_left);
+        if (@available(iOS 11.0,*)) {
+            make.left.equalTo(self.view.mas_safeAreaLayoutGuideLeft);
+        }else{
+            make.left.equalTo(self.view.mas_left);
+        }
         make.centerY.equalTo(self.view.mas_centerY);
     }];
     [_rightPopBtn mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -545,35 +609,55 @@
     
     //用来点击隐藏曲线，覆盖在温度文字上面
     UIButton *beanBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    beanBtn.frame = CGRectMake(272/HScale,0,75/HScale,60/WScale);
+    if (kDevice_Is_iPhoneX) {
+        beanBtn.frame = CGRectMake((272+44)/HScale,0,75/HScale,60/WScale);
+    }else{
+        beanBtn.frame = CGRectMake(272/HScale,0,75/HScale,60/WScale);
+    }
     [beanBtn setBackgroundColor:[UIColor clearColor]];
     [beanBtn addTarget:self action:@selector(beanCurveAction:) forControlEvents:UIControlEventTouchUpInside];
     beanBtn.tag = unselect;
     [self.view addSubview:beanBtn];
     
     UIButton *inBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    inBtn.frame = CGRectMake(347/HScale,0,75/HScale,60/WScale);
+    if (kDevice_Is_iPhoneX) {
+        inBtn.frame = CGRectMake((347+44)/HScale,0,75/HScale,60/WScale);
+    }else{
+        inBtn.frame = CGRectMake(347/HScale,0,75/HScale,60/WScale);
+    }
     [inBtn setBackgroundColor:[UIColor clearColor]];
     [inBtn addTarget:self action:@selector(inCurveAction:) forControlEvents:UIControlEventTouchUpInside];
     inBtn.tag = unselect;
     [self.view addSubview:inBtn];
     
     UIButton *outBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    outBtn.frame = CGRectMake(422/HScale,0,75/HScale,60/WScale);
+    if (kDevice_Is_iPhoneX) {
+        outBtn.frame = CGRectMake((422+44)/HScale,0,75/HScale,60/WScale);
+    }else{
+        outBtn.frame = CGRectMake(422/HScale,0,75/HScale,60/WScale);
+    }
     [outBtn setBackgroundColor:[UIColor clearColor]];
     [outBtn addTarget:self action:@selector(outCurveAction:) forControlEvents:UIControlEventTouchUpInside];
     outBtn.tag = unselect;
     [self.view addSubview:outBtn];
     
     UIButton *environBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    environBtn.frame = CGRectMake(497/HScale,0,75/HScale,60/WScale);
+    if (kDevice_Is_iPhoneX) {
+        environBtn.frame = CGRectMake((497+44)/HScale,0,75/HScale,60/WScale);
+    }else{
+        environBtn.frame = CGRectMake(497/HScale,0,75/HScale,60/WScale);
+    }
     [environBtn setBackgroundColor:[UIColor clearColor]];
     [environBtn addTarget:self action:@selector(environCurveAction:) forControlEvents:UIControlEventTouchUpInside];
     environBtn.tag = unselect;
     [self.view addSubview:environBtn];
     
     UIButton *upTempBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    upTempBtn.frame = CGRectMake(572/HScale,0,75/HScale,60/WScale);
+    if (kDevice_Is_iPhoneX) {
+        upTempBtn.frame = CGRectMake((572+44)/HScale,0,75/HScale,60/WScale);
+    }else{
+        upTempBtn.frame = CGRectMake(572/HScale,0,75/HScale,60/WScale);
+    }
     [upTempBtn setBackgroundColor:[UIColor clearColor]];
     [upTempBtn addTarget:self action:@selector(upTempCurveAction:) forControlEvents:UIControlEventTouchUpInside];
     upTempBtn.tag = unselect;
@@ -610,11 +694,33 @@
     lfVC.modalPresentationStyle = UIModalPresentationOverCurrentContext;
     lfVC.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
     [self presentViewController:lfVC animated:YES completion:nil];
-
 }
 
 - (void)popRightControlView{
     RightFuncController *rfVC = [[RightFuncController alloc] init];
+    rfVC.isRelaOn = isRelaOn;
+    rfVC.relaSwitch = ^(BOOL isOn) {
+        LineChartDataSet *rela1 = (LineChartDataSet *)_chartView.data.dataSets[5];
+        LineChartDataSet *rela2 = (LineChartDataSet *)_chartView.data.dataSets[6];
+        LineChartDataSet *rela3 = (LineChartDataSet *)_chartView.data.dataSets[7];
+        LineChartDataSet *rela4 = (LineChartDataSet *)_chartView.data.dataSets[8];
+        LineChartDataSet *rela5 = (LineChartDataSet *)_chartView.data.dataSets[9];
+        isRelaOn = isOn;
+        if (isOn) {
+            NSLog(@"sdf");
+            rela1.visible = YES;
+            rela2.visible = YES;
+            rela3.visible = YES;
+            rela4.visible = YES;
+            rela5.visible = YES;
+        }else{
+            rela1.visible = NO;
+            rela2.visible = NO;
+            rela3.visible = NO;
+            rela4.visible = NO;
+            rela5.visible = NO;
+        }
+    };
     rfVC.modalPresentationStyle = UIModalPresentationOverCurrentContext;
     rfVC.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
     [self presentViewController:rfVC animated:YES completion:nil];
@@ -628,41 +734,47 @@
     if (sender.tag == unselect) {
         set3.visible = NO;
         sender.tag = select;
+        _view1.backgroundColor = [UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1];
     }else if(sender.tag == select){
         set3.visible = YES;
         sender.tag = unselect;
+        _view1.backgroundColor = [UIColor colorWithRed:71/255.0 green:120/255.0 blue:204/255.0 alpha:1];
     }
-    [self setDataValue:nil];
+    [self setDataValue];
 }
 
 - (void)inCurveAction:(UIButton *)sender{
-    if (_chartView.data.dataSets.count < 2) {
-        return;
-    }
-    LineChartDataSet *set2 = (LineChartDataSet *)_chartView.data.dataSets[1];
-    if (sender.tag == unselect) {
-        set2.visible = NO;
-        sender.tag = select;
-    }else{
-        set2.visible = YES;
-        sender.tag = unselect;
-    }
-    [self setDataValue:nil];
-}
-
-- (void)outCurveAction:(UIButton *)sender{
     if (_chartView.data.dataSets.count < 1) {
         return;
     }
-    LineChartDataSet *set1 = (LineChartDataSet *)_chartView.data.dataSets[0];
+    LineChartDataSet *set2 = (LineChartDataSet *)_chartView.data.dataSets[0];
+    if (sender.tag == unselect) {
+        set2.visible = NO;
+        sender.tag = select;
+        _view2.backgroundColor = [UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1];
+    }else{
+        set2.visible = YES;
+        sender.tag = unselect;
+        _view2.backgroundColor = [UIColor colorWithRed:123/255.0 green:179/255.0 blue:64/255.0 alpha:1];
+    }
+    [self setDataValue];
+}
+
+- (void)outCurveAction:(UIButton *)sender{
+    if (_chartView.data.dataSets.count < 2) {
+        return;
+    }
+    LineChartDataSet *set1 = (LineChartDataSet *)_chartView.data.dataSets[1];
     if (sender.tag == unselect) {
         set1.visible = NO;
         sender.tag = select;
+        _view3.backgroundColor = [UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1];
     }else{
         set1.visible = YES;
         sender.tag = unselect;
+        _view3.backgroundColor = [UIColor colorWithRed:80/255.0 green:227/255.0 blue:194/255.0 alpha:1];
     }
-    [self setDataValue:nil];
+    [self setDataValue];
 }
 
 - (void)environCurveAction:(UIButton *)sender{
@@ -673,11 +785,13 @@
     if (sender.tag == unselect) {
         set4.visible = NO;
         sender.tag = select;
+        _view4.backgroundColor = [UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1];
     }else{
         set4.visible = YES;
         sender.tag = unselect;
+        _view4.backgroundColor = [UIColor colorWithRed:245/255.0 green:166/255.0 blue:35/255.0 alpha:1];
     }
-    [self setDataValue:nil];
+    [self setDataValue];
 }
 
 - (void)upTempCurveAction:(UIButton *)sender{
@@ -688,18 +802,62 @@
     if (sender.tag == unselect) {
         set5.visible = NO;
         sender.tag = select;
+        _view5.backgroundColor = [UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1];
     }else{
         set5.visible = YES;
         sender.tag = unselect;
+        _view5.backgroundColor = [UIColor colorWithRed:255/255.0 green:71/255.0 blue:51/255.0 alpha:1];
     }
-    [self setDataValue:nil];
+    [self setDataValue];
 }
 
 - (void)setPower{
     
 }
 
-- (void)setDataValue:(NSArray *)dataArray
+- (void)setRelaCurve{
+    NetWork *net = [NetWork shareNetWork];
+    if (net.relaCurve.curveValueJson) {
+        NSData *curveData = [net.relaCurve.curveValueJson dataUsingEncoding:NSUTF8StringEncoding];
+        NSDictionary *curveDic = [NSJSONSerialization JSONObjectWithData:curveData options:NSJSONReadingMutableLeaves error:nil];
+        
+        NSArray *Bean = [curveDic objectForKey:@"bean"];
+        NSArray *Out = [curveDic objectForKey:@"out"];
+        NSArray *In = [curveDic objectForKey:@"in"];
+        NSArray *Environment = [curveDic objectForKey:@"environment"];
+        NSMutableArray *Diff = [[NSMutableArray alloc] init];
+        for (int i = beanRorDiffCount; i < Bean.count; i = i + beanRorDiffCount) {
+            [Diff addObject:[NSNumber numberWithDouble:([Bean[i] doubleValue] - [Bean[i - beanRorDiffCount] doubleValue]) * 12.f]];
+        }
+        
+        NSLog(@"%lu",(unsigned long)Bean.count);
+        NSLog(@"%lu",Out.count);
+        NSLog(@"%lu",In.count);
+        NSLog(@"%lu",Environment.count);
+        _rela_Diff = [[NSMutableArray alloc] init];
+        _rela_In = [[NSMutableArray alloc] init];
+        _rela_Out = [[NSMutableArray alloc] init];
+        _rela_Bean = [[NSMutableArray alloc] init];
+        _rela_Environment = [[NSMutableArray alloc] init];
+        
+        for (int i = 0; i<Bean.count; i++) {
+            [_rela_Bean addObject:[[ChartDataEntry alloc] initWithX:i y:[Bean[i] doubleValue]]];
+        }
+        for (int i = 0; i<Out.count; i++) {
+            [_rela_Out addObject:[[ChartDataEntry alloc] initWithX:i y:[Out[i] doubleValue]]];
+        }
+        for (int i = 0; i<In.count; i++) {
+            [_rela_In addObject:[[ChartDataEntry alloc] initWithX:i y:[In[i] doubleValue]]];
+        }
+        for (int i = 0; i<Environment.count; i++) {
+            [_rela_Environment addObject:[[ChartDataEntry alloc] initWithX:i y:[Environment[i] doubleValue]]];
+        }
+        _rela_Diff = [[NetWork shareNetWork] getBeanTempRorWithArr:[Bean mutableCopy]];
+        
+    }
+}
+
+- (void)setDataValue
 {
     NSDictionary *tempDic = [NSObject readLocalFileWithName:@"数据"];
     NSArray *beanTemp = tempDic[@"temp2"];
@@ -718,15 +876,15 @@
 ////        }
 //    }
     
-    LineChartDataSet *set1 = nil, *set2 = nil, *set3 = nil, *set4 = nil,*set5, *test = nil;
+    LineChartDataSet *set1 = nil, *set2 = nil, *set3 = nil, *set4 = nil,*set5, *rela1 = nil, *rela2 = nil, *rela3 = nil, *rela4 = nil, *rela5 = nil;
     
     if (_chartView.data.dataSetCount > 0)
     {
         set1 = (LineChartDataSet *)_chartView.data.dataSets[0];
-        set1.values = _myNet.yVals_Out;
+        set1.values = _myNet.yVals_In;
         
         set2 = (LineChartDataSet *)_chartView.data.dataSets[1];
-        set2.values = _myNet.yVals_In;
+        set2.values = _myNet.yVals_Out;
         
         set3 = (LineChartDataSet *)_chartView.data.dataSets[2];
         set3.values = _myNet.yVals_Bean;
@@ -736,15 +894,45 @@
         
         set5 = (LineChartDataSet *)_chartView.data.dataSets[4];
         set5.values = _myNet.yVals_Diff;
+        
+        rela1 = (LineChartDataSet *)_chartView.data.dataSets[5];
+        rela1.values = _rela_In;
+
+        rela2 = (LineChartDataSet *)_chartView.data.dataSets[6];
+        rela2.values = _rela_Out;
+
+        rela3 = (LineChartDataSet *)_chartView.data.dataSets[7];
+        rela3.values = _rela_Bean;
+
+        rela4 = (LineChartDataSet *)_chartView.data.dataSets[8];
+        rela4.values = _rela_Environment;
+
+        rela5 = (LineChartDataSet *)_chartView.data.dataSets[9];
+        rela5.values = _rela_Diff;
+
 
         //实时调整y轴最大值
         if ([_myNet.BeanArr[_myNet.BeanArr.count-1] floatValue] > leftAxisMax) {
-            _chartView.leftAxis.axisMaximum = [_myNet.BeanArr[_myNet.BeanArr.count-1] floatValue] + 30;
+            _chartView.leftAxis.axisMaximum = leftAxisMax + 50;
+            leftAxisMax = leftAxisMax + 50;
         }
-        
-        if (_myNet.yVals_Out.count > 150) {
-            _chartView.xAxis.axisRange = 15;
-            [_chartView setVisibleXRangeWithMinXRange:0.5 maxXRange:UI_IS_IPHONE5?4:5];
+        if ([_myNet.InArr[_myNet.InArr.count-1] floatValue] > leftAxisMax) {
+            _chartView.leftAxis.axisMaximum = leftAxisMax + 50;
+            leftAxisMax = leftAxisMax + 50;
+        }
+        if ([_myNet.OutArr[_myNet.OutArr.count-1] floatValue] > leftAxisMax) {
+            _chartView.leftAxis.axisMaximum = leftAxisMax + 50;
+            leftAxisMax = leftAxisMax + 50;
+        }
+        if ([_myNet.EnvironmentArr[_myNet.EnvironmentArr.count-1] floatValue] > leftAxisMax) {
+            _chartView.leftAxis.axisMaximum = leftAxisMax + 50;
+            leftAxisMax = leftAxisMax + 50;
+        }
+        if (_myNet.BeanArr.count > xAxisMax * 60) {
+            NSLog(@"%ld",xAxisMax);
+            xAxisMax = xAxisMax + 2;
+            _chartView.xAxis.axisMaximum = xAxisMax * 60;
+            _chartView.xAxis.labelCount = xAxisMax + 1;
         }
         
         [_chartView.data notifyDataChanged];
@@ -752,19 +940,6 @@
     }
     else
     {
-        test = [[LineChartDataSet alloc] initWithValues:yVals label:LocalString(@"test")];
-        test.axisDependency = AxisDependencyRight;
-        [test setColor:[UIColor colorWithRed:51/255.f green:181/255.f blue:229/255.f alpha:1.f]];
-        [test setCircleColor:UIColor.whiteColor];
-        test.lineWidth = 2.0;
-        test.circleRadius = 0.0;
-        test.fillAlpha = 65/255.0;
-        //test.fillColor = [UIColor colorWithRed:51/255.f green:181/255.f blue:229/255.f alpha:1.f];
-        //test.highlightColor = [UIColor colorWithRed:244/255.f green:117/255.f blue:117/255.f alpha:1.f];
-        test.drawCircleHoleEnabled = NO;
-        test.drawValuesEnabled = NO;//是否在拐点处显示数据
-        test.highlightEnabled = NO;//选中拐点,是否开启高亮效果(显示十字线)
-        //[test setColor:[UIColor clearColor]];//用于隐藏曲线
         
         set1 = [[LineChartDataSet alloc] initWithValues:_myNet.yVals_Out label:LocalString(@"进风温")];
         set1.axisDependency = AxisDependencyLeft;
@@ -805,10 +980,10 @@
         set3.circleHoleRadius = 5.5;
         set3.fillAlpha = 65/255.0;
         set3.fillColor = [UIColor colorWithRed:71/255.0 green:120/255.0 blue:204/255.0 alpha:1];
-        set3.drawCircleHoleEnabled = YES;
+        //set3.drawCircleHoleEnabled = YES;
         set3.drawValuesEnabled = YES;//是否在拐点处显示数据
         //set1.cubicIntensity = 1;//曲线弧度
-        set3.highlightEnabled = YES;//选中拐点,是否开启高亮效果(显示十字线)
+        set3.highlightEnabled = NO;//选中拐点,是否开启高亮效果(显示十字线)
         
         
         set4 = [[LineChartDataSet alloc] initWithValues:_myNet.yVals_Environment label:LocalString(@"环境温")];
@@ -826,6 +1001,7 @@
         
         set5 = [[LineChartDataSet alloc] initWithValues:_myNet.yVals_Diff label:LocalString(@"升温率")];
         set5.axisDependency = AxisDependencyRight;
+        set5.mode = LineChartModeHorizontalBezier;
         [set5 setColor:[UIColor colorWithRed:255/255.0 green:71/255.0 blue:51/255.0 alpha:1]];
         [set5 setCircleColor:UIColor.whiteColor];
         set5.lineWidth = 2.0;
@@ -835,24 +1011,103 @@
         set5.drawCircleHoleEnabled = NO;
         set5.drawValuesEnabled = NO;//是否在拐点处显示数据
         set5.highlightEnabled = NO;//选中拐点,是否开启高亮效果(显示十字线)
-
+        
+        rela1 = [[LineChartDataSet alloc] initWithValues:_rela_In label:LocalString(@"进风温(rela)")];
+        rela1.axisDependency = AxisDependencyRight;
+        [rela1 setColor:[UIColor colorWithRed:123/255.0 green:179/255.0 blue:64/255.0 alpha:1]];
+        [rela1 setCircleColor:UIColor.whiteColor];
+        rela1.lineWidth = 1.0;
+        rela1.circleRadius = 0.0;
+        rela1.fillAlpha = 65/255.0;
+        rela1.fillColor = [UIColor colorWithRed:123/255.0 green:179/255.0 blue:64/255.0 alpha:1];
+        rela1.drawCircleHoleEnabled = NO;
+        rela1.drawValuesEnabled = NO;//是否在拐点处显示数据
+        rela1.highlightEnabled = NO;//选中拐点,是否开启高亮效果(显示十字线)
+        rela1.lineDashLengths = @[@5.f,@5.f];
+        rela1.visible = NO;
+        
+        rela2 = [[LineChartDataSet alloc] initWithValues:_rela_Out label:LocalString(@"出风温(rela)")];
+        rela2.axisDependency = AxisDependencyRight;
+        [rela2 setColor:[UIColor colorWithRed:80/255.0 green:227/255.0 blue:194/255.0 alpha:1]];
+        [rela2 setCircleColor:UIColor.whiteColor];
+        rela2.lineWidth = 1.0;
+        rela2.circleRadius = 0.0;
+        rela2.fillAlpha = 65/255.0;
+        rela2.fillColor = [UIColor colorWithRed:80/255.0 green:227/255.0 blue:194/255.0 alpha:1];
+        rela2.drawCircleHoleEnabled = NO;
+        rela2.drawValuesEnabled = NO;//是否在拐点处显示数据
+        rela2.highlightEnabled = NO;//选中拐点,是否开启高亮效果(显示十字线)
+        rela2.lineDashLengths = @[@5.f,@5.f];
+        rela2.visible = NO;
+        
+        rela3 = [[LineChartDataSet alloc] initWithValues:_rela_Bean label:LocalString(@"豆温(rela)")];
+        rela3.axisDependency = AxisDependencyRight;
+        [rela3 setColor:[UIColor colorWithRed:71/255.0 green:120/255.0 blue:204/255.0 alpha:1]];
+        [rela3 setCircleColor:UIColor.whiteColor];
+        rela3.lineWidth = 1.0;
+        rela3.circleRadius = 0.0;
+        rela3.fillAlpha = 65/255.0;
+        rela3.fillColor = [UIColor colorWithRed:71/255.0 green:120/255.0 blue:204/255.0 alpha:1];
+        rela3.drawCircleHoleEnabled = NO;
+        rela3.drawValuesEnabled = NO;//是否在拐点处显示数据
+        rela3.highlightEnabled = NO;//选中拐点,是否开启高亮效果(显示十字线)
+        rela3.lineDashLengths = @[@5.f,@5.f];
+        rela3.visible = NO;
+        
+        rela4 = [[LineChartDataSet alloc] initWithValues:_rela_Environment label:LocalString(@"环境温(rela)")];
+        rela4.axisDependency = AxisDependencyRight;
+        [rela4 setColor:[UIColor colorWithRed:245/255.0 green:166/255.0 blue:35/255.0 alpha:1]];
+        [rela4 setCircleColor:UIColor.whiteColor];
+        rela4.lineWidth = 1.0;
+        rela4.circleRadius = 0.0;
+        rela4.fillAlpha = 65/255.0;
+        rela4.fillColor = [UIColor colorWithRed:245/255.0 green:166/255.0 blue:35/255.0 alpha:1];
+        rela4.drawCircleHoleEnabled = NO;
+        rela4.drawValuesEnabled = NO;//是否在拐点处显示数据
+        rela4.highlightEnabled = NO;//选中拐点,是否开启高亮效果(显示十字线)
+        rela4.lineDashLengths = @[@5.f,@5.f];
+        rela4.visible = NO;
+        
+        rela5 = [[LineChartDataSet alloc] initWithValues:_rela_Diff label:LocalString(@"升温率(rela)")];
+        rela5.axisDependency = AxisDependencyRight;
+        [rela5 setColor:[UIColor colorWithRed:255/255.0 green:71/255.0 blue:51/255.0 alpha:1]];
+        [rela5 setCircleColor:UIColor.whiteColor];
+        rela5.lineWidth = 1.0;
+        rela5.circleRadius = 0.0;
+        rela5.fillAlpha = 65/255.0;
+        rela5.fillColor = [UIColor colorWithRed:255/255.0 green:71/255.0 blue:51/255.0 alpha:1];
+        rela5.drawCircleHoleEnabled = NO;
+        rela5.drawValuesEnabled = NO;//是否在拐点处显示数据
+        rela5.highlightEnabled = NO;//选中拐点,是否开启高亮效果(显示十字线)
+        rela5.lineDashLengths = @[@5.f,@5.f];
+        rela5.visible = NO;
         
         NSMutableArray *dataSets = [[NSMutableArray alloc] init];
-        //[dataSets addObject:test];
         [dataSets addObject:set1];
         [dataSets addObject:set2];
         [dataSets addObject:set3];
         [dataSets addObject:set4];
         [dataSets addObject:set5];
+        [dataSets addObject:rela1];
+        [dataSets addObject:rela2];
+        [dataSets addObject:rela3];
+        [dataSets addObject:rela4];
+        [dataSets addObject:rela5];
         
         LineChartData *data = [[LineChartData alloc] initWithDataSets:dataSets];
         [data setValueTextColor:UIColor.whiteColor];
         [data setValueFont:[UIFont systemFontOfSize:9.f]];
         
-        _chartView.xAxis.axisRange = 15;
-        [_chartView setVisibleXRangeWithMinXRange:0.5 maxXRange:UI_IS_IPHONE5?4:5];
-
-        _chartView.xAxis.labelCount = 6;
+//        //_chartView.xAxis.labelCount = 10;
+//        _chartView.xAxis.valueFormatter = self;
+//
+//        _chartView.xAxis.axisMinimum = 0;
+//        _chartView.xAxis.axisMaximum = 600;
+//        _chartView.xAxis.axisRange = 600;
+//        _chartView.xAxis.granularity = 60;
+//        _chartView.xAxis.labelCount = 10;
+        NSLog(@"%ld",_chartView.xAxis.labelCount);
+        
         _chartView.data = data;
     }
 }
@@ -877,11 +1132,16 @@
     //NSLog(@"图表移动");
 }
 
+- (NSString *)stringForValue:(double)value axis:(ChartAxisBase *)axis{
+    return [NSString stringWithFormat:@"%d",(int)value/60];
+}
+
 #pragma mark - kvo
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context{
     if ([keyPath isEqualToString:@"tempData"]) {
+        NetWork *net = [NetWork shareNetWork];
         dispatch_async(dispatch_get_main_queue(), ^{
-            [self setDataValue:_myNet.tempData];
+            [self setDataValue];
             
             NSMutableArray *data = [_myNet.recivedData68 copy];
             double tempOut = ([data[6] intValue] * 256 + [data[7] intValue]) / 10.0;
@@ -889,11 +1149,13 @@
             double tempBean = ([data[10] intValue] * 256 + [data[11] intValue]) / 10.0;
             double tempEnvironment = ([data[12] intValue] * 256 + [data[13] intValue]) / 10.0;
             
-            _beanTempLabel.text = [NSString stringWithFormat:@"%.1f℃",tempBean];
-            _inTempLabel.text = [NSString stringWithFormat:@"%.1f℃",tempIn];
-            _outTempLabel.text = [NSString stringWithFormat:@"%.1f℃",tempOut];
-            _environTempLabel.text = [NSString stringWithFormat:@"%.1f℃",tempEnvironment];
-            //_beanTempRateLabel.text = [NSString stringWithFormat:@"%.1f℃/min",tempRate];
+            _beanTempLabel.text = [NSString stringWithFormat:@"%.1f%@",[NSString diffTempUnitStringWithTemp:tempBean],[DataBase shareDataBase].setting.tempUnit];
+            _inTempLabel.text = [NSString stringWithFormat:@"%.1f%@",[NSString diffTempUnitStringWithTemp:tempIn],[DataBase shareDataBase].setting.tempUnit];
+            _outTempLabel.text = [NSString stringWithFormat:@"%.1f%@",[NSString diffTempUnitStringWithTemp:tempOut],[DataBase shareDataBase].setting.tempUnit];
+            _environTempLabel.text = [NSString stringWithFormat:@"%.1f%@",[NSString diffTempUnitStringWithTemp:tempEnvironment],[DataBase shareDataBase].setting.tempUnit];
+            if (net.BeanArr.count > 5) {
+                _beanTempRateLabel.text = [NSString stringWithFormat:@"%.1f%@/min",([NSString diffTempUnitStringWithTemp:[net.BeanArr[net.BeanArr.count-1] doubleValue]] - [NSString diffTempUnitStringWithTemp:[net.BeanArr[net.BeanArr.count-6] doubleValue]])/5*60,[DataBase shareDataBase].setting.tempUnit];
+            }
         });
 
     }else if ([keyPath isEqualToString:@"timerValue"]){
@@ -901,6 +1163,7 @@
         long second = _myNet.timerValue % 60;
         if (_myNet.deviceTimerStatus == 0) {
             _bakeTime.text = [NSString stringWithFormat:@"%02ld:%02ld",minute,second];
+            _developRate.text = [NSString stringWithFormat:@"%.1f%%",(float)_myNet.developTime/_myNet.timerValue*100.f];
         }
     }else if ([keyPath isEqualToString:@"developTime"]){
         long minute = _myNet.developTime / 60;

@@ -12,7 +12,7 @@
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier{
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
-    self.userInteractionEnabled = NO;
+    //self.userInteractionEnabled = NO;
     if (self) {
         self.selectionStyle = UITableViewCellSelectionStyleNone;
         if (!_image) {
@@ -48,6 +48,7 @@
             _weightTF.textColor = [UIColor colorWithHexString:@"333333"];
             _weightTF.layer.cornerRadius = 15.f/HScale;
             _weightTF.clearButtonMode = UITextFieldViewModeWhileEditing;
+            _weightTF.keyboardType = UIKeyboardTypeDecimalPad;
             _weightTF.autocorrectionType = UITextAutocorrectionTypeNo;
             _weightTF.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;
             _weightTF.textAlignment = NSTextAlignmentCenter;
@@ -65,16 +66,17 @@
             }];
         }
         UILabel *label = [[UILabel alloc] init];
-        label.text = @"g";
+        label.text = [DataBase shareDataBase].setting.weightUnit;
         label.font = [UIFont systemFontOfSize:16.f];
         label.textColor = [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1];
         label.textAlignment = NSTextAlignmentRight;
+        label.adjustsFontSizeToFitWidth = YES;
         label.alpha = 1;
         label.numberOfLines = 0;
         [self.contentView addSubview:label];
         
         [label mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.size.mas_equalTo(CGSizeMake(9.5/WScale, 22.5/HScale));
+            make.size.mas_equalTo(CGSizeMake(15/WScale, 22.5/HScale));
             make.left.equalTo(self.weightTF.mas_right).offset(8/WScale);
             make.centerY.equalTo(self.contentView.mas_centerY);
         }];

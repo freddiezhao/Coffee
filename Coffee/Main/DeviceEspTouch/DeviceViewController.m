@@ -650,6 +650,7 @@ NSString *const CellIdentifier_device = @"CellID_device";
             }
         }];
         
+        _deviceArray = [[DataBase shareDataBase] queryAllDevice];
         if (!_deviceArray.count && !_onlineDeviceArray.count && ![NetWork shareNetWork].connectedDevice) {
             _devieceTable.hidden = YES;
             _noDeviceView.hidden = NO;
@@ -677,6 +678,8 @@ NSString *const CellIdentifier_device = @"CellID_device";
     if (_deviceArray.count == 0) {
         [self queryDevicesByApi];
     }else{
+        _devieceTable.hidden = NO;
+        _noDeviceView.hidden = YES;
         [self sendSearchBroadcast];
         if ([NetWork shareNetWork].connectedDevice) {
             for (DeviceModel *device in _deviceArray) {

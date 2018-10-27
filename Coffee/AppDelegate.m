@@ -33,6 +33,8 @@
     
     [self.window makeKeyAndVisible];
     
+    NSSetUncaughtExceptionHandler(&getException);
+
     [ESP_NetUtil tryOpenNetworkPermission];
     return YES;
 }
@@ -94,6 +96,16 @@
     
     //去掉透明后导航栏下边的黑边
     [navigationBarAppearance setShadowImage:[[UIImage alloc] init]];
+}
+
+//获得异常的C函数
+void getException(NSException *exception)
+{
+    NSLog(@"名字：%@",exception.name);
+    NSLog(@"原因：%@",exception.reason);
+    NSLog(@"用户信息：%@",exception.userInfo);
+    NSLog(@"栈内存地址：%@",exception.callStackReturnAddresses);
+    NSLog(@"栈描述：%@",exception.callStackSymbols);
 }
 
 @end

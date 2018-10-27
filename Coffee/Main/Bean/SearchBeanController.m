@@ -150,7 +150,7 @@ static float HEIGHT_CELL = 70.f;
     cell.beanLabel.attributedText = str;
     
     cell.infoLabel.text = [NSString stringWithFormat:@"%@等级 · 处理方式%@",bean.grade,bean.process];
-    cell.weightLabel.text = [NSString stringWithFormat:@"%.1fkg",bean.stock];
+    cell.weightLabel.text = [NSString stringWithFormat:@"%.1f%@",[NSString diffWeightUnitStringWithWeight:bean.stock],[DataBase shareDataBase].setting.weightUnit];
     return cell;
 }
 

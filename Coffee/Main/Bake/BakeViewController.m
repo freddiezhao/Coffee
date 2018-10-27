@@ -36,6 +36,7 @@
 @property (nonatomic, strong) UIView *mainView;
 @property (nonatomic, strong) UIImageView *pointerImage;
 @property (nonatomic, strong) UILabel *beanTempLabel;
+@property (nonatomic, strong) UILabel *beanTempUnitLabel;
 @property (nonatomic, strong) UILabel *beanTempRateLabel;
 @property (nonatomic, strong) UILabel *inTempLabel;
 @property (nonatomic, strong) UILabel *outTempLabel;
@@ -117,6 +118,13 @@
     [self.rdv_tabBarController setTabBarHidden:NO animated:YES];
     
     if (_myNet.connectedDevice) {
+        _deviceImage.hidden = NO;
+        _status2.hidden = NO;
+        _status1.hidden = NO;
+        _status3.hidden = NO;
+        _statusView1.hidden = NO;
+        _statusView2.hidden = NO;
+        _statusView3.hidden = NO;
         self.navigationItem.title = _myNet.connectedDevice.deviceName;
         switch ([_myNet.connectedDevice.deviceType integerValue]) {
             case 0:
@@ -145,6 +153,11 @@
     if (_beanNameView) {
         _beanNameView = [self beanNameView];
     }
+    _beanTempRateLabel.text = [NSString stringWithFormat:@"%.1f %@/min",0.0,[DataBase shareDataBase].setting.tempUnit];
+    _inTempLabel.text = [NSString stringWithFormat:@"%.1f%@",0.0,[DataBase shareDataBase].setting.tempUnit];
+    _outTempLabel.text = [NSString stringWithFormat:@"%.1f%@",0.0,[DataBase shareDataBase].setting.tempUnit];
+    _environTempLabel.text = [NSString stringWithFormat:@"%.1f%@",0.0,[DataBase shareDataBase].setting.tempUnit];
+    _beanTempUnitLabel.text = [DataBase shareDataBase].setting.tempUnit;
 }
 
 - (void)dealloc{
@@ -191,6 +204,8 @@
         _deviceImage = [[UIImageView alloc] initWithFrame:CGRectMake(75/WScale, 18/HScale, 225/WScale, 150/HScale)];
         _deviceImage.image = [UIImage imageNamed:@"img_peak_edmund"];
         [self.view addSubview:_deviceImage];
+        
+        _deviceImage.hidden = YES;
     }
     return _deviceImage;
 }
@@ -203,12 +218,14 @@
         _status1.textColor = [UIColor colorWithHexString:@"999999"];
         _status1.font = [UIFont systemFontOfSize:12.f];
         [self.view addSubview:_status1];
+        _status1.hidden = YES;
         
         _statusView1 = [[UIView alloc] init];
         _statusView1.frame = CGRectMake(74/WScale,180/HScale,6/WScale,6/WScale);
         _statusView1.layer.backgroundColor = [UIColor colorWithRed:213/255.0 green:218/255.0 blue:224/255.0 alpha:1].CGColor;
         _statusView1.layer.cornerRadius = 3/WScale;
         [self.view addSubview:_statusView1];
+        _statusView1.hidden = YES;
     }
     return _status1;
 }
@@ -221,12 +238,14 @@
         _status2.textColor = [UIColor colorWithHexString:@"999999"];
         _status2.font = [UIFont systemFontOfSize:12.f];
         [self.view addSubview:_status2];
+        _status2.hidden = YES;
         
         _statusView2 = [[UIView alloc] init];
         _statusView2.frame = CGRectMake(163/WScale,180/HScale,6/WScale,6/WScale);
         _statusView2.layer.backgroundColor = [UIColor colorWithRed:213/255.0 green:218/255.0 blue:224/255.0 alpha:1].CGColor;
         _statusView2.layer.cornerRadius = 3/WScale;
         [self.view addSubview:_statusView2];
+        _statusView2.hidden = YES;
     }
     return _status2;
 }
@@ -239,12 +258,14 @@
         _status3.textColor = [UIColor colorWithHexString:@"999999"];
         _status3.font = [UIFont systemFontOfSize:12.f];
         [self.view addSubview:_status3];
+        _status3.hidden = YES;
         
         _statusView3 = [[UIView alloc] init];
         _statusView3.frame = CGRectMake(253/WScale,180/HScale,6/WScale,6/WScale);
         _statusView3.layer.backgroundColor = [UIColor colorWithRed:213/255.0 green:218/255.0 blue:224/255.0 alpha:1].CGColor;
         _statusView3.layer.cornerRadius = 3/WScale;
         [self.view addSubview:_statusView3];
+        _statusView3.hidden = YES;
     }
     return _status3;
 }
@@ -465,13 +486,13 @@
             make.top.equalTo(_mainView.mas_top).offset(47/HScale);
         }];
         
-        UILabel *unitLabel = [[UILabel alloc] init];
-        unitLabel.text = LocalString(@"°C");
-        unitLabel.textColor = [UIColor colorWithHexString:@"4778CC"];
-        unitLabel.textAlignment = NSTextAlignmentLeft;
-        unitLabel.font = [UIFont fontWithName:@"Avenir" size:20.f];
-        [_mainView addSubview:unitLabel];
-        [unitLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        _beanTempUnitLabel = [[UILabel alloc] init];
+        _beanTempUnitLabel.text = [DataBase shareDataBase].setting.tempUnit;
+        _beanTempUnitLabel.textColor = [UIColor colorWithHexString:@"4778CC"];
+        _beanTempUnitLabel.textAlignment = NSTextAlignmentLeft;
+        _beanTempUnitLabel.font = [UIFont fontWithName:@"Avenir" size:20.f];
+        [_mainView addSubview:_beanTempUnitLabel];
+        [_beanTempUnitLabel mas_makeConstraints:^(MASConstraintMaker *make) {
             make.size.mas_equalTo(CGSizeMake(40/WScale, 25/HScale));
             make.left.equalTo(_beanTempLabel.mas_right).offset(4/WScale);
             make.top.equalTo(_mainView.mas_top).offset(65/HScale);
@@ -484,7 +505,7 @@
     if (!_beanTempRateLabel) {
         _beanTempRateLabel = [[UILabel alloc] init];
         _beanTempRateLabel.frame = CGRectMake(210/WScale,93/HScale,100/WScale,20/HScale);
-        _beanTempRateLabel.text = [NSString stringWithFormat:@"%.1f %@",0.0,LocalString(@"°C/min")];
+        _beanTempRateLabel.text = [NSString stringWithFormat:@"%.1f %@/min",0.0,[DataBase shareDataBase].setting.tempUnit];
         _beanTempRateLabel.textAlignment = NSTextAlignmentLeft;
         _beanTempRateLabel.textColor = [UIColor colorWithHexString:@"4778CC"];
         _beanTempRateLabel.font = [UIFont fontWithName:@"Avenir" size:16.f];
@@ -498,7 +519,7 @@
     if (!_inTempLabel) {
         _inTempLabel = [[UILabel alloc] init];
         _inTempLabel.frame = CGRectMake(70/WScale,181/HScale,80/WScale,25/WScale);
-        _inTempLabel.text = [NSString stringWithFormat:@"%.1f%@",0.0,LocalString(@"°C")];
+        _inTempLabel.text = [NSString stringWithFormat:@"%.1f%@",0.0,[DataBase shareDataBase].setting.tempUnit];
         _inTempLabel.textAlignment = NSTextAlignmentLeft;
         _inTempLabel.textColor = [UIColor colorWithHexString:@"4778CC"];
         _inTempLabel.font = [UIFont fontWithName:@"Avenir" size:18.f];
@@ -532,7 +553,7 @@
     if (!_outTempLabel) {
         _outTempLabel = [[UILabel alloc] init];
         _outTempLabel.frame = CGRectMake(182/WScale,181/HScale,80/WScale,25/WScale);
-        _outTempLabel.text = [NSString stringWithFormat:@"%.1f%@",0.0,LocalString(@"°C")];
+        _outTempLabel.text = [NSString stringWithFormat:@"%.1f%@",0.0,[DataBase shareDataBase].setting.tempUnit];
         _outTempLabel.textAlignment = NSTextAlignmentLeft;
         _outTempLabel.textColor = [UIColor colorWithHexString:@"4778CC"];
         _outTempLabel.font = [UIFont fontWithName:@"Avenir" size:18.f];
@@ -566,7 +587,7 @@
     if (!_environTempLabel) {
         _environTempLabel = [[UILabel alloc] init];
         _environTempLabel.frame = CGRectMake(294/WScale,181/HScale,80/WScale,25/WScale);
-        _environTempLabel.text = [NSString stringWithFormat:@"%.1f%@",0.0,LocalString(@"°C")];
+        _environTempLabel.text = [NSString stringWithFormat:@"%.1f%@",0.0,[DataBase shareDataBase].setting.tempUnit];
         _environTempLabel.textAlignment = NSTextAlignmentLeft;
         _environTempLabel.textColor = [UIColor colorWithHexString:@"4778CC"];
         _environTempLabel.font = [UIFont fontWithName:@"Avenir" size:18.f];
@@ -828,12 +849,12 @@
         dispatch_async(dispatch_get_main_queue(), ^{
             //当顺时针旋转120度时，指针转到129
             _pointerImage.transform = CGAffineTransformMakeRotation((tempBean / 129.f * 120.0) / 180 * M_PI);
-            _beanTempLabel.text = [NSString stringWithFormat:@"%.1f",tempBean];
-            _inTempLabel.text = [NSString stringWithFormat:@"%.1f℃",tempIn];
-            _outTempLabel.text = [NSString stringWithFormat:@"%.1f℃",tempOut];
-            _environTempLabel.text = [NSString stringWithFormat:@"%.1f℃",tempEnvironment];
+            _beanTempLabel.text = [NSString stringWithFormat:@"%.1f",[NSString diffTempUnitStringWithTemp:tempBean]];
+            _inTempLabel.text = [NSString stringWithFormat:@"%.1f%@",[NSString diffTempUnitStringWithTemp:tempIn],[DataBase shareDataBase].setting.tempUnit];
+            _outTempLabel.text = [NSString stringWithFormat:@"%.1f%@",[NSString diffTempUnitStringWithTemp:tempOut],[DataBase shareDataBase].setting.tempUnit];
+            _environTempLabel.text = [NSString stringWithFormat:@"%.1f%@",[NSString diffTempUnitStringWithTemp:tempEnvironment],[DataBase shareDataBase].setting.tempUnit];
             if (net.BeanArr.count > 5) {
-                _beanTempRateLabel.text = [NSString stringWithFormat:@"%.1f℃/min",[net.BeanArr[net.BeanArr.count-1] doubleValue] - [net.BeanArr[net.BeanArr.count-6] doubleValue]];
+                _beanTempRateLabel.text = [NSString stringWithFormat:@"%.1f%@/min",([NSString diffTempUnitStringWithTemp:[net.BeanArr[net.BeanArr.count-1] doubleValue]] - [NSString diffTempUnitStringWithTemp:[net.BeanArr[net.BeanArr.count-6] doubleValue]])/5*60,[DataBase shareDataBase].setting.tempUnit];
             }
         });
         
@@ -925,6 +946,25 @@
                 _status.text = LocalString(@"设备已连接");
             }else{
                 _status.text = LocalString(@"设备未连接");
+                _statusView.layer.backgroundColor = [UIColor colorWithRed:254/255.0 green:71/255.0 blue:51/255.0 alpha:1].CGColor;
+                _statusView.layer.shadowColor = [UIColor colorWithRed:254/255.0 green:71/255.0 blue:52/255.0 alpha:1].CGColor;
+                _statusView.layer.shadowOffset = CGSizeMake(0,0);
+                _statusView.layer.shadowOpacity = 1;
+                
+                _beanTempLabel.text = [NSString stringWithFormat:@"%.1f",0.0];
+                _inTempLabel.text = [NSString stringWithFormat:@"%.1f%@",0.0,[DataBase shareDataBase].setting.tempUnit];
+                _outTempLabel.text = [NSString stringWithFormat:@"%.1f%@",0.0,[DataBase shareDataBase].setting.tempUnit];
+                _environTempLabel.text = [NSString stringWithFormat:@"%.1f%@",0.0,[DataBase shareDataBase].setting.tempUnit];
+                _beanTempRateLabel.text = [NSString stringWithFormat:@"%.1f%@/min",0.0,[DataBase shareDataBase].setting.tempUnit];
+                
+                _deviceImage.hidden = YES;
+                _status2.hidden = YES;
+                _status1.hidden = YES;
+                _status3.hidden = YES;
+                _statusView1.hidden = YES;
+                _statusView2.hidden = YES;
+                _statusView3.hidden = YES;
+
             }
         });
     }

@@ -142,6 +142,13 @@ static NSString *curveUid;
     _developRate = 0.0;
     _deviceTimerStatus = 0;
     _eventCount = 0;
+    _isStartBake = NO;
+    _isDevyOver = NO;
+    _isFirstBurst = NO;
+    _isFirstBurstOver = NO;
+    _isSecondBurst = NO;
+    _isSecondBurstOver = NO;
+    _isBakeOver = NO;
     
     _ssid = @"";
     _bssid = @"";
@@ -841,6 +848,26 @@ static NSString *curveUid;
                     {
                         _deviceTimerStatus = 0;
                         [_myTimer setFireDate:[NSDate date]];
+                        
+                        self.isStartBake = YES;
+                        EventModel *event = [[EventModel alloc] init];
+                        event.eventId = 0;//类型为0
+                        event.eventTime = 0;
+                        event.eventText = LocalString(@"烘焙开始");
+                        NSLog(@"烘焙开始事件");
+                        if (self.BeanArr.count == 0) {
+                            event.eventBeanTemp = 0.0;
+                        }else{
+                            event.eventBeanTemp = [self.BeanArr[self.BeanArr.count - 1] floatValue];
+                        }
+                        for (EventModel *event in self.eventArray) {
+                            if (event.eventId == 0) {
+                                [self.eventArray removeObject:event];
+                                break;
+                            }
+                        }
+                        [self.eventArray addObject:event];
+
                         //[self inquirePowerStatus];
                         //[self inquireTempCount];
                     }
@@ -899,7 +926,7 @@ static NSString *curveUid;
                 });
                 resendCount = 0;
                 if (_deviceTimerStatus == 0) {
-                    NSLog(@"adssd");
+                    [_myTimer setFireDate:[NSDate distantFuture]];
                     [_OutArr removeAllObjects];
                     [_InArr removeAllObjects];
                     [_BeanArr removeAllObjects];
@@ -910,7 +937,6 @@ static NSString *curveUid;
                     [_yVals_Bean removeAllObjects];
                     [_yVals_Environment removeAllObjects];
                     _timerValue = 0;
-                    [_myTimer setFireDate:[NSDate distantFuture]];
                     [_myTimer setFireDate:[NSDate date]];
                 }
             }else if (self.msg68Type == getPowerStatus){
@@ -933,6 +959,26 @@ static NSString *curveUid;
             if (self.msg68Type == getTimerStatus) {
                 if ([_recivedData68[6] unsignedIntegerValue] == 0) {
                     [_myTimer setFireDate:[NSDate distantFuture]];
+                    
+                    _isStartBake = YES;
+                    EventModel *event = [[EventModel alloc] init];
+                    event.eventId = 0;
+                    event.eventTime = 0;
+                    event.eventText = LocalString(@"烘焙开始");
+                    NSLog(@"被写烘焙开始事件");
+                    if (self.BeanArr.count == 0) {
+                        event.eventBeanTemp = 0.0;
+                    }else{
+                        event.eventBeanTemp = [self.BeanArr[self.BeanArr.count - 1] floatValue];
+                    }
+                    for (EventModel *event in _eventArray) {
+                        if (event.eventId == 0) {
+                            [_eventArray removeObject:event];
+                            break;
+                        }
+                    }
+                    [_eventArray addObject:event];
+
                     [_OutArr removeAllObjects];
                     [_InArr removeAllObjects];
                     [_BeanArr removeAllObjects];
@@ -947,22 +993,26 @@ static NSString *curveUid;
                     
                     _deviceTimerStatus = 0;
                     
-                    EventModel *event = [[EventModel alloc] init];
-                    event.eventId = 0;
-                    event.eventTime = 0;
-                    event.eventText = LocalString(@"烘焙开始");
-                    for (EventModel *event in _eventArray) {
-                        if (event.eventId == 0) {
-                            [_eventArray removeObject:event];
-                            break;
-                        }
-                    }
-                    [_eventArray addObject:event];
-
                     [_myTimer setFireDate:[NSDate date]];
                 }else if ([_recivedData68[6] unsignedIntegerValue] == 1 || [_recivedData68[6] unsignedIntegerValue] == 2){
                     //烘焙结束，保存数据生成报告
                     //[[NSNotificationCenter defaultCenter] postNotificationName:@"bakeCompelete" object:nil userInfo:nil];
+                    
+                    _isBakeOver = YES;
+                    EventModel *event = [[EventModel alloc] init];
+                    event.eventId = 7;//类型为7
+                    event.eventTime = self.timerValue;
+                    event.eventText = LocalString(@"烘焙结束");
+                    NSLog(@"被写烘焙结束事件");
+                    event.eventBeanTemp = [self.BeanArr[self.BeanArr.count - 1] floatValue];
+                    for (EventModel *event in self.eventArray) {
+                        if (event.eventId == 7) {
+                            [self.eventArray removeObject:event];
+                            break;
+                        }
+                    }
+                    [self.eventArray addObject:event];
+
                     dispatch_async(dispatch_get_main_queue(), ^{
                         [self showBakeOverAlertAction];
                     });
@@ -1176,7 +1226,7 @@ static NSString *curveUid;
     }];
 }
 
-- (void)bakeCompelete{
+- (void)bakeCompeleteWithCurveDataDic:(NSDictionary *)curveDataDic{
     DataBase *myDB = [DataBase shareDataBase];
     
     //曲线名字
@@ -1193,27 +1243,21 @@ static NSString *curveUid;
     if (_beanArray) {
         for (BeanModel *bean in _beanArray) {
             totolWeight += bean.weight;
+            [myDB updateBeanWeight:bean];//用于修改豆库存量
         }
     }
     
     //曲线数据
     NSString *curveValueJson;
-    if (self.OutArr && self.InArr && self.BeanArr && self.EnvironmentArr) {
-        NSArray *outTArray = [self.OutArr copy];
-        NSArray *inTArray = [self.InArr copy];
-        NSArray *beanTArray = [self.BeanArr copy];
-        NSArray *enTArray = [self.EnvironmentArr copy];
-        //NSArray *diffTArray = [self.yVals_Diff copy];
-        
-        NSDictionary *curveValueDic = @{@"out":outTArray,@"in":inTArray,@"bean":beanTArray,@"environment":enTArray};
-        NSData *curveData = [NSJSONSerialization dataWithJSONObject:curveValueDic options:NSJSONWritingPrettyPrinted error:nil];
+    if (curveDataDic) {
+        NSData *curveData = [NSJSONSerialization dataWithJSONObject:curveDataDic options:NSJSONWritingPrettyPrinted error:nil];
         curveValueJson = [[NSString alloc] initWithData:curveData encoding:NSUTF8StringEncoding];
         
     }
     static BOOL isSucc = NO;
     //添加报告并更新数据的事务
     [myDB.queueDB inTransaction:^(FMDatabase * _Nonnull db, BOOL * _Nonnull rollback) {
-        BOOL result = [db executeUpdate:@"INSERT INTO curveInfo (curveName,date,deviceName,sn,rawBeanWeight,bakeBeanWeight,light,bakeTime,developTime,developRate,bakerName,curveValue,shareName,isShare) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)",curveName,[NSDate localStringFromUTCDate:[NSDate date]],_connectedDevice.deviceName,_connectedDevice.sn,[NSNumber numberWithDouble:totolWeight],@0,@0,[NSNumber numberWithInt:_timerValue],[NSNumber numberWithInt:_developTime],[NSNumber numberWithFloat:_developRate],myDB.userName,curveValueJson,@"",@0];
+        BOOL result = [db executeUpdate:@"INSERT INTO curveInfo (curveUid,curveName,date,deviceName,sn,rawBeanWeight,bakeBeanWeight,light,bakeTime,developTime,developRate,bakerName,curveValue,shareName,isShare) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",curveUid,curveName,[NSDate localStringFromUTCDate:[NSDate date]],_connectedDevice.deviceName,_connectedDevice.sn,[NSNumber numberWithDouble:totolWeight],@0,@0,[NSNumber numberWithInt:_timerValue],[NSNumber numberWithInt:_developTime],[NSNumber numberWithFloat:_developRate],myDB.userName,curveValueJson,@"",@0];
         //test
         //BOOL result = [db executeUpdate:@"INSERT INTO curveInfo (curveName,date,deviceName,rawBeanWeight,bakeBeanWeight,light,bakeTime,developTime,developRate,bakerName,curveValue) VALUES (?,?,?,?,?,?,?,?,?,?,?)",@"",[NSDate localStringFromUTCDate:[NSDate date]],@"",@0,@0,@0,@0,@0,@"",@"",@""];
         if (!result) {
@@ -1234,7 +1278,7 @@ static NSString *curveUid;
         //插入曲线事件关联
         for (int i = 0; i < _eventArray.count; i++) {
             EventModel *event = _eventArray[i];
-            result = [db executeUpdate:@"INSERT INTO curve_event (curveUid,eventId,eventText,eventTime,eventBeanTemp) VALUES (?,?,?,?)",curveUid,[NSNumber numberWithInteger:event.eventId],event.eventText,[NSNumber numberWithInteger:event.eventTime],[NSNumber numberWithDouble:event.eventBeanTemp]];
+            result = [db executeUpdate:@"INSERT INTO curve_event (curveUid,eventId,eventText,eventTime,eventBeanTemp) VALUES (?,?,?,?,?)",curveUid,[NSNumber numberWithInteger:event.eventId],event.eventText,[NSNumber numberWithInteger:event.eventTime],[NSNumber numberWithDouble:event.eventBeanTemp]];
             if (!result) {
                 *rollback = YES;
                 [SVProgressHUD dismiss];
@@ -1288,6 +1332,13 @@ static NSString *curveUid;
         _developRate = 0.0;
         _deviceTimerStatus = 0;
         _eventCount = 0;
+        _isStartBake = NO;
+        _isDevyOver = NO;
+        _isFirstBurst = NO;
+        _isFirstBurstOver = NO;
+        _isSecondBurst = NO;
+        _isSecondBurstOver = NO;
+        _isBakeOver = NO;
         
         _ssid = @"";
         _bssid = @"";
@@ -1358,6 +1409,13 @@ static NSString *curveUid;
     }
     
     //生豆
+    if (_beanArray.count == 0) {
+        [NSObject showHudTipStr:LocalString(@"生豆信息未添加")];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [SVProgressHUD dismiss];
+        });
+        return;
+    }
     NSMutableArray *beanArr = [[NSMutableArray alloc] init];
     for (BeanModel *bean in _beanArray) {
         NSDictionary *beanDic = @{@"beanUid":bean.beanUid,@"used":[NSNumber numberWithDouble:bean.weight]};
@@ -1372,9 +1430,6 @@ static NSString *curveUid;
     if (_connectedDevice.deviceName) {
         [roasterReportPageThree setObject:_connectedDevice.deviceName forKey:@"roasterName"];
     }
-    if ([DataBase shareDataBase].userName) {
-        [roasterReportPageThree setObject:[DataBase shareDataBase].userName forKey:@"userName"];
-    }
     if (beanArr.count > 0) {
         [roasterReportPageThree setObject:beanArr forKey:@"beans"];
     }
@@ -1382,7 +1437,17 @@ static NSString *curveUid;
     [roasterReportPageThree setObject:[NSNumber numberWithDouble:totolWeight] forKey:@"rawBean"];
     [roasterReportPageThree setObject:@0.0 forKey:@"cooked"];
     
-    NSDictionary *parameters = @{@"eventList":eventArr,@"curveData":curveDataDic,@"roasterReportPageThree":roasterReportPageThree};
+    NSMutableDictionary *parameters = [[NSMutableDictionary alloc] init];
+    if (eventArr.count > 0) {
+        [parameters setObject:eventArr forKey:@"eventList"];
+        NSLog(@"%@",parameters);
+    }
+    if (curveDataDic.count > 0) {
+        [parameters setObject:curveDataDic forKey:@"curveData"];
+        NSLog(@"%@",parameters);
+    }
+    [parameters setObject:roasterReportPageThree forKey:@"roastReportPageThree"];
+    NSLog(@"%@",parameters);
     
     [manager POST:url parameters:parameters progress:nil
           success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
@@ -1391,7 +1456,7 @@ static NSString *curveUid;
               NSString * daetr = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
               NSLog(@"success:%@",daetr);
               if ([[responseDic objectForKey:@"errno"] intValue] == 0) {
-                  [self bakeCompelete];
+                  [self bakeCompeleteWithCurveDataDic:curveDataDic];
                   [NSObject showHudTipStr:LocalString(@"服务器添加烘焙信息成功")];
               }else{
                   dispatch_async(dispatch_get_main_queue(), ^{
@@ -1536,7 +1601,7 @@ static NSString *curveUid;
 - (NSMutableArray *)getBeanTempRorWithArr:(NSMutableArray *)arr{
     NSMutableArray *rorArr = [[NSMutableArray alloc] init];
     for (int i = beanRorDiffCount; i < [arr count]; i = i + beanRorDiffCount) {
-        [rorArr addObject:[[ChartDataEntry alloc] initWithX:i y:([arr[i] doubleValue] - [arr[i - beanRorDiffCount] doubleValue]) * 12.f]];
+        [rorArr addObject:[[ChartDataEntry alloc] initWithX:i y:([arr[i] doubleValue] - [arr[i - beanRorDiffCount] doubleValue]) * (60.f/beanRorDiffCount)]];
     }
     
     return rorArr;

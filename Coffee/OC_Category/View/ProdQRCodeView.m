@@ -23,7 +23,7 @@
     [self.view setBackgroundColor:[UIColor colorWithRed:0/255.0 green:0/255.0 blue:0/255.0 alpha:0.6]];
 
     _QRcodeView = [self QRcodeView];
-    [self generateQRCode];
+    //[self generateQRCode];
 }
 
 #pragma mark - Lazy Load
@@ -65,6 +65,7 @@
         [dismissBtn setTitleColor:[UIColor colorWithHexString:@"999999"] forState:UIControlStateNormal];
         [dismissBtn.titleLabel setFont:[UIFont fontWithName:@"PingFangSC-Medium" size:16]];
         [dismissBtn setBackgroundColor:[UIColor clearColor]];
+        [dismissBtn addTarget:self action:@selector(dismissVC) forControlEvents:UIControlEventTouchUpInside];
         [self.QRcodeView addSubview:dismissBtn];
         dismissBtn.layer.borderColor = [UIColor colorWithRed:206/255.0 green:206/255.0 blue:206/255.0 alpha:1].CGColor;
         dismissBtn.layer.cornerRadius = 11.f;
@@ -85,6 +86,40 @@
     [filter setValue:data forKey:@"inputMessage"];
     
     CIImage *image = [filter outputImage];
-    _QRImage.image = [UIImage imageWithCIImage:image];
+    _QRImage.image = [self createNonInterpolatedUIImageFormCIImage:image withSize:200.f/WScale];
 }
+
+/**
+ *  根据CIImage生成指定大小的UIImage
+ *
+ *  @param image CIImage
+ *  @param size  图片宽度
+ */
+- (UIImage *)createNonInterpolatedUIImageFormCIImage:(CIImage *)image withSize:(CGFloat) size
+{
+    CGRect extent = CGRectIntegral(image.extent);
+    CGFloat scale = MIN(size/CGRectGetWidth(extent), size/CGRectGetHeight(extent));
+    
+    // 1.创建bitmap;
+    size_t width = CGRectGetWidth(extent) * scale;
+    size_t height = CGRectGetHeight(extent) * scale;
+    CGColorSpaceRef cs = CGColorSpaceCreateDeviceGray();
+    CGContextRef bitmapRef = CGBitmapContextCreate(nil, width, height, 8, 0, cs, (CGBitmapInfo)kCGImageAlphaNone);
+    CIContext *context = [CIContext contextWithOptions:nil];
+    CGImageRef bitmapImage = [context createCGImage:image fromRect:extent];
+    CGContextSetInterpolationQuality(bitmapRef, kCGInterpolationNone);
+    CGContextScaleCTM(bitmapRef, scale, scale);
+    CGContextDrawImage(bitmapRef, extent, bitmapImage);
+    
+    // 2.保存bitmap到图片
+    CGImageRef scaledImage = CGBitmapContextCreateImage(bitmapRef);
+    CGContextRelease(bitmapRef);
+    CGImageRelease(bitmapImage);
+    return [UIImage imageWithCGImage:scaledImage];
+}
+
+- (void)dismissVC{
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
+
 @end

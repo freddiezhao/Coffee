@@ -64,7 +64,7 @@ static DataBase *_dataBase = nil;
 - (SettingModel *)setting{
     if (!_setting) {
         _setting = [[SettingModel alloc] init];
-        _setting.weightUnit = @"g";
+        _setting.weightUnit = @"kg";
         _setting.tempUnit = @"℃";
         _setting.bakeChromaReferStandard = @"argon";
         _setting.timeAxis = 10;
@@ -72,7 +72,6 @@ static DataBase *_dataBase = nil;
         _setting.tempCurveSmooth = 5;
         _setting.tempRateSmooth = 5;
         _setting.language = LocalString(@"中文");
-        _setting.isInit = YES;
     }
     return _setting;
 }
@@ -86,7 +85,7 @@ static DataBase *_dataBase = nil;
         }else{
             NSLog(@"创建表bean失败");
         }
-        result = [db executeUpdate:@"CREATE TABLE IF NOT EXISTS curveInfo (curveUid integer PRIMARY KEY,curveName text NOT NULL,date text,deviceName text,sn text NOT NULL,rawBeanWeight REAL,bakeBeanWeight REAL,light REAL,curveValue text,bakeTime integer,developTime integer,developRate REAL,bakerName text,shareName text,isShare integer NOT NULL)"];
+        result = [db executeUpdate:@"CREATE TABLE IF NOT EXISTS curveInfo (curveUid text PRIMARY KEY,curveName text NOT NULL,date text,deviceName text,sn text NOT NULL,rawBeanWeight REAL,bakeBeanWeight REAL,light REAL,curveValue text,bakeTime integer,developTime integer,developRate REAL,bakerName text,shareName text,isShare integer NOT NULL)"];
         if (result) {
             NSLog(@"创建表curve成功");
         }else{
@@ -134,26 +133,21 @@ static DataBase *_dataBase = nil;
 #pragma mark - 查
 - (void)querySetting{
     SettingModel *model = [[SettingModel alloc] init];
-    model.events = [[NSMutableArray alloc] init];
-    static BOOL isStored = NO;
     [_queueDB inDatabase:^(FMDatabase * _Nonnull db) {
         FMResultSet *set = [db executeQuery:@"SELECT * FROM user_setting"];
         while ([set next]) {
-            model.weightUnit = [set stringForColumn:@"weightUnit"];
-            model.timeAxis = [set intForColumn:@"timeAxis"];
-            isStored = YES;
-        }
-        FMResultSet *set1 = [db executeQuery:@"SELECT * FROM user_setting_events"];
-        while ([set1 next]) {
-            [model.events addObject:[set1 stringForColumn:@"event"]];
+            model.weightUnit = [set stringForColumn:@"weightunit"];
+            model.timeAxis = [set intForColumn:@"timeaxis"];
+            model.tempUnit = [set stringForColumn:@"tempunit"];
+            model.bakeChromaReferStandard = [set stringForColumn:@"bakechromareferstandard"];
+            model.tempAxis = [set intForColumn:@"tempaxis"];
+            model.tempCurveSmooth = [set intForColumn:@"tempcurvesmooth"];
+            model.tempRateSmooth = [set intForColumn:@"tempratesmooth"];
+            model.language = [set stringForColumn:@"language"];
+            _setting = model;
         }
         [set close];
-        [set1 close];
     }];
-    if (isStored) {
-        _setting = model;
-        _setting.isInit = NO;
-    }
 }
 
 - (NSMutableArray *)queryAllReport{//device为nil就查全部
@@ -326,7 +320,7 @@ static DataBase *_dataBase = nil;
 - (NSArray *)queryEvent:(NSString *)curveUid{
     NSMutableArray *eventArray = [[NSMutableArray alloc] init];
     [_queueDB inDatabase:^(FMDatabase * _Nonnull db) {
-        FMResultSet *set = [db executeQuery:@"SELECT bc.*,use.event FROM curve_event AS bc,user_setting_events AS use WHERE bc.curveUid = ? AND bc.eventId = use.eventId ORDER BY bc.eventId",curveUid];
+        FMResultSet *set = [db executeQuery:@"SELECT * FROM curve_event WHERE curveUid = ? ORDER BY eventId",curveUid];
         while ([set next]) {
             EventModel *eventModel = [[EventModel alloc] init];//每次循环都必须新建对象，不然都是在同一个对象（内存地址）操作
             eventModel.eventId = [set intForColumn:@"eventId"];
@@ -334,6 +328,7 @@ static DataBase *_dataBase = nil;
             eventModel.eventBeanTemp = [set doubleForColumn:@"eventBeanTemp"];
             eventModel.eventText = [set stringForColumn:@"eventText"];
             [eventArray addObject:eventModel];
+            NSLog(@"%@",eventModel.eventText);
         }
         [set close];
     }];
@@ -512,8 +507,7 @@ static DataBase *_dataBase = nil;
     static BOOL result = YES;
     [_queueDB inDatabase:^(FMDatabase * _Nonnull db) {
         result = [db executeUpdate:@"INSERT INTO cup (cupUid,cupName,curveUid,dryAndWet,flavor,aftermath,acid,taste,sweet,balance,overFeel,deveUnfull,overDeve,bakePaste,injure,germInjure ,beanFaceInjure,date,light,total) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",cup.cupUid,cup.name,cup.curveUid,[NSNumber numberWithFloat:cup.dryAndWet],[NSNumber numberWithFloat:cup.flavor],[NSNumber numberWithFloat:cup.aftermath],[NSNumber numberWithFloat:cup.acid],[NSNumber numberWithFloat:cup.taste],[NSNumber numberWithFloat:cup.sweet],[NSNumber numberWithFloat:cup.balance],[NSNumber numberWithFloat:cup.overFeel],[NSNumber numberWithFloat:cup.deveUnfull],[NSNumber numberWithFloat:cup.overDeve],[NSNumber numberWithFloat:cup.bakePaste],[NSNumber numberWithFloat:cup.injure],[NSNumber numberWithFloat:cup.germInjure],[NSNumber numberWithFloat:cup.beanFaceInjure],[NSDate YMDStringFromDate:[NSDate date]],[NSNumber numberWithFloat:cup.light],[NSNumber numberWithFloat:cup.grade]];
-//        result = [db executeUpdate:@"INSERT INTO cup (cupName,curveId,bakeDegree,dryAndWet,flavor ,aftermath,acid,taste,sweet,balance,overFeel,deveUnfull,overDeve,bakePaste,injure,germInjure ,beanFaceInjure,date,light) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",@"样品豆",@11,@5.5,@5.1,@3.2,@2.3,@2.3,@2.3,@2.3,@2.3,@2.3,@2.3,@2.3,@2.3,@2.3,@2.3,@2.3,[NSDate YMDStringFromDate:[NSDate date]],@0.0];
-        NSLog(@"%@",cup.name);
+        NSLog(@"%@",cup.cupUid);
         if (!result) {
             NSLog(@"添加咖啡豆失败");
         }
@@ -584,7 +578,7 @@ static DataBase *_dataBase = nil;
             if (!result) {
                 *rollback = YES;
                 NSLog(@"插入曲线失败，生豆信息有误");
-                [NSObject showHudTipStr:@"添加曲线失败，生豆信息有误"];
+                [NSObject showHudTipStr:@"修改曲线失败，生豆信息有误"];
                 return;
             }
         }
@@ -598,6 +592,20 @@ static DataBase *_dataBase = nil;
     [_queueDB inDatabase:^(FMDatabase * _Nonnull db) {
         result = [db executeUpdate:@"UPDATE beanInfo SET beanName = ?,nation = ?,area = ?,manor = ?,altitude = ?,beanSpecies = ?,grade = ?,process = ?,water = ?,supplier = ?,price = ?,stock = ?,time = ? WHERE beanUid = ?",bean.name,bean.nation,bean.area,bean.manor,[NSNumber numberWithFloat:bean.altitude],bean.beanSpecies,bean.grade,bean.process,[NSNumber numberWithFloat:bean.water],bean.supplier,[NSNumber numberWithFloat:bean.price],[NSNumber numberWithFloat:bean.stock],[NSDate YMDStringFromDate:bean.time],bean.beanUid];
         NSLog(@"%@",bean.name);
+        if (!result) {
+            NSLog(@"更新咖啡豆失败");
+        }
+    }];
+    return result;
+}
+
+- (BOOL)updateBeanWeight:(BeanModel *)bean{
+    static BOOL result = YES;
+    //计算使用后豆的库存量
+    BeanModel *beanW = [self queryBean:bean.beanUid];
+    bean.stock = beanW.stock - bean.weight;
+    [_queueDB inDatabase:^(FMDatabase * _Nonnull db) {
+        result = [db executeUpdate:@"UPDATE beanInfo SET stock = ? WHERE beanUid = ?",[NSNumber numberWithFloat:bean.stock],bean.beanUid];
         if (!result) {
             NSLog(@"更新咖啡豆失败");
         }

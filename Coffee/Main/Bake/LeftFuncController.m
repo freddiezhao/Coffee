@@ -201,20 +201,8 @@
 
 - (void)setPower{
     if (_myNet.powerStatus) {
-        [_powerBtn setImage:[UIImage imageNamed:@"btn_power_on"] forState:UIControlStateNormal];
-        _fireBtn.enabled = YES;
-        _coolingBtn.enabled = YES;
-        _stirBtn.enabled = YES;
-        _windPowerBtn.enabled = YES;
-        _firePowerBtn.enabled = YES;
         [_myNet setPower:[NSNumber numberWithUnsignedInteger:0x00]];
     }else{
-        [_powerBtn setImage:[UIImage imageNamed:@"btn_power_off"] forState:UIControlStateNormal];
-        _fireBtn.enabled = NO;
-        _coolingBtn.enabled = NO;
-        _stirBtn.enabled = NO;
-        _windPowerBtn.enabled = NO;
-        _firePowerBtn.enabled = NO;
         [_myNet setPower:[NSNumber numberWithUnsignedInteger:0xFF]];
     }
     _myNet.powerStatus = !_myNet.powerStatus;
@@ -230,11 +218,6 @@
 }
 
 - (void)clickStir{
-    if (_myNet.stirStatus) {
-        [_stirBtn setImage:[UIImage imageNamed:@"btn_stir_off"] forState:UIControlStateNormal];
-    }else{
-        [_stirBtn setImage:[UIImage imageNamed:@"btn_stir_on"] forState:UIControlStateNormal];
-    }
     if (_myNet.stirStatus && _myNet.coolStatus) {
         [_myNet setColdAndStir:[NSNumber numberWithUnsignedInteger:0x01]];
     }else if (!_myNet.stirStatus && _myNet.coolStatus){
@@ -248,11 +231,6 @@
 }
 
 - (void)clickCool{
-    if (_myNet.coolStatus) {
-        [_coolingBtn setImage:[UIImage imageNamed:@"btn_cold_off"] forState:UIControlStateNormal];
-    }else{
-        [_coolingBtn setImage:[UIImage imageNamed:@"btn_cold_on"] forState:UIControlStateNormal];
-    }
     if (_myNet.stirStatus && _myNet.coolStatus) {
         [_myNet setColdAndStir:[NSNumber numberWithUnsignedInteger:0x02]];
     }else if (!_myNet.stirStatus && _myNet.coolStatus){

@@ -62,7 +62,7 @@
             ChartYAxis *leftAxis = _chartView.leftAxis;
             leftAxis.labelTextColor = [UIColor colorWithRed:184/255.0 green:190/255.0 blue:204/255.0 alpha:1];
             leftAxis.labelFont = [UIFont fontWithName:@"Avenir-Light" size:12];
-            leftAxis.axisMaximum = 8000 - 0.5;
+            leftAxis.axisMaximum = 600 - 0.5;
             //leftAxisMax = 140 - 0.5;
             leftAxis.axisMinimum = 0.0;
             leftAxis.spaceTop = 30.f;
@@ -76,7 +76,7 @@
             ChartYAxis *rightAxis = _chartView.rightAxis;
             rightAxis.labelFont = [UIFont fontWithName:@"Avenir-Light" size:12];
             rightAxis.labelTextColor = [UIColor colorWithRed:184/255.0 green:190/255.0 blue:204/255.0 alpha:1];
-            rightAxis.axisMaximum = 10.0;
+            rightAxis.axisMaximum = 50.0;
             rightAxis.axisMinimum = 0;
             rightAxis.drawGridLinesEnabled = NO;
             rightAxis.granularityEnabled = NO;
@@ -90,7 +90,7 @@
 
 - (void)setDataValue
 {
-    LineChartDataSet *set1 = nil, *set2 = nil, *set3 = nil, *set4 = nil;
+    LineChartDataSet *set1 = nil, *set2 = nil, *set3 = nil, *set4 = nil, *set5 = nil;
     
     if (_chartView.data.dataSetCount > 0)
     {
@@ -106,6 +106,8 @@
         set4 = (LineChartDataSet *)_chartView.data.dataSets[3];
         set4.values = _yVals_Environment;
         
+        set5 = (LineChartDataSet *)_chartView.data.dataSets[4];
+        set5.values = _yVals_Diff;
         
         if (_yVals_Out.count > 150) {
             _chartView.xAxis.axisRange = 15;
@@ -171,11 +173,24 @@
         //set1.cubicIntensity = 1;//曲线弧度
         set4.highlightEnabled = NO;//选中拐点,是否开启高亮效果(显示十字线)
         
+        set5 = [[LineChartDataSet alloc] initWithValues:_yVals_Diff label:LocalString(@"升温率")];
+        set5.axisDependency = AxisDependencyRight;
+        [set5 setColor:[UIColor colorWithRed:255/255.0 green:71/255.0 blue:51/255.0 alpha:1]];
+        [set5 setCircleColor:UIColor.whiteColor];
+        set5.lineWidth = 2.0;
+        set5.circleRadius = 0.0;
+        set5.fillAlpha = 65/255.0;
+        set5.fillColor = [UIColor colorWithRed:255/255.0 green:71/255.0 blue:51/255.0 alpha:1];
+        set5.drawCircleHoleEnabled = NO;
+        set5.drawValuesEnabled = NO;//是否在拐点处显示数据
+        set5.highlightEnabled = NO;//选中拐点,是否开启高亮效果(显示十字线)
+        
         NSMutableArray *dataSets = [[NSMutableArray alloc] init];
         [dataSets addObject:set1];
         [dataSets addObject:set2];
         [dataSets addObject:set3];
         [dataSets addObject:set4];
+        [dataSets addObject:set5];
         
         LineChartData *data = [[LineChartData alloc] initWithDataSets:dataSets];
         [data setValueTextColor:UIColor.whiteColor];

@@ -76,9 +76,7 @@
 - (void)sliderValueChanged:(id)sender {
     UISlider *slider = (UISlider *)sender;
     _sliderValue.text = [NSString stringWithFormat:@"%d",(int)slider.value];
-    if (self.sliderBlock) {
-        self.sliderBlock((int)slider.value);
-    }
+    
 }
 
 - (void)showView{
@@ -87,6 +85,9 @@
 
 - (void)dismissVC{
     [self dismissViewControllerAnimated:NO completion:nil];
+    if (self.sliderBlock) {
+        self.sliderBlock((int)_mySlider.value);
+    }
 }
 
 @end

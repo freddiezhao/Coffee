@@ -32,6 +32,7 @@
             _rawBean.textColor = [UIColor colorWithHexString:@"999999"];
             _rawBean.font = [UIFont systemFontOfSize:13.0];
             _rawBean.textAlignment = NSTextAlignmentLeft;
+            _rawBean.adjustsFontSizeToFitWidth = YES;
             [self.contentView addSubview:_rawBean];
         }
         
@@ -40,6 +41,7 @@
             _bakedBean.textColor = [UIColor colorWithHexString:@"999999"];
             _bakedBean.font = [UIFont systemFontOfSize:13.0];
             _bakedBean.textAlignment = NSTextAlignmentLeft;
+            _bakedBean.adjustsFontSizeToFitWidth = YES;
             [self.contentView addSubview:_bakedBean];
         }
         
@@ -48,6 +50,7 @@
             _outWaterRate.textColor = [UIColor colorWithHexString:@"999999"];
             _outWaterRate.font = [UIFont systemFontOfSize:13.0];
             _outWaterRate.textAlignment = NSTextAlignmentLeft;
+            _outWaterRate.adjustsFontSizeToFitWidth = YES;
             [self.contentView addSubview:_outWaterRate];
         }
     }

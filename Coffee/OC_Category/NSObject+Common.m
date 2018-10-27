@@ -24,7 +24,7 @@
         [hud setOffset:CGPointMake(0, (ScreenHeight / 2 - 141) / HScale)];
         hud.removeFromSuperViewOnHide = YES;
         hud.bezelView.backgroundColor = [UIColor colorWithRed:0/255.0 green:0/255.0 blue:0/255.0 alpha:0.8];
-        [hud hideAnimated:YES afterDelay:1.0];
+        [hud hideAnimated:YES afterDelay:1.5];
     }
 }
 

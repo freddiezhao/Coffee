@@ -15,6 +15,8 @@
 #import "DeviceModel.h"
 #import "FMDB.h"
 #import "SearchCurveController.h"
+#import "QRCodeScanController.h"
+
 
 NSString *const CellIdentifier_CurrentCurve = @"CellID_CurrentCurve";
 
@@ -26,6 +28,8 @@ NSString *const CellIdentifier_CurrentCurve = @"CellID_CurrentCurve";
 @property (nonatomic, strong) NSArray *titleData;
 
 @property (nonatomic, strong) UITableView *currentTable;
+@property (nonatomic, strong) UIView *noCurveView;
+@property (nonatomic, strong) UILabel *noCurveLabel;
 @property (nonatomic, strong) NSMutableArray *currentReportArr;
 
 @end
@@ -43,10 +47,11 @@ static float HEIGHT_HEADER = 36.f;
     if (!_currentReportArr) {
         _currentReportArr = [[NSMutableArray alloc] init];
     }
-    _currentReportArr = [self getAllReportWithCurrentDevice];
     _titleData = [self titleData];
     _mySegment = [self mySegment];
+    _currentReportArr = [self getAllReportWithCurrentDevice];
     _currentTable = [self currentTable];
+    _noCurveView = [self noCurveView];
 }
 
 - (void)viewWillAppear:(BOOL)animated{
@@ -111,17 +116,6 @@ static float HEIGHT_HEADER = 36.f;
     return _mySegment;
 }
 
-//- (UISearchBar *)curveSearch{
-//    if (!_curveSearch) {
-//        _curveSearch = [[UISearchBar alloc] initWithFrame:CGRectMake(0, 0, ScreenWidth, 44)];
-//        _curveSearch.placeholder = LocalString(@"搜索");
-//        _curveSearch.showsCancelButton = YES;
-//        _curveSearch.searchBarStyle = UISearchBarStyleProminent;
-//        [self.view addSubview:_curveSearch];
-//    }
-//    return _curveSearch;
-//}
-
 - (NSArray *)titleData {
     if (!_titleData) {
         _titleData = @[@"当前设备",@"所有设备",@"来自分享"];
@@ -132,11 +126,12 @@ static float HEIGHT_HEADER = 36.f;
 - (UITableView *)currentTable{
     if (!_currentTable) {
         _currentTable = ({
-            TouchTableView *tableView = [[TouchTableView alloc] initWithFrame:CGRectMake(0, 44/HScale, ScreenWidth, ScreenHeight - 64 - (44 + 44)/HScale) style:UITableViewStylePlain];
+            TouchTableView *tableView = [[TouchTableView alloc] initWithFrame:CGRectMake(0, 44/HScale, ScreenWidth, ScreenHeight - 64 - (44 + tabbarHeight)/HScale) style:UITableViewStylePlain];
             tableView.backgroundColor = [UIColor clearColor];
             tableView.separatorColor = [UIColor colorWithRed:0/255.0 green:0/255.0 blue:0/255.0 alpha:0.08];
             tableView.dataSource = self;
             tableView.delegate = self;
+            tableView.hidden = YES;
             [tableView registerClass:[CurrentCurveCell class] forCellReuseIdentifier:CellIdentifier_CurrentCurve];
             [self.view addSubview:tableView];
             tableView.estimatedRowHeight = 0;
@@ -163,6 +158,40 @@ static float HEIGHT_HEADER = 36.f;
         });
     }
     return _currentTable;
+}
+
+- (UIView *)noCurveView{
+    if (!_noCurveView) {
+        _noCurveView = [[UIView alloc] init];
+        _noCurveView.frame = CGRectMake(0, 44, ScreenWidth, ScreenHeight);
+        _noCurveView.backgroundColor = [UIColor colorWithRed:246/255.0 green:246/255.0 blue:246/255.0 alpha:1];
+        [self.view addSubview:_noCurveView];
+        
+        UIImageView *deviceImage = [[UIImageView alloc] init];
+        deviceImage.image = [UIImage imageNamed:@"img_logo_gray"];
+        [_noCurveView addSubview:deviceImage];
+        
+        _noCurveLabel = [[UILabel alloc] init];
+        _noCurveLabel.font = [UIFont fontWithName:@"PingFangSC-Regular" size:14];
+        _noCurveLabel.textAlignment = NSTextAlignmentCenter;
+        _noCurveLabel.adjustsFontSizeToFitWidth = YES;
+        _noCurveLabel.textColor = [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1];
+        [_noCurveView addSubview:_noCurveLabel];
+        
+        [deviceImage mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.size.mas_equalTo(CGSizeMake(140.f / WScale, 110.f / HScale));
+            make.centerX.equalTo(_noCurveView.mas_centerX);
+            make.top.equalTo(_noCurveView.mas_top).offset(120.f / HScale);
+        }];
+        
+        [_noCurveLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.size.mas_equalTo(CGSizeMake(ScreenWidth, 20.f / HScale));
+            make.centerX.equalTo(_noCurveView.mas_centerX);
+            make.top.equalTo(_noCurveView.mas_top).offset(252.f / HScale);
+        }];
+        
+    }
+    return _noCurveView;
 }
 
 #pragma mark - UITableView
@@ -229,7 +258,12 @@ static float HEIGHT_HEADER = 36.f;
     [headerView addSubview:textLabel];
     
     ReportModel *report = _currentReportArr[section][0];
-    textLabel.text = [NSDate YMDStringFromDate:report.date];
+    if (report.date) {
+        textLabel.text = [NSDate YMDStringFromDate:report.date];
+    }else{
+        textLabel.text = LocalString(@"No date");
+    }
+    
 
     return headerView;
 }
@@ -253,42 +287,20 @@ static float HEIGHT_HEADER = 36.f;
         BOOL result = NO;
         result = [db deleteqReport:report];
         if (result) {
-            [_currentReportArr[indexPath.section] removeObjectAtIndex:indexPath.row];
-            [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
+            if ([_currentReportArr[indexPath.section] count] == 1) {
+                [_currentReportArr removeObjectAtIndex:indexPath.section];
+                [tableView deleteSections:[NSIndexSet indexSetWithIndex:indexPath.section] withRowAnimation:UITableViewRowAnimationLeft];
+            }else{
+                [_currentReportArr[indexPath.section] removeObjectAtIndex:indexPath.row];
+                [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
+
+            }
             [NSObject showHudTipStr:LocalString(@"删除成功")];
         }else{
             [NSObject showHudTipStr:LocalString(@"删除失败")];
         }
     }
 }
-
-#pragma mark - uisearchbar delegate
-//- (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar{
-//    _searchTableView.hidden = NO;
-//    [searchBar setShowsCancelButton:YES animated:YES];
-//}
-//
-//- (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar{
-//    _searchTableView.hidden = YES;
-//    [searchBar resignFirstResponder];
-//    searchBar.text = @"";
-//    [searchBar setShowsCancelButton:NO animated:YES];
-//    [_searchData removeAllObjects];
-//    [_searchTableView reloadData];
-//}
-//
-//- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText{
-//    for (SectionModel *section in _sectionData) {
-//        for (CellModel *cell in section.cellArray) {
-//            if ([cell.title containsString:searchText]) {
-//                cell.groupName = section.groupName;
-//                [_searchData addObject:cell];
-//                [_searchTableView reloadData];
-//                NSLog(@"%@",cell.title);
-//            }
-//        }
-//    }
-//}
 
 #pragma mark - UISegment delegate
 -(void)didClickMySegmentAction:(UISegmentedControl *)Seg{
@@ -297,28 +309,22 @@ static float HEIGHT_HEADER = 36.f;
     switch (Index) {
         case 0:
         {
-            [_currentTable.mj_header beginRefreshing];
             [_currentReportArr removeAllObjects];
             [_currentReportArr addObjectsFromArray:[self getAllReportWithCurrentDevice]];
             [_currentTable reloadData];
-            [_currentTable.mj_header endRefreshing];
         }
             break;
         case 1:
         {
-            [_currentTable.mj_header beginRefreshing];
             [_currentReportArr removeAllObjects];
             [_currentReportArr addObjectsFromArray:[self getAllReport]];
             [_currentTable reloadData];
-            [_currentTable.mj_header endRefreshing];
         }
             break;
         case 2:
         {
-            [_currentTable.mj_header beginRefreshing];
             [self getAllSharedReport];
             [_currentTable reloadData];
-            [_currentTable.mj_header endRefreshing];
         }
             break;
             
@@ -335,12 +341,13 @@ static float HEIGHT_HEADER = 36.f;
 }
 
 - (void)scanQRcode{
-    
+    QRCodeScanController *scanVC = [[QRCodeScanController alloc] init];
+    [self.navigationController pushViewController:scanVC animated:YES];
 }
 
 - (void)searchCurve{
     SearchCurveController *searchVC = [[SearchCurveController alloc] init];
-    searchVC.curveArr = [self getAllReport];
+    searchVC.curveArr = [[DataBase shareDataBase] queryAllReport];
     UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:searchVC];
     nav.modalPresentationStyle = UIModalPresentationOverCurrentContext;//可以保持本VC的UI显示
     nav.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
@@ -348,11 +355,20 @@ static float HEIGHT_HEADER = 36.f;
     searchVC.dismissBlock = ^{
         [self.rdv_tabBarController setTabBarHidden:NO animated:YES];
     };
+    searchVC.isRela = NO;
     [self presentViewController:nav animated:YES completion:nil];
 }
 
 - (NSMutableArray *)getAllReport{
     NSMutableArray *arr = [[DataBase shareDataBase] queryAllReport];
+    if (arr.count > 0) {
+        self.currentTable.hidden = NO;
+        self.noCurveView.hidden = YES;
+    }else{
+        self.currentTable.hidden = YES;
+        self.noCurveView.hidden = NO;
+        _noCurveLabel.text = LocalString(@"您还未生成过曲线");
+    }
     arr = [self sortByDate:arr];
     NSMutableArray *classArr = [self classArray:arr];
     return classArr;
@@ -360,6 +376,14 @@ static float HEIGHT_HEADER = 36.f;
 
 - (NSMutableArray *)getAllReportWithCurrentDevice{
     NSMutableArray *arr = [[DataBase shareDataBase] queryAllReport:[NetWork shareNetWork].connectedDevice];
+    if (arr.count > 0) {
+        self.currentTable.hidden = NO;
+        self.noCurveView.hidden = YES;
+    }else{
+        self.currentTable.hidden = YES;
+        self.noCurveView.hidden = NO;
+        _noCurveLabel.text = LocalString(@"该设备还未生成过曲线");
+    }
     arr = [self sortByDate:arr];
     NSMutableArray *classArr = [self classArray:arr];
     return classArr;
@@ -367,6 +391,14 @@ static float HEIGHT_HEADER = 36.f;
 
 - (void)getAllSharedReport{
     NSMutableArray *arr = [[DataBase shareDataBase] queryAllSharedReport];
+    if (arr.count > 0) {
+        self.currentTable.hidden = NO;
+        self.noCurveView.hidden = YES;
+    }else{
+        self.currentTable.hidden = YES;
+        self.noCurveView.hidden = NO;
+        _noCurveLabel.text = LocalString(@"您还没有添加过被分享的曲线");
+    }
     arr = [self sortByDate:arr];
     NSMutableArray *classArr = [self classArray:arr];
     if (_currentReportArr.count > 0) {
@@ -375,9 +407,6 @@ static float HEIGHT_HEADER = 36.f;
     [_currentReportArr addObjectsFromArray:classArr];
 }
 
-- (void)refreshTable{
-    //_currentReportArr = [self getAllReport:nil];
-}
 #pragma mark - 排序
 - (NSMutableArray *)sortByDate:(NSMutableArray *)arr{
     [arr sortUsingComparator:^NSComparisonResult(ReportModel *obj1, ReportModel *obj2) {

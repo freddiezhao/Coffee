@@ -18,6 +18,18 @@
 @property (nonatomic, strong) UIView *rightFuncView;
 @property (nonatomic, strong) UIButton *dismissBtn;
 
+@property (nonatomic, strong) UIButton *startBake;
+@property (nonatomic, strong) UIButton *dehyOver;
+@property (nonatomic, strong) UIButton *firstBurst;
+@property (nonatomic, strong) UIButton *firstBurstOver;
+@property (nonatomic, strong) UIButton *secondBurst;
+@property (nonatomic, strong) UIButton *secondBurstOver;
+@property (nonatomic, strong) UIButton *bakeOver;
+@property (nonatomic, strong) UIButton *fireorwindPower;
+@property (nonatomic, strong) UIButton *remark;
+@property (nonatomic, strong) UIButton *saveCurveBtn;
+@property (nonatomic, strong) UISwitch *curveSwitch;
+
 @end
 
 @implementation RightFuncController
@@ -44,7 +56,7 @@
 - (UIButton *)dismissBtn{
     if (!_dismissBtn) {
         _dismissBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        _dismissBtn.frame = CGRectMake(0, 0, (ScreenWidth - 224.5) / WScaleT, ScreenHeight);
+        _dismissBtn.frame = CGRectMake(0, 0, ScreenWidth - 224.5 / WScaleT, ScreenHeight);
         [_dismissBtn setBackgroundColor:[UIColor clearColor]];
         [_dismissBtn addTarget:self action:@selector(dismissVC) forControlEvents:UIControlEventTouchUpInside];
         [self.view addSubview:_dismissBtn];
@@ -53,95 +65,150 @@
 }
 
 - (void)drawRightViewContent{
-    UIButton *startBake = [[UIButton alloc] initWithFrame:CGRectMake(458/WScaleT,15/HScaleT,90/WScaleT,40/HScaleT)];
-    [startBake setTitle:LocalString(@"烘焙开始") forState:UIControlStateNormal];
-    [startBake.titleLabel setFont:[UIFont fontWithName:@"PingFangSC-Light" size:15]];
-    [startBake setTitleColor:[UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1] forState:UIControlStateNormal];
-    [startBake setButtonStyleWithColor:[UIColor clearColor] Width:1.0 cornerRadius:20/HScaleT];
-    [startBake setBackgroundColor:[UIColor whiteColor]];
-    [startBake addTarget:self action:@selector(startBake) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:startBake];
+    NetWork *net = [NetWork shareNetWork];
     
-    UIButton *dehyOver = [[UIButton alloc] initWithFrame:CGRectMake(563/WScaleT,15/HScaleT,90/WScaleT,40/HScaleT)];
-    [dehyOver setTitle:LocalString(@"脱水结束") forState:UIControlStateNormal];
-    [dehyOver.titleLabel setFont:[UIFont fontWithName:@"PingFangSC-Light" size:15]];
-    [dehyOver setTitleColor:[UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1] forState:UIControlStateNormal];
-    [dehyOver setButtonStyleWithColor:[UIColor clearColor] Width:1.0 cornerRadius:20/HScaleT];
-    [dehyOver setBackgroundColor:[UIColor whiteColor]];
-    [dehyOver addTarget:self action:@selector(devyOver) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:dehyOver];
+    _startBake = [[UIButton alloc] initWithFrame:CGRectMake(458/WScaleT,15/HScaleT,90/WScaleT,40/HScaleT)];
+    [_startBake setTitle:LocalString(@"烘焙开始") forState:UIControlStateNormal];
+    [_startBake.titleLabel setFont:[UIFont fontWithName:@"PingFangSC-Light" size:15]];
+    if (net.isStartBake) {
+        [_startBake setTitleColor:[UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1] forState:UIControlStateNormal];
+        _startBake.enabled = NO;
+    }else{
+        [_startBake setTitleColor:[UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1] forState:UIControlStateNormal];
+        _startBake.enabled = YES;
+    }
+    [_startBake setButtonStyleWithColor:[UIColor clearColor] Width:1.0 cornerRadius:20/HScaleT];
+    [_startBake setBackgroundColor:[UIColor whiteColor]];
+    [_startBake addTarget:self action:@selector(clickStartBake) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:_startBake];
     
-    UIButton *firstBurst = [[UIButton alloc] initWithFrame:CGRectMake(458/WScaleT,70/HScaleT,90/WScaleT,40/HScaleT)];
-    [firstBurst setTitle:LocalString(@"一爆开始") forState:UIControlStateNormal];
-    [firstBurst.titleLabel setFont:[UIFont fontWithName:@"PingFangSC-Light" size:15]];
-    [firstBurst setTitleColor:[UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1] forState:UIControlStateNormal];
-    [firstBurst setButtonStyleWithColor:[UIColor clearColor] Width:1.0 cornerRadius:20/HScaleT];
-    [firstBurst setBackgroundColor:[UIColor whiteColor]];
-    [firstBurst addTarget:self action:@selector(firstBurst) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:firstBurst];
+    _dehyOver = [[UIButton alloc] initWithFrame:CGRectMake(563/WScaleT,15/HScaleT,90/WScaleT,40/HScaleT)];
+    [_dehyOver setTitle:LocalString(@"脱水结束") forState:UIControlStateNormal];
+    [_dehyOver.titleLabel setFont:[UIFont fontWithName:@"PingFangSC-Light" size:15]];
+    if (net.isStartBake && !net.isDevyOver) {
+        [_dehyOver setTitleColor:[UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1] forState:UIControlStateNormal];
+        _dehyOver.enabled = YES;
+    }else{
+        [_dehyOver setTitleColor:[UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1] forState:UIControlStateNormal];
+        _dehyOver.enabled = NO;
+    }
+    [_dehyOver setButtonStyleWithColor:[UIColor clearColor] Width:1.0 cornerRadius:20/HScaleT];
+    [_dehyOver setBackgroundColor:[UIColor whiteColor]];
+    [_dehyOver addTarget:self action:@selector(clickDevyOver) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:_dehyOver];
     
-    UIButton *firstBurstOver = [[UIButton alloc] initWithFrame:CGRectMake(563/WScaleT,70/HScaleT,90/WScaleT,40/HScaleT)];
-    [firstBurstOver setTitle:LocalString(@"一爆结束") forState:UIControlStateNormal];
-    [firstBurstOver.titleLabel setFont:[UIFont fontWithName:@"PingFangSC-Light" size:15]];
-    [firstBurstOver setTitleColor:[UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1] forState:UIControlStateNormal];
-    [firstBurstOver setButtonStyleWithColor:[UIColor clearColor] Width:1.0 cornerRadius:20/HScaleT];
-    [firstBurstOver setBackgroundColor:[UIColor whiteColor]];
-    [firstBurstOver addTarget:self action:@selector(firstBurstOver) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:firstBurstOver];
+    _firstBurst = [[UIButton alloc] initWithFrame:CGRectMake(458/WScaleT,70/HScaleT,90/WScaleT,40/HScaleT)];
+    [_firstBurst setTitle:LocalString(@"一爆开始") forState:UIControlStateNormal];
+    [_firstBurst.titleLabel setFont:[UIFont fontWithName:@"PingFangSC-Light" size:15]];
+    if (net.isStartBake && !net.isFirstBurst) {
+        [_firstBurst setTitleColor:[UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1] forState:UIControlStateNormal];
+        _firstBurst.enabled = YES;
+    }else{
+        [_firstBurst setTitleColor:[UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1] forState:UIControlStateNormal];
+        _firstBurst.enabled = NO;
+    }
+    [_firstBurst setButtonStyleWithColor:[UIColor clearColor] Width:1.0 cornerRadius:20/HScaleT];
+    [_firstBurst setBackgroundColor:[UIColor whiteColor]];
+    [_firstBurst addTarget:self action:@selector(clickFirstBurst) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:_firstBurst];
     
-    UIButton *secondBurst = [[UIButton alloc] initWithFrame:CGRectMake(458/WScaleT,125/HScaleT,90/WScaleT,40/HScaleT)];
-    [secondBurst setTitle:LocalString(@"二爆开始") forState:UIControlStateNormal];
-    [secondBurst.titleLabel setFont:[UIFont fontWithName:@"PingFangSC-Light" size:15]];
-    [secondBurst setTitleColor:[UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1] forState:UIControlStateNormal];
-    [secondBurst setButtonStyleWithColor:[UIColor clearColor] Width:1.0 cornerRadius:20/HScaleT];
-    [secondBurst setBackgroundColor:[UIColor whiteColor]];
-    [secondBurst addTarget:self action:@selector(secondBurst) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:secondBurst];
+    _firstBurstOver = [[UIButton alloc] initWithFrame:CGRectMake(563/WScaleT,70/HScaleT,90/WScaleT,40/HScaleT)];
+    [_firstBurstOver setTitle:LocalString(@"一爆结束") forState:UIControlStateNormal];
+    [_firstBurstOver.titleLabel setFont:[UIFont fontWithName:@"PingFangSC-Light" size:15]];
+    if (net.isStartBake && !net.isFirstBurstOver) {
+        [_firstBurstOver setTitleColor:[UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1] forState:UIControlStateNormal];
+        _firstBurst.enabled = YES;
+    }else{
+        [_firstBurstOver setTitleColor:[UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1] forState:UIControlStateNormal];
+        _firstBurst.enabled = NO;
+    }
+    [_firstBurstOver setButtonStyleWithColor:[UIColor clearColor] Width:1.0 cornerRadius:20/HScaleT];
+    [_firstBurstOver setBackgroundColor:[UIColor whiteColor]];
+    [_firstBurstOver addTarget:self action:@selector(clickFirstBurstOver) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:_firstBurstOver];
     
-    UIButton *secondBurstOver = [[UIButton alloc] initWithFrame:CGRectMake(563/WScaleT,125/HScaleT,90/WScaleT,40/HScaleT)];
-    [secondBurstOver setTitle:LocalString(@"二爆结束") forState:UIControlStateNormal];
-    [secondBurstOver.titleLabel setFont:[UIFont fontWithName:@"PingFangSC-Light" size:15]];
-    [secondBurstOver setTitleColor:[UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1] forState:UIControlStateNormal];
-    [secondBurstOver setButtonStyleWithColor:[UIColor clearColor] Width:1.0 cornerRadius:20/HScaleT];
-    [secondBurstOver setBackgroundColor:[UIColor whiteColor]];
-    [secondBurstOver addTarget:self action:@selector(secondBurstOver) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:secondBurstOver];
+    _secondBurst = [[UIButton alloc] initWithFrame:CGRectMake(458/WScaleT,125/HScaleT,90/WScaleT,40/HScaleT)];
+    [_secondBurst setTitle:LocalString(@"二爆开始") forState:UIControlStateNormal];
+    [_secondBurst.titleLabel setFont:[UIFont fontWithName:@"PingFangSC-Light" size:15]];
+    if (net.isStartBake && !net.isSecondBurst) {
+        [_secondBurst setTitleColor:[UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1] forState:UIControlStateNormal];
+        _secondBurst.enabled = YES;
+    }else{
+        [_secondBurst setTitleColor:[UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1] forState:UIControlStateNormal];
+        _secondBurst.enabled = NO;
+    }
+    [_secondBurst setButtonStyleWithColor:[UIColor clearColor] Width:1.0 cornerRadius:20/HScaleT];
+    [_secondBurst setBackgroundColor:[UIColor whiteColor]];
+    [_secondBurst addTarget:self action:@selector(clickSecondBurst) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:_secondBurst];
     
-    UIButton *bakeOver = [[UIButton alloc] initWithFrame:CGRectMake(458/WScaleT,180/HScaleT,90/WScaleT,40/HScaleT)];
-    [bakeOver setTitle:LocalString(@"烘焙结束") forState:UIControlStateNormal];
-    [bakeOver.titleLabel setFont:[UIFont fontWithName:@"PingFangSC-Light" size:15]];
-    [bakeOver setTitleColor:[UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1] forState:UIControlStateNormal];
-    [bakeOver setButtonStyleWithColor:[UIColor clearColor] Width:1.0 cornerRadius:20/HScaleT];
-    [bakeOver setBackgroundColor:[UIColor whiteColor]];
-    [bakeOver addTarget:self action:@selector(bakeOver) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:bakeOver];
+    _secondBurstOver = [[UIButton alloc] initWithFrame:CGRectMake(563/WScaleT,125/HScaleT,90/WScaleT,40/HScaleT)];
+    [_secondBurstOver setTitle:LocalString(@"二爆结束") forState:UIControlStateNormal];
+    [_secondBurstOver.titleLabel setFont:[UIFont fontWithName:@"PingFangSC-Light" size:15]];
+    if (net.isStartBake && !net.isSecondBurstOver) {
+        [_secondBurstOver setTitleColor:[UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1] forState:UIControlStateNormal];
+        _secondBurstOver.enabled = YES;
+    }else{
+        [_secondBurstOver setTitleColor:[UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1] forState:UIControlStateNormal];
+        _secondBurstOver.enabled = NO;
+    }
+    [_secondBurstOver setButtonStyleWithColor:[UIColor clearColor] Width:1.0 cornerRadius:20/HScaleT];
+    [_secondBurstOver setBackgroundColor:[UIColor whiteColor]];
+    [_secondBurstOver addTarget:self action:@selector(clickSecondBurstOver) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:_secondBurstOver];
     
-    UIButton *fireorwindPower = [[UIButton alloc] initWithFrame:CGRectMake(563/WScaleT,180/HScaleT,90/WScaleT,40/HScaleT)];
-    [fireorwindPower setTitle:LocalString(@"火力/风力") forState:UIControlStateNormal];
-    [fireorwindPower.titleLabel setFont:[UIFont fontWithName:@"PingFangSC-Light" size:15]];
-    [fireorwindPower setTitleColor:[UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1] forState:UIControlStateNormal];
-    [fireorwindPower setButtonStyleWithColor:[UIColor clearColor] Width:1.0 cornerRadius:20/HScaleT];
-    [fireorwindPower setBackgroundColor:[UIColor whiteColor]];
-    [fireorwindPower addTarget:self action:@selector(fireWindSlide) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:fireorwindPower];
+    _bakeOver = [[UIButton alloc] initWithFrame:CGRectMake(458/WScaleT,180/HScaleT,90/WScaleT,40/HScaleT)];
+    [_bakeOver setTitle:LocalString(@"烘焙结束") forState:UIControlStateNormal];
+    [_bakeOver.titleLabel setFont:[UIFont fontWithName:@"PingFangSC-Light" size:15]];
+    if (net.isStartBake && !net.isBakeOver) {
+        [_bakeOver setTitleColor:[UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1] forState:UIControlStateNormal];
+        _bakeOver.enabled = YES;
+    }else{
+        [_bakeOver setTitleColor:[UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1] forState:UIControlStateNormal];
+        _bakeOver.enabled = NO;
+    }
+    [_bakeOver setButtonStyleWithColor:[UIColor clearColor] Width:1.0 cornerRadius:20/HScaleT];
+    [_bakeOver setBackgroundColor:[UIColor whiteColor]];
+    [_bakeOver addTarget:self action:@selector(clickBakeOver) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:_bakeOver];
     
-    UIButton *remark = [[UIButton alloc] initWithFrame:CGRectMake(458/WScaleT,235/HScaleT,90/WScaleT,40/HScaleT)];
-    [remark setTitle:LocalString(@"备注记录") forState:UIControlStateNormal];
-    [remark.titleLabel setFont:[UIFont fontWithName:@"PingFangSC-Light" size:15]];
-    [remark setTitleColor:[UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1] forState:UIControlStateNormal];
-    [remark setButtonStyleWithColor:[UIColor clearColor] Width:1.0 cornerRadius:20/HScaleT];
-    [remark setBackgroundColor:[UIColor whiteColor]];
-    [remark addTarget:self action:@selector(startBake) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:remark];
+    _fireorwindPower = [[UIButton alloc] initWithFrame:CGRectMake(563/WScaleT,180/HScaleT,90/WScaleT,40/HScaleT)];
+    [_fireorwindPower setTitle:LocalString(@"火力/风力") forState:UIControlStateNormal];
+    [_fireorwindPower.titleLabel setFont:[UIFont fontWithName:@"PingFangSC-Light" size:15]];
+    if (net.isStartBake) {
+        [_fireorwindPower setTitleColor:[UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1] forState:UIControlStateNormal];
+        _fireorwindPower.enabled = YES;
+    }else{
+        [_fireorwindPower setTitleColor:[UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1] forState:UIControlStateNormal];
+        _fireorwindPower.enabled = NO;
+    }
+    [_fireorwindPower setButtonStyleWithColor:[UIColor clearColor] Width:1.0 cornerRadius:20/HScaleT];
+    [_fireorwindPower setBackgroundColor:[UIColor whiteColor]];
+    [_fireorwindPower addTarget:self action:@selector(fireWindSlide) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:_fireorwindPower];
     
-    UIButton *saveCurve = [[UIButton alloc] initWithFrame:CGRectMake(563/WScaleT,235/HScaleT,90/WScaleT,40/HScaleT)];
-    [saveCurve setTitle:LocalString(@"保存曲线") forState:UIControlStateNormal];
-    [saveCurve.titleLabel setFont:[UIFont fontWithName:@"PingFangSC-Light" size:15]];
-    [saveCurve setTitleColor:[UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1] forState:UIControlStateNormal];
-    [saveCurve setButtonStyleWithColor:[UIColor clearColor] Width:1.0 cornerRadius:20/HScaleT];
-    [saveCurve setBackgroundColor:[UIColor whiteColor]];
-    [saveCurve addTarget:self action:@selector(saveCurve) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:saveCurve];
+    _remark = [[UIButton alloc] initWithFrame:CGRectMake(458/WScaleT,235/HScaleT,90/WScaleT,40/HScaleT)];
+    [_remark setTitle:LocalString(@"备注记录") forState:UIControlStateNormal];
+    [_remark.titleLabel setFont:[UIFont fontWithName:@"PingFangSC-Light" size:15]];
+    if (net.isStartBake) {
+        [_remark setTitleColor:[UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1] forState:UIControlStateNormal];
+    }else{
+        [_remark setTitleColor:[UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1] forState:UIControlStateNormal];
+    }
+    [_remark setButtonStyleWithColor:[UIColor clearColor] Width:1.0 cornerRadius:20/HScaleT];
+    [_remark setBackgroundColor:[UIColor whiteColor]];
+    _remark.enabled = NO;
+    [_remark addTarget:self action:@selector(startBake) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:_remark];
+    
+    _saveCurveBtn = [[UIButton alloc] initWithFrame:CGRectMake(563/WScaleT,235/HScaleT,90/WScaleT,40/HScaleT)];
+    [_saveCurveBtn setTitle:LocalString(@"保存曲线") forState:UIControlStateNormal];
+    [_saveCurveBtn.titleLabel setFont:[UIFont fontWithName:@"PingFangSC-Light" size:15]];
+    [_saveCurveBtn setTitleColor:[UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1] forState:UIControlStateNormal];
+    [_saveCurveBtn setButtonStyleWithColor:[UIColor clearColor] Width:1.0 cornerRadius:20/HScaleT];
+    [_saveCurveBtn setBackgroundColor:[UIColor whiteColor]];
+    [_saveCurveBtn addTarget:self action:@selector(saveCurve) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:_saveCurveBtn];
     
     UILabel *curveLabel = [[UILabel alloc] init];
     curveLabel.frame = CGRectMake(472.5/WScaleT,327.5/HScaleT,60/WScaleT,21/HScaleT);
@@ -150,21 +217,22 @@
     curveLabel.textColor = [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1];
     [self.view addSubview:curveLabel];
     
-    UISwitch *curveSwitch = [[UISwitch alloc] init];
-    curveSwitch.frame = CGRectMake(582/WScaleT,322.5/HScaleT,51/WScaleT,31/HScaleT);
-    curveSwitch.layer.masksToBounds = YES;
-    [curveSwitch addTarget:self action:@selector(switchAction:) forControlEvents:UIControlEventValueChanged];
-    [self.view addSubview:curveSwitch];
+    _curveSwitch = [[UISwitch alloc] init];
+    _curveSwitch.frame = CGRectMake(582/WScaleT,322.5/HScaleT,51/WScaleT,31/HScaleT);
+    _curveSwitch.layer.masksToBounds = YES;
+    [_curveSwitch addTarget:self action:@selector(switchAction:) forControlEvents:UIControlEventValueChanged];
+    _curveSwitch.on = _isRelaOn;
+    [self.view addSubview:_curveSwitch];
 }
 
 #pragma mark - Actions
-- (void)startBake{
+- (void)clickStartBake{
     NetWork *net = [NetWork shareNetWork];
-    [net.myTimer setFireDate:[NSDate distantFuture]];
+    //[net.myTimer setFireDate:[NSDate distantFuture]];
     
     YAlertViewController *alert = [[YAlertViewController alloc] init];
     alert.lBlock = ^{
-        [net.myTimer setFireDate:[NSDate date]];
+        //[net.myTimer setFireDate:[NSDate date]];
     };
     alert.rBlock = ^{
         net.deviceTimerStatus = 0;
@@ -174,6 +242,11 @@
         event.eventId = 0;//类型为0
         event.eventTime = 0;
         event.eventText = LocalString(@"烘焙开始");
+        if (net.BeanArr.count > 0) {
+            event.eventBeanTemp = [net.BeanArr[net.BeanArr.count - 1] floatValue];
+        }else{
+            event.eventBeanTemp = 0.0;
+        }
         for (EventModel *event in net.eventArray) {
             if (event.eventId == 0) {
                 [net.eventArray removeObject:event];
@@ -182,6 +255,24 @@
         }
         [net.eventArray addObject:event];
         
+        net.isStartBake = YES;
+        [_startBake setTitleColor:[UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1] forState:UIControlStateNormal];
+        _startBake.enabled = NO;
+        [_dehyOver setTitleColor:[UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1] forState:UIControlStateNormal];
+        _dehyOver.enabled = YES;
+        [_firstBurst setTitleColor:[UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1] forState:UIControlStateNormal];
+        _firstBurst.enabled = YES;
+        [_firstBurstOver setTitleColor:[UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1] forState:UIControlStateNormal];
+        _firstBurst.enabled = YES;
+        [_secondBurst setTitleColor:[UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1] forState:UIControlStateNormal];
+        _secondBurst.enabled = YES;
+        [_secondBurstOver setTitleColor:[UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1] forState:UIControlStateNormal];
+        _secondBurstOver.enabled = YES;
+        [_bakeOver setTitleColor:[UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1] forState:UIControlStateNormal];
+        _bakeOver.enabled = YES;
+        [_fireorwindPower setTitleColor:[UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1] forState:UIControlStateNormal];
+        _fireorwindPower.enabled = YES;
+        [_remark setTitleColor:[UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1] forState:UIControlStateNormal];
     };
     alert.modalPresentationStyle = UIModalPresentationOverCurrentContext;
     [self presentViewController:alert animated:NO completion:^{
@@ -196,7 +287,7 @@
     }];
 }
 
-- (void)devyOver{
+- (void)clickDevyOver{
     YAlertViewController *alert = [[YAlertViewController alloc] init];
     alert.lBlock = ^{
     };
@@ -206,6 +297,11 @@
         event.eventId = 2;//类型为2
         event.eventTime = net.timerValue;
         event.eventText = LocalString(@"脱水结束");
+        if (net.BeanArr.count > 0) {
+            event.eventBeanTemp = [net.BeanArr[net.BeanArr.count - 1] floatValue];
+        }else{
+            event.eventBeanTemp = 0.0;
+        }
         for (EventModel *event in net.eventArray) {
             if (event.eventId == 2) {
                 [net.eventArray removeObject:event];
@@ -213,6 +309,10 @@
             }
         }
         [net.eventArray addObject:event];
+        
+        net.isDevyOver = YES;
+        [_dehyOver setTitleColor:[UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1] forState:UIControlStateNormal];
+        _dehyOver.enabled = NO;
     };
     alert.modalPresentationStyle = UIModalPresentationOverCurrentContext;
     [self presentViewController:alert animated:NO completion:^{
@@ -227,7 +327,7 @@
     }];
 }
 
-- (void)firstBurst{
+- (void)clickFirstBurst{
     YAlertViewController *alert = [[YAlertViewController alloc] init];
     alert.lBlock = ^{
     };
@@ -238,6 +338,11 @@
         event.eventId = 3;//类型为3
         event.eventTime = net.timerValue;
         event.eventText = LocalString(@"一爆开始");
+        if (net.BeanArr.count > 0) {
+            event.eventBeanTemp = [net.BeanArr[net.BeanArr.count - 1] floatValue];
+        }else{
+            event.eventBeanTemp = 0.0;
+        }
         for (EventModel *event in net.eventArray) {
             if (event.eventId == 3) {
                 [net.eventArray removeObject:event];
@@ -245,6 +350,10 @@
             }
         }
         [net.eventArray addObject:event];
+        
+        net.isFirstBurst = YES;
+        [_firstBurst setTitleColor:[UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1] forState:UIControlStateNormal];
+        _firstBurst.enabled = NO;
     };
     alert.modalPresentationStyle = UIModalPresentationOverCurrentContext;
     [self presentViewController:alert animated:NO completion:^{
@@ -259,7 +368,7 @@
     }];
 }
 
-- (void)firstBurstOver{
+- (void)clickFirstBurstOver{
     YAlertViewController *alert = [[YAlertViewController alloc] init];
     alert.lBlock = ^{
     };
@@ -269,6 +378,11 @@
         event.eventId = 4;//类型为4
         event.eventTime = net.timerValue;
         event.eventText = LocalString(@"一爆结束");
+        if (net.BeanArr.count > 0) {
+            event.eventBeanTemp = [net.BeanArr[net.BeanArr.count - 1] floatValue];
+        }else{
+            event.eventBeanTemp = 0.0;
+        }
         for (EventModel *event in net.eventArray) {
             if (event.eventId == 4) {
                 [net.eventArray removeObject:event];
@@ -276,6 +390,10 @@
             }
         }
         [net.eventArray addObject:event];
+        
+        net.isFirstBurstOver = YES;
+        [_firstBurstOver setTitleColor:[UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1] forState:UIControlStateNormal];
+        _firstBurstOver.enabled = NO;
     };
     alert.modalPresentationStyle = UIModalPresentationOverCurrentContext;
     [self presentViewController:alert animated:NO completion:^{
@@ -290,7 +408,7 @@
     }];
 }
 
-- (void)secondBurst{
+- (void)clickSecondBurst{
     YAlertViewController *alert = [[YAlertViewController alloc] init];
     alert.lBlock = ^{
     };
@@ -301,6 +419,11 @@
         event.eventId = 5;//类型为5
         event.eventTime = net.timerValue;
         event.eventText = LocalString(@"二爆开始");
+        if (net.BeanArr.count > 0) {
+            event.eventBeanTemp = [net.BeanArr[net.BeanArr.count - 1] floatValue];
+        }else{
+            event.eventBeanTemp = 0.0;
+        }
         for (EventModel *event in net.eventArray) {
             if (event.eventId == 5) {
                 [net.eventArray removeObject:event];
@@ -308,6 +431,10 @@
             }
         }
         [net.eventArray addObject:event];
+        
+        net.isSecondBurst = YES;
+        [_secondBurst setTitleColor:[UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1] forState:UIControlStateNormal];
+        _secondBurst.enabled = NO;
     };
     alert.modalPresentationStyle = UIModalPresentationOverCurrentContext;
     [self presentViewController:alert animated:NO completion:^{
@@ -322,7 +449,7 @@
     }];
 }
 
-- (void)secondBurstOver{
+- (void)clickSecondBurstOver{
     YAlertViewController *alert = [[YAlertViewController alloc] init];
     alert.lBlock = ^{
     };
@@ -332,6 +459,11 @@
         event.eventId = 6;//类型为6
         event.eventTime = net.timerValue;
         event.eventText = LocalString(@"二爆结束");
+        if (net.BeanArr.count > 0) {
+            event.eventBeanTemp = [net.BeanArr[net.BeanArr.count - 1] floatValue];
+        }else{
+            event.eventBeanTemp = 0.0;
+        }
         for (EventModel *event in net.eventArray) {
             if (event.eventId == 6) {
                 [net.eventArray removeObject:event];
@@ -339,6 +471,10 @@
             }
         }
         [net.eventArray addObject:event];
+        
+        net.isSecondBurstOver = YES;
+        [_secondBurstOver setTitleColor:[UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1] forState:UIControlStateNormal];
+        _secondBurstOver.enabled = NO;
     };
     alert.modalPresentationStyle = UIModalPresentationOverCurrentContext;
     [self presentViewController:alert animated:NO completion:^{
@@ -353,24 +489,27 @@
     }];
 }
 
-- (void)bakeOver{
+- (void)clickBakeOver{
     NetWork *net = [NetWork shareNetWork];
-    [net.myTimer setFireDate:[NSDate distantFuture]];
+    //[net.myTimer setFireDate:[NSDate distantFuture]];
     
     YAlertViewController *alert = [[YAlertViewController alloc] init];
     alert.lBlock = ^{
-        [net.myTimer setFireDate:[NSDate date]];
+        //[net.myTimer setFireDate:[NSDate date]];
     };
     alert.rBlock = ^{
         [net setTimerStatusOff];
         net.deviceTimerStatus = 2;
         
-        net.developRate = 1.0*net.developTime/net.timerValue;
-
         EventModel *event = [[EventModel alloc] init];
         event.eventId = 7;//类型为7
         event.eventTime = net.timerValue;
         event.eventText = LocalString(@"烘焙结束");
+        if (net.BeanArr.count > 0) {
+            event.eventBeanTemp = [net.BeanArr[net.BeanArr.count - 1] floatValue];
+        }else{
+            event.eventBeanTemp = 0.0;
+        }
         for (EventModel *event in net.eventArray) {
             if (event.eventId == 7) {
                 [net.eventArray removeObject:event];
@@ -378,6 +517,13 @@
             }
         }
         [net.eventArray addObject:event];
+        
+        net.isBakeOver = YES;
+        [_bakeOver setTitleColor:[UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1] forState:UIControlStateNormal];
+        _bakeOver.enabled = NO;
+        [_saveCurveBtn setTitleColor:[UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1] forState:UIControlStateNormal];
+        
+        [net showBakeOverAlertAction];
     };
     alert.modalPresentationStyle = UIModalPresentationOverCurrentContext;
     [self presentViewController:alert animated:NO completion:^{
@@ -411,7 +557,12 @@
             EventModel *event = [[EventModel alloc] init];
             event.eventId = 8;//类型为8
             event.eventTime = net.timerValue;
-            event.eventText = [NSString stringWithFormat:@"%@%d",LocalString(@"风力/火力调整为"),value];
+            event.eventText = [NSString stringWithFormat:@"%@%d%@",LocalString(@"风力/火力调整为"),value,LocalString(@"档")];
+            if (net.BeanArr.count > 0) {
+                event.eventBeanTemp = [net.BeanArr[net.BeanArr.count - 1] floatValue];
+            }else{
+                event.eventBeanTemp = 0.0;
+            }
             //风力火力调整可能有多次，不需要删除
 //            for (EventModel *event in net.eventArray) {
 //                if (event.eventId == 8) {
@@ -429,7 +580,9 @@
 }
 
 - (void)switchAction:(UISwitch *)sender{
-    
+    if (self.relaSwitch) {
+        self.relaSwitch(sender.isOn);
+    }
 }
 
 @end

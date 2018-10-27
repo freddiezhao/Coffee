@@ -12,6 +12,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface DataWithApi : NSObject
 
+- (void)startGetInfo;
+
 @end
 
 NS_ASSUME_NONNULL_END

@@ -30,10 +30,10 @@ static float HEIGHT_CELL = 50.f;
     [super viewDidLoad];
     //[self.view setBackgroundColor:[UIColor colorWithRed:0/255.0 green:0/255.0 blue:0/255.0 alpha:0.4]];
     
+    _resultArr = [[NSMutableArray alloc] init];
     _myTableView = [self myTableView];
     _searchController = [self searchController];
     _dismissBtn = [self dismissBtn];
-    _resultArr = [[NSMutableArray alloc] init];
 }
 
 - (void)viewDidAppear:(BOOL)animated{
@@ -158,15 +158,19 @@ static float HEIGHT_CELL = 50.f;
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    //NSLog(@"%ld",[_currentReportArr[0] count]);
     ReportModel *report = _resultArr[indexPath.row];
-    
-    BakeReportController *reportVC = [[BakeReportController alloc] init];
-    reportVC.curveUid = report.curveUid;
     if (_searchController.active) {
         [_searchController dismissViewControllerAnimated:YES completion:nil];
     }
-    [self.navigationController pushViewController:reportVC animated:YES];
+    if (_isRela) {
+        [NetWork shareNetWork].relaCurve = [[DataBase shareDataBase] queryReport:report.curveUid];
+        [self dismissVC];
+    }else{
+        
+        BakeReportController *reportVC = [[BakeReportController alloc] init];
+        reportVC.curveUid = report.curveUid;
+        [self.navigationController pushViewController:reportVC animated:YES];
+    }
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -179,6 +183,7 @@ static float HEIGHT_CELL = 50.f;
     if ([inputStr isEqualToString:@""]) {
         self.dismissBtn.hidden = NO;
         _myTableView.backgroundColor = [UIColor colorWithRed:0/255.0 green:0/255.0 blue:0/255.0 alpha:0.4];
+        return;
     }else{
         self.dismissBtn.hidden = YES;
         _myTableView.backgroundColor = [UIColor colorWithRed:255/255.0 green:255/255.0 blue:255/255.0 alpha:1];
@@ -187,11 +192,13 @@ static float HEIGHT_CELL = 50.f;
         [_resultArr removeAllObjects];
     }
     for (ReportModel *report in self.curveArr) {
-        NSRange result = [report.curveName rangeOfString:inputStr options:NSCaseInsensitiveSearch];
-        if (result.length > 0)
-        {
-            report.searchRange = result;
-            [self.resultArr addObject:report];
+        if (report.curveName) {
+            NSRange result = [report.curveName rangeOfString:inputStr options:NSCaseInsensitiveSearch];
+            if (result.length > 0)
+            {
+                report.searchRange = result;
+                [self.resultArr addObject:report];
+            }
         }
     }
     [self.myTableView reloadData];
@@ -207,7 +214,9 @@ static float HEIGHT_CELL = 50.f;
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar{
     [self dismissVC];
 }
+
 #pragma mark - actions
+//根据颜色生成图片
 - (UIImage *)GetImageWithColor:(UIColor*)color andHeight:(CGFloat)height{
     
     CGRect r= CGRectMake(0.0f,

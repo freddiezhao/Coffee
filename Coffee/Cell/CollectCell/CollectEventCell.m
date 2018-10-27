@@ -37,6 +37,7 @@
         _rightLabel.textColor = [UIColor colorWithHexString:@"999999"];
         _rightLabel.font = [UIFont systemFontOfSize:13];
         _rightLabel.backgroundColor = [UIColor clearColor];
+        _rightLabel.adjustsFontSizeToFitWidth = YES;
         [self.contentView addSubview:_rightLabel];
     }
     

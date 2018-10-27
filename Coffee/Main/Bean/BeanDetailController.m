@@ -167,7 +167,7 @@ static float HEIGHT_HEADER = 15.f;
                 cell.contentLabel.text = [NSString stringWithFormat:@"%.1f¥/kg",_myBean.price];
             }else if (indexPath.row == 2){
                 cell.nameLabel.text = LocalString(@"库存量");
-                cell.contentLabel.text = [NSString stringWithFormat:@"%.1fkg",_myBean.stock];
+                cell.contentLabel.text = [NSString stringWithFormat:@"%.1f%@",[NSString diffWeightUnitStringWithWeight:_myBean.stock],[DataBase shareDataBase].setting.weightUnit];
             }else if (indexPath.row == 3){
                 cell.nameLabel.text = LocalString(@"购买日期");
                 cell.contentLabel.text = [NSDate YMDStringFromDate:_myBean.time];

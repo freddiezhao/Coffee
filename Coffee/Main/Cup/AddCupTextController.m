@@ -576,7 +576,7 @@ NSString *const CellIdentifier_cupAddBadScore = @"CellID_cupAddBadScore";
                     cell.beanNameLabel.text = [nameString substringToIndex:[nameString length]-1];
                     cell.rawBean.text = [NSString stringWithFormat:@"%@%.1lf",LocalString(@"生豆:"),_reportModel.rawBeanWeight];
                     cell.bakedBean.text = [NSString stringWithFormat:@"%@%.1lf",LocalString(@"熟豆:"),_reportModel.bakeBeanWeight];
-                    cell.outWaterRate.text = [NSString stringWithFormat:@"%@%.1lf%%",LocalString(@"脱水率:"),_reportModel.outWaterRate];
+                    cell.outWaterRate.text = [NSString stringWithFormat:@"%@%.1lf%%",LocalString(@"脱水率:"),(_reportModel.rawBeanWeight - _reportModel.bakeBeanWeight)/_reportModel.rawBeanWeight*100.f];
                 }else{
                     cell.beanNameLabel.text = LocalString(@"未添加豆种");
                     cell.rawBean.text = LocalString(@"生豆:?");

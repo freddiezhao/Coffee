@@ -211,7 +211,7 @@ static float HEIGHT_HEADER = 36.f;
         _totolWeight.backgroundColor = [UIColor clearColor];
         _totolWeight.textColor = [UIColor colorWithHexString:@"999999"];
         _totolWeight.textAlignment = NSTextAlignmentLeft;
-        _totolWeight.text = [NSString stringWithFormat:@"总重量：%f kg",0.f];
+        _totolWeight.text = [NSString stringWithFormat:@"总重量：%f %@",0.f,[DataBase shareDataBase].setting.weightUnit];
         [_headerView addSubview:_totolWeight];
         [self.view addSubview:_headerView];
         
@@ -348,27 +348,27 @@ static float HEIGHT_HEADER = 36.f;
         cell.beanImage.image = [UIImage imageNamed:@"img_coffee_beans"];
         cell.beanLabel.text = bean.name;
         cell.infoLabel.text = [NSString stringWithFormat:@"%@等级 · 处理方式%@",bean.grade,bean.process];
-        cell.weightLabel.text = [NSString stringWithFormat:@"%.1fkg",bean.stock];
+        cell.weightLabel.text = [NSString stringWithFormat:@"%.1f%@",[NSString diffWeightUnitStringWithWeight:bean.stock],[DataBase shareDataBase].setting.weightUnit];
         return cell;
     }else if (_sort_weightBtn.tag != sortUnselect){//重量排序(包括正序和倒叙)
         BeanModel *bean = _weightArr[indexPath.row];
         cell.beanImage.image = [UIImage imageNamed:@"img_coffee_beans"];
         cell.beanLabel.text = bean.name;
         cell.infoLabel.text = [NSString stringWithFormat:@"%@等级 · 处理方式%@",bean.grade,bean.process];
-        cell.weightLabel.text = [NSString stringWithFormat:@"%.1fkg",bean.stock];
+        cell.weightLabel.text = [NSString stringWithFormat:@"%.1f%@",[NSString diffWeightUnitStringWithWeight:bean.stock],[DataBase shareDataBase].setting.weightUnit];
         return cell;
     }else if (_sort_nameBtn.tag != sortUnselect){//名字排序
         BeanModel *bean = [_mutableSections[indexPath.section] objectAtIndex:indexPath.row];
         cell.beanImage.image = [UIImage imageNamed:@"img_coffee_beans"];
         cell.beanLabel.text = bean.name;
         cell.infoLabel.text = [NSString stringWithFormat:@"%@等级 · 处理方式%@",bean.grade,bean.process];
-        cell.weightLabel.text = [NSString stringWithFormat:@"%.1fkg",bean.stock];
+        cell.weightLabel.text = [NSString stringWithFormat:@"%.1f%@",[NSString diffWeightUnitStringWithWeight:bean.stock],[DataBase shareDataBase].setting.weightUnit];
         return cell;
     }else{
         cell.beanImage.image = [UIImage imageNamed:@"img_coffee_beans"];
         cell.beanLabel.text = @"样品豆";
         cell.infoLabel.text = @"Q1等级 · 处理方式日晒";
-        cell.weightLabel.text = [NSString stringWithFormat:@"%.1fkg",5.2];
+        cell.weightLabel.text = [NSString stringWithFormat:@"%.1f%@",0.f,[DataBase shareDataBase].setting.weightUnit];
         return cell;
     }
 }
@@ -384,7 +384,7 @@ static float HEIGHT_HEADER = 36.f;
         bean = [_mutableSections[indexPath.section] objectAtIndex:indexPath.row];
     }
     for (BeanModel *model in [NetWork shareNetWork].beanArray) {
-        if (model.beanUid == bean.beanUid) {
+        if ([model.beanUid isEqualToString:bean.beanUid]) {
             [NSObject showHudTipStr:@"你已经添加该生豆了"];
             return;
         }
@@ -577,7 +577,7 @@ sectionForSectionIndexTitle:(NSString *)title
     for (BeanModel *bean in _beanArr) {
         totolWeight += bean.stock;
     }
-    _totolWeight.text = [NSString stringWithFormat:@"总重量：%.3f kg",totolWeight];
+    _totolWeight.text = [NSString stringWithFormat:@"总重量：%.3f %@",[NSString diffWeightUnitStringWithWeight:totolWeight],[DataBase shareDataBase].setting.weightUnit];
     if (_sort_nameBtn.tag == sortUp) {
         [self setObjects:_beanArr];
     }else if(_sort_weightBtn.tag == sortUp){

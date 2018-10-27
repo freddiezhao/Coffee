@@ -16,6 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, strong) NSMutableArray *curveArr;
 @property (nonatomic) dismissBlock dismissBlock;
+@property (nonatomic) BOOL isRela;//是参考曲线的搜索还是曲线页面的搜索
 
 @end
 

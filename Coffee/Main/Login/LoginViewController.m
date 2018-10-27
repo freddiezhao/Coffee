@@ -11,6 +11,8 @@
 #import "VerifyCodeLoginController.h"
 #import "RegisterController.h"
 #import "MainViewController.h"
+#import "DataWithApi.h"
+#import "SettingModel.h"
 
 @interface LoginViewController () <UITextFieldDelegate>
 
@@ -233,11 +235,16 @@
                   DataBase *db = [DataBase shareDataBase];
                   NSDictionary *dic = [responseDic objectForKey:@"data"];
                   db.userId = [[dic objectForKey:@"userId"] copy];
+                  db.userName = [dic objectForKey:@"userName"];
+                  NSLog(@"%@",db.userName);
                   db.token = [[dic objectForKey:@"token"] copy];
                   [db initDB];
                   if (![[dic objectForKey:@"lastMobile"] isEqualToString:[[[UIDevice currentDevice] identifierForVendor] UUIDString]]) {
                       [db deleteAllTable];
                       [db createTable];
+                      [self getSettingByApi];
+                      DataWithApi *data = [[DataWithApi alloc] init];
+                      [data startGetInfo];
                   }
                   MainViewController *mainVC = [[MainViewController alloc] init];
                   [self presentViewController:mainVC animated:NO completion:nil];
@@ -274,6 +281,87 @@
 }
 
 - (void)forgetPW{
+    
+}
+
+- (void)getSettingByApi{
+    DataBase *mydb = [DataBase shareDataBase];
+    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+    
+    [manager.requestSerializer willChangeValueForKey:@"timeoutInterval"];
+    manager.requestSerializer.timeoutInterval = 4.f;
+    [manager.requestSerializer didChangeValueForKey:@"timeoutInterval"];
+    
+    NSString *url = [NSString stringWithFormat:@"http://139.196.90.97:8080/coffee/setting"];
+    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet characterSetWithCharactersInString:@"`#%^{}\"[]|\\<> "].invertedSet];
+    
+    NSLog(@"%@",[DataBase shareDataBase].userId);
+    [manager.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+    [manager.requestSerializer setValue:[DataBase shareDataBase].userId forHTTPHeaderField:@"userId"];
+    [manager.requestSerializer setValue:[NSString stringWithFormat:@"bearer %@",[DataBase shareDataBase].token] forHTTPHeaderField:@"Authorization"];
+    [manager GET:url parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableContainers|NSJSONReadingMutableLeaves error:nil];
+        NSData * data = [NSJSONSerialization dataWithJSONObject:responseDic options:(NSJSONWritingOptions)0 error:nil];
+        NSString * daetr = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
+        NSLog(@"success:%@",daetr);
+        
+        if ([[responseDic objectForKey:@"errno"] intValue] == 0) {
+            if ([responseDic objectForKey:@"data"]) {
+                NSDictionary *settingDic = [responseDic objectForKey:@"data"];
+                if (settingDic == nil) {
+                    [self addSettingByApi];
+                }else{
+                    mydb.setting.weightUnit = [settingDic objectForKey:@"weightUnit"];
+                    mydb.setting.tempUnit = [settingDic objectForKey:@"tempUnit"];
+                    mydb.setting.bakeChromaReferStandard = [settingDic objectForKey:@"roasterChroma"];
+                    mydb.setting.timeAxis = [[settingDic objectForKey:@"timer"] integerValue];
+                    mydb.setting.tempAxis = [[settingDic objectForKey:@"temp"] integerValue];
+                    mydb.setting.tempCurveSmooth = [[settingDic objectForKey:@"tempCurveSmooth"] integerValue];
+                    mydb.setting.tempRateSmooth = [[settingDic objectForKey:@"tempRateSmooth"] integerValue];
+                    mydb.setting.language = [settingDic objectForKey:@"language"];
+                    [mydb deleteSetting];//删除之前可能存在的设置
+                    if (![mydb insertSetting]) {
+                        [NSObject showHudTipStr:@"通用设置本地同步失败"];
+                    }
+                }
+            }
+        }
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        NSLog(@"Error:%@",error);
+    }];
+}
+
+- (void)addSettingByApi{
+    DataBase *mydb = [DataBase shareDataBase];
+
+    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+    
+    [manager.requestSerializer willChangeValueForKey:@"timeoutInterval"];
+    manager.requestSerializer.timeoutInterval = 4.f;
+    [manager.requestSerializer didChangeValueForKey:@"timeoutInterval"];
+    
+    NSString *url = [NSString stringWithFormat:@"http://139.196.90.97:8080/coffee/setting"];
+    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet characterSetWithCharactersInString:@"`#%^{}\"[]|\\<> "].invertedSet];
+    
+    [manager.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+    [manager.requestSerializer setValue:[DataBase shareDataBase].userId forHTTPHeaderField:@"userId"];
+    [manager.requestSerializer setValue:[NSString stringWithFormat:@"bearer %@",[DataBase shareDataBase].token] forHTTPHeaderField:@"Authorization"];
+    
+    NSDictionary *parameters = @{@"weightUnit":mydb.setting.weightUnit,@"tempUnit":mydb.setting.tempUnit,@"roasterChroma":mydb.setting.bakeChromaReferStandard,@"timer":[NSNumber numberWithInteger:mydb.setting.timeAxis],@"temp":[NSNumber numberWithInteger:mydb.setting.tempAxis],@"tempCurveSmooth":[NSNumber numberWithInteger:mydb.setting.tempCurveSmooth],@"tempRateSmooth":[NSNumber numberWithInteger:mydb.setting.tempRateSmooth],@"language":mydb.setting.language};
+    
+    [manager POST:url parameters:parameters progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableContainers|NSJSONReadingMutableLeaves error:nil];
+        NSData * data = [NSJSONSerialization dataWithJSONObject:responseDic options:(NSJSONWritingOptions)0 error:nil];
+        NSString * daetr = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
+        NSLog(@"%@",daetr);
+        if ([[responseDic objectForKey:@"errno"] intValue] == 0) {
+            [mydb insertSetting];
+        }else{
+            [NSObject showHudTipStr:[responseDic objectForKey:@"error"]];
+        }
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        
+    }];
     
 }
 @end

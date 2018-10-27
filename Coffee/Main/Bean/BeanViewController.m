@@ -48,6 +48,7 @@ NSString *const CellIdentifier_bean = @"CellID_bean";
 }
 static float HEIGHT_CELL = 70.f;
 static float HEIGHT_HEADER = 36.f;
+static float HEIGHT_SELECT = 44.f;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -131,7 +132,14 @@ static float HEIGHT_HEADER = 36.f;
 - (UITableView *)beanTable{
     if (!_beanTable) {
         _beanTable = ({
-            TouchTableView *tableView = [[TouchTableView alloc] initWithFrame:CGRectMake(0, (44 + HEIGHT_HEADER)/HScale, ScreenWidth, ScreenHeight - 64 - (44 + 44 + HEIGHT_HEADER)/HScale) style:UITableViewStylePlain];
+            TouchTableView *tableView;
+            NSLog(@"%f",getRectNavAndStatusHight);
+            NSLog(@"%f",tabbarHeight);
+            if (@available(iOS 11.0,*)) {
+                tableView = [[TouchTableView alloc] initWithFrame:CGRectMake(0, (HEIGHT_SELECT + HEIGHT_HEADER)/HScale, ScreenWidth, ScreenHeight - getRectNavAndStatusHight - tabbarHeight - (HEIGHT_SELECT + HEIGHT_HEADER)/HScale) style:UITableViewStylePlain];
+            }else{
+                tableView = [[TouchTableView alloc] initWithFrame:CGRectMake(0, (HEIGHT_SELECT + HEIGHT_HEADER)/HScale, ScreenWidth, ScreenHeight - getRectNavAndStatusHight - tabbarHeight - (HEIGHT_SELECT + HEIGHT_HEADER)/HScale) style:UITableViewStylePlain];
+            }
             tableView.backgroundColor = [UIColor clearColor];
             tableView.separatorColor = [UIColor colorWithRed:0/255.0 green:0/255.0 blue:0/255.0 alpha:0.1];
             tableView.dataSource = self;
@@ -186,6 +194,8 @@ static float HEIGHT_HEADER = 36.f;
         UILabel *label = [[UILabel alloc] init];
         label.text = LocalString(@"您的生豆库中还未添加生豆");
         label.font = [UIFont fontWithName:@"PingFangSC-Regular" size:14];
+        label.textAlignment = NSTextAlignmentCenter;
+        label.adjustsFontSizeToFitWidth = YES;
         label.textColor = [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1];
         [_noBeanView addSubview:label];
         
@@ -196,7 +206,7 @@ static float HEIGHT_HEADER = 36.f;
         }];
         
         [label mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.size.mas_equalTo(CGSizeMake(168.f / WScale, 20.f / HScale));
+            make.size.mas_equalTo(CGSizeMake(ScreenWidth, 20.f / HScale));
             make.centerX.equalTo(_noBeanView.mas_centerX);
             make.top.equalTo(_noBeanView.mas_top).offset(252.f / HScale);
         }];
@@ -221,7 +231,7 @@ static float HEIGHT_HEADER = 36.f;
         _totolWeight.backgroundColor = [UIColor clearColor];
         _totolWeight.textColor = [UIColor colorWithHexString:@"999999"];
         _totolWeight.textAlignment = NSTextAlignmentLeft;
-        _totolWeight.text = [NSString stringWithFormat:@"总重量：%f kg",0.f];
+        _totolWeight.text = [NSString stringWithFormat:@"总重量：%f %@",0.f,[DataBase shareDataBase].setting.weightUnit];
         [_headerView addSubview:_totolWeight];
         [self.view addSubview:_headerView];
 
@@ -247,7 +257,7 @@ static float HEIGHT_HEADER = 36.f;
         [self.view addSubview:_sort_generalBtn];
         
         [_sort_generalBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.size.mas_equalTo(CGSizeMake(125.f / WScale, 44.f / HScale));
+            make.size.mas_equalTo(CGSizeMake(125.f / WScale, HEIGHT_SELECT / HScale));
             make.left.equalTo(self.view.mas_left);
             make.top.equalTo(self.view.mas_top);
         }];
@@ -269,7 +279,7 @@ static float HEIGHT_HEADER = 36.f;
         [self.view addSubview:_sort_nameBtn];
         
         [_sort_nameBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.size.mas_equalTo(CGSizeMake(125.f / WScale, 44.f / HScale));
+            make.size.mas_equalTo(CGSizeMake(125.f / WScale, HEIGHT_SELECT / HScale));
             make.left.equalTo(self.sort_generalBtn.mas_right);
             make.top.equalTo(self.view.mas_top);
         }];
@@ -295,7 +305,7 @@ static float HEIGHT_HEADER = 36.f;
             [self.view addSubview:_sort_weightBtn];
             
             [_sort_weightBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-                make.size.mas_equalTo(CGSizeMake(125.f / WScale, 44.f / HScale));
+                make.size.mas_equalTo(CGSizeMake(125.f / WScale, HEIGHT_SELECT / HScale));
                 make.left.equalTo(self.sort_nameBtn.mas_right);
                 make.top.equalTo(self.view.mas_top);
             }];
@@ -358,27 +368,27 @@ static float HEIGHT_HEADER = 36.f;
         cell.beanImage.image = [UIImage imageNamed:@"img_coffee_beans"];
         cell.beanLabel.text = bean.name;
         cell.infoLabel.text = [NSString stringWithFormat:@"%@等级 · 处理方式%@",bean.grade,bean.process];
-        cell.weightLabel.text = [NSString stringWithFormat:@"%.1fkg",bean.stock];
+        cell.weightLabel.text = [NSString stringWithFormat:@"%.1f%@",[NSString diffWeightUnitStringWithWeight:bean.stock],[DataBase shareDataBase].setting.weightUnit];
         return cell;
     }else if (_sort_weightBtn.tag != sortUnselect){//重量排序(包括正序和倒叙)
         BeanModel *bean = _weightArr[indexPath.row];
         cell.beanImage.image = [UIImage imageNamed:@"img_coffee_beans"];
         cell.beanLabel.text = bean.name;
         cell.infoLabel.text = [NSString stringWithFormat:@"%@等级 · 处理方式%@",bean.grade,bean.process];
-        cell.weightLabel.text = [NSString stringWithFormat:@"%.1fkg",bean.stock];
+        cell.weightLabel.text = [NSString stringWithFormat:@"%.1f%@",[NSString diffWeightUnitStringWithWeight:bean.stock],[DataBase shareDataBase].setting.weightUnit];
         return cell;
     }else if (_sort_nameBtn.tag != sortUnselect){//名字排序
         BeanModel *bean = [_mutableSections[indexPath.section] objectAtIndex:indexPath.row];
         cell.beanImage.image = [UIImage imageNamed:@"img_coffee_beans"];
         cell.beanLabel.text = bean.name;
         cell.infoLabel.text = [NSString stringWithFormat:@"%@等级 · 处理方式%@",bean.grade,bean.process];
-        cell.weightLabel.text = [NSString stringWithFormat:@"%.1fkg",bean.stock];
+        cell.weightLabel.text = [NSString stringWithFormat:@"%.1f%@",[NSString diffWeightUnitStringWithWeight:bean.stock],[DataBase shareDataBase].setting.weightUnit];
         return cell;
     }else{
         cell.beanImage.image = [UIImage imageNamed:@"img_coffee_beans"];
         cell.beanLabel.text = @"样品豆";
         cell.infoLabel.text = @"Q1等级 · 处理方式日晒";
-        cell.weightLabel.text = [NSString stringWithFormat:@"%.1fkg",5.2];
+        cell.weightLabel.text = [NSString stringWithFormat:@"%.1f%@",0.f,[DataBase shareDataBase].setting.weightUnit];
         return cell;
     }
 }
@@ -475,21 +485,21 @@ sectionForSectionIndexTitle:(NSString *)title
             }else{
                 [NSObject showHudTipStr:LocalString(@"删除失败")];
             }
-        }else if (_sort_nameBtn.tag == sortUp){
-            BeanModel *bean = _weightArr[indexPath.row];
+        }else if (_sort_nameBtn.tag == sortUp || _sort_nameBtn.tag == sortDown){
+            BeanModel *bean = [_mutableSections[indexPath.section] objectAtIndex:indexPath.row];
             result = [db deleteqBean:bean];
             if (result) {
-                [_weightArr removeObject:bean];
+                [_mutableSections[indexPath.section] removeObject:bean];
                 [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
                 [NSObject showHudTipStr:LocalString(@"删除成功")];
             }else{
                 [NSObject showHudTipStr:LocalString(@"删除失败")];
             }
         }else if (_sort_weightBtn.tag == sortUp || _sort_weightBtn.tag == sortDown){
-            BeanModel *bean = [_mutableSections[indexPath.section] objectAtIndex:indexPath.row];
+            BeanModel *bean = _weightArr[indexPath.row];
             result = [db deleteqBean:bean];
             if (result) {
-                [_mutableSections[indexPath.section] removeObject:bean];
+                [_weightArr removeObject:bean];
                 [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
                 [NSObject showHudTipStr:LocalString(@"删除成功")];
             }else{
@@ -509,8 +519,6 @@ sectionForSectionIndexTitle:(NSString *)title
 - (void)searchBean{
     SearchBeanController *searchVC = [[SearchBeanController alloc] init];
     searchVC.beanArr = _beanArr;
-//    searchVC.modalPresentationStyle = UIModalPresentationOverCurrentContext;
-//    searchVC.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
     UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:searchVC];
     nav.modalPresentationStyle = UIModalPresentationOverCurrentContext;
     nav.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
@@ -518,11 +526,13 @@ sectionForSectionIndexTitle:(NSString *)title
     searchVC.dismissBlock = ^{
         [self.rdv_tabBarController setTabBarHidden:NO animated:YES];
     };
+    [self.navigationController setDefinesPresentationContext:YES];
     [self presentViewController:nav animated:YES completion:nil];
 
 }
 
 - (void)generalSort:(UIButton *)sender{
+    _beanArr = [[DataBase shareDataBase] queryAllBean];
     _sort_weightBtn.tag = sortUnselect;
     [_sort_weightBtn setImage:[UIImage imageNamed:@"ic_rank1"] forState:UIControlStateNormal];
     _sort_nameBtn.tag = sortUnselect;
@@ -536,6 +546,7 @@ sectionForSectionIndexTitle:(NSString *)title
 }
 
 - (void)nameSort:(UIButton *)sender{
+    _beanArr = [[DataBase shareDataBase] queryAllBean];
     _sort_weightBtn.tag = sortUnselect;
     [_sort_weightBtn setImage:[UIImage imageNamed:@"ic_rank1"] forState:UIControlStateNormal];
     _sort_generalBtn.tag = sortUnselect;
@@ -556,6 +567,7 @@ sectionForSectionIndexTitle:(NSString *)title
 }
 
 - (void)weightSort:(UIButton *)sender{
+    _beanArr = [[DataBase shareDataBase] queryAllBean];
     _sort_generalBtn.tag = sortUnselect;
     [_sort_generalBtn setTitleColor:[UIColor colorWithHexString:@"999999"] forState:UIControlStateNormal];
     _sort_nameBtn.tag = sortUnselect;
@@ -660,7 +672,7 @@ sectionForSectionIndexTitle:(NSString *)title
     for (BeanModel *bean in _beanArr) {
         totolWeight += bean.stock;
     }
-    _totolWeight.text = [NSString stringWithFormat:@"总重量：%.3f kg",totolWeight];
+    _totolWeight.text = [NSString stringWithFormat:@"总重量：%.3f %@",[NSString diffWeightUnitStringWithWeight:totolWeight],[DataBase shareDataBase].setting.weightUnit];
     if (_sort_nameBtn.tag == sortUp) {
         [self setObjects:_beanArr];
     }else if(_sort_weightBtn.tag == sortUp){

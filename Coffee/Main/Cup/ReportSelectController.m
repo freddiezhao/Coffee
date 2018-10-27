@@ -13,6 +13,7 @@
 #import "CurrentCurveCell.h"
 #import "ReportModel.h"
 #import "DeviceModel.h"
+#import "QRCodeScanController.h"
 
 NSString *const CellIdentifier_CupSelectCurve = @"CellID_CupSelectCurve";
 
@@ -315,7 +316,8 @@ static float HEIGHT_HEADER = 36.f;
 }
 
 - (void)scanQRcode{
-    
+    QRCodeScanController *scanVC = [[QRCodeScanController alloc] init];
+    [self.navigationController pushViewController:scanVC animated:YES];
 }
 
 - (void)searchCurve{

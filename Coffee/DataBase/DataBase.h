@@ -55,6 +55,7 @@
 - (BOOL)deleteqReport:(ReportModel *)report;
 - (BOOL)updateReportWithReport:(ReportModel *)report WithBean:(NSMutableArray *)beanArr;
 - (BOOL)updateBean:(BeanModel *)bean;
+- (BOOL)updateBeanWeight:(BeanModel *)bean;
 - (BOOL)insertNewCup:(CupModel *)cup;
 - (BOOL)updateCup:(CupModel *)cup;
 - (BOOL)deleteqCup:(CupModel *)cup;

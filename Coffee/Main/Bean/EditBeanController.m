@@ -230,9 +230,9 @@ static float HEIGHT_HEADER = 36.f;
                     cell = [[AddBeanInfoCell2 alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_EditBean2];
                 }
                 cell.nameLabel.text = LocalString(@"库存量");
-                cell.unitLabel.text = @"kg";
+                cell.unitLabel.text = [DataBase shareDataBase].setting.weightUnit;
                 if (_myBean.stock) {
-                    cell.contentTF.text = [NSString stringWithFormat:@"%.1f",_myBean.stock];
+                    cell.contentTF.text = [NSString stringWithFormat:@"%.1f",[NSString diffWeightUnitStringWithWeight:_myBean.stock]];
                 }
                 cell.TFBlock = ^(NSString *text) {
                     _myBean.stock = [text floatValue];

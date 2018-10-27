@@ -286,10 +286,61 @@ NSString *const CellIdentifier_EditBakeBean = @"CellID_EditBakeBean";
 
 #pragma mark - Actions
 - (void)saveEdit{
-    BOOL result = [[DataBase shareDataBase] updateReportWithReport:_reportModel WithBean:_beanArray];
-    if (result) {
-        [NSObject showHudTipStr:LocalString(@"修改成功")];
+    [self editCurveByApi];
+}
+
+- (void)editCurveByApi{
+    [SVProgressHUD show];
+    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+    
+    [manager.requestSerializer willChangeValueForKey:@"timeoutInterval"];
+    manager.requestSerializer.timeoutInterval = 6.f;
+    [manager.requestSerializer didChangeValueForKey:@"timeoutInterval"];
+    
+    NSString *url = [NSString stringWithFormat:@"http://139.196.90.97:8080/coffee/roastCurve/bean?curveUid=%@",_reportModel.curveUid];
+    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet characterSetWithCharactersInString:@"`#%^{}\"[]|\\<> "].invertedSet];
+    
+    [manager.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+    [manager.requestSerializer setValue:[DataBase shareDataBase].userId forHTTPHeaderField:@"userId"];
+    [manager.requestSerializer setValue:[NSString stringWithFormat:@"bearer %@",[DataBase shareDataBase].token] forHTTPHeaderField:@"Authorization"];
+    
+    if (_beanArray.count == 0) {
+        [NSObject showHudTipStr:LocalString(@"生豆信息未添加")];
+        return;
     }
+    NSMutableArray *beanArr = [[NSMutableArray alloc] init];
+    for (BeanModel *bean in _beanArray) {
+        NSDictionary *beanDic = @{@"beanUid":bean.beanUid,@"used":[NSNumber numberWithDouble:bean.weight]};
+        [beanArr addObject:beanDic];
+    }
+    
+    NSDictionary *parameters = @{@"name":_reportModel.curveName,@"cooked":[NSNumber numberWithFloat:_reportModel.bakeBeanWeight],@"light":[NSNumber numberWithFloat:_reportModel.light],@"beans":beanArr};
+    
+    [manager PUT:url parameters:parameters success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableContainers|NSJSONReadingMutableLeaves error:nil];
+        NSData * data = [NSJSONSerialization dataWithJSONObject:responseDic options:(NSJSONWritingOptions)0 error:nil];
+        NSString * daetr = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
+        NSLog(@"%@",daetr);
+        if ([[responseDic objectForKey:@"errno"] intValue] == 0) {
+            BOOL result = [[DataBase shareDataBase] updateReportWithReport:_reportModel WithBean:_beanArray];
+            if (result) {
+                [NSObject showHudTipStr:LocalString(@"修改报告信息成功")];
+                [self.navigationController popViewControllerAnimated:YES];
+            }else{
+                [NSObject showHudTipStr:LocalString(@"本地修改报告信息失败")];
+            }
+        }else{
+            [NSObject showHudTipStr:LocalString(@"服务器修改报告信息失败")];
+        }
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [SVProgressHUD dismiss];
+        });
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [NSObject showHudTipStr:LocalString(@"服务器修改报告信息失败")];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [SVProgressHUD dismiss];
+        });
+    }];
 }
 
 @end

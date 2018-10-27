@@ -14,6 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, strong) NSString *curveUid;
 
+- (void)generateQRCode;
 @end
 
 NS_ASSUME_NONNULL_END

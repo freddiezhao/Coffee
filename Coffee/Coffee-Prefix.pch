@@ -24,6 +24,7 @@
 #import "DataBase.h"
 #import "YAlertViewController.h"
 #import "AFHTTPSessionManager.h"
+#import "SettingModel.h"
 #import <SVProgressHUD/SVProgressHUD.h>
 #endif
 // Include any system framework and library headers here that should be included in all compilation units.
@@ -50,6 +51,8 @@
 #define yColor_back @"D8DADD"
 #define yColor_common @"996640"
 #define yColor_BtnBG @"4778CC"
+//获取导航栏+状态栏的高度
+#define getRectNavAndStatusHight (self.navigationController.navigationBar.frame.size.height+[[UIApplication sharedApplication] statusBarFrame].size.height)
 #define tabbarHeight (ScreenHeight < 700 ? 44.f : 60.f)
 #define HScale (UI_IS_IPHONE6PLUS ? (667.f / ScreenHeight) : 1.f)
 #define WScale (UI_IS_IPHONE6PLUS ? (375.f / ScreenWidth) : 1.f)

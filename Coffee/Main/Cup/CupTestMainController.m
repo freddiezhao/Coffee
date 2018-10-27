@@ -25,6 +25,7 @@ NSString *const CellIdentifier_cup = @"CellID_cup";
 @property (nonatomic, strong) UIButton *sort_gradeBtn;
 
 @property (nonatomic, strong) UITableView *cupTable;
+@property (nonatomic, strong) UIView *noCupView;
 
 @property (nonatomic, strong) NSMutableArray *cupArr;//综合
 @property (nonatomic, strong) NSMutableArray *mutableSections;//名称
@@ -43,7 +44,7 @@ static float HEIGHT_CELL = 60.f;
     _sort_gradeBtn = [self sort_gradeBtn];
     _sort_nameBtn = [self sort_nameBtn];
     _sort_generalBtn = [self sort_generalBtn];
-    
+    _noCupView = [self noCupView];
     [self getAllCup];
 }
 
@@ -128,7 +129,7 @@ static float HEIGHT_CELL = 60.f;
             _sort_gradeBtn = [UIButton buttonWithType:UIButtonTypeCustom];
             _sort_gradeBtn.tag = sortUnselect;
             [_sort_gradeBtn setImage:[UIImage imageNamed:@"ic_rank1"] forState:UIControlStateNormal];
-            [_sort_gradeBtn setTitle:LocalString(@"重量") forState:UIControlStateNormal];
+            [_sort_gradeBtn setTitle:LocalString(@"评分") forState:UIControlStateNormal];
             [_sort_gradeBtn setTitleColor:[UIColor colorWithHexString:@"999999"] forState:UIControlStateNormal];
             [_sort_gradeBtn.titleLabel setFont:[UIFont fontWithName:@"PingFangSC-Medium" size:14]];
             [_sort_gradeBtn setBackgroundColor:[UIColor colorWithRed:255/255.0 green:255/255.0 blue:255/255.0 alpha:1]];
@@ -152,11 +153,12 @@ static float HEIGHT_CELL = 60.f;
 - (UITableView *)cupTable{
     if (!_cupTable) {
         _cupTable = ({
-            TouchTableView *tableView = [[TouchTableView alloc] initWithFrame:CGRectMake(0, 44/HScale, ScreenWidth, ScreenHeight - 64 - (44 + 44)/HScale) style:UITableViewStylePlain];
+            TouchTableView *tableView = [[TouchTableView alloc] initWithFrame:CGRectMake(0, 44/HScale, ScreenWidth, ScreenHeight - 64 - (44 + tabbarHeight)/HScale) style:UITableViewStylePlain];
             tableView.backgroundColor = [UIColor clearColor];
             tableView.separatorColor = [UIColor colorWithRed:0/255.0 green:0/255.0 blue:0/255.0 alpha:0.1];
             tableView.dataSource = self;
             tableView.delegate = self;
+            tableView.hidden = YES;
             [tableView registerClass:[CupNormalCell class] forCellReuseIdentifier:CellIdentifier_cup];
             [self.view addSubview:tableView];
             tableView.separatorColor = [UIColor colorWithRed:0/255.0 green:0/255.0 blue:0/255.0 alpha:0.08];
@@ -190,6 +192,41 @@ static float HEIGHT_CELL = 60.f;
         });
     }
     return _cupTable;
+}
+
+- (UIView *)noCupView{
+    if (!_noCupView) {
+        _noCupView = [[UIView alloc] init];
+        _noCupView.frame = CGRectMake(0, 0, ScreenWidth, ScreenHeight);
+        _noCupView.backgroundColor = [UIColor colorWithRed:246/255.0 green:246/255.0 blue:246/255.0 alpha:1];
+        [self.view addSubview:_noCupView];
+        
+        UIImageView *deviceImage = [[UIImageView alloc] init];
+        deviceImage.image = [UIImage imageNamed:@"img_logo_gray"];
+        [_noCupView addSubview:deviceImage];
+        
+        UILabel *label = [[UILabel alloc] init];
+        label.text = LocalString(@"您还未添加杯测报告");
+        label.font = [UIFont fontWithName:@"PingFangSC-Regular" size:14];
+        label.textAlignment = NSTextAlignmentCenter;
+        label.adjustsFontSizeToFitWidth = YES;
+        label.textColor = [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1];
+        [_noCupView addSubview:label];
+        
+        [deviceImage mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.size.mas_equalTo(CGSizeMake(140.f / WScale, 110.f / HScale));
+            make.centerX.equalTo(_noCupView.mas_centerX);
+            make.top.equalTo(_noCupView.mas_top).offset(120.f / HScale);
+        }];
+        
+        [label mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.size.mas_equalTo(CGSizeMake(ScreenWidth, 20.f / HScale));
+            make.centerX.equalTo(_noCupView.mas_centerX);
+            make.top.equalTo(_noCupView.mas_top).offset(252.f / HScale);
+        }];
+        
+    }
+    return _noCupView;
 }
 
 #pragma mark - uitableview
@@ -334,21 +371,21 @@ sectionForSectionIndexTitle:(NSString *)title
             }else{
                 [NSObject showHudTipStr:LocalString(@"删除失败")];
             }
-        }else if (_sort_nameBtn.tag == sortUp){
-            CupModel *cup = _gradeArr[indexPath.row];
+        }else if (_sort_nameBtn.tag == sortUp || _sort_nameBtn.tag == sortDown){
+            CupModel *cup = [_mutableSections[indexPath.section] objectAtIndex:indexPath.row];
             result = [db deleteqCup:cup];
             if (result) {
-                [_gradeArr removeObject:cup];
+                [_mutableSections[indexPath.section] removeObject:cup];
                 [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
                 [NSObject showHudTipStr:LocalString(@"删除成功")];
             }else{
                 [NSObject showHudTipStr:LocalString(@"删除失败")];
             }
         }else if (_sort_gradeBtn.tag == sortUp || _sort_gradeBtn.tag == sortDown){
-            CupModel *cup = [_mutableSections[indexPath.section] objectAtIndex:indexPath.row];
+            CupModel *cup = _gradeArr[indexPath.row];
             result = [db deleteqCup:cup];
             if (result) {
-                [_mutableSections[indexPath.section] removeObject:cup];
+                [_gradeArr removeObject:cup];
                 [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
                 [NSObject showHudTipStr:LocalString(@"删除成功")];
             }else{
@@ -376,10 +413,12 @@ sectionForSectionIndexTitle:(NSString *)title
     searchVC.dismissBlock = ^{
         [self.rdv_tabBarController setTabBarHidden:NO animated:YES];
     };
+    [self.navigationController setDefinesPresentationContext:YES];
     [self presentViewController:nav animated:YES completion:nil];
 }
 
 - (void)generalSort:(UIButton *)sender{
+    _cupArr = [[DataBase shareDataBase] queryAllCup];
     _sort_gradeBtn.tag = sortUnselect;
     [_sort_gradeBtn setImage:[UIImage imageNamed:@"ic_rank1"] forState:UIControlStateNormal];
     _sort_nameBtn.tag = sortUnselect;
@@ -393,6 +432,7 @@ sectionForSectionIndexTitle:(NSString *)title
 }
 
 - (void)nameSort:(UIButton *)sender{
+    _cupArr = [[DataBase shareDataBase] queryAllCup];
     _sort_gradeBtn.tag = sortUnselect;
     [_sort_gradeBtn setImage:[UIImage imageNamed:@"ic_rank1"] forState:UIControlStateNormal];
     _sort_generalBtn.tag = sortUnselect;
@@ -413,6 +453,7 @@ sectionForSectionIndexTitle:(NSString *)title
 }
 
 - (void)gradeSort:(UIButton *)sender{
+    _cupArr = [[DataBase shareDataBase] queryAllCup];
     _sort_generalBtn.tag = sortUnselect;
     [_sort_generalBtn setTitleColor:[UIColor colorWithHexString:@"999999"] forState:UIControlStateNormal];
     _sort_nameBtn.tag = sortUnselect;
@@ -497,6 +538,19 @@ sectionForSectionIndexTitle:(NSString *)title
 }
 
 - (void)afterGetCupArr{
+    if (_cupArr.count == 0) {
+        _sort_nameBtn.hidden = YES;
+        _sort_generalBtn.hidden = YES;
+        _sort_gradeBtn.hidden = YES;
+        _cupTable.hidden = YES;
+        _noCupView.hidden = NO;
+    }else{
+        _sort_nameBtn.hidden = NO;
+        _sort_generalBtn.hidden = NO;
+        _sort_gradeBtn.hidden = NO;
+        _cupTable.hidden = NO;
+        _noCupView.hidden = YES;
+    }
     if (_sort_nameBtn.tag == sortUp) {
         [self setObjects:_cupArr];
     }else if(_sort_gradeBtn.tag == sortUp){

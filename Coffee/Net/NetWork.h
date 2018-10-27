@@ -104,7 +104,15 @@ static NSInteger tempCountVer = 1000;
 @property (nonatomic, assign) int deviceTimerStatus;//0是计时状态，1和2是停止
 ///@brief 事件数组
 @property (nonatomic, strong) NSMutableArray *eventArray;
+@property (nonatomic) BOOL isStartBake;
+@property (nonatomic) BOOL isDevyOver;
+@property (nonatomic) BOOL isFirstBurst;
+@property (nonatomic) BOOL isFirstBurstOver;
+@property (nonatomic) BOOL isSecondBurst;
+@property (nonatomic) BOOL isSecondBurstOver;
+@property (nonatomic) BOOL isBakeOver;
 @property (nonatomic, assign) int eventCount;//用来判断是否新加了event，设置entry的tag
+
 //设备控制
 ///@brief 电源状态
 @property (nonatomic) BOOL powerStatus;
