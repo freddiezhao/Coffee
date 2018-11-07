@@ -16,8 +16,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) float WScale_alert;
 @property (nonatomic) float HScale_alert;
 
-@property (nonatomic, strong) UISlider *mySlider;
-@property (nonatomic, strong) UILabel *sliderValue;
+@property (nonatomic, strong) UISlider *mySlider1;
+@property (nonatomic, strong) UILabel *sliderValue1;
+@property (nonatomic, strong) UISlider *mySlider2;
+@property (nonatomic, strong) UILabel *sliderValue2;
 @property (nonatomic) sliderBlock sliderBlock;
 
 - (void)showView;

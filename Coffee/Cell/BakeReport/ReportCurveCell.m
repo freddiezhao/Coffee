@@ -57,12 +57,13 @@
             //xAxis.axisRange = 30;
             //xAxis.granularityEnabled = YES;
             //xAxis.granularity = 10.0;
+            xAxis.valueFormatter = self;
             
             
             ChartYAxis *leftAxis = _chartView.leftAxis;
             leftAxis.labelTextColor = [UIColor colorWithRed:184/255.0 green:190/255.0 blue:204/255.0 alpha:1];
             leftAxis.labelFont = [UIFont fontWithName:@"Avenir-Light" size:12];
-            leftAxis.axisMaximum = 600 - 0.5;
+            leftAxis.axisMaximum = 400 - 0.5;
             //leftAxisMax = 140 - 0.5;
             leftAxis.axisMinimum = 0.0;
             leftAxis.spaceTop = 30.f;
@@ -76,7 +77,7 @@
             ChartYAxis *rightAxis = _chartView.rightAxis;
             rightAxis.labelFont = [UIFont fontWithName:@"Avenir-Light" size:12];
             rightAxis.labelTextColor = [UIColor colorWithRed:184/255.0 green:190/255.0 blue:204/255.0 alpha:1];
-            rightAxis.axisMaximum = 50.0;
+            rightAxis.axisMaximum = 30.0;
             rightAxis.axisMinimum = 0;
             rightAxis.drawGridLinesEnabled = NO;
             rightAxis.granularityEnabled = NO;
@@ -199,9 +200,12 @@
         _chartView.xAxis.axisRange = 15;
         [_chartView setVisibleXRangeWithMinXRange:0.5 maxXRange:UI_IS_IPHONE5?4:5];
         
-        _chartView.xAxis.labelCount = 6;
+        _chartView.xAxis.labelCount = 5;
         _chartView.data = data;
     }
 }
 
+- (NSString *)stringForValue:(double)value axis:(ChartAxisBase *)axis{
+    return [NSString stringWithFormat:@"%d",(int)value/60];
+}
 @end

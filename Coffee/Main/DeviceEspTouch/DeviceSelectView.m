@@ -93,7 +93,7 @@ NSString *const CellIdentifier_deviceSelect = @"CellID_deviceSelect";
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return 4;
+    return 5;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -134,6 +134,13 @@ NSString *const CellIdentifier_deviceSelect = @"CellID_deviceSelect";
         {
             cell.deviceName.text = LocalString(@"PEAK-Edmund咖啡烘焙机");
             cell.image.image = [UIImage imageNamed:@"img_peak_edmund_small"];
+            cell.tag = unselect;
+        }
+            break;
+            
+        case 4:{
+            cell.deviceName.text = LocalString(@"其他机型");
+            cell.image.image = [UIImage imageNamed:@"img_logo_gray"];
             cell.tag = unselect;
         }
             break;

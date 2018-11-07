@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #import <Charts/Charts-Swift.h>
 
-@interface ReportCurveCell : UITableViewCell <ChartViewDelegate>
+@interface ReportCurveCell : UITableViewCell <ChartViewDelegate, IChartAxisValueFormatter>
 
 @property (nonatomic, strong) LineChartView *chartView;
 

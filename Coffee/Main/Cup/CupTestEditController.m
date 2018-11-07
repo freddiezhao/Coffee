@@ -717,7 +717,7 @@ static float HEIGHT_HEADER = 36.f;
         NSArray *Bean = [curveDic objectForKey:@"bean"];
         NSArray *Out = [curveDic objectForKey:@"out"];
         NSArray *In = [curveDic objectForKey:@"in"];
-        NSArray *Environment = [curveDic objectForKey:@"environment"];
+        NSArray *Environment = [curveDic objectForKey:@"env"];
         //NSArray *Diff = [curveDic objectForKey:@"diff"];
         NSLog(@"%lu",(unsigned long)Bean.count);
         NSLog(@"%lu",Out.count);

@@ -788,6 +788,9 @@ static NSString *curveUid;
                     EventModel *event = [_eventArray lastObject];
                     entry.tag = event.eventText;
                     _eventCount = (int)_eventArray.count;
+                    NSLog(@"添加气泡%@",event.eventText);
+                }else{
+                    entry.tag = @"";
                 }
                 [_yVals_Bean addObject:entry];
                 [_yVals_Environment addObject:[[ChartDataEntry alloc] initWithX:[_yVals_Environment count] y:tempEnvironment]];

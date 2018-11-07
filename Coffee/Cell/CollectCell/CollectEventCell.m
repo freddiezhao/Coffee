@@ -38,6 +38,7 @@
         _rightLabel.font = [UIFont systemFontOfSize:13];
         _rightLabel.backgroundColor = [UIColor clearColor];
         _rightLabel.adjustsFontSizeToFitWidth = YES;
+        _rightLabel.numberOfLines = 0;
         [self.contentView addSubview:_rightLabel];
     }
     

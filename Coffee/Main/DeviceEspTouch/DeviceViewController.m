@@ -153,7 +153,7 @@ NSString *const CellIdentifier_device = @"CellID_device";
         [self.view addSubview:_noDeviceView];
         
         UIImageView *deviceImage = [[UIImageView alloc] init];
-        deviceImage.image = [UIImage imageNamed:@"img_peak_edmund"];
+        deviceImage.image = [UIImage imageNamed:@"img_logo_gray"];
         [_noDeviceView addSubview:deviceImage];
         
         UILabel *label = [[UILabel alloc] init];

@@ -116,7 +116,7 @@
         [self.view addSubview:tipLabel1];
         
         UILabel *tipLabel2 = [[UILabel alloc] init];
-        tipLabel2.text = LocalString(@"连接过程中请不要操作烘焙机");
+        tipLabel2.text = LocalString(@"连接过程中请不要操作咖啡烘焙机");
         tipLabel2.font = [UIFont fontWithName:@"PingFangSC-Regular" size:14];
         tipLabel2.textColor = [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1];
         tipLabel2.textAlignment = NSTextAlignmentCenter;

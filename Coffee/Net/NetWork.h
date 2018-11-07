@@ -111,6 +111,8 @@ static NSInteger tempCountVer = 1000;
 @property (nonatomic) BOOL isSecondBurst;
 @property (nonatomic) BOOL isSecondBurstOver;
 @property (nonatomic) BOOL isBakeOver;
+@property (nonatomic) float fireP;
+@property (nonatomic) float windP;
 @property (nonatomic, assign) int eventCount;//用来判断是否新加了event，设置entry的tag
 
 //设备控制

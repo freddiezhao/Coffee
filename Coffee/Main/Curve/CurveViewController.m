@@ -8,6 +8,7 @@
 
 #import "CurveViewController.h"
 #import "BakeReportController.h"
+#import "ShareReportController.h"
 #import "TouchTableView.h"
 #import <MJRefresh/MJRefresh.h>
 #import "CurrentCurveCell.h"
@@ -236,10 +237,15 @@ static float HEIGHT_HEADER = 36.f;
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     //NSLog(@"%ld",[_currentReportArr[0] count]);
     ReportModel *report = _currentReportArr[indexPath.section][indexPath.row];
-    
-    BakeReportController *reportVC = [[BakeReportController alloc] init];
-    reportVC.curveUid = report.curveUid;
-    [self.navigationController pushViewController:reportVC animated:YES];
+    if (report.isShare == 1) {
+        BakeReportController *reportVC = [[BakeReportController alloc] init];
+        reportVC.curveUid = report.curveUid;
+        [self.navigationController pushViewController:reportVC animated:YES];
+    }else{
+        ShareReportController *shareVC = [[ShareReportController alloc] init];
+        shareVC.curveUid = report.curveUid;
+        [self.navigationController pushViewController:shareVC animated:YES];
+    }
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -287,7 +293,7 @@ static float HEIGHT_HEADER = 36.f;
         BOOL result = NO;
         result = [db deleteqReport:report];
         if (result) {
-            if ([_currentReportArr[indexPath.section] count] == 1) {
+            if ([_currentReportArr[indexPath.section] count] == 0) {
                 [_currentReportArr removeObjectAtIndex:indexPath.section];
                 [tableView deleteSections:[NSIndexSet indexSetWithIndex:indexPath.section] withRowAnimation:UITableViewRowAnimationLeft];
             }else{

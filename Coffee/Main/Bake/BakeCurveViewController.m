@@ -245,7 +245,7 @@ static BOOL isRelaOn = NO;
     if (!_bakeTime) {
         _bakeTime = [[UILabel alloc] init];
         _bakeTime.textAlignment = NSTextAlignmentLeft;
-        _bakeTime.font = [UIFont fontWithName:@"PingFangSC-Light" size:13];
+        _bakeTime.font = [UIFont fontWithName:@"Helvetica" size:15];
         _bakeTime.text = @"00:00";
         _bakeTime.textColor = [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1];
         _bakeTime.adjustsFontSizeToFitWidth = YES;
@@ -258,7 +258,7 @@ static BOOL isRelaOn = NO;
     if (!_developRate) {
         _developRate = [[UILabel alloc] init];
         _developRate.textAlignment = NSTextAlignmentLeft;
-        _developRate.font = [UIFont fontWithName:@"PingFangSC-Light" size:13];
+        _developRate.font = [UIFont fontWithName:@"Helvetica" size:15];
         _developRate.text = @"0.0%";
         _developRate.textColor = [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1];
         _developRate.adjustsFontSizeToFitWidth = YES;
@@ -271,7 +271,7 @@ static BOOL isRelaOn = NO;
     if (!_developTime) {
         _developTime = [[UILabel alloc] init];
         _developTime.textAlignment = NSTextAlignmentLeft;
-        _developTime.font = [UIFont fontWithName:@"PingFangSC-Light" size:13];
+        _developTime.font = [UIFont fontWithName:@"Helvetica" size:15];
         _developTime.text = @"00:00";
         _developTime.textColor = [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1];
         _developTime.adjustsFontSizeToFitWidth = YES;
@@ -284,7 +284,7 @@ static BOOL isRelaOn = NO;
     if (!_beanTempLabel) {
         _beanTempLabel = [[UILabel alloc] init];
         _beanTempLabel.textAlignment = NSTextAlignmentLeft;
-        _beanTempLabel.font = [UIFont fontWithName:@"PingFangSC-Light" size:13];
+        _beanTempLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:15];
         _beanTempLabel.text = [NSString stringWithFormat:@"0.0%@",[DataBase shareDataBase].setting.tempUnit];
         _beanTempLabel.textColor = [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1];
         _beanTempLabel.adjustsFontSizeToFitWidth = YES;
@@ -297,7 +297,7 @@ static BOOL isRelaOn = NO;
     if (!_inTempLabel) {
         _inTempLabel = [[UILabel alloc] init];
         _inTempLabel.textAlignment = NSTextAlignmentLeft;
-        _inTempLabel.font = [UIFont fontWithName:@"PingFangSC-Light" size:13];
+        _inTempLabel.font = [UIFont fontWithName:@"Helvetica" size:15];
         _inTempLabel.text = [NSString stringWithFormat:@"0.0%@",[DataBase shareDataBase].setting.tempUnit];
         _inTempLabel.textColor = [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1];
         _inTempLabel.adjustsFontSizeToFitWidth = YES;
@@ -310,7 +310,7 @@ static BOOL isRelaOn = NO;
     if (!_outTempLabel) {
         _outTempLabel = [[UILabel alloc] init];
         _outTempLabel.textAlignment = NSTextAlignmentLeft;
-        _outTempLabel.font = [UIFont fontWithName:@"PingFangSC-Light" size:13];
+        _outTempLabel.font = [UIFont fontWithName:@"Helvetica" size:15];
         _outTempLabel.text = [NSString stringWithFormat:@"0.0%@",[DataBase shareDataBase].setting.tempUnit];
         _outTempLabel.textColor = [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1];
         _outTempLabel.adjustsFontSizeToFitWidth = YES;
@@ -323,7 +323,7 @@ static BOOL isRelaOn = NO;
     if (!_environTempLabel) {
         _environTempLabel = [[UILabel alloc] init];
         _environTempLabel.textAlignment = NSTextAlignmentLeft;
-        _environTempLabel.font = [UIFont fontWithName:@"PingFangSC-Light" size:13];
+        _environTempLabel.font = [UIFont fontWithName:@"Helvetica" size:15];
         _environTempLabel.text = [NSString stringWithFormat:@"0.0%@",[DataBase shareDataBase].setting.tempUnit];
         _environTempLabel.textColor = [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1];
         _environTempLabel.adjustsFontSizeToFitWidth = YES;
@@ -336,7 +336,7 @@ static BOOL isRelaOn = NO;
     if (!_beanTempRateLabel) {
         _beanTempRateLabel = [[UILabel alloc] init];
         _beanTempRateLabel.textAlignment = NSTextAlignmentLeft;
-        _beanTempRateLabel.font = [UIFont fontWithName:@"PingFangSC-Light" size:13];
+        _beanTempRateLabel.font = [UIFont fontWithName:@"Helvetica" size:15];
         _beanTempRateLabel.text = [NSString stringWithFormat:@"0.0%@/min",[DataBase shareDataBase].setting.tempUnit];
         _beanTempRateLabel.textColor = [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1];
         _beanTempRateLabel.adjustsFontSizeToFitWidth = YES;
@@ -734,11 +734,13 @@ static BOOL isRelaOn = NO;
     if (sender.tag == unselect) {
         set3.visible = NO;
         sender.tag = select;
-        _view1.backgroundColor = [UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1];
+        _view1.hidden = YES;
+        _beanTempLabel.textColor = [UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1];
     }else if(sender.tag == select){
         set3.visible = YES;
         sender.tag = unselect;
-        _view1.backgroundColor = [UIColor colorWithRed:71/255.0 green:120/255.0 blue:204/255.0 alpha:1];
+        _view1.hidden = NO;
+        _beanTempLabel.textColor = [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1];
     }
     [self setDataValue];
 }
@@ -751,11 +753,13 @@ static BOOL isRelaOn = NO;
     if (sender.tag == unselect) {
         set2.visible = NO;
         sender.tag = select;
-        _view2.backgroundColor = [UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1];
+        _view2.hidden = YES;
+        _inTempLabel.textColor = [UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1];
     }else{
         set2.visible = YES;
         sender.tag = unselect;
-        _view2.backgroundColor = [UIColor colorWithRed:123/255.0 green:179/255.0 blue:64/255.0 alpha:1];
+        _view2.hidden = NO;
+        _inTempLabel.textColor = [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1];
     }
     [self setDataValue];
 }
@@ -768,11 +772,13 @@ static BOOL isRelaOn = NO;
     if (sender.tag == unselect) {
         set1.visible = NO;
         sender.tag = select;
-        _view3.backgroundColor = [UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1];
+        _view3.hidden = YES;
+        _outTempLabel.textColor = [UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1];
     }else{
         set1.visible = YES;
         sender.tag = unselect;
-        _view3.backgroundColor = [UIColor colorWithRed:80/255.0 green:227/255.0 blue:194/255.0 alpha:1];
+        _view3.hidden = NO;
+        _outTempLabel.textColor = [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1];
     }
     [self setDataValue];
 }
@@ -785,11 +791,13 @@ static BOOL isRelaOn = NO;
     if (sender.tag == unselect) {
         set4.visible = NO;
         sender.tag = select;
-        _view4.backgroundColor = [UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1];
+        _view4.hidden = YES;
+        _environTempLabel.textColor = [UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1];
     }else{
         set4.visible = YES;
         sender.tag = unselect;
-        _view4.backgroundColor = [UIColor colorWithRed:245/255.0 green:166/255.0 blue:35/255.0 alpha:1];
+        _view4.hidden = NO;
+        _environTempLabel.textColor = [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1];
     }
     [self setDataValue];
 }
@@ -802,11 +810,13 @@ static BOOL isRelaOn = NO;
     if (sender.tag == unselect) {
         set5.visible = NO;
         sender.tag = select;
-        _view5.backgroundColor = [UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1];
+        _view5.hidden = YES;
+        _beanTempRateLabel.textColor = [UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1];
     }else{
         set5.visible = YES;
         sender.tag = unselect;
-        _view5.backgroundColor = [UIColor colorWithRed:255/255.0 green:71/255.0 blue:51/255.0 alpha:1];
+        _view5.hidden = NO;
+        _beanTempRateLabel.textColor = [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1];
     }
     [self setDataValue];
 }
@@ -975,15 +985,16 @@ static BOOL isRelaOn = NO;
         [set3 setColor:[UIColor colorWithRed:71/255.0 green:120/255.0 blue:204/255.0 alpha:1]];
         [set3 setCircleColor:[UIColor colorWithRed:71/255.0 green:120/255.0 blue:204/255.0 alpha:1]];
         [set3 setCircleHoleColor:[UIColor whiteColor]];
-        set3.lineWidth = 2.0;
-        set3.circleRadius = 6.0;
-        set3.circleHoleRadius = 5.5;
+        set3.lineWidth = 3.0;
+        set3.circleRadius = 4.0;
+        set3.circleHoleRadius = 3.0;
+        set3.highlightLineWidth = 0.0;
         set3.fillAlpha = 65/255.0;
         set3.fillColor = [UIColor colorWithRed:71/255.0 green:120/255.0 blue:204/255.0 alpha:1];
-        //set3.drawCircleHoleEnabled = YES;
-        set3.drawValuesEnabled = YES;//是否在拐点处显示数据
+        set3.drawCircleHoleEnabled = YES;
+        set3.drawValuesEnabled = NO;//是否在拐点处显示数据
         //set1.cubicIntensity = 1;//曲线弧度
-        set3.highlightEnabled = NO;//选中拐点,是否开启高亮效果(显示十字线)
+        set3.highlightEnabled = YES;//选中拐点,是否开启高亮效果(显示十字线)
         
         
         set4 = [[LineChartDataSet alloc] initWithValues:_myNet.yVals_Environment label:LocalString(@"环境温")];

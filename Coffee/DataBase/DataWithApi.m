@@ -216,27 +216,30 @@
             if ([[responseDic objectForKey:@"errno"] intValue] == 0) {
                 if ([responseDic objectForKey:@"data"]) {
                     //第一页信息获取
-                    NSDictionary *dic = [responseDic objectForKey:@"roastReportPageOne"];
-                    if (dic != nil) {
-                        report.curveName = [dic objectForKey:@"name"];
-                        report.deviceName = [dic objectForKey:@"roasterName"];
-                        report.bakerName = [dic objectForKey:@"userName"];
-                        report.date = [NSDate UTCDateFromLocalString:[dic objectForKey:@"createTime"]];
-                        report.light = [[dic objectForKey:@"light"] floatValue];
-                        report.rawBeanWeight = [[dic objectForKey:@"rawBean"] doubleValue];
-                        report.bakeBeanWeight = [[dic objectForKey:@"cooked"] doubleValue];
-                    }
-                    if ([dic objectForKey:@"beans"]) {
-                        [[dic objectForKey:@"beans"] enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-                            [[DataBase shareDataBase].queueDB inDatabase:^(FMDatabase * _Nonnull db) {
-                                BOOL result = [db executeUpdate:@"INSERT INTO bean_curve (beanUid,curveUid,beanWeight) VALUES (?,?,?)",[obj objectForKey:@"beanUid"],report.curveUid,[[obj objectForKey:@"used"] floatValue]];
-                                if (!result) {
-                                    NSLog(@"插入生豆%@失败",[obj objectForKey:@"name"]);
-                                }
+                    NSDictionary *dic = [responseDic objectForKey:@"data"];
+                    if ([dic objectForKey:@"roastReportPageOne"]) {
+                        NSDictionary *curveDic = [dic objectForKey:@"roastReportPageOne"];
+                        report.curveName = [curveDic objectForKey:@"name"];
+                        report.deviceName = [curveDic objectForKey:@"roasterName"];
+                        report.bakerName = [curveDic objectForKey:@"userName"];
+                        report.date = [NSDate UTCDateFromLocalString:[curveDic objectForKey:@"createTime"]];
+                        report.light = [[curveDic objectForKey:@"light"] floatValue];
+                        report.rawBeanWeight = [[curveDic objectForKey:@"rawBean"] doubleValue];
+                        report.bakeBeanWeight = [[curveDic objectForKey:@"cooked"] doubleValue];
+                        
+                        if ([curveDic objectForKey:@"beans"]) {
+                            [[curveDic objectForKey:@"beans"] enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                                [[DataBase shareDataBase].queueDB inDatabase:^(FMDatabase * _Nonnull db) {
+                                    BOOL result = [db executeUpdate:@"INSERT INTO bean_curve (beanUid,curveUid,beanWeight) VALUES (?,?,?)",[obj objectForKey:@"beanUid"],report.curveUid,[NSNumber numberWithFloat:[[obj objectForKey:@"used"] floatValue]]];
+                                    if (!result) {
+                                        NSLog(@"插入生豆%@失败",[obj objectForKey:@"name"]);
+                                    }
+                                }];
                             }];
-                        }];
+                        }
+
                     }
-                    NSArray *eventArr = [responseDic objectForKey:@"eventList"];
+                    NSArray *eventArr = [dic objectForKey:@"eventList"];
                     if (eventArr.count > 0) {
                         [eventArr enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
                             [[DataBase shareDataBase].queueDB inDatabase:^(FMDatabase * _Nonnull db) {
@@ -247,15 +250,17 @@
                             }];
                         }];
                     }
-                    NSDictionary *curveDataDic = [responseDic objectForKey:@"curveData"];
+                    NSDictionary *curveDataDic = [dic objectForKey:@"curveData"];
                     if (curveDataDic != nil) {
-                        //report.bakeTime = [[dic objectForKey:@"roastedTime"] integerValue];
-                        //report.developRate = [[dic objectForKey:@"devRate"] floatValue];
-                        //report.developTime = [[dic objectForKey:@"devTime"] integerValue];
-                        NSArray *In = [NSString toArrayOrNSDictionary:[[dic objectForKey:@"in"] dataUsingEncoding:NSUTF8StringEncoding]];
-                        NSArray *Out = [NSString toArrayOrNSDictionary:[[dic objectForKey:@"out"] dataUsingEncoding:NSUTF8StringEncoding]];
-                        NSArray *Bean = [NSString toArrayOrNSDictionary:[[dic objectForKey:@"bean"] dataUsingEncoding:NSUTF8StringEncoding]];
-                        NSArray *Environment = [NSString toArrayOrNSDictionary:[[dic objectForKey:@"env"] dataUsingEncoding:NSUTF8StringEncoding]];
+//                        NSArray *In = [NSString toArrayOrNSDictionary:[[curveDataDic objectForKey:@"in"] dataUsingEncoding:NSUTF8StringEncoding]];
+//                        NSArray *Out = [NSString toArrayOrNSDictionary:[[curveDataDic objectForKey:@"out"] dataUsingEncoding:NSUTF8StringEncoding]];
+//                        NSArray *Bean = [NSString toArrayOrNSDictionary:[[curveDataDic objectForKey:@"bean"] dataUsingEncoding:NSUTF8StringEncoding]];
+//                        NSArray *Environment = [NSString toArrayOrNSDictionary:[[curveDataDic objectForKey:@"env"] dataUsingEncoding:NSUTF8StringEncoding]];
+                        NSArray *In = [curveDataDic objectForKey:@"in"];
+                        NSArray *Out = [curveDataDic objectForKey:@"out"];
+                        NSArray *Bean = [curveDataDic objectForKey:@"bean"];
+                        NSArray *Environment = [curveDataDic objectForKey:@"env"];
+
                         NSLog(@"%lu",(unsigned long)Bean.count);
                         NSDictionary *curveValueDic = @{@"out":Out,@"in":In,@"bean":Bean,@"env":Environment};
                         NSData *curveData = [NSJSONSerialization dataWithJSONObject:curveValueDic options:NSJSONWritingPrettyPrinted error:nil];

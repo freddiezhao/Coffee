@@ -266,7 +266,7 @@ static float HEIGHT_HEADER = 36.f;
                     }
                         break;
                         
-                    case 1:
+                    case 2:
                     {
                         cell.nameLabel.text = LocalString(@"供应商");
                         cell.contentTF.enabled = YES;
@@ -281,7 +281,7 @@ static float HEIGHT_HEADER = 36.f;
                     }
                         break;
                         
-                    case 2:
+                    case 1:
                     {
                         cell.nameLabel.text = LocalString(@"豆种");
                         cell.contentTF.enabled = NO;
@@ -412,7 +412,7 @@ static float HEIGHT_HEADER = 36.f;
         case 2:
         {
             switch (indexPath.row) {
-                case 2:
+                case 1:
                 {
                     SpicesSelController *spicesVC = [[SpicesSelController alloc] init];
                     spicesVC.spicesBlock = ^(NSString *text) {

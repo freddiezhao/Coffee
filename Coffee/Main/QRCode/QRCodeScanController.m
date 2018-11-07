@@ -23,6 +23,12 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self codeScan];
+
+}
+
+- (void)viewWillAppear:(BOOL)animated{
+    [super viewWillAppear:animated];
+    [self.rdv_tabBarController setTabBarHidden:YES animated:YES];
 }
 
 #pragma mark - Actions

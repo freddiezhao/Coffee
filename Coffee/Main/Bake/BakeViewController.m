@@ -118,35 +118,40 @@
     [self.rdv_tabBarController setTabBarHidden:NO animated:YES];
     
     if (_myNet.connectedDevice) {
-        _deviceImage.hidden = NO;
-        _status2.hidden = NO;
-        _status1.hidden = NO;
-        _status3.hidden = NO;
-        _statusView1.hidden = NO;
-        _statusView2.hidden = NO;
-        _statusView3.hidden = NO;
         self.navigationItem.title = _myNet.connectedDevice.deviceName;
         switch ([_myNet.connectedDevice.deviceType integerValue]) {
             case 0:
             case 1:
             {
+                _deviceImage.frame = CGRectMake(75/WScale, 18/HScale, 225/WScale, 150/HScale);
                 _deviceImage.image = [UIImage imageNamed:@"img_hb_m6g_small"];
             }
                 break;
              
             case 2:
             {
+                _deviceImage.frame = CGRectMake(75/WScale, 18/HScale, 225/WScale, 150/HScale);
                 _deviceImage.image = [UIImage imageNamed:@"img_hb_l2_small"];
             }
                 break;
                 
             case 3:
             {
+                _deviceImage.frame = CGRectMake(75/WScale, 18/HScale, 225/WScale, 150/HScale);
                 _deviceImage.image = [UIImage imageNamed:@"img_peak_edmund"];
             }
                 break;
                 
+            case 4:
+            {
+                _deviceImage.frame = CGRectMake(75/WScale, 18/HScale, 225/WScale, 150/HScale);
+                _deviceImage.image = [UIImage imageNamed:@"img_hb_m6g_small"];
+            }
+                break;
+                
             default:
+                _deviceImage.frame = CGRectMake(117/WScale, 37/HScale, 140/WScale, 112/HScale);
+                _deviceImage.image = [UIImage imageNamed:@"img_logo_gray"];
                 break;
         }
     }
@@ -201,11 +206,10 @@
 
 - (UIImageView *)deviceImage{
     if (!_deviceImage) {
-        _deviceImage = [[UIImageView alloc] initWithFrame:CGRectMake(75/WScale, 18/HScale, 225/WScale, 150/HScale)];
-        _deviceImage.image = [UIImage imageNamed:@"img_peak_edmund"];
+        _deviceImage = [[UIImageView alloc] initWithFrame:CGRectMake(117/WScale, 37/HScale, 140/WScale, 112/HScale)];
+        _deviceImage.image = [UIImage imageNamed:@"img_logo_gray"];
         [self.view addSubview:_deviceImage];
         
-        _deviceImage.hidden = YES;
     }
     return _deviceImage;
 }
@@ -218,14 +222,12 @@
         _status1.textColor = [UIColor colorWithHexString:@"999999"];
         _status1.font = [UIFont systemFontOfSize:12.f];
         [self.view addSubview:_status1];
-        _status1.hidden = YES;
         
         _statusView1 = [[UIView alloc] init];
         _statusView1.frame = CGRectMake(74/WScale,180/HScale,6/WScale,6/WScale);
         _statusView1.layer.backgroundColor = [UIColor colorWithRed:213/255.0 green:218/255.0 blue:224/255.0 alpha:1].CGColor;
         _statusView1.layer.cornerRadius = 3/WScale;
         [self.view addSubview:_statusView1];
-        _statusView1.hidden = YES;
     }
     return _status1;
 }
@@ -238,14 +240,12 @@
         _status2.textColor = [UIColor colorWithHexString:@"999999"];
         _status2.font = [UIFont systemFontOfSize:12.f];
         [self.view addSubview:_status2];
-        _status2.hidden = YES;
         
         _statusView2 = [[UIView alloc] init];
         _statusView2.frame = CGRectMake(163/WScale,180/HScale,6/WScale,6/WScale);
         _statusView2.layer.backgroundColor = [UIColor colorWithRed:213/255.0 green:218/255.0 blue:224/255.0 alpha:1].CGColor;
         _statusView2.layer.cornerRadius = 3/WScale;
         [self.view addSubview:_statusView2];
-        _statusView2.hidden = YES;
     }
     return _status2;
 }
@@ -258,14 +258,12 @@
         _status3.textColor = [UIColor colorWithHexString:@"999999"];
         _status3.font = [UIFont systemFontOfSize:12.f];
         [self.view addSubview:_status3];
-        _status3.hidden = YES;
         
         _statusView3 = [[UIView alloc] init];
         _statusView3.frame = CGRectMake(253/WScale,180/HScale,6/WScale,6/WScale);
         _statusView3.layer.backgroundColor = [UIColor colorWithRed:213/255.0 green:218/255.0 blue:224/255.0 alpha:1].CGColor;
         _statusView3.layer.cornerRadius = 3/WScale;
         [self.view addSubview:_statusView3];
-        _statusView3.hidden = YES;
     }
     return _status3;
 }
@@ -957,14 +955,8 @@
                 _environTempLabel.text = [NSString stringWithFormat:@"%.1f%@",0.0,[DataBase shareDataBase].setting.tempUnit];
                 _beanTempRateLabel.text = [NSString stringWithFormat:@"%.1f%@/min",0.0,[DataBase shareDataBase].setting.tempUnit];
                 
-                _deviceImage.hidden = YES;
-                _status2.hidden = YES;
-                _status1.hidden = YES;
-                _status3.hidden = YES;
-                _statusView1.hidden = YES;
-                _statusView2.hidden = YES;
-                _statusView3.hidden = YES;
-
+                _deviceImage.frame = CGRectMake(117/WScale, 37/HScale, 140/WScale, 112/HScale);
+                _deviceImage.image = [UIImage imageNamed:@"img_logo_gray"];
             }
         });
     }
