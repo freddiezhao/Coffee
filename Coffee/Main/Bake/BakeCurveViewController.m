@@ -85,7 +85,7 @@ static BOOL isRelaOn = NO;
     _backBtn = [self backBtn];
     [self uiMasonry];
     [self setRelaCurve];
-    [self setDataValue];
+    //[self setDataValue];
     
     [_myNet addObserver:self forKeyPath:@"tempData" options:NSKeyValueObservingOptionNew context:nil];
     [_myNet addObserver:self forKeyPath:@"timerValue" options:NSKeyValueObservingOptionNew context:nil];

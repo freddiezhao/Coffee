@@ -154,6 +154,7 @@
         _verifyLoginBtn = [UIButton buttonWithType:UIButtonTypeCustom];
         [_verifyLoginBtn setTitle:LocalString(@"验证码登录") forState:UIControlStateNormal];
         [_verifyLoginBtn.titleLabel setFont:[UIFont systemFontOfSize:14.f]];
+        _verifyLoginBtn.titleLabel.adjustsFontSizeToFitWidth = YES;
         [_verifyLoginBtn setBackgroundColor:[UIColor clearColor]];
         [_verifyLoginBtn setTitleColor:[UIColor colorWithHexString:@"4778CC"] forState:UIControlStateNormal];
         [_verifyLoginBtn addTarget:self action:@selector(verifyLogin) forControlEvents:UIControlEventTouchUpInside];
@@ -172,6 +173,7 @@
         _registeBtn = [UIButton buttonWithType:UIButtonTypeCustom];
         [_registeBtn setTitle:LocalString(@"注册新用户") forState:UIControlStateNormal];
         [_registeBtn.titleLabel setFont:[UIFont systemFontOfSize:14.f]];
+        _registeBtn.titleLabel.adjustsFontSizeToFitWidth = YES;
         [_registeBtn setBackgroundColor:[UIColor clearColor]];
         [_registeBtn setTitleColor:[UIColor colorWithHexString:@"4778CC"] forState:UIControlStateNormal];
         [_registeBtn addTarget:self action:@selector(registeUser) forControlEvents:UIControlEventTouchUpInside];
@@ -190,6 +192,7 @@
         _forgetPWBtn = [UIButton buttonWithType:UIButtonTypeCustom];
         [_forgetPWBtn setTitle:LocalString(@"忘记密码") forState:UIControlStateNormal];
         [_forgetPWBtn.titleLabel setFont:[UIFont systemFontOfSize:14.f]];
+        _forgetPWBtn.titleLabel.adjustsFontSizeToFitWidth = YES;
         [_forgetPWBtn setBackgroundColor:[UIColor clearColor]];
         [_forgetPWBtn setTitleColor:[UIColor colorWithHexString:@"999999"] forState:UIControlStateNormal];
         [_forgetPWBtn addTarget:self action:@selector(forgetPW) forControlEvents:UIControlEventTouchUpInside];

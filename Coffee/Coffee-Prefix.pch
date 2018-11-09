@@ -55,7 +55,7 @@
 #define getRectNavAndStatusHight (self.navigationController.navigationBar.frame.size.height+[[UIApplication sharedApplication] statusBarFrame].size.height)
 #define tabbarHeight (ScreenHeight < 700 ? 44.f : 60.f)
 #define HScale (UI_IS_IPHONE6PLUS ? (667.f / ScreenHeight) : 1.f)
-#define WScale (UI_IS_IPHONE6PLUS ? (375.f / ScreenWidth) : 1.f)
+#define WScale (UI_IS_IPHONE6 ? 1.f : (375.f / ScreenWidth))
 #define cellHeight 44
 #define yButtonHeight (50.f / HScale)
 #define viewWidth self.contentView.frame.size.width
