@@ -14,6 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface YPickerAlertController : UIViewController
 
+@property (nonatomic) NSInteger index;
 @property (nonatomic, strong) NSMutableArray *pickerArr;
 @property (nonatomic, strong) UILabel *titleLabel;
 @property (nonatomic) pickerBlock pickerBlock;

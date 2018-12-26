@@ -750,7 +750,6 @@
 }
 
 #pragma mark - Actions
-
 - (void)goBakeCurveViewController{
     BakeCurveViewController *bakeCurveVC = [[BakeCurveViewController alloc] init];
     bakeCurveVC.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;

@@ -21,8 +21,9 @@
     [super viewDidLoad];
     [self.view setBackgroundColor:[UIColor colorWithRed:0/255.0 green:0/255.0 blue:0/255.0 alpha:0.6]];
 
-    _myPicker = [self myPicker];
-    _dismissBtn = [self dismissBtn];
+    self.myPicker = [self myPicker];
+    self.dismissBtn = [self dismissBtn];
+    [self.myPicker selectRow:_index inComponent:0 animated:YES];
 }
 
 - (void)viewWillAppear:(BOOL)animated{
@@ -110,6 +111,7 @@
     if (self.pickerBlock) {
         self.pickerBlock([_pickerArr[row] integerValue]);
     }
+    [self dismissVC];
 }
 
 - (void)dismissVC{

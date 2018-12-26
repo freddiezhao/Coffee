@@ -13,6 +13,8 @@
 #import "CurveColorViewController.h"
 #import "SettingModel.h"
 #import "YPickerAlertController.h"
+#import <Charts/Charts-Swift.h>
+
 
 NSString *const CellIdentifier_GeneralSub = @"CellID_GeneralSub";
 NSString *const CellIdentifier_GeneralLR = @"CellID_GeneralLR";
@@ -203,6 +205,7 @@ NSString *const CellIdentifier_GeneralLR = @"CellID_GeneralLR";
             }
             YPickerAlertController *VC = [[YPickerAlertController alloc] init];
             VC.pickerArr = [array mutableCopy];
+            VC.index = _myData.setting.timeAxis;
             VC.pickerBlock = ^(NSInteger picker) {
                 _myData.setting.timeAxis = picker;
                 [_generalTable reloadData];
@@ -219,6 +222,7 @@ NSString *const CellIdentifier_GeneralLR = @"CellID_GeneralLR";
             }
             YPickerAlertController *VC = [[YPickerAlertController alloc] init];
             VC.pickerArr = [array mutableCopy];
+            VC.index = _myData.setting.tempAxis/50;
             VC.pickerBlock = ^(NSInteger picker) {
                 _myData.setting.tempAxis = picker;
                 [_generalTable reloadData];
@@ -238,6 +242,7 @@ NSString *const CellIdentifier_GeneralLR = @"CellID_GeneralLR";
             }
             YPickerAlertController *VC = [[YPickerAlertController alloc] init];
             VC.pickerArr = [array mutableCopy];
+            VC.index = _myData.setting.tempCurveSmooth;
             VC.pickerBlock = ^(NSInteger picker) {
                 _myData.setting.tempCurveSmooth = picker;
                 [_generalTable reloadData];
@@ -254,6 +259,7 @@ NSString *const CellIdentifier_GeneralLR = @"CellID_GeneralLR";
             }
             YPickerAlertController *VC = [[YPickerAlertController alloc] init];
             VC.pickerArr = [array mutableCopy];
+            VC.index = _myData.setting.tempRateSmooth;
             VC.pickerBlock = ^(NSInteger picker) {
                 _myData.setting.tempRateSmooth = picker;
                 [_generalTable reloadData];
@@ -304,42 +310,80 @@ NSString *const CellIdentifier_GeneralLR = @"CellID_GeneralLR";
 #pragma mark - Actions
 - (void)showSheetWithTitle:(NSString *)title actions:(NSArray *)actions indexpath:(NSIndexPath *)indexpath{
     //显示弹出框列表选择
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:title
-                                                                   message:nil
-                                                            preferredStyle:UIAlertControllerStyleActionSheet];
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:title message:nil preferredStyle:UIAlertControllerStyleActionSheet];
     
     for (int i = 0; i < actions.count; i++) {
         NSString *title = actions[i];
-        UIAlertAction *alertAction = [UIAlertAction actionWithTitle:title style:UIAlertActionStyleDefault
-                                                            handler:^(UIAlertAction * action) {
-                                                                //响应事件
-                                                                NSLog(@"action = %@", action);
-                                                                dispatch_async(dispatch_get_main_queue(), ^{
-                                                                    if (indexpath.section == 1) {
-                                                                        if (indexpath.row == 0) {
-                                                                            _myData.setting.weightUnit = title;
-                                                                        }else if (indexpath.row == 1){
-                                                                            _myData.setting.tempUnit = title;
-                                                                        }else if (indexpath.row == 2){
-                                                                            _myData.setting.bakeChromaReferStandard = title;
-                                                                        }
-                                                                    }else if (indexpath.section == 4){
-                                                                        _myData.setting.language = title;
-                                                                    }
-                                                                    [_generalTable reloadData];
-                                                                    [self updateSetting];
-                                                                });
-                                                            }];
+        UIAlertAction *alertAction = [UIAlertAction actionWithTitle:title style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
+            //响应事件
+            NSLog(@"action = %@", action);
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if (indexpath.section == 1) {
+                    if (indexpath.row == 0) {
+                        _myData.setting.weightUnit = title;
+                    }else if (indexpath.row == 1){
+                        if (![_myData.setting.tempUnit isEqualToString:title]) {
+                            _myData.setting.tempUnit = title;
+                            //将曲线数据转化单位
+                            [self transformValuesWithDifferentTempUnit];
+                        }
+                        
+                    }else if (indexpath.row == 2){
+                        _myData.setting.bakeChromaReferStandard = title;
+                    }
+                }else if (indexpath.section == 4){
+                    _myData.setting.language = title;
+                }
+                [_generalTable reloadData];
+                [self updateSetting];
+            });
+            
+        }];
         [alertAction setValue:[UIColor colorWithHexString:@"333333"] forKey:@"_titleTextColor"];
         [alert addAction:alertAction];
     }
-    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel
-                                                         handler:^(UIAlertAction * action) {
-                                                             //响应事件
-                                                             NSLog(@"action = %@", action);
-                                                         }];
+    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:^(UIAlertAction * action) {
+        //响应事件
+        NSLog(@"action = %@", action);
+
+    }];
     [alert addAction:cancelAction];
     [self presentViewController:alert animated:YES completion:nil];
+}
+
+- (void)transformValuesWithDifferentTempUnit{
+    NetWork *net = [NetWork shareNetWork];
+    for (int i = 0; i < net.yVals_Out.count; i++) {
+        ChartDataEntry *entry = net.yVals_Out[i];
+        entry.y = [self transformTempUnitStringWithTemp:entry.y];
+    }
+    for (int i = 0; i < net.yVals_In.count; i++) {
+        ChartDataEntry *entry = net.yVals_In[i];
+        entry.y = [self transformTempUnitStringWithTemp:entry.y];
+    }
+    for (int i = 0; i < net.yVals_Bean.count; i++) {
+        ChartDataEntry *entry = net.yVals_Bean[i];
+        entry.y = [self transformTempUnitStringWithTemp:entry.y];
+    }
+    for (int i = 0; i < net.yVals_Environment.count; i++) {
+        ChartDataEntry *entry = net.yVals_Environment[i];
+        entry.y = [self transformTempUnitStringWithTemp:entry.y];
+    }
+    for (int i = 0; i < net.yVals_Diff.count; i++) {
+        ChartDataEntry *entry = net.yVals_Diff[i];
+        entry.y = [self transformTempUnitStringWithTemp:entry.y];
+    }
+}
+
+- (double)transformTempUnitStringWithTemp:(double)temp{
+    DataBase *db = [DataBase shareDataBase];
+    double caltemp = temp;
+    if ([db.setting.tempUnit isEqualToString:@"℃"]) {
+        caltemp = (temp - 32)*5/9;
+    }else if ([db.setting.tempUnit isEqualToString:@"℉"]){
+        caltemp = temp*9/5 + 32;
+    }
+    return caltemp;
 }
 
 #pragma mark - DataSource

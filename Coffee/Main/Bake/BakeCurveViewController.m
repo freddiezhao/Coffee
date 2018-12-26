@@ -205,8 +205,8 @@ static BOOL isRelaOn = NO;
         ChartYAxis *leftAxis = _chartView.leftAxis;
         leftAxis.labelTextColor = [UIColor colorWithRed:184/255.0 green:190/255.0 blue:204/255.0 alpha:1];
         leftAxis.labelFont = [UIFont fontWithName:@"Avenir-Light" size:12];
-        leftAxis.axisMaximum = [DataBase shareDataBase].setting.tempAxis - 0.5;
-        leftAxisMax = [DataBase shareDataBase].setting.tempAxis - 0.5;
+        leftAxis.axisMaximum = [NSString diffTempUnitStringWithTemp:[DataBase shareDataBase].setting.tempAxis - 0.5];
+        leftAxisMax = [NSString diffTempUnitStringWithTemp:[DataBase shareDataBase].setting.tempAxis - 0.5];
         leftAxis.axisMinimum = 0.0;
         leftAxis.spaceTop = 30.f;
         leftAxis.drawGridLinesEnabled = YES;
@@ -219,7 +219,7 @@ static BOOL isRelaOn = NO;
         ChartYAxis *rightAxis = _chartView.rightAxis;
         rightAxis.labelFont = [UIFont fontWithName:@"Avenir-Light" size:12];
         rightAxis.labelTextColor = [UIColor colorWithRed:184/255.0 green:190/255.0 blue:204/255.0 alpha:1];
-        rightAxis.axisMaximum = 30;
+        rightAxis.axisMaximum = [NSString diffTempUnitStringWithTemp:30.f];;
         rightAxis.axisMinimum = 0;
         rightAxis.drawGridLinesEnabled = NO;
         rightAxis.granularityEnabled = NO;
@@ -924,19 +924,19 @@ static BOOL isRelaOn = NO;
         //实时调整y轴最大值
         if ([_myNet.BeanArr[_myNet.BeanArr.count-1] floatValue] > leftAxisMax) {
             _chartView.leftAxis.axisMaximum = leftAxisMax + 50;
-            leftAxisMax = leftAxisMax + 50;
+            leftAxisMax = leftAxisMax + [NSString diffTempUnitStringWithTemp:50.f];;
         }
         if ([_myNet.InArr[_myNet.InArr.count-1] floatValue] > leftAxisMax) {
             _chartView.leftAxis.axisMaximum = leftAxisMax + 50;
-            leftAxisMax = leftAxisMax + 50;
+            leftAxisMax = leftAxisMax + [NSString diffTempUnitStringWithTemp:50.f];
         }
         if ([_myNet.OutArr[_myNet.OutArr.count-1] floatValue] > leftAxisMax) {
             _chartView.leftAxis.axisMaximum = leftAxisMax + 50;
-            leftAxisMax = leftAxisMax + 50;
+            leftAxisMax = leftAxisMax + [NSString diffTempUnitStringWithTemp:50.f];
         }
         if ([_myNet.EnvironmentArr[_myNet.EnvironmentArr.count-1] floatValue] > leftAxisMax) {
             _chartView.leftAxis.axisMaximum = leftAxisMax + 50;
-            leftAxisMax = leftAxisMax + 50;
+            leftAxisMax = leftAxisMax + [NSString diffTempUnitStringWithTemp:50.f];
         }
         if (_myNet.BeanArr.count > xAxisMax * 60) {
             NSLog(@"%ld",xAxisMax);

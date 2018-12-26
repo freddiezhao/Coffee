@@ -144,7 +144,7 @@ static DataBase *_dataBase = nil;
             model.tempCurveSmooth = [set intForColumn:@"tempcurvesmooth"];
             model.tempRateSmooth = [set intForColumn:@"tempratesmooth"];
             model.language = [set stringForColumn:@"language"];
-            _setting = model;
+            self.setting = model;
         }
         [set close];
     }];

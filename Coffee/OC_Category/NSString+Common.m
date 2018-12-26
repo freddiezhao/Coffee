@@ -276,7 +276,7 @@
     
 }
 
-//单位转换
+#pragma mark - 不同的重量单位对应的温度数值
 + (double)diffWeightUnitStringWithWeight:(double)weight{
     DataBase *db = [DataBase shareDataBase];
     double calWeight = weight;
@@ -290,6 +290,7 @@
     return calWeight;
 }
 
+#pragma mark - 不同的温度单位对应的温度数值
 + (double)diffTempUnitStringWithTemp:(double)temp{
     DataBase *db = [DataBase shareDataBase];
     double caltemp = temp;
