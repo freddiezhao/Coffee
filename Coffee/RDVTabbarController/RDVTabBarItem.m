@@ -112,7 +112,7 @@
     }
     
     //imageSize = [image size];
-    imageSize = CGSizeMake([image size].width/WScale, [image size].height/HScale);
+    imageSize = CGSizeMake([image size].width/(UI_IS_IPHONE6 ? 1.f : (375.f / ScreenWidth)), [image size].height/(UI_IS_IPHONE6 ? 1.f : (375.f / ScreenWidth)));
     //imageSize = CGSizeMake(24, 24);
     
     CGContextRef context = UIGraphicsGetCurrentContext();

@@ -183,17 +183,25 @@
                 const int maxDisplayCount = 5;
                 if ([firstResult isSuc])
                 {
-                     for (int i = 0; i < [esptouchResultArray count]; ++i)
-                     {
-                         ESPTouchResult *resultInArray = [esptouchResultArray objectAtIndex:i];
-                         [mutableStr appendString:[resultInArray description]];
-                         [mutableStr appendString:@"\n"];
-                         count++;
-                         if (count >= maxDisplayCount){
-                             break;
-                         }
-                     }
-                     
+                    NSLog(@"%@",firstResult.ipAddrData);
+                    NSString *ipAddrDataStr = [ESP_NetUtil descriptionInetAddr4ByData:firstResult.ipAddrData];
+                    if (ipAddrDataStr==nil) {
+                        ipAddrDataStr = [ESP_NetUtil descriptionInetAddr6ByData:firstResult.ipAddrData];
+                    }
+                    [NetWork shareNetWork].ipAddr = ipAddrDataStr;
+                    NSLog(@"%@",[NetWork shareNetWork].ipAddr);
+
+                    for (int i = 0; i < [esptouchResultArray count]; ++i)
+                    {
+                        ESPTouchResult *resultInArray = [esptouchResultArray objectAtIndex:i];
+                        [mutableStr appendString:[resultInArray description]];
+                        [mutableStr appendString:@"\n"];
+                        count++;
+                        if (count >= maxDisplayCount){
+                            break;
+                        }
+                    }
+                    
                     if (count < [esptouchResultArray count]){
                         [mutableStr appendString:[NSString stringWithFormat:@"\nthere's %lu more result(s) without showing\n",(unsigned long)([esptouchResultArray count] - count)]];
                     }
@@ -203,7 +211,6 @@
                             [self.navigationController popToViewController:controller animated:YES];
                         }
                     }
-                    [NetWork shareNetWork].ipAddr = [[NSString alloc] initWithData:firstResult.ipAddrData encoding:NSUTF8StringEncoding];
                     [NSObject showHudTipStr:LocalString(@"连接成功，请进行设备的选择")];
                 }
                 else

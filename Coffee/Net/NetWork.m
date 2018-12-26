@@ -100,20 +100,7 @@ static NSString *curveUid;
     return self;
 }
 
-#pragma mark - Lazy load
-- (NSTimer *)myTimer{
-    if (!_myTimer) {
-        _myTimer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(getTemp) userInfo:nil repeats:YES];
-        [_myTimer setFireDate:[NSDate distantFuture]];
-    }
-    return _myTimer;
-}
-
-#pragma mark - Tcp Delegate
-- (void)socket:(GCDAsyncSocket *)sock didConnectToHost:(NSString *)host port:(uint16_t)port
-{
-    NSLog(@"连接成功");
-    
+- (void)resetState{
     _frameCount = 0;
     isGetTimerStatus = NO;
     isGetFireStatus = NO;
@@ -137,7 +124,7 @@ static NSString *curveUid;
     [_eventArray removeAllObjects];
     _isCurveOn = NO;
     _relaCurve = nil;
-    _isDevelop = NO;
+    _isDevelop = YES;
     _developTime = 0;
     _developRate = 0.0;
     _deviceTimerStatus = 0;
@@ -153,6 +140,23 @@ static NSString *curveUid;
     _ssid = @"";
     _bssid = @"";
     _apPwd = @"";
+}
+
+#pragma mark - Lazy load
+- (NSTimer *)myTimer{
+    if (!_myTimer) {
+        _myTimer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(getTemp) userInfo:nil repeats:YES];
+        [_myTimer setFireDate:[NSDate distantFuture]];
+    }
+    return _myTimer;
+}
+
+#pragma mark - Tcp Delegate
+- (void)socket:(GCDAsyncSocket *)sock didConnectToHost:(NSString *)host port:(uint16_t)port
+{
+    NSLog(@"连接成功");
+    
+    [self resetState];
 
     [self inquireTimer];
     
@@ -1307,45 +1311,7 @@ static NSString *curveUid;
     }];
     
     if (isSucc) {
-        _frameCount = 0;
-        isGetTimerStatus = NO;
-        isGetFireStatus = NO;
-        isGetPowerStatus = NO;
-        sendCount = 0;
-        recvCount = 0;
-        resendCount = 0;
-        tempCountVer = 1000;
-        _timerValue = 0;
-        [_yVals_In removeAllObjects];
-        [_yVals_Out removeAllObjects];
-        [_yVals_Bean removeAllObjects];
-        [_yVals_Environment removeAllObjects];
-        [_yVals_Diff removeAllObjects];
-        [_InArr removeAllObjects];
-        [_OutArr removeAllObjects];
-        [_BeanArr removeAllObjects];
-        [_EnvironmentArr removeAllObjects];
-        
-        [_beanArray removeAllObjects];
-        [_eventArray removeAllObjects];
-        _isCurveOn = NO;
-        _relaCurve = nil;
-        _isDevelop = YES;
-        _developTime = 0;
-        _developRate = 0.0;
-        _deviceTimerStatus = 0;
-        _eventCount = 0;
-        _isStartBake = NO;
-        _isDevyOver = NO;
-        _isFirstBurst = NO;
-        _isFirstBurstOver = NO;
-        _isSecondBurst = NO;
-        _isSecondBurstOver = NO;
-        _isBakeOver = NO;
-        
-        _ssid = @"";
-        _bssid = @"";
-        _apPwd = @"";
+        [self resetState];
         
         [SVProgressHUD dismiss];
         [NSObject showHudTipStr:@"烘焙信息本地添加成功"];

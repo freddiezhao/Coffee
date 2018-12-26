@@ -17,7 +17,18 @@
 
 @end
 
-@implementation DeviceConfirmView
+@implementation DeviceConfirmView{
+    NSArray *deviceTypeNameArray;
+}
+
+- (instancetype)init
+{
+    self = [super init];
+    if (self) {
+        deviceTypeNameArray = @[@"HB-M6G咖啡烘焙机",@"HB-M6E咖啡烘焙机",@"HB-L2咖啡烘焙机",@"PEAK-Edmund咖啡烘焙机",@"其他机型"];
+    }
+    return self;
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -74,14 +85,14 @@
         }];
         
         UILabel *tipLabel1 = [[UILabel alloc] init];
-        tipLabel1.text = LocalString(@"接通电源，长按屏幕切换键，直到Wi-Fi指示灯闪烁");
+        tipLabel1.text = LocalString(@"接通电源，长按点火键和冷却键，直到Wi-Fi指示灯闪烁");
         tipLabel1.font = [UIFont fontWithName:@"PingFangSC-Regular" size:14];
         tipLabel1.textColor = [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1];
         tipLabel1.textAlignment = NSTextAlignmentCenter;
         [self.view addSubview:tipLabel1];
         
         UILabel *tipLabel2 = [[UILabel alloc] init];
-        tipLabel2.text = LocalString(@"您选择了 HB-M6G咖啡烘焙机");
+        tipLabel2.text = [NSString stringWithFormat:@"%@%@",LocalString(@"您选择了 "),deviceTypeNameArray[[[NetWork shareNetWork].deviceType integerValue]]];
         tipLabel2.font = [UIFont fontWithName:@"PingFangSC-Regular" size:14];
         tipLabel2.textColor = [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1];
         tipLabel2.textAlignment = NSTextAlignmentCenter;

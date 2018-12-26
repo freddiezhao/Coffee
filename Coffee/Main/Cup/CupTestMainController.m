@@ -153,7 +153,7 @@ static float HEIGHT_CELL = 60.f;
 - (UITableView *)cupTable{
     if (!_cupTable) {
         _cupTable = ({
-            TouchTableView *tableView = [[TouchTableView alloc] initWithFrame:CGRectMake(0, 44/HScale, ScreenWidth, ScreenHeight - 64 - (44 + tabbarHeight)/HScale) style:UITableViewStylePlain];
+            TouchTableView *tableView = [[TouchTableView alloc] initWithFrame:CGRectMake(0, 44/HScale, ScreenWidth, ScreenHeight - 64 - (44 + (tabbarHeight + kSafeArea_Bottom))/HScale) style:UITableViewStylePlain];
             tableView.backgroundColor = [UIColor clearColor];
             tableView.separatorColor = [UIColor colorWithRed:0/255.0 green:0/255.0 blue:0/255.0 alpha:0.1];
             tableView.dataSource = self;

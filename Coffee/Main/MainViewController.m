@@ -74,7 +74,8 @@
         index++;
     }
     
-    [self.tabBar setHeight:tabbarHeight];
+    [self.tabBar setHeight:tabbarHeight + kSafeArea_Bottom];
+    self.tabBar.contentEdgeInsets = UIEdgeInsetsMake(0, 0, 0 + kSafeArea_Bottom / 2.f, 0);
     
     self.tabBar.translucent = YES;
     

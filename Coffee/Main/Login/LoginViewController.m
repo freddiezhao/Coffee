@@ -40,6 +40,7 @@
     _registeBtn = [self registeBtn];
     _forgetPWBtn = [self forgetPWBtn];
 
+    [self textFieldTextChange:nil];//从本地获取帐号密码后使登录按钮enabled
 }
 
 - (void)viewWillAppear:(BOOL)animated{
@@ -93,6 +94,12 @@
         UIView *paddingView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 18/WScale, 0)];
         _phoneTF.leftView = paddingView;
         _phoneTF.leftViewMode = UITextFieldViewModeAlways;
+        
+        NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+        NSString *mobile = [userDefaults objectForKey:@"mobile"];
+        if (mobile != NULL) {
+            _phoneTF.text = mobile;
+        }
 
     }
     return _phoneTF;
@@ -122,6 +129,12 @@
         UIView *paddingView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 18/WScale, 0)];
         _passwordTF.leftView = paddingView;
         _passwordTF.leftViewMode = UITextFieldViewModeAlways;
+        
+        NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+        NSString *passWord = [userDefaults objectForKey:@"passWord"];
+        if (passWord != NULL) {
+            _passwordTF.text = passWord;
+        }
 
     }
     return _passwordTF;
@@ -230,6 +243,12 @@
     
     [manager POST:@"http://139.196.90.97:8080/coffee/user/login" parameters:parameters progress:nil
           success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+              //保存账号密码
+              NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+              [userDefaults setObject:self.phoneTF.text forKey:@"mobile"];
+              [userDefaults setObject:self.passwordTF.text forKey:@"passWord"];
+              [userDefaults synchronize];
+              
               NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableContainers|NSJSONReadingMutableLeaves error:nil];
               NSData * data = [NSJSONSerialization dataWithJSONObject:responseDic options:(NSJSONWritingOptions)0 error:nil];
               NSString * daetr = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];

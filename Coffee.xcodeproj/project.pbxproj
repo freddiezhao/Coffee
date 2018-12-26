@@ -43,6 +43,7 @@
 		BB2AF248216CD7D700114A91 /* ios_40.png in Resources */ = {isa = PBXBuildFile; fileRef = BB2AF237216CD7D600114A91 /* ios_40.png */; };
 		BB2AF249216CD7D700114A91 /* ios_100.png in Resources */ = {isa = PBXBuildFile; fileRef = BB2AF238216CD7D700114A91 /* ios_100.png */; };
 		BB2AF24A216CD7D700114A91 /* ios_57.png in Resources */ = {isa = PBXBuildFile; fileRef = BB2AF239216CD7D700114A91 /* ios_57.png */; };
+		BB2B4E2421CE1FF6009E8F44 /* NSData+Common.m in Sources */ = {isa = PBXBuildFile; fileRef = BB2B4E2321CE1FF6009E8F44 /* NSData+Common.m */; };
 		BB2DF8022150FE6400BC8DFB /* MineNormalCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BB2DF8012150FE6400BC8DFB /* MineNormalCell.m */; };
 		BB345BF521533601000537DD /* LoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB345BF421533601000537DD /* LoginViewController.m */; };
 		BB345BF8215336C8000537DD /* TextFieldCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BB345BF7215336C8000537DD /* TextFieldCell.m */; };
@@ -278,6 +279,7 @@
 		BB6A556020FCCD8E0013C3C1 /* ic_bake_dialog_delete@1x.png in Resources */ = {isa = PBXBuildFile; fileRef = BB6A555F20FCCD8E0013C3C1 /* ic_bake_dialog_delete@1x.png */; };
 		BB6A556220FCCDA90013C3C1 /* ic_bake_dialog_delete@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = BB6A556120FCCDA90013C3C1 /* ic_bake_dialog_delete@2x.png */; };
 		BB6A556420FCCDC40013C3C1 /* ic_bake_dialog_delete@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = BB6A556320FCCDC30013C3C1 /* ic_bake_dialog_delete@3x.png */; };
+		BB6A68B121D1BE0D004625B9 /* YTFAlertController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB6A68B021D1BE0D004625B9 /* YTFAlertController.m */; };
 		BB6A784620E32A4D00EE3E2E /* DeviceTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BB6A784420E32A4D00EE3E2E /* DeviceTableViewCell.m */; };
 		BB6A784B20E36E7200EE3E2E /* BaseViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB6A784A20E36E7200EE3E2E /* BaseViewController.m */; };
 		BB6AD0E82126CC0C0010458A /* ReportLightCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BB6AD0E72126CC0C0010458A /* ReportLightCell.m */; };
@@ -471,6 +473,8 @@
 		BB2AF237216CD7D600114A91 /* ios_40.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ios_40.png; sourceTree = "<group>"; };
 		BB2AF238216CD7D700114A91 /* ios_100.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ios_100.png; sourceTree = "<group>"; };
 		BB2AF239216CD7D700114A91 /* ios_57.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ios_57.png; sourceTree = "<group>"; };
+		BB2B4E2221CE1FF6009E8F44 /* NSData+Common.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSData+Common.h"; sourceTree = "<group>"; };
+		BB2B4E2321CE1FF6009E8F44 /* NSData+Common.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSData+Common.m"; sourceTree = "<group>"; };
 		BB2DF8002150FE6400BC8DFB /* MineNormalCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MineNormalCell.h; sourceTree = "<group>"; };
 		BB2DF8012150FE6400BC8DFB /* MineNormalCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MineNormalCell.m; sourceTree = "<group>"; };
 		BB345BF321533601000537DD /* LoginViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LoginViewController.h; sourceTree = "<group>"; };
@@ -775,6 +779,8 @@
 		BB6A555F20FCCD8E0013C3C1 /* ic_bake_dialog_delete@1x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ic_bake_dialog_delete@1x.png"; sourceTree = "<group>"; };
 		BB6A556120FCCDA90013C3C1 /* ic_bake_dialog_delete@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ic_bake_dialog_delete@2x.png"; sourceTree = "<group>"; };
 		BB6A556320FCCDC30013C3C1 /* ic_bake_dialog_delete@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ic_bake_dialog_delete@3x.png"; sourceTree = "<group>"; };
+		BB6A68AF21D1BE0D004625B9 /* YTFAlertController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YTFAlertController.h; sourceTree = "<group>"; };
+		BB6A68B021D1BE0D004625B9 /* YTFAlertController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YTFAlertController.m; sourceTree = "<group>"; };
 		BB6A784320E32A4D00EE3E2E /* DeviceTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DeviceTableViewCell.h; sourceTree = "<group>"; };
 		BB6A784420E32A4D00EE3E2E /* DeviceTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DeviceTableViewCell.m; sourceTree = "<group>"; };
 		BB6A784920E36E7200EE3E2E /* BaseViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BaseViewController.h; sourceTree = "<group>"; };
@@ -1527,6 +1533,8 @@
 				BB6E0B7D2122D5B0008F20FC /* YAlertViewController.m */,
 				BB56101B215267C5008433B1 /* YPickerAlertController.h */,
 				BB56101C215267C5008433B1 /* YPickerAlertController.m */,
+				BB6A68AF21D1BE0D004625B9 /* YTFAlertController.h */,
+				BB6A68B021D1BE0D004625B9 /* YTFAlertController.m */,
 				BB4A4C79214F4A0B0010A9A1 /* ArcProgressView.h */,
 				BB4A4C7A214F4A0B0010A9A1 /* ArcProgressView.m */,
 				BB68F2F02159E5CC00D40336 /* HeightSlider.h */,
@@ -1757,6 +1765,8 @@
 				BB593FA8210F172D007ECB1D /* NSDate+Common.m */,
 				BB345C352153C7D6000537DD /* NSString+Common.h */,
 				BB345C342153C7D6000537DD /* NSString+Common.m */,
+				BB2B4E2221CE1FF6009E8F44 /* NSData+Common.h */,
+				BB2B4E2321CE1FF6009E8F44 /* NSData+Common.m */,
 				BB8AA4E620DFD18D00610316 /* UIColor+ColorChange.h */,
 				BB8AA4E720DFD18D00610316 /* UIColor+ColorChange.m */,
 				BB1C156520E1E8AD006D7053 /* UIButton+Common.h */,
@@ -2443,6 +2453,7 @@
 				BB345C272153A4A9000537DD /* AFURLSessionManager.m in Sources */,
 				BB345C312153A4AA000537DD /* UIWebView+AFNetworking.m in Sources */,
 				BB7845DE216DDC83000CDD3A /* DataWithApi.m in Sources */,
+				BB6A68B121D1BE0D004625B9 /* YTFAlertController.m in Sources */,
 				BB25E7A9212E611A003568BD /* BeanViewController.m in Sources */,
 				BB345C2C2153A4AA000537DD /* UIRefreshControl+AFNetworking.m in Sources */,
 				BB813E72214BB5CB00D68F7B /* CupNormalCell.m in Sources */,
@@ -2461,6 +2472,7 @@
 				BB6AD0E82126CC0C0010458A /* ReportLightCell.m in Sources */,
 				BB73BA2D212FE903001D9258 /* SpicesSelController.m in Sources */,
 				BB6144DD214D056900592210 /* CupTestDetailController.m in Sources */,
+				BB2B4E2421CE1FF6009E8F44 /* NSData+Common.m in Sources */,
 				BB593FAC210F324C007ECB1D /* EventModel.m in Sources */,
 				BB94EAA520DBA9C800370A95 /* MainViewController.m in Sources */,
 				BB21D6092134470B009FCB66 /* CurrentCurveCell.m in Sources */,

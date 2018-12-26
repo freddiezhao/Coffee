@@ -162,6 +162,7 @@ NSString *const CellIdentifier_deviceSelect = @"CellID_deviceSelect";
                 cell.tag = select;
                 [cell.checkBtn setImage:[UIImage imageNamed:@"ic_selected"] forState:UIControlStateNormal];
                 [NetWork shareNetWork].deviceType = [NSNumber numberWithInteger:indexPath.row];
+                NSLog(@"%@",[NetWork shareNetWork].deviceType);
                 [_nextBtn setBackgroundColor:[UIColor colorWithRed:71/255.0 green:120/255.0 blue:204/255.0 alpha:1]];
                 _nextBtn.enabled = YES;
             }else{

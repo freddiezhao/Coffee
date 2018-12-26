@@ -126,6 +126,9 @@
     return hexString;
 }
 
+/*
+ *把字符串中的16进制转换为int值
+ */
 + (int)stringScanToInt:(NSString *)str{
     NSString *str_1 = [str substringWithRange:NSMakeRange(0, 1)];
     NSString *str_2 = [str substringWithRange:NSMakeRange(1, 1)];
@@ -133,11 +136,7 @@
     int number1 = [NSString hexToDecimal:str_1];
     int number2 = [NSString hexToDecimal:str_2];
     int number = number1 * 16 + number2;
-    /*NSScanner *scanner = [NSScanner scannerWithString:str];
-    [scanner scanUpToCharactersFromSet:[NSCharacterSet decimalDigitCharacterSet] intoString:nil];
-    int number;
-    [scanner scanInt:&number];
-    NSLog(@"%@",str);*/
+
     return number;
 }
 
@@ -301,4 +300,6 @@
     }
     return caltemp;
 }
+
+
 @end

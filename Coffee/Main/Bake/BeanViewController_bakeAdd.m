@@ -112,6 +112,7 @@ static float HEIGHT_HEADER = 36.f;
     UIBarButtonItem *rightBarButton = [[UIBarButtonItem alloc] initWithCustomView:rightButtonView];
     self.navigationItem.rightBarButtonItem = rightBarButton;
 }
+
 - (UITableView *)beanTable{
     if (!_beanTable) {
         _beanTable = ({
@@ -572,7 +573,7 @@ sectionForSectionIndexTitle:(NSString *)title
 #pragma mark - Data Source
 - (void)getAllBean{
     _beanArr = [[DataBase shareDataBase] queryAllBean];
-    _totolCount.text = [NSString stringWithFormat:@"总数:%ld",_beanArr.count];
+    _totolCount.text = [NSString stringWithFormat:@"总数:%lu",(unsigned long)self.beanArr.count];
     float totolWeight = 0.f;
     for (BeanModel *bean in _beanArr) {
         totolWeight += bean.stock;

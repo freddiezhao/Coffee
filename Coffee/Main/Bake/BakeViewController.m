@@ -120,32 +120,32 @@
     if (_myNet.connectedDevice) {
         self.navigationItem.title = _myNet.connectedDevice.deviceName;
         switch ([_myNet.connectedDevice.deviceType integerValue]) {
-            case 0:
-            case 1:
+            case Coffee_HB_M6G:
+            case Coffee_HB_M6E:
             {
                 _deviceImage.frame = CGRectMake(75/WScale, 18/HScale, 225/WScale, 150/HScale);
                 _deviceImage.image = [UIImage imageNamed:@"img_hb_m6g_small"];
             }
                 break;
              
-            case 2:
+            case Coffee_HB_L2:
             {
                 _deviceImage.frame = CGRectMake(75/WScale, 18/HScale, 225/WScale, 150/HScale);
                 _deviceImage.image = [UIImage imageNamed:@"img_hb_l2_small"];
             }
                 break;
                 
-            case 3:
+            case Coffee_PEAK_Edmund:
             {
                 _deviceImage.frame = CGRectMake(75/WScale, 18/HScale, 225/WScale, 150/HScale);
                 _deviceImage.image = [UIImage imageNamed:@"img_peak_edmund"];
             }
                 break;
                 
-            case 4:
+            case Coffee_HB_Another:
             {
                 _deviceImage.frame = CGRectMake(75/WScale, 18/HScale, 225/WScale, 150/HScale);
-                _deviceImage.image = [UIImage imageNamed:@"img_hb_m6g_small"];
+                _deviceImage.image = [UIImage imageNamed:@"img_logo_gray"];
             }
                 break;
                 
@@ -270,7 +270,7 @@
 
 - (UIView *)mainView{
     if (!_mainView) {
-        _mainView = [[UIView alloc] initWithFrame:CGRectMake(0, (ScreenHeight - 64 - tabbarHeight - 400/HScale + 154/HScale - 90/HScale), ScreenWidth, 400/HScale)];//154是控制按钮view高度，刚好把控制按钮隐藏，90是bottonview高度
+        _mainView = [[UIView alloc] initWithFrame:CGRectMake(0, (ScreenHeight - 64 - (tabbarHeight + kSafeArea_Bottom) - 400/HScale + 154/HScale - 90/HScale), ScreenWidth, 400/HScale)];//154是控制按钮view高度，刚好把控制按钮隐藏，90是bottonview高度
         _mainView.layer.backgroundColor = [UIColor colorWithRed:255/255.0 green:255/255.0 blue:255/255.0 alpha:1].CGColor;
         _mainView.layer.cornerRadius = 16;
         _mainView.layer.shadowColor = [UIColor colorWithRed:0/255.0 green:0/255.0 blue:0/255.0 alpha:0.03].CGColor;
@@ -672,7 +672,7 @@
 
 - (UIView *)bottomView{
     if (!_bottomView) {
-        _bottomView = [[UIView alloc] initWithFrame:CGRectMake(0, (ScreenHeight - 64 - tabbarHeight - 90/HScale), ScreenWidth, 90/HScale)];
+        _bottomView = [[UIView alloc] initWithFrame:CGRectMake(0, (ScreenHeight - 64 - (tabbarHeight + kSafeArea_Bottom) - 90/HScale), ScreenWidth, 90/HScale)];
         _bottomView.layer.backgroundColor = [UIColor colorWithRed:255/255.0 green:255/255.0 blue:255/255.0 alpha:1].CGColor;
         [self.view addSubview:_bottomView];
     }
@@ -767,14 +767,14 @@
         sender.tag = select;
         [UIView animateWithDuration:0.5 animations:^{
             CGSize size = _mainView.frame.size;
-            _mainView.frame = CGRectMake(0, (ScreenHeight - 64 - tabbarHeight - 400/HScale - 90/HScale), size.width, size.height);//154是控制按钮view高度，刚好把控制按钮隐藏，90是bottonview高度
+            _mainView.frame = CGRectMake(0, (ScreenHeight - 64 - (tabbarHeight + kSafeArea_Bottom) - 400/HScale - 90/HScale), size.width, size.height);//154是控制按钮view高度，刚好把控制按钮隐藏，90是bottonview高度
             [sender setImage:[UIImage imageNamed:@"btn_collapse"] forState:UIControlStateNormal];
         }];
     }else{
         sender.tag = unselect;
         [UIView animateWithDuration:0.5 animations:^{
             CGSize size = _mainView.frame.size;
-            _mainView.frame = CGRectMake(0, (ScreenHeight - 64 - tabbarHeight - 400/HScale + 154/HScale - 90/HScale), size.width, size.height);//154是控制按钮view高度，刚好把控制按钮隐藏，90是bottonview高度
+            _mainView.frame = CGRectMake(0, (ScreenHeight - 64 - (tabbarHeight + kSafeArea_Bottom) - 400/HScale + 154/HScale - 90/HScale), size.width, size.height);//154是控制按钮view高度，刚好把控制按钮隐藏，90是bottonview高度
             [sender setImage:[UIImage imageNamed:@"btn_expand"] forState:UIControlStateNormal];
         }];
     }
@@ -843,7 +843,7 @@
         double tempBean = ([data[10] intValue] * 256 + [data[11] intValue]) / 10.0;
         double tempEnvironment = ([data[12] intValue] * 256 + [data[13] intValue]) / 10.0;
         
-       // _beanTempRateLabel.text = [NSString stringWithFormat:@"%f℃/min",tempOut];
+        //_beanTempRateLabel.text = [NSString stringWithFormat:@"%f℃/min",tempOut];
         dispatch_async(dispatch_get_main_queue(), ^{
             //当顺时针旋转120度时，指针转到129
             _pointerImage.transform = CGAffineTransformMakeRotation((tempBean / 129.f * 120.0) / 180 * M_PI);

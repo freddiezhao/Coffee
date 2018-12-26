@@ -136,9 +136,9 @@ static float HEIGHT_SELECT = 44.f;
             NSLog(@"%f",getRectNavAndStatusHight);
             NSLog(@"%f",tabbarHeight);
             if (@available(iOS 11.0,*)) {
-                tableView = [[TouchTableView alloc] initWithFrame:CGRectMake(0, (HEIGHT_SELECT + HEIGHT_HEADER)/HScale, ScreenWidth, ScreenHeight - getRectNavAndStatusHight - tabbarHeight - (HEIGHT_SELECT + HEIGHT_HEADER)/HScale) style:UITableViewStylePlain];
+                tableView = [[TouchTableView alloc] initWithFrame:CGRectMake(0, (HEIGHT_SELECT + HEIGHT_HEADER)/HScale, ScreenWidth, ScreenHeight - getRectNavAndStatusHight - (tabbarHeight + kSafeArea_Bottom) - (HEIGHT_SELECT + HEIGHT_HEADER)/HScale) style:UITableViewStylePlain];
             }else{
-                tableView = [[TouchTableView alloc] initWithFrame:CGRectMake(0, (HEIGHT_SELECT + HEIGHT_HEADER)/HScale, ScreenWidth, ScreenHeight - getRectNavAndStatusHight - tabbarHeight - (HEIGHT_SELECT + HEIGHT_HEADER)/HScale) style:UITableViewStylePlain];
+                tableView = [[TouchTableView alloc] initWithFrame:CGRectMake(0, (HEIGHT_SELECT + HEIGHT_HEADER)/HScale, ScreenWidth, ScreenHeight - getRectNavAndStatusHight - (tabbarHeight + kSafeArea_Bottom) - (HEIGHT_SELECT + HEIGHT_HEADER)/HScale) style:UITableViewStylePlain];
             }
             tableView.backgroundColor = [UIColor clearColor];
             tableView.separatorColor = [UIColor colorWithRed:0/255.0 green:0/255.0 blue:0/255.0 alpha:0.1];
