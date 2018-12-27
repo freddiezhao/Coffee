@@ -571,21 +571,23 @@ NSString *const CellIdentifier_TempPer30Share = @"CellID_TempPer30Share";
 }
 
 #pragma mark - Actions
-- (void)editReport{
-    ReportEditController *editVC = [[ReportEditController alloc] init];
-    editVC.beanArray = [_beanArray mutableCopy];
-    editVC.reportModel = _reportModel;
-    [self.navigationController pushViewController:editVC animated:YES];
-}
+//分享曲线应该不需要这两个功能
 
-- (void)shareReport{
-    ProdQRCodeView *QRVC = [[ProdQRCodeView alloc] init];
-    QRVC.modalPresentationStyle = UIModalPresentationOverCurrentContext;
-    QRVC.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
-    [self presentViewController:QRVC animated:YES completion:^{
-        QRVC.curveUid = _curveUid;
-        NSLog(@"%@",_curveUid);
-        [QRVC generateQRCode];
-    }];
-}
+//- (void)editReport{
+//    ReportEditController *editVC = [[ReportEditController alloc] init];
+//    editVC.beanArray = [_beanArray mutableCopy];
+//    editVC.reportModel = _reportModel;
+//    [self.navigationController pushViewController:editVC animated:YES];
+//}
+//
+//- (void)shareReport{
+//    ProdQRCodeView *QRVC = [[ProdQRCodeView alloc] init];
+//    QRVC.modalPresentationStyle = UIModalPresentationOverCurrentContext;
+//    QRVC.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+//    [self presentViewController:QRVC animated:YES completion:^{
+//        QRVC.curveUid = _curveUid;
+//        NSLog(@"%@",_curveUid);
+//        [QRVC generateQRCode];
+//    }];
+//}
 @end

@@ -375,6 +375,7 @@ NSString *const CellIdentifier_GeneralLR = @"CellID_GeneralLR";
     }
 }
 
+//在更改温度单位时数据要根据单位转换为准确的值
 - (double)transformTempUnitStringWithTemp:(double)temp{
     DataBase *db = [DataBase shareDataBase];
     double caltemp = temp;

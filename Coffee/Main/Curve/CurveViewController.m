@@ -237,7 +237,7 @@ static float HEIGHT_HEADER = 36.f;
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     //NSLog(@"%ld",[_currentReportArr[0] count]);
     ReportModel *report = _currentReportArr[indexPath.section][indexPath.row];
-    if (report.isShare == 1) {
+    if (report.isShare == 0) {
         BakeReportController *reportVC = [[BakeReportController alloc] init];
         reportVC.curveUid = report.curveUid;
         [self.navigationController pushViewController:reportVC animated:YES];

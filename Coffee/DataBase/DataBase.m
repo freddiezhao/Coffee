@@ -79,7 +79,7 @@ static DataBase *_dataBase = nil;
 #pragma mark - Data 增删改查
 - (void)createTable{
     [_queueDB inDatabase:^(FMDatabase * _Nonnull db) {
-        BOOL result = [db executeUpdate:@"CREATE TABLE IF NOT EXISTS beanInfo (beanUid text PRIMARY KEY,beanName text NOT NULL,nation text,area text,manor text,altitude REAL,beanSpecies text,grade text,process text,water REAL,supplier text,price REAL,stock REAL,time text)"];
+        BOOL result = [db executeUpdate:@"CREATE TABLE IF NOT EXISTS beanInfo (beanUid text PRIMARY KEY,beanName text NOT NULL,nation text,area text,manor text,altitude REAL,beanSpecies text,grade text,process text,water REAL,supplier text,price REAL,stock REAL,time text，isShared integer)"];
         if (result) {
             NSLog(@"创建表bean成功");
         }else{
@@ -91,7 +91,7 @@ static DataBase *_dataBase = nil;
         }else{
             NSLog(@"创建表curve失败");
         }
-        result = [db executeUpdate:@"CREATE TABLE IF NOT EXISTS bean_curve (beanUid text NOT NULl,curveUid text NOT NULL,beanWeight REAL NOT NULL)"];
+        result = [db executeUpdate:@"CREATE TABLE IF NOT EXISTS bean_curve (beanUid text NOT NULL,curveUid text NOT NULL,beanWeight REAL NOT NULL,beanName text,nation text,area text,manor text,altitude REAL,beanSpecies text,grade text,process text,water REAL)"];
         if (result) {
             NSLog(@"创建表bean_curve成功");
         }else{

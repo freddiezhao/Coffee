@@ -53,7 +53,7 @@ static float HEIGHT_CELL = 50.f;
     [rightBar setTintColor:[UIColor colorWithHexString:@"4778CC"]];
     [rightBar setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:[UIFont boldSystemFontOfSize:16.f], NSFontAttributeName,nil] forState:(UIControlStateNormal)];
     
-    self.navigationItem.rightBarButtonItem = rightBar;
+    //self.navigationItem.rightBarButtonItem = rightBar;
 }
 
 - (UIView *)headerView{

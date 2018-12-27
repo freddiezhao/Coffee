@@ -13,6 +13,8 @@
 #import "AboutViewController.h"
 #import "FeedbackViewController.h"
 #import "UIButton+WebCache.h"
+#import "DeviceViewController.h"
+#import "QRCodeScanController.h"
 
 NSString *const CellIdentifier_Mine = @"CellID_Mine";
 
@@ -41,17 +43,12 @@ static float HEIGHT_CELL = 51.f;
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
     [self.rdv_tabBarController setTabBarHidden:NO animated:YES];
-    self.navigationController.navigationBar.translucent = YES;
-    [self.navigationController.navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
-    [self.navigationController.navigationBar setShadowImage:[UIImage new]];
-
+    self.navigationController.navigationBar.hidden = YES;
 }
 
 -(void)viewWillDisappear:(BOOL)animated{
     [super viewWillDisappear:animated];
-    self.navigationController.navigationBar.translucent = NO;
-    [self.navigationController.navigationBar setBackgroundImage:nil forBarMetrics:UIBarMetricsDefault];
-    //[self.navigationController.navigationBar setShadowImage:nil];
+    self.navigationController.navigationBar.hidden = NO;
 }
 
 #pragma mark - Lazyload
@@ -172,7 +169,10 @@ static float HEIGHT_CELL = 51.f;
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     if (indexPath.section == 0){
-        if (indexPath.row == 1) {
+        if (indexPath.row == 0) {
+            DeviceViewController *deviceVC = [[DeviceViewController alloc] init];
+            [self.navigationController pushViewController:deviceVC animated:YES];
+        }else if (indexPath.row == 1) {
             GeneralViewController *generalVC = [[GeneralViewController alloc] init];
             [self.navigationController pushViewController:generalVC animated:YES];
         }
@@ -224,7 +224,9 @@ static float HEIGHT_CELL = 51.f;
 }
 
 - (void)scanAction{
-    
+    NSLog(@"sdsd");
+    QRCodeScanController *scanVC = [[QRCodeScanController alloc] init];
+    [self.navigationController pushViewController:scanVC animated:YES];
 }
 
 #pragma mark - API

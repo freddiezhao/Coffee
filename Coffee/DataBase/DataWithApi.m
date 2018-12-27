@@ -230,7 +230,14 @@
                         if ([curveDic objectForKey:@"beans"]) {
                             [[curveDic objectForKey:@"beans"] enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
                                 [[DataBase shareDataBase].queueDB inDatabase:^(FMDatabase * _Nonnull db) {
-                                    BOOL result = [db executeUpdate:@"INSERT INTO bean_curve (beanUid,curveUid,beanWeight) VALUES (?,?,?)",[obj objectForKey:@"beanUid"],report.curveUid,[NSNumber numberWithFloat:[[obj objectForKey:@"used"] floatValue]]];
+                                    BOOL result;
+                                    if (report.isShare) {
+                                        //不是分享的存储生豆uid，从uid获取本地生豆信息
+                                        result = [db executeUpdate:@"INSERT INTO bean_curve (beanUid,curveUid,beanWeight) VALUES (?,?,?)",[obj objectForKey:@"beanUid"],report.curveUid,[NSNumber numberWithFloat:[[obj objectForKey:@"used"] floatValue]]];
+                                    }else{
+                                        //分享曲线存储所有生豆信息在关联表，因为本地没有该生豆存储
+                                        result = [db executeUpdate:@"INSERT INTO bean_curve (beanUid,curveUid,beanWeight,beanName,nation,area,manor,altitude,beanSpecies,grade,process,water) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",[obj objectForKey:@"beanUid"],report.curveUid,[NSNumber numberWithFloat:[[obj objectForKey:@"used"] floatValue]],[obj objectForKey:@"name"],[obj objectForKey:@"country"],[obj objectForKey:@"origin"],[obj objectForKey:@"farm"],[NSNumber numberWithFloat:[[obj objectForKey:@"altitude"] floatValue]],[obj objectForKey:@"species"],[obj objectForKey:@"grade"],[obj objectForKey:@"processingMethod"],[NSNumber numberWithFloat:[[obj objectForKey:@"waterContent"] floatValue]]];
+                                    }
                                     if (!result) {
                                         NSLog(@"插入生豆%@失败",[obj objectForKey:@"name"]);
                                     }

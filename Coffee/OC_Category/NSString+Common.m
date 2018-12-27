@@ -277,7 +277,7 @@
 }
 
 #pragma mark - 不同的重量单位对应的温度数值
-+ (double)diffWeightUnitStringWithWeight:(double)weight{
++ (double)diffWeightUnitStringWithWeight:(double)weight{//传入参数单位必须是kg
     DataBase *db = [DataBase shareDataBase];
     double calWeight = weight;
     if ([db.setting.weightUnit isEqualToString:@"kg"]) {
@@ -291,7 +291,7 @@
 }
 
 #pragma mark - 不同的温度单位对应的温度数值
-+ (double)diffTempUnitStringWithTemp:(double)temp{
++ (double)diffTempUnitStringWithTemp:(double)temp{//传入参数单位必须是摄氏度
     DataBase *db = [DataBase shareDataBase];
     double caltemp = temp;
     if ([db.setting.tempUnit isEqualToString:@"℃"]) {

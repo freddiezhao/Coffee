@@ -8,6 +8,10 @@
 
 #import "QRCodeScanController.h"
 #import <AVFoundation/AVFoundation.h>
+#import "ReportModel.h"
+#import "FMDB.h"
+#import "MainViewController.h"
+#import "ShareReportController.h"
 
 @interface QRCodeScanController () <AVCaptureMetadataOutputObjectsDelegate, UIAlertViewDelegate>
 
@@ -23,12 +27,49 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self codeScan];
-
 }
 
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
     [self.rdv_tabBarController setTabBarHidden:YES animated:YES];
+}
+
+#pragma mark - Lazyload
+- (AVCaptureSession *)session
+{
+    if (!_session) {
+        _session = [[AVCaptureSession alloc] init];
+    }
+    return _session;
+}
+
+- (AVCaptureVideoPreviewLayer *)scanLayer
+{
+    if (!_scanLayer) {
+        _scanLayer = [AVCaptureVideoPreviewLayer layerWithSession:self.session];
+        _scanLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
+        _scanLayer.frame = self.view.bounds;
+    }
+    return _scanLayer;
+}
+
+- (AVCaptureMetadataOutput *)output
+{
+    if (!_output) {
+        _output = [[AVCaptureMetadataOutput alloc] init];
+        [_output setMetadataObjectsDelegate:self queue:dispatch_get_main_queue()];
+    }
+    return _output;
+}
+
+- (UIView *)borderView
+{
+    if (!_borderView) {
+        _borderView = [[UIView alloc] initWithFrame:CGRectMake(0.1 * ScreenWidth, 150, 0.8 *ScreenWidth, 0.8*ScreenWidth)];
+        _borderView.layer.borderColor = [UIColor whiteColor].CGColor;
+        _borderView.layer.borderWidth = 2.0f;
+    }
+    return _borderView;
 }
 
 #pragma mark - Actions
@@ -118,7 +159,7 @@
                   [NSObject showHudTipStr:LocalString(@"添加分享曲线成功")];
                   [self.session stopRunning];
                   [self.scanLayer removeFromSuperlayer];
-                  [self.navigationController popViewControllerAnimated:YES];
+                  [self getFullCurveInfoByApi:curveUid];//获取曲线详细信息
               }else{
                   [NSObject showHudTipStr:LocalString(@"添加分享曲线失败")];
               }
@@ -134,44 +175,150 @@
           }];
 }
 
-#pragma mark - Lazyload
-- (AVCaptureSession *)session
-{
-    if (!_session) {
-        _session = [[AVCaptureSession alloc] init];
-    }
-    return _session;
+- (void)getFullCurveInfoByApi:(NSString *)curveUid{
+    [SVProgressHUD showWithStatus:LocalString(@"正在获取曲线信息")];
+    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+    
+    [manager.requestSerializer willChangeValueForKey:@"timeoutInterval"];
+    manager.requestSerializer.timeoutInterval = 6.f;
+    [manager.requestSerializer didChangeValueForKey:@"timeoutInterval"];
+    
+    NSString *url = [NSString stringWithFormat:@"http://139.196.90.97:8080/coffee/roastCurve/allReport?curveUid=%@",curveUid];
+    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet characterSetWithCharactersInString:@"`#%^{}\"[]|\\<> "].invertedSet];
+    
+    [manager.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+    [manager.requestSerializer setValue:[DataBase shareDataBase].userId forHTTPHeaderField:@"userId"];
+    [manager.requestSerializer setValue:[NSString stringWithFormat:@"bearer %@",[DataBase shareDataBase].token] forHTTPHeaderField:@"Authorization"];
+    [manager GET:url parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableContainers|NSJSONReadingMutableLeaves error:nil];
+        NSData * data = [NSJSONSerialization dataWithJSONObject:responseDic options:(NSJSONWritingOptions)0 error:nil];
+        NSString * daetr = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
+        NSLog(@"success:%@",daetr);
+        if ([[responseDic objectForKey:@"errno"] intValue] == 0) {
+            if ([responseDic objectForKey:@"data"]) {
+                ReportModel *report = [[ReportModel alloc] init];
+                //第一页信息获取
+                NSDictionary *dic = [responseDic objectForKey:@"data"];
+                if ([dic objectForKey:@"roastReportPageOne"]) {
+                    NSDictionary *curveDic = [dic objectForKey:@"roastReportPageOne"];
+                    report.curveUid = curveUid;
+                    report.curveName = [curveDic objectForKey:@"name"];
+                    report.deviceName = [curveDic objectForKey:@"roasterName"];
+                    report.bakerName = [curveDic objectForKey:@"userName"];
+                    report.date = [NSDate UTCDateFromLocalString:[curveDic objectForKey:@"createTime"]];
+                    report.light = [[curveDic objectForKey:@"light"] floatValue];
+                    report.rawBeanWeight = [[curveDic objectForKey:@"rawBean"] doubleValue];
+                    report.bakeBeanWeight = [[curveDic objectForKey:@"cooked"] doubleValue];
+                    report.sn = [curveDic objectForKey:@"sn"];
+                    report.sharerName = report.bakerName;
+                    report.isShare = 1;
+                    
+                    if ([curveDic objectForKey:@"beans"]) {
+                        [[curveDic objectForKey:@"beans"] enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                            [[DataBase shareDataBase].queueDB inDatabase:^(FMDatabase * _Nonnull db) {
+                                //因为是分享曲线，所以把
+                                BOOL result = [db executeUpdate:@"INSERT INTO bean_curve (beanUid,curveUid,beanWeight,beanName,nation,area,manor,altitude,beanSpecies,grade,process,water) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",[obj objectForKey:@"beanUid"],report.curveUid,[NSNumber numberWithFloat:[[obj objectForKey:@"used"] floatValue]],[obj objectForKey:@"name"],[obj objectForKey:@"country"],[obj objectForKey:@"origin"],[obj objectForKey:@"farm"],[NSNumber numberWithFloat:[[obj objectForKey:@"altitude"] floatValue]],[obj objectForKey:@"species"],[obj objectForKey:@"grade"],[obj objectForKey:@"processingMethod"],[NSNumber numberWithFloat:[[obj objectForKey:@"waterContent"] floatValue]]];
+                                if (!result) {
+                                    NSLog(@"插入生豆%@失败",[obj objectForKey:@"name"]);
+                                }
+                            }];
+                        }];
+                    }
+                    
+                }
+                NSArray *eventArr = [dic objectForKey:@"eventList"];
+                if (eventArr.count > 0) {
+                    [eventArr enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                        [[DataBase shareDataBase].queueDB inDatabase:^(FMDatabase * _Nonnull db) {
+                            BOOL result = [db executeUpdate:@"INSERT INTO curve_event (curveUid,eventId,eventText,eventTime,eventBeanTemp) VALUES (?,?,?,?,?)",report.curveUid,[NSNumber numberWithInteger:[[obj objectForKey:@"type"] integerValue]],[obj objectForKey:@"content"],[NSNumber numberWithInteger:[[obj objectForKey:@"time"] integerValue]],[NSNumber numberWithDouble:[[obj objectForKey:@"name"] doubleValue]]];
+                            if (!result) {
+                                NSLog(@"插入事件%@失败",[obj objectForKey:@"content"]);
+                            }
+                        }];
+                    }];
+                }
+                NSDictionary *curveDataDic = [dic objectForKey:@"curveData"];
+                if (curveDataDic != nil) {
+                    NSArray *In = [curveDataDic objectForKey:@"in"];
+                    NSArray *Out = [curveDataDic objectForKey:@"out"];
+                    NSArray *Bean = [curveDataDic objectForKey:@"bean"];
+                    NSArray *Environment = [curveDataDic objectForKey:@"env"];
+                    
+                    NSLog(@"%lu",(unsigned long)Bean.count);
+                    NSDictionary *curveValueDic = @{@"out":Out,@"in":In,@"bean":Bean,@"env":Environment};
+                    NSData *curveData = [NSJSONSerialization dataWithJSONObject:curveValueDic options:NSJSONWritingPrettyPrinted error:nil];
+                    NSString *curveValueJson = [[NSString alloc] initWithData:curveData encoding:NSUTF8StringEncoding];
+                    report.curveValueJson = curveValueJson;
+                }
+                [[DataBase shareDataBase].queueDB inDatabase:^(FMDatabase * _Nonnull db) {
+                    BOOL result = [db executeUpdate:@"INSERT INTO curveInfo (curveUid,curveName,date,deviceName,sn,rawBeanWeight,bakeBeanWeight,light,bakeTime,developTime,developRate,bakerName,curveValue,shareName,isShare) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",report.curveUid,report.curveName,[NSDate localStringFromUTCDate:report.date],report.deviceName,report.sn,[NSNumber numberWithFloat:report.rawBeanWeight],[NSNumber numberWithFloat:report.bakeBeanWeight],[NSNumber numberWithFloat:report.light],@0,@0,@0,report.bakerName,report.curveValueJson,report.sharerName,[NSNumber numberWithInteger:report.isShare]];//烘焙总时间、发展时间、发展率都通过事件计算,不再存储
+                    if (!result) {
+                        NSLog(@"插入报告失败");
+                    }
+                }];
+                
+                //跳转到曲线页面
+                MainViewController *mainVC = [[MainViewController alloc] init];
+                [self restoreRootViewController:mainVC];
+                mainVC.selectedIndex = 1;
+                
+                ShareReportController *reportVC = [[ShareReportController alloc] init];
+                reportVC.curveUid = curveUid;
+                //因为mainVC.selectedViewController是一个自己生成的UINavigationController，所以要获得根vc
+                UINavigationController *nav = (UINavigationController *)mainVC.selectedViewController;
+                [[nav viewControllers][0].navigationController pushViewController:reportVC animated:YES];
+
+            }
+        }else{
+            [NSObject showHudTipStr:LocalString(@"从服务器获取烘焙报告失败")];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [SVProgressHUD dismiss];
+                [self.navigationController popViewControllerAnimated:YES];
+            });
+        }
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        NSLog(@"Error:%@",error);
+        [NSObject showHudTipStr:LocalString(@"从服务器获取烘焙报告失败")];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [SVProgressHUD dismiss];
+            [self.navigationController popViewControllerAnimated:YES];
+        });
+    }];
 }
 
-- (AVCaptureVideoPreviewLayer *)scanLayer
-{
-    if (!_scanLayer) {
-        _scanLayer = [AVCaptureVideoPreviewLayer layerWithSession:self.session];
-        _scanLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
-        _scanLayer.frame = self.view.bounds;
-    }
-    return _scanLayer;
+- (void)restoreRootViewController:(UIViewController *)rootViewController {
+    
+    typedef void (^Animation)(void);
+    
+    UIWindow* window = [UIApplication sharedApplication].keyWindow;
+    
+    
+    
+    rootViewController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+    
+    Animation animation = ^{
+        
+        BOOL oldState = [UIView areAnimationsEnabled];
+        
+        [UIView setAnimationsEnabled:NO];
+        
+        window.rootViewController = rootViewController;
+        
+        [UIView setAnimationsEnabled:oldState];
+        
+    };
+    
+    
+    
+    [UIView transitionWithView:window
+     
+                      duration:0.5f
+     
+                       options:UIViewAnimationOptionTransitionCrossDissolve
+     
+                    animations:animation
+     
+                    completion:nil];
+    
 }
-
-- (AVCaptureMetadataOutput *)output
-{
-    if (!_output) {
-        _output = [[AVCaptureMetadataOutput alloc] init];
-        [_output setMetadataObjectsDelegate:self queue:dispatch_get_main_queue()];
-    }
-    return _output;
-}
-
-- (UIView *)borderView
-{
-    if (!_borderView) {
-        _borderView = [[UIView alloc] initWithFrame:CGRectMake(0.1 * ScreenWidth, 150, 0.8 *ScreenWidth, 0.8*ScreenWidth)];
-        _borderView.layer.borderColor = [UIColor whiteColor].CGColor;
-        _borderView.layer.borderWidth = 2.0f;
-    }
-    return _borderView;
-}
-
-
-
 @end
