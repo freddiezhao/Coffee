@@ -101,12 +101,15 @@
     _addBeanBtn = [self addBeanBtn];
     
     _myNet = [NetWork shareNetWork];
+    
     [_myNet addObserver:self forKeyPath:@"tempData" options:NSKeyValueObservingOptionNew context:nil];
     [_myNet addObserver:self forKeyPath:@"powerStatus" options:NSKeyValueObservingOptionNew context:nil];
     [_myNet addObserver:self forKeyPath:@"fireStatus" options:NSKeyValueObservingOptionNew context:nil];
     [_myNet addObserver:self forKeyPath:@"coolStatus" options:NSKeyValueObservingOptionNew context:nil];
     [_myNet addObserver:self forKeyPath:@"stirStatus" options:NSKeyValueObservingOptionNew context:nil];
     [_myNet addObserver:self forKeyPath:@"connectedDevice" options:NSKeyValueObservingOptionNew context:nil];
+    [_myNet addObserver:self forKeyPath:@"deviceTimerStatus" options:NSKeyValueObservingOptionNew context:nil];
+
 }
 
 - (void)viewDidAppear:(BOOL)animated{
@@ -116,6 +119,8 @@
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
     [self.rdv_tabBarController setTabBarHidden:NO animated:YES];
+    
+    _myNet = [NetWork shareNetWork];
     
     if (_myNet.connectedDevice) {
         self.navigationItem.title = _myNet.connectedDevice.deviceName;
@@ -163,6 +168,13 @@
     _outTempLabel.text = [NSString stringWithFormat:@"%.1f%@",0.0,[DataBase shareDataBase].setting.tempUnit];
     _environTempLabel.text = [NSString stringWithFormat:@"%.1f%@",0.0,[DataBase shareDataBase].setting.tempUnit];
     _beanTempUnitLabel.text = [DataBase shareDataBase].setting.tempUnit;
+    
+    if (_myNet.deviceTimerStatus == 0 && _myNet.connectedDevice) {
+        _statusView2.layer.backgroundColor = [UIColor colorWithRed:255/255.0 green:221/255.0 blue:51/255.0 alpha:1.0].CGColor;
+    }else{
+        _statusView2.layer.backgroundColor = [UIColor colorWithRed:213/255.0 green:218/255.0 blue:224/255.0 alpha:1].CGColor;
+    }
+    
 }
 
 - (void)dealloc{
@@ -172,6 +184,7 @@
     [_myNet removeObserver:self forKeyPath:@"coolStatus"];
     [_myNet removeObserver:self forKeyPath:@"stirStatus"];
     [_myNet removeObserver:self forKeyPath:@"connectedDevice"];
+    [_myNet removeObserver:self forKeyPath:@"deviceTimerStatus"];
 }
 
 #pragma mark - Lazy Load
@@ -956,6 +969,15 @@
                 
                 _deviceImage.frame = CGRectMake(117/WScale, 37/HScale, 140/WScale, 112/HScale);
                 _deviceImage.image = [UIImage imageNamed:@"img_logo_gray"];
+            }
+        });
+    }else if ([keyPath isEqualToString:@"deviceTimerStatus"]){
+        NSLog(@"adsas");
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (!_myNet.deviceTimerStatus && _myNet.connectedDevice) {
+                _statusView2.layer.backgroundColor = [UIColor colorWithRed:255/255.0 green:221/255.0 blue:51/255.0 alpha:1.0].CGColor;
+            }else{
+                _statusView2.layer.backgroundColor = [UIColor colorWithRed:213/255.0 green:218/255.0 blue:224/255.0 alpha:1].CGColor;
             }
         });
     }

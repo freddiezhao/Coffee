@@ -231,25 +231,9 @@
 #pragma mark - Actions
 - (void)clickStartBake{
     NetWork *net = [NetWork shareNetWork];
+    [net.myTimer setFireDate:[NSDate distantFuture]];
     net.deviceTimerStatus = 0;
     [net setTimerStatusOn];
-    
-    EventModel *event = [[EventModel alloc] init];
-    event.eventId = 0;//类型为0
-    event.eventTime = 0;
-    event.eventText = LocalString(@"烘焙开始");
-    if (net.BeanArr.count > 0) {
-        event.eventBeanTemp = [net.BeanArr[net.BeanArr.count - 1] floatValue];
-    }else{
-        event.eventBeanTemp = 0.0;
-    }
-    for (EventModel *event in net.eventArray) {
-        if (event.eventId == 0) {
-            [net.eventArray removeObject:event];
-            break;
-        }
-    }
-    [net.eventArray addObject:event];
     
     net.isStartBake = YES;
     [_startBake setTitleColor:[UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1] forState:UIControlStateNormal];

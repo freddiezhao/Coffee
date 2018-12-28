@@ -96,6 +96,7 @@ static NSString *curveUid;
         if (!_sendSignal) {
             _sendSignal = dispatch_semaphore_create(2);
         }
+        _deviceTimerStatus = 100;//预设值，防止未连接设备时判断为正在计时状态（0）
     }
     return self;
 }
@@ -853,7 +854,7 @@ static NSString *curveUid;
                 switch ([_recivedData68[6] unsignedIntegerValue]) {
                     case 0:
                     {
-                        _deviceTimerStatus = 0;
+                        [self setDeviceTimerStatus:0];
                         [_myTimer setFireDate:[NSDate date]];
                         
                         self.isStartBake = YES;
@@ -882,7 +883,7 @@ static NSString *curveUid;
                       
                     case 1:
                     {
-                        _deviceTimerStatus = 1;
+                        [self setDeviceTimerStatus:1];
                         if (!isGetTimerStatus) {
                             [self inquirePowerStatus];
                         }
@@ -892,7 +893,7 @@ static NSString *curveUid;
                         
                     case 2:
                     {
-                        _deviceTimerStatus = 2;
+                        [self setDeviceTimerStatus:2];
                         if (!isGetTimerStatus) {
                             [self inquirePowerStatus];
                         }
@@ -945,6 +946,25 @@ static NSString *curveUid;
                     [_yVals_Environment removeAllObjects];
                     _timerValue = 0;
                     [_myTimer setFireDate:[NSDate date]];
+                    
+                    EventModel *event = [[EventModel alloc] init];
+                    event.eventId = 0;//类型为0
+                    event.eventTime = 0;
+                    event.eventText = LocalString(@"烘焙开始");
+                    NSLog(@"烘焙开始事件");
+                    if (self.BeanArr.count == 0) {
+                        event.eventBeanTemp = 0.0;
+                    }else{
+                        event.eventBeanTemp = [self.BeanArr[self.BeanArr.count - 1] floatValue];
+                    }
+                    for (EventModel *event in self.eventArray) {
+                        if (event.eventId == 0) {
+                            [self.eventArray removeObject:event];
+                            break;
+                        }
+                    }
+                    [self.eventArray addObject:event];
+
                 }
             }else if (self.msg68Type == getPowerStatus){
                 dispatch_async(dispatch_get_main_queue(), ^{
@@ -998,12 +1018,13 @@ static NSString *curveUid;
                     _timerValue = 0;
                     _eventCount = 0;
                     
-                    _deviceTimerStatus = 0;
+                    [self setDeviceTimerStatus:0];
                     
                     [_myTimer setFireDate:[NSDate date]];
                 }else if ([_recivedData68[6] unsignedIntegerValue] == 1 || [_recivedData68[6] unsignedIntegerValue] == 2){
                     //烘焙结束，保存数据生成报告
                     //[[NSNotificationCenter defaultCenter] postNotificationName:@"bakeCompelete" object:nil userInfo:nil];
+                    [self setDeviceTimerStatus:[_recivedData68[6] intValue]];
                     
                     _isBakeOver = YES;
                     EventModel *event = [[EventModel alloc] init];
