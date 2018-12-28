@@ -486,51 +486,30 @@
 
 - (void)clickBakeOver{
     NetWork *net = [NetWork shareNetWork];
-    //[net.myTimer setFireDate:[NSDate distantFuture]];
     
-    YAlertViewController *alert = [[YAlertViewController alloc] init];
-    alert.lBlock = ^{
-        //[net.myTimer setFireDate:[NSDate date]];
-    };
-    alert.rBlock = ^{
-        [net setTimerStatusOff];
-        net.deviceTimerStatus = 2;
-        
-        EventModel *event = [[EventModel alloc] init];
-        event.eventId = 7;//类型为7
-        event.eventTime = net.timerValue;
-        event.eventText = LocalString(@"烘焙结束");
-        if (net.BeanArr.count > 0) {
-            event.eventBeanTemp = [net.BeanArr[net.BeanArr.count - 1] floatValue];
-        }else{
-            event.eventBeanTemp = 0.0;
+    EventModel *event = [[EventModel alloc] init];
+    event.eventId = 7;//类型为7
+    event.eventTime = net.timerValue;
+    event.eventText = LocalString(@"烘焙结束");
+    if (net.BeanArr.count > 0) {
+        event.eventBeanTemp = [net.BeanArr[net.BeanArr.count - 1] floatValue];
+    }else{
+        event.eventBeanTemp = 0.0;
+    }
+    for (EventModel *event in net.eventArray) {
+        if (event.eventId == 7) {
+            [net.eventArray removeObject:event];
+            break;
         }
-        for (EventModel *event in net.eventArray) {
-            if (event.eventId == 7) {
-                [net.eventArray removeObject:event];
-                break;
-            }
-        }
-        [net.eventArray addObject:event];
-        
-        net.isBakeOver = YES;
-        [_bakeOver setTitleColor:[UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1] forState:UIControlStateNormal];
-        _bakeOver.enabled = NO;
-        [_saveCurveBtn setTitleColor:[UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1] forState:UIControlStateNormal];
-        
-        [net showBakeOverAlertAction];
-    };
-    alert.modalPresentationStyle = UIModalPresentationOverCurrentContext;
-    [self presentViewController:alert animated:NO completion:^{
-        alert.WScale_alert = WScaleT;
-        NSLog(@"%f",alert.WScale_alert);
-        alert.HScale_alert = HScaleT;
-        [alert showView];
-        alert.titleLabel.text = LocalString(@"提示");
-        alert.messageLabel.text = LocalString(@"确认烘焙结束?");
-        [alert.leftBtn setTitle:LocalString(@"取消") forState:UIControlStateNormal];
-        [alert.rightBtn setTitle:LocalString(@"确认") forState:UIControlStateNormal];
-    }];
+    }
+    [net.eventArray addObject:event];
+    
+    net.isBakeOver = YES;
+    [_bakeOver setTitleColor:[UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1] forState:UIControlStateNormal];
+    _bakeOver.enabled = NO;
+    [_saveCurveBtn setTitleColor:[UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1] forState:UIControlStateNormal];
+    
+    [net showBakeOverAlertAction];
 }
 
 //- (void)saveCurve{
@@ -539,8 +518,6 @@
 //}
 
 - (void)fireWindSlide{
-    NetWork *net = [NetWork shareNetWork];
-
     BakeSliderAlertVC *sliderAlert = [[BakeSliderAlertVC alloc] init];
     sliderAlert.modalPresentationStyle = UIModalPresentationOverCurrentContext;
     [self presentViewController:sliderAlert animated:NO completion:^{
@@ -548,18 +525,6 @@
         NSLog(@"%f",sliderAlert.WScale_alert);
         sliderAlert.HScale_alert = HScaleT;
         [sliderAlert showView];
-        sliderAlert.sliderBlock = ^(int value) {
-//            EventModel *event = [[EventModel alloc] init];
-//            event.eventId = 8;//类型为8
-//            event.eventTime = net.timerValue;
-//            event.eventText = [NSString stringWithFormat:@"%@%d%@",LocalString(@"风力/火力调整为"),value,LocalString(@"档")];
-//            if (net.BeanArr.count > 0) {
-//                event.eventBeanTemp = [net.BeanArr[net.BeanArr.count - 1] floatValue];
-//            }else{
-//                event.eventBeanTemp = 0.0;
-//            }
-//            [net.eventArray addObject:event];
-        };
     }];
 }
 
