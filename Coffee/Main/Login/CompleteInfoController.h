@@ -12,6 +12,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface CompleteInfoController : UIViewController
 
+@property (nonatomic, strong) NSString *mobile;
+@property (nonatomic, strong) NSString *password;
+
 @end
 
 NS_ASSUME_NONNULL_END

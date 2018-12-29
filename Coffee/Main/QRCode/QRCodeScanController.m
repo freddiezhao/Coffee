@@ -104,6 +104,7 @@
     if (metadataObjects.count > 0) {
         AVMetadataMachineReadableCodeObject *object = [metadataObjects lastObject];
         if (object.stringValue.length == 24){
+            [self.session stopRunning];
             [self addSharedCurveWithCurveUid:object.stringValue];
         }else{
             [NSObject showHudTipStr:LocalString(@"曲线的二维码信息错误")];
@@ -161,7 +162,9 @@
                   [self.scanLayer removeFromSuperlayer];
                   [self getFullCurveInfoByApi:curveUid];//获取曲线详细信息
               }else{
+                  NSLog(@"error,%@",daetr);
                   [NSObject showHudTipStr:LocalString(@"添加分享曲线失败")];
+                  [self showAlert];
               }
               dispatch_async(dispatch_get_main_queue(), ^{
                   [SVProgressHUD dismiss];
@@ -169,6 +172,7 @@
           } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
               NSLog(@"Error:%@",error);
               [NSObject showHudTipStr:LocalString(@"添加分享曲线失败")];
+              [self showAlert];
               dispatch_async(dispatch_get_main_queue(), ^{
                   [SVProgressHUD dismiss];
               });
@@ -267,7 +271,6 @@
                 //因为mainVC.selectedViewController是一个自己生成的UINavigationController，所以要获得根vc
                 UINavigationController *nav = (UINavigationController *)mainVC.selectedViewController;
                 [[nav viewControllers][0].navigationController pushViewController:reportVC animated:YES];
-
             }
         }else{
             [NSObject showHudTipStr:LocalString(@"从服务器获取烘焙报告失败")];

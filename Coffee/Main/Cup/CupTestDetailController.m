@@ -465,7 +465,11 @@ static float HEIGHT_HEADER = 15.f;
                     cell.beanNameLabel.text = [nameString substringToIndex:[nameString length]-1];
                     cell.rawBean.text = [NSString stringWithFormat:@"%@%.1lf",LocalString(@"生豆:"),_reportModel.rawBeanWeight];
                     cell.bakedBean.text = [NSString stringWithFormat:@"%@%.1lf",LocalString(@"熟豆:"),_reportModel.bakeBeanWeight];
-                    cell.outWaterRate.text = [NSString stringWithFormat:@"%@%.1lf%%",LocalString(@"脱水率:"),(_reportModel.rawBeanWeight - _reportModel.bakeBeanWeight)/_reportModel.rawBeanWeight*100.f];
+                    if (_reportModel.rawBeanWeight == 0) {
+                        cell.outWaterRate.text = [NSString stringWithFormat:@"%@%.1f%%",LocalString(@"脱水率:"),0.0f];
+                    }else{
+                        cell.outWaterRate.text = [NSString stringWithFormat:@"%@%.1lf%%",LocalString(@"脱水率:"),(_reportModel.rawBeanWeight - _reportModel.bakeBeanWeight)/_reportModel.rawBeanWeight*100.f];
+                    }
                 }else{
                     cell.beanNameLabel.text = LocalString(@"未添加豆种");
                     cell.rawBean.text = LocalString(@"生豆:?");
@@ -479,56 +483,16 @@ static float HEIGHT_HEADER = 15.f;
                     cell = [[BeanInfoCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_cupBeanInfo];
                 }
                 BeanModel *bean = _beanArray[indexPath.row - 1];
-                if (bean.name) {
-                    cell.beanName.text = bean.name;
-                }else{
-                    cell.beanName.text = LocalString(@"未知");
-                }
-                if (bean.nation) {
-                    cell.nation.text = bean.nation;
-                }else{
-                    cell.nation.text = LocalString(@"未知");
-                }
-                if (bean.area) {
-                    cell.area.text = bean.area;
-                }else{
-                    cell.area.text = LocalString(@"未知");
-                }
-                if (bean.altitude) {
-                    cell.altitude.text = [NSString stringWithFormat:@"%.1f",bean.altitude];
-                }else{
-                    cell.altitude.text = LocalString(@"未知");
-                }
-                if (bean.manor) {
-                    cell.manor.text = bean.manor;
-                }else{
-                    cell.manor.text = LocalString(@"未知");
-                }
-                if (bean.beanSpecies) {
-                    cell.beanSpecies.text = bean.beanSpecies;
-                }else{
-                    cell.beanSpecies.text = LocalString(@"未知");
-                }
-                if (bean.grade) {
-                    cell.grade.text = bean.grade;
-                }else{
-                    cell.grade.text = LocalString(@"未知");
-                }
-                if (bean.process) {
-                    cell.process.text = bean.process;
-                }else{
-                    cell.process.text = LocalString(@"未知");
-                }
-                if (bean.water) {
-                    cell.water.text = [NSString stringWithFormat:@"%.1f",bean.water];
-                }else{
-                    cell.water.text = LocalString(@"未知");
-                }
-                if (bean.weight) {
-                    cell.weight.text = [NSString stringWithFormat:@"%.1f",bean.weight];
-                }else{
-                    cell.weight.text = LocalString(@"未知");
-                }
+                cell.beanName.text = bean.name;
+                cell.nation.text = bean.nation;
+                cell.area.text = bean.area;
+                cell.altitude.text = [NSString stringWithFormat:@"%.1f",bean.altitude];
+                cell.manor.text = bean.manor;
+                cell.beanSpecies.text = bean.beanSpecies;
+                cell.grade.text = bean.grade;
+                cell.process.text = bean.process;
+                cell.water.text = [NSString stringWithFormat:@"%.1f",bean.water];
+                cell.weight.text = [NSString stringWithFormat:@"%.1f",bean.weight];
                 return cell;
             }
         }else{
@@ -652,6 +616,13 @@ static float HEIGHT_HEADER = 15.f;
     }
     //可能没有添加生豆数据
     _beanArray = [beanMutaArray copy];
+    
+    if (_beanArray.count == 0) {
+        //没有生豆或者没有曲线的情况下
+        BeanModel *bean = [[[DataBase shareDataBase] queryAllBean] objectAtIndex:0];
+        _beanArray = @[bean];
+    }
+    
     [self.bakeDetailTable reloadData];
 }
 

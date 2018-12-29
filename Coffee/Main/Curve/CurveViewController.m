@@ -37,7 +37,7 @@ NSString *const CellIdentifier_CurrentCurve = @"CellID_CurrentCurve";
 
 @implementation CurveViewController
 
-static float HEIGHT_CELL = 50.f;
+static float HEIGHT_CELL = 70.f;
 static float HEIGHT_HEADER = 36.f;
 
 - (void)viewDidLoad {
@@ -213,19 +213,11 @@ static float HEIGHT_HEADER = 36.f;
     }
     ReportModel *report = _currentReportArr[indexPath.section][indexPath.row];
     if (_mySegment.selectedSegmentIndex == 0 || _mySegment.selectedSegmentIndex == 1) {
-        NSMutableAttributedString *str = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"%@  %@",report.curveName,report.deviceName]];
-        [str addAttribute:NSForegroundColorAttributeName value:[UIColor colorWithHexString:@"333333"] range:NSMakeRange(0,report.curveName.length)];
-        [str addAttribute:NSForegroundColorAttributeName value:[UIColor colorWithHexString:@"999999"] range:NSMakeRange(report.curveName.length + 2,report.deviceName.length)];
-        [str addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:16.f] range:NSMakeRange(0,report.curveName.length)];
-        [str addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:14.f] range:NSMakeRange(report.curveName.length + 2,report.deviceName.length)];
-        cell.beanDeviceName.attributedText = str;
+        cell.curveName.text = report.curveName;
+        cell.deviceName.text = report.deviceName;
     }else if (_mySegment.selectedSegmentIndex == 2){
-        NSMutableAttributedString *str = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"%@  来自%@的分享",report.curveName,report.sharerName]];
-        [str addAttribute:NSForegroundColorAttributeName value:[UIColor colorWithHexString:@"333333"] range:NSMakeRange(0,report.curveName.length)];
-        [str addAttribute:NSForegroundColorAttributeName value:[UIColor colorWithHexString:@"999999"] range:NSMakeRange(report.curveName.length + 2,report.sharerName.length + 5)];
-        [str addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:16.f] range:NSMakeRange(0,report.curveName.length)];
-        [str addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:14.f] range:NSMakeRange(report.curveName.length + 2,report.sharerName.length + 5)];
-        cell.beanDeviceName.attributedText = str;
+        cell.curveName.text = report.curveName;
+        cell.deviceName.text = [NSString stringWithFormat:@"%@%@%@",LocalString(@"来自"),report.sharerName,LocalString(@"的分享")];;
     }
     
     cell.dateLabel.text = [NSDate YMDHMStringFromUTCDate:report.date];
@@ -290,21 +282,65 @@ static float HEIGHT_HEADER = 36.f;
     if (editingStyle == UITableViewCellEditingStyleDelete) {
         DataBase *db = [DataBase shareDataBase];
         ReportModel *report = _currentReportArr[indexPath.section][indexPath.row];
-        BOOL result = NO;
-        result = [db deleteqReport:report];
-        if (result) {
-            if ([_currentReportArr[indexPath.section] count] == 0) {
-                [_currentReportArr removeObjectAtIndex:indexPath.section];
-                [tableView deleteSections:[NSIndexSet indexSetWithIndex:indexPath.section] withRowAnimation:UITableViewRowAnimationLeft];
-            }else{
-                [_currentReportArr[indexPath.section] removeObjectAtIndex:indexPath.row];
-                [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
+        
+        //http delete
+        AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+        //设置超时时间
+        [manager.requestSerializer willChangeValueForKey:@"timeoutInterval"];
+        manager.requestSerializer.timeoutInterval = 6.f;
+        [manager.requestSerializer didChangeValueForKey:@"timeoutInterval"];
+        
+        NSString *url = [NSString stringWithFormat:@"http://139.196.90.97:8080/coffee/roastCurve/deleteReport?curveUid=%@",report.curveUid];
+        url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet characterSetWithCharactersInString:@"`#%^{}\"[]|\\<> "].invertedSet];
 
+        [manager.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+        [manager.requestSerializer setValue:[NSString stringWithFormat:@"Bearer %@",[DataBase shareDataBase].token] forHTTPHeaderField:@"Authorization"];
+        [manager.requestSerializer setValue:[DataBase shareDataBase].userId forHTTPHeaderField:@"userId"];
+        
+        
+        //manager.requestSerializer.HTTPMethodsEncodingParametersInURI = [NSSet setWithObjects:@"GET", @"HEAD", nil];
+        
+        [manager DELETE:url parameters:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+            NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableContainers|NSJSONReadingMutableLeaves error:nil];
+            NSData * data = [NSJSONSerialization dataWithJSONObject:responseDic options:(NSJSONWritingOptions)0 error:nil];
+            NSString * daetr = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
+            NSLog(@"success:%@",daetr);
+            
+            if ([[responseDic objectForKey:@"errno"] intValue] == 0) {
+                
+                //本地数据库delete
+                BOOL result = NO;
+                result = [db deleteqReport:report];
+                if (result) {
+                    if ([_currentReportArr[indexPath.section] count] == 0) {
+                        [_currentReportArr removeObjectAtIndex:indexPath.section];
+                        [tableView deleteSections:[NSIndexSet indexSetWithIndex:indexPath.section] withRowAnimation:UITableViewRowAnimationLeft];
+                    }else{
+                        [_currentReportArr[indexPath.section] removeObjectAtIndex:indexPath.row];
+                        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
+                        
+                    }
+                    [NSObject showHudTipStr:LocalString(@"删除成功")];
+                }else{
+                    [NSObject showHudTipStr:LocalString(@"删除失败")];
+                }
+                
+            }else{
+                [NSObject showHudTipStr:LocalString(@"删除失败")];
             }
-            [NSObject showHudTipStr:LocalString(@"删除成功")];
-        }else{
+        } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+            
+            NSData *errorData = error.userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey];
+            
+            NSDictionary *serializedData = [NSJSONSerialization JSONObjectWithData: errorData options:kNilOptions error:nil];
+            
+            NSLog(@"error--%@",serializedData);
+            
+            
             [NSObject showHudTipStr:LocalString(@"删除失败")];
-        }
+            NSLog(@"Error:%@",error);
+        }];
+        
     }
 }
 
@@ -374,6 +410,9 @@ static float HEIGHT_HEADER = 36.f;
         self.currentTable.hidden = YES;
         self.noCurveView.hidden = NO;
         _noCurveLabel.text = LocalString(@"您还未生成过曲线");
+    }
+    for (ReportModel *report in arr) {
+        NSLog(@"%ld",(long)report.isShare);
     }
     arr = [self sortByDate:arr];
     NSMutableArray *classArr = [self classArray:arr];

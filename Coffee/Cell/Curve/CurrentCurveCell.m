@@ -13,18 +13,32 @@
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier{
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
-        if (!_beanDeviceName) {
-            _beanDeviceName = [[UILabel alloc] init];
-            _beanDeviceName.textColor = [UIColor colorWithHexString:@"333333"];
-            _beanDeviceName.font = [UIFont systemFontOfSize:16.0];
-            _beanDeviceName.textAlignment = NSTextAlignmentLeft;
-            _beanDeviceName.adjustsFontSizeToFitWidth = YES;
-            [self.contentView addSubview:_beanDeviceName];
+        if (!_curveName) {
+            _curveName = [[UILabel alloc] init];
+            _curveName.textColor = [UIColor colorWithHexString:@"333333"];
+            _curveName.font = [UIFont systemFontOfSize:16.0];
+            _curveName.textAlignment = NSTextAlignmentLeft;
+            _curveName.adjustsFontSizeToFitWidth = YES;
+            [self.contentView addSubview:_curveName];
             
-            [_beanDeviceName mas_makeConstraints:^(MASConstraintMaker *make) {
+            [_curveName mas_makeConstraints:^(MASConstraintMaker *make) {
                 make.size.mas_equalTo(CGSizeMake(200/WScale, 23/HScale));
                 make.left.equalTo(self.contentView.mas_left).offset(15/WScale);
-                make.centerY.equalTo(self.contentView.mas_centerY);
+                make.bottom.equalTo(self.contentView.mas_centerY).offset(-2);
+            }];
+        }
+        if (!_deviceName) {
+            _deviceName = [[UILabel alloc] init];
+            _deviceName.textColor = [UIColor colorWithHexString:@"999999"];
+            _deviceName.font = [UIFont systemFontOfSize:14.0];
+            _deviceName.textAlignment = NSTextAlignmentLeft;
+            _deviceName.adjustsFontSizeToFitWidth = YES;
+            [self.contentView addSubview:_deviceName];
+            
+            [_deviceName mas_makeConstraints:^(MASConstraintMaker *make) {
+                make.size.mas_equalTo(CGSizeMake(200/WScale, 20/HScale));
+                make.left.equalTo(self.contentView.mas_left).offset(15/WScale);
+                make.top.equalTo(self.contentView.mas_centerY).offset(2);
             }];
         }
         if (!_dateLabel) {

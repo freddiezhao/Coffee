@@ -202,7 +202,6 @@ static float HEIGHT_CELL = 50.f;
 
 #pragma mark - Actions
 - (void)registerUser{
-#warning NEED 注册完成后返回用户userid，token
     AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
     
     //设置超时时间
@@ -228,6 +227,8 @@ static float HEIGHT_CELL = 50.f;
               NSLog(@"success:%@",daetr);
               if ([[responseDic objectForKey:@"errno"] intValue] == 0) {
                   CompleteInfoController *infoVC = [[CompleteInfoController alloc] init];
+                  infoVC.mobile = _phone;
+                  infoVC.password = _pwText;
                   [self.navigationController pushViewController:infoVC animated:YES];
               }else{
                   [NSObject showHudTipStr:LocalString(@"注册用户失败，请检查验证码和密码是否填写错误")];

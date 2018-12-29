@@ -326,6 +326,7 @@ static float HEIGHT_HEADER = 36.f;
                     {
                         cell.nameLabel.text = LocalString(@"含水量");
                         cell.unitLabel.text = @"%";
+                        cell.contentTF.tag = 2222;
                         if (_myBean.water) {
                             cell.contentTF.text = [NSString stringWithFormat:@"%.1f",_myBean.water];
                         }
@@ -531,7 +532,7 @@ static float HEIGHT_HEADER = 36.f;
     [manager POST:url parameters:parameters progress:nil
           success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableContainers|NSJSONReadingMutableLeaves error:nil];
-        NSData * data = [NSJSONSerialization dataWithJSONObject:responseDic options:(NSJSONWritingOptions)0 error:nil];
+        NSData *data = [NSJSONSerialization dataWithJSONObject:responseDic options:(NSJSONWritingOptions)0 error:nil];
         NSString * daetr = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
         if ([[responseDic objectForKey:@"errno"] intValue] == 0) {
             NSLog(@"success:%@",daetr);

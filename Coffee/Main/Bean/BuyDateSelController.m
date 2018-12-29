@@ -59,7 +59,7 @@
 - (UIDatePicker *)dateSelPicker{
     if (!_dateSelPicker) {
         _dateSelPicker = [[UIDatePicker alloc] init];
-        //[_dateSelPicker setLocale:[[NSLocale alloc]initWithLocaleIdentifier:@"zh_Hans_CN"]];
+        [_dateSelPicker setLocale:[[NSLocale alloc] initWithLocaleIdentifier:@"zh_Hans_CN"]];
         [_dateSelPicker setCalendar:[NSCalendar currentCalendar]];
         [_dateSelPicker setDatePickerMode:UIDatePickerModeDate];
         [_dateSelPicker setValue:[UIColor colorWithHexString:@"222222"] forKey:@"textColor"];

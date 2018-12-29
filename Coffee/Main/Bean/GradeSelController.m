@@ -8,6 +8,7 @@
 
 #import "GradeSelController.h"
 #import "SortModel.h"
+#import "YTFAlertController.h"
 
 NSString *const CellIdentifier_GradeSel = @"CellID_GradeSel";
 
@@ -107,6 +108,28 @@ static float HEIGHT_CELL = 50.f;
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     SortModel *model = [_mutableSections[indexPath.section] objectAtIndex:indexPath.row];
+    
+    //其他选项时手动输入
+    if ([model.name isEqualToString:@"#其他"]) {
+        YTFAlertController *alert = [[YTFAlertController alloc] init];
+        alert.lBlock = ^{
+        };
+        alert.rBlock = ^(NSString * _Nullable text) {
+            if (self.gradeBlock) {
+                self.gradeBlock(text);
+            }
+            [self.navigationController popViewControllerAnimated:YES];
+        };
+        alert.modalPresentationStyle = UIModalPresentationOverCurrentContext;
+        [self presentViewController:alert animated:NO completion:^{
+            alert.titleLabel.text = LocalString(@"#其他");
+            alert.textField.placeholder = LocalString(@"请输入豆的等级");
+            [alert.leftBtn setTitle:LocalString(@"取消") forState:UIControlStateNormal];
+            [alert.rightBtn setTitle:LocalString(@"确认") forState:UIControlStateNormal];
+        }];
+        return;
+    }
+    
     if (self.gradeBlock) {
         self.gradeBlock(model.name);
     }
@@ -157,6 +180,11 @@ sectionForSectionIndexTitle:(NSString *)title
         [subArr removeAllObjects];
         [subArr addObjectsFromArray:sortArr];
     }
+}
+
+#pragma mark - Actions
+- (void)searchBean{
+    
 }
 
 @end

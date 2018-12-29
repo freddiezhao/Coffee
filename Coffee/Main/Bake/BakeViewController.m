@@ -339,14 +339,14 @@
         _firePBtn = [[UIButton alloc] init];
         _firePBtn = [UIButton buttonWithType:UIButtonTypeCustom];
         [_firePBtn setImage:[UIImage imageWithContentsOfFile:[_resourcePath stringByAppendingPathComponent:@"btn_firepower_disable@2x.png"]] forState:UIControlStateNormal];
-        [_firePBtn addTarget:self action:@selector(setPower) forControlEvents:UIControlEventTouchUpInside];
+        [_firePBtn addTarget:self action:@selector(setFirePower) forControlEvents:UIControlEventTouchUpInside];
         _firePBtn.enabled = NO;
         [_mainView addSubview:_firePBtn];
         
         _windPBtn = [[UIButton alloc] init];
         _windPBtn = [UIButton buttonWithType:UIButtonTypeCustom];
         [_windPBtn setImage:[UIImage imageWithContentsOfFile:[_resourcePath stringByAppendingPathComponent:@"btn_windpower_disable@2x.png"]] forState:UIControlStateNormal];
-        [_windPBtn addTarget:self action:@selector(setPower) forControlEvents:UIControlEventTouchUpInside];
+        [_windPBtn addTarget:self action:@selector(setWindPower) forControlEvents:UIControlEventTouchUpInside];
         _windPBtn.enabled = NO;
         [_mainView addSubview:_windPBtn];
         
@@ -877,8 +877,8 @@
                 _fireBtn.enabled = YES;
                 _coldBtn.enabled = YES;
                 _stirBtn.enabled = YES;
-                _windPBtn.enabled = YES;
-                _firePBtn.enabled = YES;
+                _windPBtn.enabled = NO;
+                _firePBtn.enabled = NO;
                 _status.text = LocalString(@"电源开启");
                 _statusView.layer.backgroundColor = [UIColor colorWithRed:126/255.0 green:211/255.0 blue:33/255.0 alpha:1].CGColor;
                 _statusView.layer.shadowColor = [UIColor colorWithRed:106/255.0 green:255/255.0 blue:77/255.0 alpha:1].CGColor;
@@ -886,7 +886,18 @@
                 _statusView.layer.shadowOpacity = 1;
                 _statusView.layer.shadowRadius = 8;
             }else{
+                //电源关闭后所有按钮关闭
                 [_powerBtn setImage:[UIImage imageWithContentsOfFile:[_resourcePath stringByAppendingPathComponent:@"btn_power_off@2x.png"]] forState:UIControlStateNormal];
+                [_fireBtn setImage:[UIImage imageWithContentsOfFile:[_resourcePath stringByAppendingPathComponent:@"btn_fire_off@2x.png"]] forState:UIControlStateNormal];
+                [_coldBtn setImage:[UIImage imageWithContentsOfFile:[_resourcePath stringByAppendingPathComponent:@"btn_cold_off@2x.png"]] forState:UIControlStateNormal];
+                [_stirBtn setImage:[UIImage imageWithContentsOfFile:[_resourcePath stringByAppendingPathComponent:@"btn_stir_off@2x.png"]] forState:UIControlStateNormal];
+                
+                //所有状态为关闭
+                _myNet.coolStatus = NO;
+                _myNet.fireStatus = NO;
+                _myNet.stirStatus = NO;
+
+                //所有功能不能使用
                 _fireBtn.enabled = NO;
                 _coldBtn.enabled = NO;
                 _stirBtn.enabled = NO;

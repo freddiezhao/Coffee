@@ -65,7 +65,7 @@
 #define viewHeight self.contentView.frame.size.height
 #define select 100001
 #define unselect 100000
-#define beanRorDiffCount 5
+#define beanRorDiffCount [DataBase shareDataBase].setting.tempRateSmooth
 
 typedef enum : NSUInteger {
     sortUnselect = 1000,

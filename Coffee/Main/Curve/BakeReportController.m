@@ -494,7 +494,7 @@ NSString *const CellIdentifier_TempPer30 = @"CellID_TempPer30";
     for (EventModel *event in _eventArray) {
         if (event.eventId == 0) {
             event1 = event;
-        }else if (event.eventId == 7){
+        }else if (event.eventId == 6){
             event2 = event;
         }
     }
@@ -502,9 +502,9 @@ NSString *const CellIdentifier_TempPer30 = @"CellID_TempPer30";
     
     //计算发展时间
     for (EventModel *event in _eventArray) {
-        if (event.eventId == 3) {
+        if (event.eventId == 2) {
             event1 = event;
-        }else if (event.eventId == 5){
+        }else if (event.eventId == 4){
             event2 = event;
         }
     }

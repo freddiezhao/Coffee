@@ -125,7 +125,7 @@ static NSString *curveUid;
     [_eventArray removeAllObjects];
     _isCurveOn = NO;
     _relaCurve = nil;
-    _isDevelop = YES;
+    _isDevelop = NO;
     _developTime = 0;
     _developRate = 0.0;
     _deviceTimerStatus = 0;
@@ -1028,13 +1028,13 @@ static NSString *curveUid;
                     
                     _isBakeOver = YES;
                     EventModel *event = [[EventModel alloc] init];
-                    event.eventId = 7;//类型为7
+                    event.eventId = 6;//类型为6
                     event.eventTime = self.timerValue;
                     event.eventText = LocalString(@"烘焙结束");
                     NSLog(@"被写烘焙结束事件");
                     event.eventBeanTemp = [self.BeanArr[self.BeanArr.count - 1] floatValue];
                     for (EventModel *event in self.eventArray) {
-                        if (event.eventId == 7) {
+                        if (event.eventId == 6) {
                             [self.eventArray removeObject:event];
                             break;
                         }
@@ -1400,12 +1400,11 @@ static NSString *curveUid;
     
     //生豆
     if (_beanArray.count == 0) {
-        [NSObject showHudTipStr:LocalString(@"生豆信息未添加")];
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [SVProgressHUD dismiss];
-        });
-        return;
+        NSArray *allBean = [[DataBase shareDataBase] queryAllBean];
+        BeanModel *sampleBean = allBean[0];
+        [_beanArray addObject:sampleBean];
     }
+    
     NSMutableArray *beanArr = [[NSMutableArray alloc] init];
     for (BeanModel *bean in _beanArray) {
         NSDictionary *beanDic = @{@"beanUid":bean.beanUid,@"used":[NSNumber numberWithDouble:bean.weight]};
@@ -1590,7 +1589,7 @@ static NSString *curveUid;
 #pragma mark - 生成ror
 - (NSMutableArray *)getBeanTempRorWithArr:(NSMutableArray *)arr{
     NSMutableArray *rorArr = [[NSMutableArray alloc] init];
-    for (int i = beanRorDiffCount; i < [arr count]; i = i + beanRorDiffCount) {
+    for (NSInteger i = beanRorDiffCount; i < [arr count]; i = i + beanRorDiffCount) {
         [rorArr addObject:[[ChartDataEntry alloc] initWithX:i y:([NSString diffTempUnitStringWithTemp:[arr[i] doubleValue]] - [NSString diffTempUnitStringWithTemp:[arr[i - beanRorDiffCount] doubleValue]]) * (60.f/beanRorDiffCount)]];
     }
     

@@ -72,6 +72,9 @@
 }
 
 -(void)textField1TextChange:(UITextField *)textField{
+    if ([textField.text integerValue]>100 && textField.tag == 2222) {//2222为含水量
+        textField.text = @"100";
+    }
     if (self.TFBlock) {
         self.TFBlock(textField.text);
     }

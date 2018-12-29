@@ -27,7 +27,6 @@
 @property (nonatomic, strong) UIButton *bakeOver;
 @property (nonatomic, strong) UIButton *fireorwindPower;
 @property (nonatomic, strong) UIButton *remark;
-@property (nonatomic, strong) UIButton *saveCurveBtn;
 @property (nonatomic, strong) UISwitch *curveSwitch;
 
 @end
@@ -201,17 +200,6 @@
     [_remark addTarget:self action:@selector(startBake) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:_remark];
     
-    /**
-     **保存曲线按钮不要了
-     **/
-//    _saveCurveBtn = [[UIButton alloc] initWithFrame:CGRectMake(563/WScaleT,235/HScaleT,90/WScaleT,40/HScaleT)];
-//    [_saveCurveBtn setTitle:LocalString(@"保存曲线") forState:UIControlStateNormal];
-//    [_saveCurveBtn.titleLabel setFont:[UIFont fontWithName:@"PingFangSC-Light" size:15]];
-//    [_saveCurveBtn setTitleColor:[UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1] forState:UIControlStateNormal];
-//    [_saveCurveBtn setButtonStyleWithColor:[UIColor clearColor] Width:1.0 cornerRadius:20/HScaleT];
-//    [_saveCurveBtn setBackgroundColor:[UIColor whiteColor]];
-//    [_saveCurveBtn addTarget:self action:@selector(saveCurve) forControlEvents:UIControlEventTouchUpInside];
-//    [self.view addSubview:_saveCurveBtn];
     
     UILabel *curveLabel = [[UILabel alloc] init];
     curveLabel.frame = CGRectMake(472.5/WScaleT,327.5/HScaleT,60/WScaleT,21/HScaleT);
@@ -236,52 +224,42 @@
     [net setTimerStatusOn];
     
     net.isStartBake = YES;
-    [_startBake setTitleColor:[UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1] forState:UIControlStateNormal];
-    _startBake.enabled = NO;
-    [_dehyOver setTitleColor:[UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1] forState:UIControlStateNormal];
-    _dehyOver.enabled = YES;
-    [_firstBurst setTitleColor:[UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1] forState:UIControlStateNormal];
-    _firstBurst.enabled = YES;
-    [_firstBurstOver setTitleColor:[UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1] forState:UIControlStateNormal];
-    _firstBurst.enabled = YES;
-    [_secondBurst setTitleColor:[UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1] forState:UIControlStateNormal];
-    _secondBurst.enabled = YES;
-    [_secondBurstOver setTitleColor:[UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1] forState:UIControlStateNormal];
-    _secondBurstOver.enabled = YES;
-    [_bakeOver setTitleColor:[UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1] forState:UIControlStateNormal];
-    _bakeOver.enabled = YES;
-    [_fireorwindPower setTitleColor:[UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1] forState:UIControlStateNormal];
-    _fireorwindPower.enabled = YES;
-    [_remark setTitleColor:[UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1] forState:UIControlStateNormal];
-
-    /**
-     **除烘焙结束以外全部取消二次弹窗确认
-     **/
-//    YAlertViewController *alert = [[YAlertViewController alloc] init];
-//    alert.lBlock = ^{
-//        //[net.myTimer setFireDate:[NSDate date]];
-//    };
-//    alert.rBlock = ^{
-//    };
-//    alert.modalPresentationStyle = UIModalPresentationOverCurrentContext;
-//    [self presentViewController:alert animated:NO completion:^{
-//        alert.WScale_alert = WScaleT;
-//        NSLog(@"%f",alert.WScale_alert);
-//        alert.HScale_alert = HScaleT;
-//        [alert showView];
-//        alert.titleLabel.text = LocalString(@"提示");
-//        alert.messageLabel.text = LocalString(@"确认烘焙开始?");
-//        [alert.leftBtn setTitle:LocalString(@"取消") forState:UIControlStateNormal];
-//        [alert.rightBtn setTitle:LocalString(@"确认") forState:UIControlStateNormal];
-//    }];
+    NSArray *statusArray = @[@0,@1,@1,@1,@1,@1,@1,@1,@1];
+    [self eventButtonStatusControl:statusArray];
 }
 
 - (void)clickDevyOver{
     NetWork *net = [NetWork shareNetWork];
     EventModel *event = [[EventModel alloc] init];
-    event.eventId = 2;//类型为2
+    event.eventId = 1;//类型为1
     event.eventTime = net.timerValue;
     event.eventText = LocalString(@"脱水结束");
+    if (net.BeanArr.count > 0) {
+        event.eventBeanTemp = [net.BeanArr[net.BeanArr.count - 1] floatValue];
+    }else{
+        event.eventBeanTemp = 0.0;
+    }
+    for (EventModel *event in net.eventArray) {
+        if (event.eventId == 1) {
+            [net.eventArray removeObject:event];
+            break;
+        }
+    }
+    [net.eventArray addObject:event];
+    
+    net.isDevyOver = YES;
+    NSArray *statusArray = @[@0,@0,@1,@1,@1,@1,@1,@1,@1];
+    [self eventButtonStatusControl:statusArray];
+
+}
+
+- (void)clickFirstBurst{
+    NetWork *net = [NetWork shareNetWork];
+    net.isDevelop = YES;
+    EventModel *event = [[EventModel alloc] init];
+    event.eventId = 2;//类型为2
+    event.eventTime = net.timerValue;
+    event.eventText = LocalString(@"一爆开始");
     if (net.BeanArr.count > 0) {
         event.eventBeanTemp = [net.BeanArr[net.BeanArr.count - 1] floatValue];
     }else{
@@ -295,35 +273,18 @@
     }
     [net.eventArray addObject:event];
     
-    net.isDevyOver = YES;
-    [_dehyOver setTitleColor:[UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1] forState:UIControlStateNormal];
-    _dehyOver.enabled = NO;
+    net.isFirstBurst = YES;
+    NSArray *statusArray = @[@0,@0,@0,@1,@1,@1,@1,@1,@1];
+    [self eventButtonStatusControl:statusArray];
 
-//    YAlertViewController *alert = [[YAlertViewController alloc] init];
-//    alert.lBlock = ^{
-//    };
-//    alert.rBlock = ^{
-//    };
-//    alert.modalPresentationStyle = UIModalPresentationOverCurrentContext;
-//    [self presentViewController:alert animated:NO completion:^{
-//        alert.WScale_alert = WScaleT;
-//        NSLog(@"%f",alert.WScale_alert);
-//        alert.HScale_alert = HScaleT;
-//        [alert showView];
-//        alert.titleLabel.text = LocalString(@"提示");
-//        alert.messageLabel.text = LocalString(@"确认脱水结束?");
-//        [alert.leftBtn setTitle:LocalString(@"取消") forState:UIControlStateNormal];
-//        [alert.rightBtn setTitle:LocalString(@"确认") forState:UIControlStateNormal];
-//    }];
 }
 
-- (void)clickFirstBurst{
+- (void)clickFirstBurstOver{
     NetWork *net = [NetWork shareNetWork];
-    net.isDevelop = YES;
     EventModel *event = [[EventModel alloc] init];
     event.eventId = 3;//类型为3
     event.eventTime = net.timerValue;
-    event.eventText = LocalString(@"一爆开始");
+    event.eventText = LocalString(@"一爆结束");
     if (net.BeanArr.count > 0) {
         event.eventBeanTemp = [net.BeanArr[net.BeanArr.count - 1] floatValue];
     }else{
@@ -337,34 +298,18 @@
     }
     [net.eventArray addObject:event];
     
-    net.isFirstBurst = YES;
-    [_firstBurst setTitleColor:[UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1] forState:UIControlStateNormal];
-    _firstBurst.enabled = NO;
-
-//    YAlertViewController *alert = [[YAlertViewController alloc] init];
-//    alert.lBlock = ^{
-//    };
-//    alert.rBlock = ^{
-//    };
-//    alert.modalPresentationStyle = UIModalPresentationOverCurrentContext;
-//    [self presentViewController:alert animated:NO completion:^{
-//        alert.WScale_alert = WScaleT;
-//        NSLog(@"%f",alert.WScale_alert);
-//        alert.HScale_alert = HScaleT;
-//        [alert showView];
-//        alert.titleLabel.text = LocalString(@"提示");
-//        alert.messageLabel.text = LocalString(@"确认一爆开始?");
-//        [alert.leftBtn setTitle:LocalString(@"取消") forState:UIControlStateNormal];
-//        [alert.rightBtn setTitle:LocalString(@"确认") forState:UIControlStateNormal];
-//    }];
+    net.isFirstBurstOver = YES;
+    NSArray *statusArray = @[@0,@0,@0,@0,@1,@1,@1,@1,@1];
+    [self eventButtonStatusControl:statusArray];
 }
 
-- (void)clickFirstBurstOver{
+- (void)clickSecondBurst{
     NetWork *net = [NetWork shareNetWork];
+    net.isDevelop = NO;
     EventModel *event = [[EventModel alloc] init];
     event.eventId = 4;//类型为4
     event.eventTime = net.timerValue;
-    event.eventText = LocalString(@"一爆结束");
+    event.eventText = LocalString(@"二爆开始");
     if (net.BeanArr.count > 0) {
         event.eventBeanTemp = [net.BeanArr[net.BeanArr.count - 1] floatValue];
     }else{
@@ -378,35 +323,20 @@
     }
     [net.eventArray addObject:event];
     
-    net.isFirstBurstOver = YES;
-    [_firstBurstOver setTitleColor:[UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1] forState:UIControlStateNormal];
-    _firstBurstOver.enabled = NO;
+    net.isSecondBurst = YES;
+    NSArray *statusArray = @[@0,@0,@0,@0,@0,@1,@1,@1,@1];
+    [self eventButtonStatusControl:statusArray];
 
-//    YAlertViewController *alert = [[YAlertViewController alloc] init];
-//    alert.lBlock = ^{
-//    };
-//    alert.rBlock = ^{
-//    };
-//    alert.modalPresentationStyle = UIModalPresentationOverCurrentContext;
-//    [self presentViewController:alert animated:NO completion:^{
-//        alert.WScale_alert = WScaleT;
-//        NSLog(@"%f",alert.WScale_alert);
-//        alert.HScale_alert = HScaleT;
-//        [alert showView];
-//        alert.titleLabel.text = LocalString(@"提示");
-//        alert.messageLabel.text = LocalString(@"确认一爆结束?");
-//        [alert.leftBtn setTitle:LocalString(@"取消") forState:UIControlStateNormal];
-//        [alert.rightBtn setTitle:LocalString(@"确认") forState:UIControlStateNormal];
-//    }];
 }
 
-- (void)clickSecondBurst{
+- (void)clickSecondBurstOver{
     NetWork *net = [NetWork shareNetWork];
     net.isDevelop = NO;
+
     EventModel *event = [[EventModel alloc] init];
     event.eventId = 5;//类型为5
     event.eventTime = net.timerValue;
-    event.eventText = LocalString(@"二爆开始");
+    event.eventText = LocalString(@"二爆结束");
     if (net.BeanArr.count > 0) {
         event.eventBeanTemp = [net.BeanArr[net.BeanArr.count - 1] floatValue];
     }else{
@@ -420,34 +350,20 @@
     }
     [net.eventArray addObject:event];
     
-    net.isSecondBurst = YES;
-    [_secondBurst setTitleColor:[UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1] forState:UIControlStateNormal];
-    _secondBurst.enabled = NO;
+    net.isSecondBurstOver = YES;
+    NSArray *statusArray = @[@0,@0,@0,@0,@0,@0,@1,@1,@1];
+    [self eventButtonStatusControl:statusArray];
 
-//    YAlertViewController *alert = [[YAlertViewController alloc] init];
-//    alert.lBlock = ^{
-//    };
-//    alert.rBlock = ^{
-//    };
-//    alert.modalPresentationStyle = UIModalPresentationOverCurrentContext;
-//    [self presentViewController:alert animated:NO completion:^{
-//        alert.WScale_alert = WScaleT;
-//        NSLog(@"%f",alert.WScale_alert);
-//        alert.HScale_alert = HScaleT;
-//        [alert showView];
-//        alert.titleLabel.text = LocalString(@"提示");
-//        alert.messageLabel.text = LocalString(@"确认二爆开始?");
-//        [alert.leftBtn setTitle:LocalString(@"取消") forState:UIControlStateNormal];
-//        [alert.rightBtn setTitle:LocalString(@"确认") forState:UIControlStateNormal];
-//    }];
 }
 
-- (void)clickSecondBurstOver{
+- (void)clickBakeOver{
     NetWork *net = [NetWork shareNetWork];
+    net.isDevelop = NO;
+
     EventModel *event = [[EventModel alloc] init];
     event.eventId = 6;//类型为6
     event.eventTime = net.timerValue;
-    event.eventText = LocalString(@"二爆结束");
+    event.eventText = LocalString(@"烘焙结束");
     if (net.BeanArr.count > 0) {
         event.eventBeanTemp = [net.BeanArr[net.BeanArr.count - 1] floatValue];
     }else{
@@ -461,61 +377,13 @@
     }
     [net.eventArray addObject:event];
     
-    net.isSecondBurstOver = YES;
-    [_secondBurstOver setTitleColor:[UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1] forState:UIControlStateNormal];
-    _secondBurstOver.enabled = NO;
-
-    
-//    YAlertViewController *alert = [[YAlertViewController alloc] init];
-//    alert.lBlock = ^{
-//    };
-//    alert.rBlock = ^{
-//    };
-//    alert.modalPresentationStyle = UIModalPresentationOverCurrentContext;
-//    [self presentViewController:alert animated:NO completion:^{
-//        alert.WScale_alert = WScaleT;
-//        NSLog(@"%f",alert.WScale_alert);
-//        alert.HScale_alert = HScaleT;
-//        [alert showView];
-//        alert.titleLabel.text = LocalString(@"提示");
-//        alert.messageLabel.text = LocalString(@"确认二爆结束?");
-//        [alert.leftBtn setTitle:LocalString(@"取消") forState:UIControlStateNormal];
-//        [alert.rightBtn setTitle:LocalString(@"确认") forState:UIControlStateNormal];
-//    }];
-}
-
-- (void)clickBakeOver{
-    NetWork *net = [NetWork shareNetWork];
-    
-    EventModel *event = [[EventModel alloc] init];
-    event.eventId = 7;//类型为7
-    event.eventTime = net.timerValue;
-    event.eventText = LocalString(@"烘焙结束");
-    if (net.BeanArr.count > 0) {
-        event.eventBeanTemp = [net.BeanArr[net.BeanArr.count - 1] floatValue];
-    }else{
-        event.eventBeanTemp = 0.0;
-    }
-    for (EventModel *event in net.eventArray) {
-        if (event.eventId == 7) {
-            [net.eventArray removeObject:event];
-            break;
-        }
-    }
-    [net.eventArray addObject:event];
-    
     net.isBakeOver = YES;
-    [_bakeOver setTitleColor:[UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1] forState:UIControlStateNormal];
-    _bakeOver.enabled = NO;
-    [_saveCurveBtn setTitleColor:[UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1] forState:UIControlStateNormal];
-    
+    NSArray *statusArray = @[@0,@0,@0,@0,@0,@0,@0,@0,@0];
+    [self eventButtonStatusControl:statusArray];
+
+    //保存烘焙报告
     [net showBakeOverAlertAction];
 }
-
-//- (void)saveCurve{
-//    //[self dismissViewControllerAnimated:YES completion:nil];
-//    [[NetWork shareNetWork] showBakeOverAlertAction];
-//}
 
 - (void)fireWindSlide{
     BakeSliderAlertVC *sliderAlert = [[BakeSliderAlertVC alloc] init];
@@ -535,6 +403,73 @@
 - (void)switchAction:(UISwitch *)sender{
     if (self.relaSwitch) {
         self.relaSwitch(sender.isOn);
+    }
+}
+
+//所有按钮的状态控制
+- (void)eventButtonStatusControl:(NSArray *)statusArray{
+    if ([statusArray[0] boolValue]) {
+        [_startBake setTitleColor:[UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1] forState:UIControlStateNormal];
+        _startBake.enabled = YES;
+    }else{
+        [_startBake setTitleColor:[UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1] forState:UIControlStateNormal];
+        _startBake.enabled = NO;
+    }
+    if ([statusArray[1] boolValue]) {
+        [_dehyOver setTitleColor:[UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1] forState:UIControlStateNormal];
+        _dehyOver.enabled = YES;
+    }else{
+        [_dehyOver setTitleColor:[UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1] forState:UIControlStateNormal];
+        _dehyOver.enabled = NO;
+    }
+    if ([statusArray[2] boolValue]) {
+        [_firstBurst setTitleColor:[UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1] forState:UIControlStateNormal];
+        _firstBurst.enabled = YES;
+    }else{
+        [_firstBurst setTitleColor:[UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1] forState:UIControlStateNormal];
+        _firstBurst.enabled = NO;
+    }
+    if ([statusArray[3] boolValue]) {
+        [_firstBurstOver setTitleColor:[UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1] forState:UIControlStateNormal];
+        _firstBurstOver.enabled = YES;
+    }else{
+        [_firstBurstOver setTitleColor:[UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1] forState:UIControlStateNormal];
+        _firstBurstOver.enabled = NO;
+    }
+    if ([statusArray[4] boolValue]) {
+        [_secondBurst setTitleColor:[UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1] forState:UIControlStateNormal];
+        _secondBurst.enabled = YES;
+    }else{
+        [_secondBurst setTitleColor:[UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1] forState:UIControlStateNormal];
+        _secondBurst.enabled = NO;
+    }
+    if ([statusArray[5] boolValue]) {
+        [_secondBurstOver setTitleColor:[UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1] forState:UIControlStateNormal];
+        _secondBurstOver.enabled = YES;
+    }else{
+        [_secondBurstOver setTitleColor:[UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1] forState:UIControlStateNormal];
+        _secondBurstOver.enabled = NO;
+    }
+    if ([statusArray[6] boolValue]) {
+        [_bakeOver setTitleColor:[UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1] forState:UIControlStateNormal];
+        _bakeOver.enabled = YES;
+    }else{
+        [_bakeOver setTitleColor:[UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1] forState:UIControlStateNormal];
+        _bakeOver.enabled = NO;
+    }
+    if ([statusArray[7] boolValue]) {
+        [_fireorwindPower setTitleColor:[UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1] forState:UIControlStateNormal];
+        _fireorwindPower.enabled = YES;
+    }else{
+        [_fireorwindPower setTitleColor:[UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1] forState:UIControlStateNormal];
+        _fireorwindPower.enabled = NO;
+    }
+    if ([statusArray[8] boolValue]) {
+        [_remark setTitleColor:[UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1] forState:UIControlStateNormal];
+        _remark.enabled = YES;
+    }else{
+        [_remark setTitleColor:[UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1] forState:UIControlStateNormal];
+        _remark.enabled = NO;
     }
 }
 

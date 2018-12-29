@@ -10,7 +10,8 @@
 
 @interface CurrentCurveCell : UITableViewCell
 
-@property (nonatomic, strong) UILabel *beanDeviceName;
+@property (nonatomic, strong) UILabel *curveName;
+@property (nonatomic, strong) UILabel *deviceName;
 @property (nonatomic, strong) UILabel *dateLabel;
 
 @end

@@ -269,6 +269,15 @@
                 _firePowerBtn.enabled = YES;
             }else{
                 [_powerBtn setImage:[UIImage imageNamed:@"btn_power_off"] forState:UIControlStateNormal];
+                [_fireBtn setImage:[UIImage imageNamed:@"btn_fire_off@2x.png"] forState:UIControlStateNormal];
+                [_coolingBtn setImage:[UIImage imageNamed:@"btn_cold_off@2x.png"] forState:UIControlStateNormal];
+                [_stirBtn setImage:[UIImage imageNamed:@"btn_stir_off@2x.png"] forState:UIControlStateNormal];
+
+                //所有状态为关闭
+                _myNet.coolStatus = NO;
+                _myNet.fireStatus = NO;
+                _myNet.stirStatus = NO;
+
                 _fireBtn.enabled = NO;
                 _coolingBtn.enabled = NO;
                 _stirBtn.enabled = NO;
