@@ -202,7 +202,7 @@
         manager.requestSerializer.timeoutInterval = 6.f;
         [manager.requestSerializer didChangeValueForKey:@"timeoutInterval"];
         
-        NSString *url = [NSString stringWithFormat:@"http://139.196.90.97:8080/coffee/roastCurve/allReport?curveUid=%@",report.curveUid];
+        NSString *url = [NSString stringWithFormat:@"http://139.196.90.97:8080/coffee/roastCurve/allReport?curveUid=%@&num=%ld",report.curveUid,report.isShare];
         url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet characterSetWithCharactersInString:@"`#%^{}\"[]|\\<> "].invertedSet];
         
         [manager.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];

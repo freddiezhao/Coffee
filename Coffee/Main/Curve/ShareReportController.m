@@ -191,7 +191,7 @@ NSString *const CellIdentifier_TempPer30Share = @"CellID_TempPer30Share";
             cell = [[ReportLightCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_reportLightShare];
         }
         if (_reportModel.light) {
-            cell.lightValue.text = [NSString stringWithFormat:@"%lf",_reportModel.light];
+            cell.lightValue.text = [NSString stringWithFormat:@"%d",(int)_reportModel.light];
         }else{
             cell.lightValue.text = LocalString(@"?");
         }
@@ -506,7 +506,7 @@ NSString *const CellIdentifier_TempPer30Share = @"CellID_TempPer30Share";
     manager.requestSerializer.timeoutInterval = 6.f;
     [manager.requestSerializer didChangeValueForKey:@"timeoutInterval"];
     
-    NSString *url = [NSString stringWithFormat:@"http://139.196.90.97:8080/coffee/roastCurve/bean/message?curveUid=%@",_curveUid];
+    NSString *url = [NSString stringWithFormat:@"http://139.196.90.97:8080/coffee/roastCurve/bean/message?curveUid=%@&num=1",_curveUid];
     url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet characterSetWithCharactersInString:@"`#%^{}\"[]|\\<> "].invertedSet];
     
     [manager.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];

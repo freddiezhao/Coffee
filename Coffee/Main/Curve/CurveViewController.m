@@ -290,7 +290,7 @@ static float HEIGHT_HEADER = 36.f;
         manager.requestSerializer.timeoutInterval = 6.f;
         [manager.requestSerializer didChangeValueForKey:@"timeoutInterval"];
         
-        NSString *url = [NSString stringWithFormat:@"http://139.196.90.97:8080/coffee/roastCurve/deleteReport?curveUid=%@",report.curveUid];
+        NSString *url = [NSString stringWithFormat:@"http://139.196.90.97:8080/coffee/roastCurve/deleteReport?curveUid=%@&num=%ld",report.curveUid,(long)report.isShare];
         url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet characterSetWithCharactersInString:@"`#%^{}\"[]|\\<> "].invertedSet];
 
         [manager.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];

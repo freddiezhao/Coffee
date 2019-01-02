@@ -208,7 +208,7 @@ NSString *const CellIdentifier_TempPer30 = @"CellID_TempPer30";
             cell = [[ReportLightCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_reportLight];
         }
         if (_reportModel.light) {
-            cell.lightValue.text = [NSString stringWithFormat:@"%lf",_reportModel.light];
+            cell.lightValue.text = [NSString stringWithFormat:@"%d",(int)_reportModel.light];
         }else{
             cell.lightValue.text = LocalString(@"?");
         }
@@ -557,6 +557,7 @@ NSString *const CellIdentifier_TempPer30 = @"CellID_TempPer30";
     QRVC.modalPresentationStyle = UIModalPresentationOverCurrentContext;
     QRVC.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
     [self presentViewController:QRVC animated:YES completion:^{
+        QRVC.userName = [DataBase shareDataBase].userName;
         QRVC.curveUid = _curveUid;
         NSLog(@"%@",_curveUid);
         [QRVC generateQRCode];

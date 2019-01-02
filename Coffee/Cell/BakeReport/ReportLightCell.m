@@ -49,6 +49,7 @@
             _lightValue.textColor = [UIColor colorWithHexString:@"FFFFFF"];
             _lightValue.font = [UIFont fontWithName:@"Avenir" size:36.0];
             _lightValue.textAlignment = NSTextAlignmentCenter;
+            _lightValue.adjustsFontSizeToFitWidth = YES;
             [_circleView addSubview:_lightValue];
             
             UILabel *tipText = [[UILabel alloc] initWithFrame:CGRectMake(27/WScale, 84/HScale, 71/WScale, 20/HScale)];

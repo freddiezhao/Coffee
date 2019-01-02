@@ -103,9 +103,11 @@
 {
     if (metadataObjects.count > 0) {
         AVMetadataMachineReadableCodeObject *object = [metadataObjects lastObject];
-        if (object.stringValue.length == 24){
+        if (object.stringValue.length >= 24){
             [self.session stopRunning];
-            [self addSharedCurveWithCurveUid:object.stringValue];
+            NSArray *resultArray = [object.stringValue componentsSeparatedByString:@":"];
+            NSLog(@"%@ %@",resultArray[0],resultArray[1]);
+            [self addSharedCurveWithCurveUid:resultArray[1] sharerName:resultArray[0]];
         }else{
             [NSObject showHudTipStr:LocalString(@"曲线的二维码信息错误")];
             [self.session stopRunning];
@@ -134,7 +136,7 @@
     [self presentViewController:alertController animated:YES completion:nil];
 }
 
-- (void)addSharedCurveWithCurveUid:(NSString *)curveUid{
+- (void)addSharedCurveWithCurveUid:(NSString *)curveUid sharerName:(NSString *)sharerName{
     [SVProgressHUD show];
     AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
     
@@ -142,7 +144,7 @@
     manager.requestSerializer.timeoutInterval = 6.f;
     [manager.requestSerializer didChangeValueForKey:@"timeoutInterval"];
     
-    NSString *url = [NSString stringWithFormat:@"http://139.196.90.97:8080/coffee/roastCurve/share?curveUid=%@",curveUid];
+    NSString *url = [NSString stringWithFormat:@"http://139.196.90.97:8080/coffee/roastCurve/share?curveUid=%@&sharerName=%@",curveUid,sharerName];
     url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet characterSetWithCharactersInString:@"`#%^{}\"[]|\\<> "].invertedSet];
     
     [manager.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
@@ -160,7 +162,7 @@
                   [NSObject showHudTipStr:LocalString(@"添加分享曲线成功")];
                   [self.session stopRunning];
                   [self.scanLayer removeFromSuperlayer];
-                  [self getFullCurveInfoByApi:curveUid];//获取曲线详细信息
+                  [self getFullCurveInfoByApi:curveUid sharerName:sharerName];//获取曲线详细信息
               }else{
                   NSLog(@"error,%@",daetr);
                   [NSObject showHudTipStr:LocalString(@"添加分享曲线失败")];
@@ -179,7 +181,7 @@
           }];
 }
 
-- (void)getFullCurveInfoByApi:(NSString *)curveUid{
+- (void)getFullCurveInfoByApi:(NSString *)curveUid sharerName:(NSString *)sharerName{
     [SVProgressHUD showWithStatus:LocalString(@"正在获取曲线信息")];
     AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
     
@@ -187,7 +189,7 @@
     manager.requestSerializer.timeoutInterval = 6.f;
     [manager.requestSerializer didChangeValueForKey:@"timeoutInterval"];
     
-    NSString *url = [NSString stringWithFormat:@"http://139.196.90.97:8080/coffee/roastCurve/allReport?curveUid=%@",curveUid];
+    NSString *url = [NSString stringWithFormat:@"http://139.196.90.97:8080/coffee/roastCurve/allReport?curveUid=%@&num=1",curveUid];
     url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet characterSetWithCharactersInString:@"`#%^{}\"[]|\\<> "].invertedSet];
     
     [manager.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
@@ -214,7 +216,7 @@
                     report.rawBeanWeight = [[curveDic objectForKey:@"rawBean"] doubleValue];
                     report.bakeBeanWeight = [[curveDic objectForKey:@"cooked"] doubleValue];
                     report.sn = [curveDic objectForKey:@"sn"];
-                    report.sharerName = report.bakerName;
+                    report.sharerName = sharerName;
                     report.isShare = 1;
                     
                     if ([curveDic objectForKey:@"beans"]) {

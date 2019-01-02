@@ -12,6 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface ProdQRCodeView : UIViewController
 
+@property (nonatomic, strong) NSString *userName;//用于分享者名字
 @property (nonatomic, strong) NSString *curveUid;
 
 - (void)generateQRCode;

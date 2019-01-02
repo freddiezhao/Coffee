@@ -23,7 +23,6 @@
     [self.view setBackgroundColor:[UIColor colorWithRed:0/255.0 green:0/255.0 blue:0/255.0 alpha:0.6]];
 
     _QRcodeView = [self QRcodeView];
-    //[self generateQRCode];
 }
 
 #pragma mark - Lazy Load
@@ -79,14 +78,23 @@
 }
 
 - (void)generateQRCode{
+
     CIFilter *filter = [CIFilter filterWithName:@"CIQRCodeGenerator"];
     [filter setDefaults];
     
-    NSData *data = [_curveUid dataUsingEncoding:NSUTF8StringEncoding];
+    NSString *info = [NSString stringWithFormat:@"%@:%@",_userName,_curveUid];
+    
+    NSData *data = [info dataUsingEncoding:NSUTF8StringEncoding];
     [filter setValue:data forKey:@"inputMessage"];
     
     CIImage *image = [filter outputImage];
-    _QRImage.image = [self createNonInterpolatedUIImageFormCIImage:image withSize:200.f/WScale];
+    
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        UIImage *qrImage = [self createNonInterpolatedUIImageFormCIImage:image withSize:200.f/WScale];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            _QRImage.image = qrImage;
+        });
+    });
 }
 
 /**

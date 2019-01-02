@@ -85,7 +85,7 @@ static DataBase *_dataBase = nil;
         }else{
             NSLog(@"创建表bean失败");
         }
-        result = [db executeUpdate:@"CREATE TABLE IF NOT EXISTS curveInfo (curveUid text PRIMARY KEY,curveName text NOT NULL,date text,deviceName text,sn text NOT NULL,rawBeanWeight REAL,bakeBeanWeight REAL,light REAL,curveValue text,bakeTime integer,developTime integer,developRate REAL,bakerName text,shareName text,isShare integer NOT NULL)"];
+        result = [db executeUpdate:@"CREATE TABLE IF NOT EXISTS curveInfo (curveUid text PRIMARY KEY,curveName text NOT NULL,date text,deviceName text,sn text,rawBeanWeight REAL,bakeBeanWeight REAL,light REAL,curveValue text,bakeTime integer,developTime integer,developRate REAL,bakerName text,shareName text,isShare integer NOT NULL)"];
         if (result) {
             NSLog(@"创建表curve成功");
         }else{
