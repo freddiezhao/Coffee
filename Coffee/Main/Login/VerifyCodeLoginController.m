@@ -100,6 +100,11 @@ static float HEIGHT_CELL = 50.f;
             [self textFieldChange];
         };
         cell.BtnBlock = ^BOOL{
+            PhoneVerifyCell *cell1 = [self.codeLoginTable cellForRowAtIndexPath:[NSIndexPath indexPathForRow:1 inSection:0]];
+            [cell1.codeTF resignFirstResponder];
+            PhoneTFCell *cell2 = [self.codeLoginTable cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];;
+            [cell2.phoneTF resignFirstResponder];
+
             AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
             //设置超时时间
             [manager.requestSerializer willChangeValueForKey:@"timeoutInterval"];
@@ -174,6 +179,10 @@ static float HEIGHT_CELL = 50.f;
 #pragma mark - Actions
 - (void)login{
     NSLog(@"%@",[[UIDevice currentDevice] identifierForVendor]);
+    PhoneVerifyCell *cell1 = [self.codeLoginTable cellForRowAtIndexPath:[NSIndexPath indexPathForRow:1 inSection:0]];
+    [cell1.codeTF resignFirstResponder];
+    PhoneTFCell *cell2 = [self.codeLoginTable cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];;
+    [cell2.phoneTF resignFirstResponder];
     
     AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
     

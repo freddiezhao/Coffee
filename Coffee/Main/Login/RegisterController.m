@@ -107,6 +107,15 @@ static float HEIGHT_CELL = 50.f;
                 [self textFieldChange];
             };
             cell.BtnBlock = ^BOOL{
+                PhoneVerifyCell *cell1 = [self.registerTable cellForRowAtIndexPath:[NSIndexPath indexPathForRow:1 inSection:0]];
+                [cell1.codeTF resignFirstResponder];
+                PhoneTFCell *cell2 = [self.registerTable cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];;
+                [cell2.phoneTF resignFirstResponder];
+                TextFieldCell *cell3 = [self.registerTable cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:1]];
+                [cell3.textField resignFirstResponder];
+                TextFieldCell *cell4 = [self.registerTable cellForRowAtIndexPath:[NSIndexPath indexPathForRow:1 inSection:1]];
+                [cell4.textField resignFirstResponder];
+
                 AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
                 
                 //设置超时时间
@@ -202,6 +211,15 @@ static float HEIGHT_CELL = 50.f;
 
 #pragma mark - Actions
 - (void)registerUser{
+    PhoneVerifyCell *cell1 = [self.registerTable cellForRowAtIndexPath:[NSIndexPath indexPathForRow:1 inSection:0]];
+    [cell1.codeTF resignFirstResponder];
+    PhoneTFCell *cell2 = [self.registerTable cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];;
+    [cell2.phoneTF resignFirstResponder];
+    TextFieldCell *cell3 = [self.registerTable cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:1]];
+    [cell3.textField resignFirstResponder];
+    TextFieldCell *cell4 = [self.registerTable cellForRowAtIndexPath:[NSIndexPath indexPathForRow:1 inSection:1]];
+    [cell4.textField resignFirstResponder];
+
     AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
     
     //设置超时时间

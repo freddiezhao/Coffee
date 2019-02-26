@@ -229,6 +229,8 @@
 #pragma mark - Actions
 - (void)login{
     NSLog(@"%@",[[UIDevice currentDevice] identifierForVendor]);
+    [self.phoneTF resignFirstResponder];
+    [self.passwordTF resignFirstResponder];
 
     AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
     

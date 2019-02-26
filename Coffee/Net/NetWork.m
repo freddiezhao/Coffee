@@ -202,7 +202,7 @@ static NSString *curveUid;
 //帧的发送
 - (void)send:(NSMutableArray *)msg withTag:(NSUInteger)tag
 {
-    dispatch_time_t time = dispatch_time(DISPATCH_TIME_NOW, 2.f * 1000 * 1000 * 1000);
+    dispatch_time_t time = dispatch_time(DISPATCH_TIME_NOW, 1.f * 1000 * 1000 * 1000);
     dispatch_semaphore_wait(_sendSignal, time);
     if (![self.mySocket isDisconnected])
     {
@@ -1233,6 +1233,14 @@ static NSString *curveUid;
 
 #pragma mark - Global Actions
 - (void)showBakeOverAlertAction{
+    _isStartBake = NO;
+    _isDevyOver = NO;
+    _isFirstBurst = NO;
+    _isFirstBurstOver = NO;
+    _isSecondBurst = NO;
+    _isSecondBurstOver = NO;
+    _isBakeOver = NO;
+
     YAlertViewController *alert = [[YAlertViewController alloc] init];
     alert.rBlock = ^{
         [self getCurveUidByApi];

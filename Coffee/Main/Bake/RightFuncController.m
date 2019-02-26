@@ -88,8 +88,8 @@
         [_dehyOver setTitleColor:[UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1] forState:UIControlStateNormal];
         _dehyOver.enabled = YES;
     }else{
-        [_dehyOver setTitleColor:[UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1] forState:UIControlStateNormal];
-        _dehyOver.enabled = NO;
+        NSArray *statusArray = @[@0,@0,@1,@1,@1,@1,@1,@1,@1];
+        [self eventButtonStatusControl:statusArray];
     }
     [_dehyOver setButtonStyleWithColor:[UIColor clearColor] Width:1.0 cornerRadius:20/HScaleT];
     [_dehyOver setBackgroundColor:[UIColor whiteColor]];
@@ -103,8 +103,8 @@
         [_firstBurst setTitleColor:[UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1] forState:UIControlStateNormal];
         _firstBurst.enabled = YES;
     }else{
-        [_firstBurst setTitleColor:[UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1] forState:UIControlStateNormal];
-        _firstBurst.enabled = NO;
+        NSArray *statusArray = @[@0,@0,@0,@1,@1,@1,@1,@1,@1];
+        [self eventButtonStatusControl:statusArray];
     }
     [_firstBurst setButtonStyleWithColor:[UIColor clearColor] Width:1.0 cornerRadius:20/HScaleT];
     [_firstBurst setBackgroundColor:[UIColor whiteColor]];
@@ -118,8 +118,8 @@
         [_firstBurstOver setTitleColor:[UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1] forState:UIControlStateNormal];
         _firstBurst.enabled = YES;
     }else{
-        [_firstBurstOver setTitleColor:[UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1] forState:UIControlStateNormal];
-        _firstBurst.enabled = NO;
+        NSArray *statusArray = @[@0,@0,@0,@0,@1,@1,@1,@1,@1];
+        [self eventButtonStatusControl:statusArray];
     }
     [_firstBurstOver setButtonStyleWithColor:[UIColor clearColor] Width:1.0 cornerRadius:20/HScaleT];
     [_firstBurstOver setBackgroundColor:[UIColor whiteColor]];
@@ -133,8 +133,8 @@
         [_secondBurst setTitleColor:[UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1] forState:UIControlStateNormal];
         _secondBurst.enabled = YES;
     }else{
-        [_secondBurst setTitleColor:[UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1] forState:UIControlStateNormal];
-        _secondBurst.enabled = NO;
+        NSArray *statusArray = @[@0,@0,@0,@0,@0,@1,@1,@1,@1];
+        [self eventButtonStatusControl:statusArray];
     }
     [_secondBurst setButtonStyleWithColor:[UIColor clearColor] Width:1.0 cornerRadius:20/HScaleT];
     [_secondBurst setBackgroundColor:[UIColor whiteColor]];
@@ -148,8 +148,8 @@
         [_secondBurstOver setTitleColor:[UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1] forState:UIControlStateNormal];
         _secondBurstOver.enabled = YES;
     }else{
-        [_secondBurstOver setTitleColor:[UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1] forState:UIControlStateNormal];
-        _secondBurstOver.enabled = NO;
+        NSArray *statusArray = @[@0,@0,@0,@0,@0,@0,@1,@1,@1];
+        [self eventButtonStatusControl:statusArray];
     }
     [_secondBurstOver setButtonStyleWithColor:[UIColor clearColor] Width:1.0 cornerRadius:20/HScaleT];
     [_secondBurstOver setBackgroundColor:[UIColor whiteColor]];
@@ -163,8 +163,8 @@
         [_bakeOver setTitleColor:[UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1] forState:UIControlStateNormal];
         _bakeOver.enabled = YES;
     }else{
-        [_bakeOver setTitleColor:[UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1] forState:UIControlStateNormal];
-        _bakeOver.enabled = NO;
+        NSArray *statusArray = @[@1,@0,@0,@0,@0,@0,@0,@0,@0];
+        [self eventButtonStatusControl:statusArray];
     }
     [_bakeOver setButtonStyleWithColor:[UIColor clearColor] Width:1.0 cornerRadius:20/HScaleT];
     [_bakeOver setBackgroundColor:[UIColor whiteColor]];
