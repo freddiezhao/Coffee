@@ -11,8 +11,11 @@
 #import "UsernameViewController.h"
 #import "UserPasswordController.h"
 #import "UserPhoneController.h"
+#import "LogOutCell.h"
+#import "LoginViewController.h"
 
 NSString *const CellIdentifier_Accountll = @"CellID_Accountll";
+NSString *const CellIdentifier_AccountLogout = @"CellID_AccountLogout";
 
 @interface AccountViewController () <UIImagePickerControllerDelegate,UINavigationControllerDelegate>
 
@@ -96,7 +99,7 @@ static float HEIGHT_CELL = 50.f;
             tableView.delegate = self;
             tableView.separatorColor = [UIColor colorWithRed:0/255.0 green:0/255.0 blue:0/255.0 alpha:0.08];
             [tableView registerClass:[LlabelRlabelCell class] forCellReuseIdentifier:CellIdentifier_Accountll];
-            
+            [tableView registerClass:[LogOutCell class] forCellReuseIdentifier:CellIdentifier_AccountLogout];
             [self.view addSubview:tableView];
             
             tableView.scrollEnabled = NO;
@@ -109,7 +112,7 @@ static float HEIGHT_CELL = 50.f;
 
 #pragma mark - UITableView Delegate
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView{
-    return 2;
+    return 3;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
@@ -120,6 +123,10 @@ static float HEIGHT_CELL = 50.f;
             
         case 1:
             return 2;
+            break;
+            
+        case 2:
+            return 1;
             break;
             
         default:
@@ -138,7 +145,7 @@ static float HEIGHT_CELL = 50.f;
         cell.leftLabel.text = LocalString(@"昵称");
         cell.rightLabel.text = _database.userName;
         return cell;
-    }else{
+    }else if(indexPath.section == 1) {
         if (indexPath.row == 0){
             cell.leftLabel.text = LocalString(@"修改登录密码");
             return cell;
@@ -149,6 +156,12 @@ static float HEIGHT_CELL = 50.f;
         }else{
             return cell;
         }
+    }else{
+        LogOutCell *cell1 = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_AccountLogout];
+        if (cell1 == nil) {
+            cell1 = [[LogOutCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_AccountLogout];
+        }
+        return cell1;
     }
 }
 
@@ -158,7 +171,7 @@ static float HEIGHT_CELL = 50.f;
         UsernameViewController *userNameVC = [[UsernameViewController alloc] init];
         UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:userNameVC];
         [self presentViewController:nav animated:YES completion:nil];
-    }else{
+    }else if(indexPath.section == 1) {
         if (indexPath.row == 0){
             UserPasswordController *pwVC = [[UserPasswordController alloc] init];
             [self.navigationController pushViewController:pwVC animated:YES];
@@ -166,8 +179,30 @@ static float HEIGHT_CELL = 50.f;
             UserPhoneController *phoneVC = [[UserPhoneController alloc] init];
             [self.navigationController pushViewController:phoneVC animated:YES];
         }
+    }else{
+        YAlertViewController *alert = [[YAlertViewController alloc] init];
+        alert.lBlock = ^{
+            
+        };
+        alert.rBlock = ^{
+            //清除单例
+            [NetWork destroyInstance];
+            
+            LoginViewController *loginVC = [[LoginViewController alloc] init];
+            UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:loginVC];
+            [UIApplication sharedApplication].keyWindow.rootViewController = nav;
+        };
+        alert.modalPresentationStyle = UIModalPresentationOverCurrentContext;
+        [self presentViewController:alert animated:NO completion:^{
+            alert.WScale_alert = WScale;
+            alert.HScale_alert = HScale;
+            [alert showView];
+            alert.titleLabel.text = LocalString(@"提示");
+            alert.messageLabel.text = LocalString(@"确定退出登录吗？");
+            [alert.leftBtn setTitle:LocalString(@"取消") forState:UIControlStateNormal];
+            [alert.rightBtn setTitle:LocalString(@"确认") forState:UIControlStateNormal];
+        }];
     }
-    
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{

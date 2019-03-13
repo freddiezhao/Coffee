@@ -127,6 +127,8 @@ static NSInteger tempCountVer = 1000;
 
 ///@brief 单例模式
 + (instancetype)shareNetWork;
+///@brief 销毁单例
++ (void)destroyInstance;
 
 ///@brief 发送数据
 - (void)send:(NSMutableArray *)msg withTag:(NSUInteger)tag;

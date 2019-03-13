@@ -378,7 +378,7 @@
     [net.eventArray addObject:event];
     
     net.isBakeOver = YES;
-    NSArray *statusArray = @[@0,@0,@0,@0,@0,@0,@0,@0,@0];
+    NSArray *statusArray = @[@1,@0,@0,@0,@0,@0,@0,@0,@0];
     [self eventButtonStatusControl:statusArray];
 
     //保存烘焙报告

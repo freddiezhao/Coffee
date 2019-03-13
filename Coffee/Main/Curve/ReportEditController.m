@@ -290,7 +290,6 @@ NSString *const CellIdentifier_EditBakeBean = @"CellID_EditBakeBean";
 }
 
 - (void)editCurveByApi{
-    [SVProgressHUD show];
     AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
     
     [manager.requestSerializer willChangeValueForKey:@"timeoutInterval"];
@@ -315,7 +314,7 @@ NSString *const CellIdentifier_EditBakeBean = @"CellID_EditBakeBean";
     }
     
     NSDictionary *parameters = @{@"name":_reportModel.curveName,@"cooked":[NSNumber numberWithFloat:_reportModel.bakeBeanWeight],@"light":[NSNumber numberWithFloat:_reportModel.light],@"beans":beanArr};
-    
+    [SVProgressHUD show];
     [manager PUT:url parameters:parameters success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableContainers|NSJSONReadingMutableLeaves error:nil];
         NSData * data = [NSJSONSerialization dataWithJSONObject:responseDic options:(NSJSONWritingOptions)0 error:nil];

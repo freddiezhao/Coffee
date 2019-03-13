@@ -666,6 +666,12 @@
         make.top.equalTo(_beanTempRateLabel.mas_bottom).offset(18/HScale);
     }];
     
+    //对srcollView添加点击响应
+    UITapGestureRecognizer *singleTapRecognizer = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(handleTapGesture:)];
+    singleTapRecognizer.numberOfTapsRequired = 1;
+    [_beanNameView addGestureRecognizer:singleTapRecognizer];
+
+    
     if (size.width > 155/WScale) {
         [UIView animateWithDuration:5
                               delay:0
@@ -763,10 +769,31 @@
 }
 
 #pragma mark - Actions
-- (void)goBakeCurveViewController{
-    BakeCurveViewController *bakeCurveVC = [[BakeCurveViewController alloc] init];
-    bakeCurveVC.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
-    [self presentViewController:bakeCurveVC animated:YES completion:nil];
+- (void)goBakeCurveViewController{    
+    if (_myNet.connectedDevice) {
+        BakeCurveViewController *bakeCurveVC = [[BakeCurveViewController alloc] init];
+        bakeCurveVC.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+        [self presentViewController:bakeCurveVC animated:YES completion:nil];
+    }else{
+        YAlertViewController *alert = [[YAlertViewController alloc] init];
+        alert.modalPresentationStyle = UIModalPresentationOverCurrentContext;
+        alert.rBlock = ^{
+            [self.rdv_tabBarController setTabBarHidden:NO animated:YES];
+        };
+        alert.lBlock = ^{
+            [self.rdv_tabBarController setTabBarHidden:NO animated:YES];
+        };
+        [self presentViewController:alert animated:NO completion:^{
+            [self.rdv_tabBarController setTabBarHidden:YES animated:YES];
+            alert.WScale_alert = WScale;
+            alert.HScale_alert = HScale;
+            [alert showView];
+            alert.titleLabel.text = LocalString(@"提示");
+            alert.messageLabel.text = LocalString(@"请先连接咖啡机设备");
+            [alert.leftBtn setTitle:LocalString(@"取消") forState:UIControlStateNormal];
+            [alert.rightBtn setTitle:LocalString(@"确认") forState:UIControlStateNormal];
+        }];
+    }
 }
 
 - (void)addCoffeeBean{
@@ -843,6 +870,15 @@
 
 - (void)getCurve{
     
+}
+
+//豆名滚动UI点击动作
+-(void)handleTapGesture:( UITapGestureRecognizer *)tapRecognizer
+{
+    // 先取消任何操作???????这句话存在的意义？？？
+    [NSObject cancelPreviousPerformRequestsWithTarget:self];
+    AddBeanTableController *addBeanVC = [[AddBeanTableController alloc] init];
+    [self.navigationController pushViewController:addBeanVC animated:YES];
 }
 
 #pragma mark - kvo

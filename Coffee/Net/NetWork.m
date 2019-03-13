@@ -22,6 +22,7 @@
 #define maxTempCount 20
 
 static NetWork *_netWork = nil;
+static dispatch_once_t oneToken;
 static NSInteger gotTempCount = 0;
 static NSString *curveUid;
 
@@ -34,9 +35,7 @@ static NSString *curveUid;
     return _netWork;
 }
 
-+ (instancetype)allocWithZone:(struct _NSZone *)zone{
-    static dispatch_once_t oneToken;
-    
++ (instancetype)allocWithZone:(struct _NSZone *)zone{    
     dispatch_once(&oneToken, ^{
         if (_netWork == nil) {
             _netWork = [super allocWithZone:zone];
@@ -141,6 +140,11 @@ static NSString *curveUid;
     _ssid = @"";
     _bssid = @"";
     _apPwd = @"";
+}
+
++ (void)destroyInstance{
+    _netWork = nil;
+    oneToken = 0l;
 }
 
 #pragma mark - Lazy load

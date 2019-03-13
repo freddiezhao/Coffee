@@ -387,6 +387,7 @@
 		BBC4AB862103347100F49BDC /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = BBC4AB852103347100F49BDC /* libsqlite3.tbd */; };
 		BBC695F020F5B31A006628E0 /* ic_mine_history_line@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = BBC695EF20F5B31A006628E0 /* ic_mine_history_line@2x.png */; };
 		BBC695F220F5B334006628E0 /* ic_mine_history_line.png in Resources */ = {isa = PBXBuildFile; fileRef = BBC695F120F5B334006628E0 /* ic_mine_history_line.png */; };
+		BBDE8F992238F4E700B8B8F5 /* LogOutCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BBDE8F972238F4E600B8B8F5 /* LogOutCell.m */; };
 		BBED09AE20F7354200D6010A /* ic_bake_bean.png in Resources */ = {isa = PBXBuildFile; fileRef = BBED09AA20F7354200D6010A /* ic_bake_bean.png */; };
 		BBED09AF20F7354200D6010A /* ic_baked.png in Resources */ = {isa = PBXBuildFile; fileRef = BBED09AB20F7354200D6010A /* ic_baked.png */; };
 		BBED09B020F7354200D6010A /* ic_bake_baking_outwind.png in Resources */ = {isa = PBXBuildFile; fileRef = BBED09AC20F7354200D6010A /* ic_bake_baking_outwind.png */; };
@@ -963,6 +964,8 @@
 		BBC4AB852103347100F49BDC /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
 		BBC695EF20F5B31A006628E0 /* ic_mine_history_line@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ic_mine_history_line@2x.png"; sourceTree = "<group>"; };
 		BBC695F120F5B334006628E0 /* ic_mine_history_line.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ic_mine_history_line.png; sourceTree = "<group>"; };
+		BBDE8F972238F4E600B8B8F5 /* LogOutCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LogOutCell.m; sourceTree = "<group>"; };
+		BBDE8F982238F4E600B8B8F5 /* LogOutCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LogOutCell.h; sourceTree = "<group>"; };
 		BBED09AA20F7354200D6010A /* ic_bake_bean.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ic_bake_bean.png; sourceTree = "<group>"; };
 		BBED09AB20F7354200D6010A /* ic_baked.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ic_baked.png; sourceTree = "<group>"; };
 		BBED09AC20F7354200D6010A /* ic_bake_baking_outwind.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ic_bake_baking_outwind.png; sourceTree = "<group>"; };
@@ -1117,6 +1120,8 @@
 		BB2DF7FF2150FE3F00BC8DFB /* Mine */ = {
 			isa = PBXGroup;
 			children = (
+				BBDE8F982238F4E600B8B8F5 /* LogOutCell.h */,
+				BBDE8F972238F4E600B8B8F5 /* LogOutCell.m */,
 				BB2DF8002150FE6400BC8DFB /* MineNormalCell.h */,
 				BB2DF8012150FE6400BC8DFB /* MineNormalCell.m */,
 				BB56100C215221D2008433B1 /* UserPWCell.h */,
@@ -2481,6 +2486,7 @@
 				BB94963F2125504F000A4A59 /* LeftFuncController.m in Sources */,
 				BB73BA24212FB4CF001D9258 /* AddBeanInfoCell2.m in Sources */,
 				BB712ABD20E47F49005FF10F /* NetWork.m in Sources */,
+				BBDE8F992238F4E700B8B8F5 /* LogOutCell.m in Sources */,
 				BB94EAA120DB8CE700370A95 /* RDVTabBarController.m in Sources */,
 				BB4A4C81214F8F210010A9A1 /* CupTestEditController.m in Sources */,
 				BB7835E22147588D000E2FCB /* EditNameCell.m in Sources */,

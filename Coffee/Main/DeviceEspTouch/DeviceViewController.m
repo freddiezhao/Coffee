@@ -501,7 +501,6 @@ NSString *const CellIdentifier_device = @"CellID_device";
         DeviceModel *device = _deviceArray[indexPath.row];
         cell.deviceName.text = device.deviceName;
         cell.deviceImage.image = [UIImage imageNamed:[self getCorrespondPicByDeviceType:[device.deviceType integerValue]]];
-
     }
     //添加长按手势
     UILongPressGestureRecognizer *longPressGesture =[[UILongPressGestureRecognizer alloc]initWithTarget:self action:@selector(deviceCellLongPress:)];
@@ -857,10 +856,18 @@ NSString *const CellIdentifier_device = @"CellID_device";
         }else{
             _devieceTable.hidden = NO;
             _noDeviceView.hidden = YES;
+            for (DeviceModel *onlineDevice in self.onlineDeviceArray) {
+                for (DeviceModel *device in self.deviceArray) {
+                    if ([onlineDevice.sn isEqualToString:device.sn]) {
+                        //去除掉在线列表存在的设备
+                        [self.deviceArray removeObject:device];
+                        break;
+                    }
+                }
+            }
         }
         dispatch_async(dispatch_get_main_queue(), ^{
             [SVProgressHUD dismiss];
-            _deviceArray = [[DataBase shareDataBase] queryAllDevice];
             [_devieceTable reloadData];
             [self sendSearchBroadcast];
         });
