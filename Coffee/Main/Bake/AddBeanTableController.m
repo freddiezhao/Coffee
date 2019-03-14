@@ -113,6 +113,9 @@ NSString *const CellIdentifier_curveInfo = @"CellID_curveInfo_add";
                     }
                     BeanModel *bean = _myNet.beanArray[indexPath.row];
                     cell.beanName.text = bean.name;
+                    if (bean.weight > 0) {
+                        cell.weightTF.text = [NSString stringWithFormat:@"%.1f",[NSString diffWeightUnitStringWithWeight:bean.weight]];
+                    }
                     cell.TFBlock = ^(NSString *text) {
                         DataBase *db = [DataBase shareDataBase];
                         if ([db.setting.weightUnit isEqualToString:@"kg"]) {

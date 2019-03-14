@@ -9,9 +9,12 @@
 #import <UIKit/UIKit.h>
 @class ReportModel;
 
+typedef void(^editBlock)(void);
+
 @interface ReportEditController : BaseViewController
 
 @property (nonatomic, strong) NSMutableArray *beanArray;
 @property (nonatomic, strong) ReportModel *reportModel;
+@property (nonatomic) editBlock editBlock;
 
 @end

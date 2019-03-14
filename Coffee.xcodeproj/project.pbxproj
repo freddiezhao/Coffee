@@ -1493,9 +1493,9 @@
 				BB6AD21621007D15008C8763 /* MineViewController.m */,
 				BB23E561210964C20074C61B /* FeedbackViewController.h */,
 				BB23E562210964C20074C61B /* FeedbackViewController.m */,
+				BB2912062106CC89001B9448 /* Account */,
 				BB79627E216F538F000373A3 /* AboutViewController.h */,
 				BB79627F216F538F000373A3 /* AboutViewController.m */,
-				BB2912062106CC89001B9448 /* Account */,
 				BB29120F2106D8B1001B9448 /* General */,
 			);
 			path = Mine;

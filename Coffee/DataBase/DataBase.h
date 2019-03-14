@@ -31,7 +31,8 @@
 
 
 + (instancetype)shareDataBase;
-- (void)initDB;
+- (BOOL)initDB;
+- (void)getSettingByApi;
 
 ///@brief DB action
 - (NSMutableArray *)queryAllReport;
@@ -62,6 +63,6 @@
 - (BOOL)insertSetting;
 - (BOOL)deleteSetting;
 
-- (void)createTable;
+- (BOOL)createTable;
 - (void)deleteAllTable;
 @end

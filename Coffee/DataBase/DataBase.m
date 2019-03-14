@@ -47,17 +47,18 @@ static DataBase *_dataBase = nil;
     return self;
 }
 
-- (void)initDB{
+- (BOOL)initDB{
     NSString *docPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
     NSString *filePath = [docPath stringByAppendingPathComponent:[NSString stringWithFormat:@"%@_Coffee.sql",_userId]];
     NSLog(@"%@",filePath);
     _queueDB = [FMDatabaseQueue databaseQueueWithPath:filePath];
-    [self createTable];
+    BOOL isCreated = [self createTable];
     //[self insertBaseEvent];
     _setting = [self setting];
     [self querySetting];
     //[self deleteTable];
     //[self insertNewReport:nil];
+    return isCreated;
 }
 
 #pragma mark - Lazy load
@@ -77,57 +78,73 @@ static DataBase *_dataBase = nil;
 }
 
 #pragma mark - Data 增删改查
-- (void)createTable{
+- (BOOL)createTable{
+    static BOOL isCreated = NO;
     [_queueDB inDatabase:^(FMDatabase * _Nonnull db) {
         BOOL result = [db executeUpdate:@"CREATE TABLE IF NOT EXISTS beanInfo (beanUid text PRIMARY KEY,beanName text NOT NULL,nation text,area text,manor text,altitude REAL,beanSpecies text,grade text,process text,water REAL,supplier text,price REAL,stock REAL,time text，isShared integer)"];
         if (result) {
             NSLog(@"创建表bean成功");
         }else{
+            isCreated = YES;
             NSLog(@"创建表bean失败");
         }
         result = [db executeUpdate:@"CREATE TABLE IF NOT EXISTS curveInfo (curveUid text PRIMARY KEY,curveName text NOT NULL,date text,deviceName text,sn text,rawBeanWeight REAL,bakeBeanWeight REAL,light REAL,curveValue text,bakeTime integer,developTime integer,developRate REAL,bakerName text,shareName text,isShare integer NOT NULL)"];
         if (result) {
             NSLog(@"创建表curve成功");
         }else{
+            isCreated = YES;
             NSLog(@"创建表curve失败");
         }
         result = [db executeUpdate:@"CREATE TABLE IF NOT EXISTS bean_curve (beanUid text NOT NULL,curveUid text NOT NULL,beanWeight REAL NOT NULL,beanName text,nation text,area text,manor text,altitude REAL,beanSpecies text,grade text,process text,water REAL)"];
         if (result) {
             NSLog(@"创建表bean_curve成功");
         }else{
+            isCreated = YES;
             NSLog(@"创建表bean_curve失败");
+        }
+        result = [db executeUpdate:@"create unique index if not exists message_key on bean_curve (beanUid,curveUid)"];
+        if (result) {
+            NSLog(@"创建表bean_curve联合主键成功");
+        }else{
+            NSLog(@"创建表bean_curve联合主键失败");
         }
         result = [db executeUpdate:@"CREATE TABLE IF NOT EXISTS user_setting_events (eventId integer PRIMARY KEY AUTOINCREMENT,event text NOT NULL)"];
         if (result) {
             NSLog(@"创建表user_setting_events成功");
         }else{
+            isCreated = YES;
             NSLog(@"创建表user_setting_events失败");
         }
         result = [db executeUpdate:@"CREATE TABLE IF NOT EXISTS curve_event (id integer PRIMARY KEY AUTOINCREMENT,curveUid text NOT NULL,eventId integer NOT NULL,eventText text NOT NULL,eventTime integer NOT NULL,eventBeanTemp REAL NOT NULL)"];
         if (result) {
             NSLog(@"创建表curve_event成功");
         }else{
+            isCreated = YES;
             NSLog(@"创建表curve_event失败");
         }
         result = [db executeUpdate:@"CREATE TABLE IF NOT EXISTS cup (cupUid text PRIMARY KEY,cupName text NOT NULL,curveUid text,dryAndWet REAL,flavor REAL,aftermath REAL,acid REAL,taste REAL,sweet REAL,balance REAL,overFeel REAL,deveUnfull REAL,overDeve REAL,bakePaste REAL,injure REAL,germInjure REAL,beanFaceInjure REAL,date text,light REAL,total REAL)"];
         if (result) {
             NSLog(@"创建表cup成功");
         }else{
+            isCreated = YES;
             NSLog(@"创建表cup失败");
         }
         result = [db executeUpdate:@"CREATE TABLE IF NOT EXISTS user_setting (id integer PRIMARY KEY AUTOINCREMENT,weightunit text NOT NULL,tempunit text NOT NULL,bakechromareferstandard text NOT NULL,timeaxis text NOT NULL,tempaxis text NOT NULL,tempcurvesmooth integer NOT NULL,tempratesmooth integer NOT NULL,language text NOT NULl)"];
         if (result) {
             NSLog(@"创建表user_setting成功");
         }else{
+            isCreated = YES;
             NSLog(@"创建表user_setting失败");
         }
         result = [db executeUpdate:@"CREATE TABLE IF NOT EXISTS device (id integer PRIMARY KEY AUTOINCREMENT,sn text NOT NULL,deviceName text NOT NULL,deviceType integer NOT NULL)"];
         if (result) {
             NSLog(@"创建表device成功");
         }else{
+            isCreated = YES;
             NSLog(@"创建表device失败");
         }
     }];
+    return isCreated;
 }
 
 #pragma mark - 查
@@ -561,6 +578,7 @@ static DataBase *_dataBase = nil;
 
 #pragma mark - 改
 - (BOOL)updateReportWithReport:(ReportModel *)report WithBean:(NSMutableArray *)beanArr{
+    NSMutableArray *beanArrayBeforeUpdate = [[self queryReportRelaBean:report.curveUid] mutableCopy];
     static BOOL isSucc = NO;
     [_queueDB inTransaction:^(FMDatabase * _Nonnull db, BOOL * _Nonnull rollback) {
         BOOL result = [db executeUpdate:@"UPDATE curveInfo SET curveName = ?,light = ?,bakeBeanWeight = ? WHERE curveUid = ?",report.curveName,[NSNumber numberWithFloat:report.light],[NSNumber numberWithFloat:report.bakeBeanWeight],report.curveUid];
@@ -582,6 +600,61 @@ static DataBase *_dataBase = nil;
                 return;
             }
         }
+        
+        //本地同步要删除的生豆
+        for (BeanModel *bean in beanArrayBeforeUpdate) {
+            BOOL isDeleted = YES;
+            for (BeanModel *newBean in beanArr) {
+                if ([bean.beanUid isEqualToString:newBean.beanUid]) {
+                    isDeleted = NO;
+                }
+            }
+            if (isDeleted) {
+                result = [db executeUpdate:@"UPDATE beanInfo SET stock = stock + ? WHERE beanUid = ?",[NSNumber numberWithFloat:bean.weight],bean.beanUid];
+                if (!result) {
+                    *rollback = YES;
+                    NSLog(@"添加生豆重量失败");
+                    [NSObject showHudTipStr:@"数据库操作失败"];
+                    return;
+                }
+                result = [db executeUpdate:@"delete from bean_curve where beanUid = ? AND curveUid = ?",bean.beanUid,report.curveUid];
+                if (!result) {
+                    *rollback = YES;
+                    NSLog(@"删除曲线关联豆失败");
+                    [NSObject showHudTipStr:@"删除曲线关联豆失败"];
+                    return;
+                }
+            }
+        }
+        
+        //更新生豆库存
+        for (int i = 0; i < beanArr.count; i++) {
+            BeanModel *bean = beanArr[i];
+            
+            BOOL isContain = NO;
+            for (BeanModel *oldBean in beanArrayBeforeUpdate) {
+                if ([oldBean.beanUid isEqualToString:bean.beanUid]) {
+                    isContain = YES;
+                    result = [db executeUpdate:@"UPDATE beanInfo SET stock = stock - ? + ? WHERE beanUid = ?",[NSNumber numberWithFloat:bean.weight],[NSNumber numberWithFloat:oldBean.weight],bean.beanUid];
+                    if (!result) {
+                        *rollback = YES;
+                        NSLog(@"更新生豆重量失败");
+                        [NSObject showHudTipStr:@"更新生豆重量失败"];
+                        return;
+                    }
+                }
+            }
+            if (!isContain) {
+                result = [db executeUpdate:@"UPDATE beanInfo SET stock = stock - ? WHERE beanUid = ?",[NSNumber numberWithFloat:bean.weight],bean.beanUid];
+                if (!result) {
+                    *rollback = YES;
+                    NSLog(@"更新生豆重量失败");
+                    [NSObject showHudTipStr:@"更新生豆重量失败"];
+                    return;
+                }
+            }
+        }
+        
         isSucc = YES;
     }];
     return isSucc;
@@ -641,6 +714,88 @@ static DataBase *_dataBase = nil;
         {
             NSLog(@"Drop table Failure");
         }
+    }];
+}
+
+#pragma mark - api
+- (void)getSettingByApi{
+    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+    
+    [manager.requestSerializer willChangeValueForKey:@"timeoutInterval"];
+    manager.requestSerializer.timeoutInterval = 4.f;
+    [manager.requestSerializer didChangeValueForKey:@"timeoutInterval"];
+    
+    NSString *url = [NSString stringWithFormat:@"http://139.196.90.97:8080/coffee/setting"];
+    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet characterSetWithCharactersInString:@"`#%^{}\"[]|\\<> "].invertedSet];
+    
+    NSLog(@"%@",[DataBase shareDataBase].userId);
+    NSLog(@"%@",[DataBase shareDataBase].token);
+    [manager.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+    [manager.requestSerializer setValue:[DataBase shareDataBase].userId forHTTPHeaderField:@"userId"];
+    [manager.requestSerializer setValue:[NSString stringWithFormat:@"bearer %@",[DataBase shareDataBase].token] forHTTPHeaderField:@"Authorization"];
+    [manager GET:url parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableContainers|NSJSONReadingMutableLeaves error:nil];
+        NSData * data = [NSJSONSerialization dataWithJSONObject:responseDic options:(NSJSONWritingOptions)0 error:nil];
+        NSString * daetr = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
+        NSLog(@"success:%@",daetr);
+        
+        if ([[responseDic objectForKey:@"errno"] intValue] == 0) {
+            if ([responseDic objectForKey:@"data"]) {
+                NSDictionary *settingDic = [responseDic objectForKey:@"data"];
+                if (settingDic == nil) {
+                    [self addSettingByApi];
+                }else{
+                    self.setting.weightUnit = [settingDic objectForKey:@"weightUnit"];
+                    self.setting.tempUnit = [settingDic objectForKey:@"tempUnit"];
+                    self.setting.bakeChromaReferStandard = [settingDic objectForKey:@"roasterChroma"];
+                    self.setting.timeAxis = [[settingDic objectForKey:@"timer"] integerValue];
+                    self.setting.tempAxis = [[settingDic objectForKey:@"temp"] integerValue];
+                    self.setting.tempCurveSmooth = [[settingDic objectForKey:@"tempCurveSmooth"] integerValue];
+                    self.setting.tempRateSmooth = [[settingDic objectForKey:@"tempRateSmooth"] integerValue];
+                    self.setting.language = [settingDic objectForKey:@"language"];
+                    [self deleteSetting];//删除之前可能存在的设置
+                    if (![self insertSetting]) {
+                        [NSObject showHudTipStr:@"通用设置本地同步失败"];
+                    }
+                }
+            }
+        }else{
+            [self addSettingByApi];
+        }
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        NSLog(@"Error:%@",error);
+    }];
+}
+
+- (void)addSettingByApi{
+    
+    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+    
+    [manager.requestSerializer willChangeValueForKey:@"timeoutInterval"];
+    manager.requestSerializer.timeoutInterval = 4.f;
+    [manager.requestSerializer didChangeValueForKey:@"timeoutInterval"];
+    
+    NSString *url = [NSString stringWithFormat:@"http://139.196.90.97:8080/coffee/setting"];
+    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet characterSetWithCharactersInString:@"`#%^{}\"[]|\\<> "].invertedSet];
+    
+    [manager.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+    [manager.requestSerializer setValue:[DataBase shareDataBase].userId forHTTPHeaderField:@"userId"];
+    [manager.requestSerializer setValue:[NSString stringWithFormat:@"bearer %@",[DataBase shareDataBase].token] forHTTPHeaderField:@"Authorization"];
+    
+    NSDictionary *parameters = @{@"weightUnit":self.setting.weightUnit,@"tempUnit":self.setting.tempUnit,@"roasterChroma":self.setting.bakeChromaReferStandard,@"timer":[NSNumber numberWithInteger:self.setting.timeAxis],@"temp":[NSNumber numberWithInteger:self.setting.tempAxis],@"tempCurveSmooth":[NSNumber numberWithInteger:self.setting.tempCurveSmooth],@"tempRateSmooth":[NSNumber numberWithInteger:self.setting.tempRateSmooth],@"language":self.setting.language};
+    
+    [manager POST:url parameters:parameters progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableContainers|NSJSONReadingMutableLeaves error:nil];
+        NSData * data = [NSJSONSerialization dataWithJSONObject:responseDic options:(NSJSONWritingOptions)0 error:nil];
+        NSString * daetr = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
+        NSLog(@"%@",daetr);
+        if ([[responseDic objectForKey:@"errno"] intValue] == 0) {
+            [self insertSetting];
+        }else{
+            [NSObject showHudTipStr:[responseDic objectForKey:@"error"]];
+        }
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        NSLog(@"%@",error);
     }];
 }
 

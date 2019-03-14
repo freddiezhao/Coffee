@@ -10,6 +10,7 @@
 #import "PhoneTFCell.h"
 #import "PhoneVerifyCell.h"
 #import "MainViewController.h"
+#import "DataWithApi.h"
 
 NSString *const CellIdentifier_VerifyLoginUserPhone = @"CellID_VerifyLoginuserPhone";
 NSString *const CellIdentifier_VerifyLoginUserPhoneVerify = @"CellID_VerifyLoginuserPhoneVerify";
@@ -19,7 +20,6 @@ NSString *const CellIdentifier_VerifyLoginUserPhoneVerify = @"CellID_VerifyLogin
 
 @property (nonatomic, strong) UITableView *codeLoginTable;
 @property (nonatomic, strong) UIButton *loginBtn;
-@property (nonatomic, strong) NSString *phone;
 @property (nonatomic, strong) NSString *code;
 
 @end
@@ -33,7 +33,6 @@ static float HEIGHT_CELL = 50.f;
     [self setNavItem];
     
     _codeLoginTable = [self codeLoginTable];
-    _phone = @"";
     _code = @"";
 }
 
@@ -145,6 +144,7 @@ static float HEIGHT_CELL = 50.f;
         if (cell == nil) {
             cell = [[PhoneTFCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_VerifyLoginUserPhone];
         }
+        cell.phoneTF.text = self.phone;
         cell.TFBlock = ^(NSString *text) {
             _phone = text;
             [self textFieldChange];
@@ -205,11 +205,15 @@ static float HEIGHT_CELL = 50.f;
                   DataBase *db = [DataBase shareDataBase];
                   NSDictionary *dic = [responseDic objectForKey:@"data"];
                   db.userId = [[dic objectForKey:@"userId"] copy];
+                  db.userName = [dic objectForKey:@"userName"];
                   db.token = [[dic objectForKey:@"token"] copy];
-                  [db initDB];
-                  if (![[dic objectForKey:@"lastMobile"] isEqualToString:[[[UIDevice currentDevice] identifierForVendor] UUIDString]]) {
+                  BOOL isCreated = [db initDB];
+                  if (![[dic objectForKey:@"lastMobile"] isEqualToString:[[[UIDevice currentDevice] identifierForVendor] UUIDString]] || !isCreated) {
                       [db deleteAllTable];
                       [db createTable];
+                      [[DataBase shareDataBase] getSettingByApi];
+                      DataWithApi *data = [[DataWithApi alloc] init];
+                      [data startGetInfo];
                   }
                   MainViewController *mainVC = [[MainViewController alloc] init];
                   [self presentViewController:mainVC animated:NO completion:nil];

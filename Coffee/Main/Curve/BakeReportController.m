@@ -523,6 +523,7 @@ NSString *const CellIdentifier_TempPer30 = @"CellID_TempPer30";
         beanModelNew.weight = beanModelOld.weight;
         beanModelNew.beanUid = beanModelOld.beanUid;
         [beanMutaArray replaceObjectAtIndex:i withObject:beanModelNew];
+        NSLog(@"%@",beanModelNew.beanUid);
     }
     //可能没有添加生豆数据
     _beanArray = [beanMutaArray copy];
@@ -549,6 +550,9 @@ NSString *const CellIdentifier_TempPer30 = @"CellID_TempPer30";
     ReportEditController *editVC = [[ReportEditController alloc] init];
     editVC.beanArray = [_beanArray mutableCopy];
     editVC.reportModel = _reportModel;
+    editVC.editBlock = ^{
+        [self queryReportInfo];
+    };
     [self.navigationController pushViewController:editVC animated:YES];
 }
 

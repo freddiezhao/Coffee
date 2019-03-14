@@ -43,7 +43,7 @@
             _weightTF.font = [UIFont systemFontOfSize:13.f];
             
             _weightTF.backgroundColor = [UIColor colorWithRed:247/255.0 green:247/255.0 blue:247/255.0 alpha:1];
-            _weightTF.placeholder = LocalString(@"0");
+            _weightTF.placeholder = LocalString(@"0.0");
             _weightTF.font = [UIFont fontWithName:@"Arial" size:15.0f];
             _weightTF.textColor = [UIColor colorWithHexString:@"333333"];
             _weightTF.layer.cornerRadius = 15.f/HScale;
@@ -60,7 +60,7 @@
 
             [self.contentView addSubview:_weightTF];
             [_weightTF mas_makeConstraints:^(MASConstraintMaker *make) {
-                make.size.mas_equalTo(CGSizeMake(70/WScale, 30/HScale));
+                make.size.mas_equalTo(CGSizeMake(100/WScale, 30/HScale));
                 make.right.equalTo(self.contentView.mas_right).offset(-33/WScale);
                 make.centerY.equalTo(self.contentView.mas_centerY);
             }];

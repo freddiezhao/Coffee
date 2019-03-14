@@ -161,7 +161,9 @@ NSString *const CellIdentifier_EditBakeBean = @"CellID_EditBakeBean";
                 }
                 BeanModel *bean = _beanArray[indexPath.row];
                 cell.beanName.text = bean.name;
-                cell.weightTF.text = [NSString stringWithFormat:@"%.1f",bean.weight];
+                if (bean.weight > 0) {
+                    cell.weightTF.text = [NSString stringWithFormat:@"%.1f",bean.weight];
+                }
                 cell.TFBlock = ^(NSString *text) {
                     bean.weight = [text floatValue];
                 };
@@ -265,7 +267,7 @@ NSString *const CellIdentifier_EditBakeBean = @"CellID_EditBakeBean";
 // Override to support conditional editing of the table view.
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
     if (indexPath.section == 2) {
-        return NO;
+        return YES;
     }
     return NO;
 }
@@ -278,9 +280,9 @@ NSString *const CellIdentifier_EditBakeBean = @"CellID_EditBakeBean";
 // Override to support editing the table view.
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
     if (editingStyle == UITableViewCellEditingStyleDelete) {
-//        BeanModel *bean = _myNet.beanArray[indexPath.row];
-//        [_myNet.beanArray removeObject:bean];
-//        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
+        BeanModel *bean = _beanArray[indexPath.row];
+        [_beanArray removeObject:bean];
+        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
     }
 }
 
@@ -324,6 +326,9 @@ NSString *const CellIdentifier_EditBakeBean = @"CellID_EditBakeBean";
             BOOL result = [[DataBase shareDataBase] updateReportWithReport:_reportModel WithBean:_beanArray];
             if (result) {
                 [NSObject showHudTipStr:LocalString(@"修改报告信息成功")];
+                if (self.editBlock) {
+                    self.editBlock();
+                }
                 [self.navigationController popViewControllerAnimated:YES];
             }else{
                 [NSObject showHudTipStr:LocalString(@"本地修改报告信息失败")];
