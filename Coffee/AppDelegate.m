@@ -36,6 +36,7 @@
     NSSetUncaughtExceptionHandler(&getException);
 
     [ESP_NetUtil tryOpenNetworkPermission];
+    
     return YES;
 }
 

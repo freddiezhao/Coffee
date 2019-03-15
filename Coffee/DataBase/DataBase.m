@@ -47,18 +47,17 @@ static DataBase *_dataBase = nil;
     return self;
 }
 
-- (BOOL)initDB{
+- (void)initDB{
     NSString *docPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
     NSString *filePath = [docPath stringByAppendingPathComponent:[NSString stringWithFormat:@"%@_Coffee.sql",_userId]];
     NSLog(@"%@",filePath);
     _queueDB = [FMDatabaseQueue databaseQueueWithPath:filePath];
-    BOOL isCreated = [self createTable];
+    [self createTable];
     //[self insertBaseEvent];
     _setting = [self setting];
     [self querySetting];
     //[self deleteTable];
     //[self insertNewReport:nil];
-    return isCreated;
 }
 
 #pragma mark - Lazy load
@@ -78,28 +77,24 @@ static DataBase *_dataBase = nil;
 }
 
 #pragma mark - Data 增删改查
-- (BOOL)createTable{
-    static BOOL isCreated = NO;
+- (void)createTable{
     [_queueDB inDatabase:^(FMDatabase * _Nonnull db) {
         BOOL result = [db executeUpdate:@"CREATE TABLE IF NOT EXISTS beanInfo (beanUid text PRIMARY KEY,beanName text NOT NULL,nation text,area text,manor text,altitude REAL,beanSpecies text,grade text,process text,water REAL,supplier text,price REAL,stock REAL,time text，isShared integer)"];
         if (result) {
             NSLog(@"创建表bean成功");
         }else{
-            isCreated = YES;
             NSLog(@"创建表bean失败");
         }
         result = [db executeUpdate:@"CREATE TABLE IF NOT EXISTS curveInfo (curveUid text PRIMARY KEY,curveName text NOT NULL,date text,deviceName text,sn text,rawBeanWeight REAL,bakeBeanWeight REAL,light REAL,curveValue text,bakeTime integer,developTime integer,developRate REAL,bakerName text,shareName text,isShare integer NOT NULL)"];
         if (result) {
             NSLog(@"创建表curve成功");
         }else{
-            isCreated = YES;
             NSLog(@"创建表curve失败");
         }
         result = [db executeUpdate:@"CREATE TABLE IF NOT EXISTS bean_curve (beanUid text NOT NULL,curveUid text NOT NULL,beanWeight REAL NOT NULL,beanName text,nation text,area text,manor text,altitude REAL,beanSpecies text,grade text,process text,water REAL)"];
         if (result) {
             NSLog(@"创建表bean_curve成功");
         }else{
-            isCreated = YES;
             NSLog(@"创建表bean_curve失败");
         }
         result = [db executeUpdate:@"create unique index if not exists message_key on bean_curve (beanUid,curveUid)"];
@@ -112,39 +107,33 @@ static DataBase *_dataBase = nil;
         if (result) {
             NSLog(@"创建表user_setting_events成功");
         }else{
-            isCreated = YES;
             NSLog(@"创建表user_setting_events失败");
         }
         result = [db executeUpdate:@"CREATE TABLE IF NOT EXISTS curve_event (id integer PRIMARY KEY AUTOINCREMENT,curveUid text NOT NULL,eventId integer NOT NULL,eventText text NOT NULL,eventTime integer NOT NULL,eventBeanTemp REAL NOT NULL)"];
         if (result) {
             NSLog(@"创建表curve_event成功");
         }else{
-            isCreated = YES;
             NSLog(@"创建表curve_event失败");
         }
         result = [db executeUpdate:@"CREATE TABLE IF NOT EXISTS cup (cupUid text PRIMARY KEY,cupName text NOT NULL,curveUid text,dryAndWet REAL,flavor REAL,aftermath REAL,acid REAL,taste REAL,sweet REAL,balance REAL,overFeel REAL,deveUnfull REAL,overDeve REAL,bakePaste REAL,injure REAL,germInjure REAL,beanFaceInjure REAL,date text,light REAL,total REAL)"];
         if (result) {
             NSLog(@"创建表cup成功");
         }else{
-            isCreated = YES;
             NSLog(@"创建表cup失败");
         }
         result = [db executeUpdate:@"CREATE TABLE IF NOT EXISTS user_setting (id integer PRIMARY KEY AUTOINCREMENT,weightunit text NOT NULL,tempunit text NOT NULL,bakechromareferstandard text NOT NULL,timeaxis text NOT NULL,tempaxis text NOT NULL,tempcurvesmooth integer NOT NULL,tempratesmooth integer NOT NULL,language text NOT NULl)"];
         if (result) {
             NSLog(@"创建表user_setting成功");
         }else{
-            isCreated = YES;
             NSLog(@"创建表user_setting失败");
         }
         result = [db executeUpdate:@"CREATE TABLE IF NOT EXISTS device (id integer PRIMARY KEY AUTOINCREMENT,sn text NOT NULL,deviceName text NOT NULL,deviceType integer NOT NULL)"];
         if (result) {
             NSLog(@"创建表device成功");
         }else{
-            isCreated = YES;
             NSLog(@"创建表device失败");
         }
     }];
-    return isCreated;
 }
 
 #pragma mark - 查
@@ -404,7 +393,6 @@ static DataBase *_dataBase = nil;
             cup.beanFaceInjure = [set doubleForColumn:@"beanFaceInjure"];
             cup.date = [NSDate YMDDateFromLocalString:[set stringForColumn:@"date"]];
             cup.light = [set doubleForColumn:@"light"];
-            cup.grade = [set doubleForColumn:@"total"];
             [cupArray addObject:cup];
         }
     }];

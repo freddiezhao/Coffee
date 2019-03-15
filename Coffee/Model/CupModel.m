@@ -11,8 +11,8 @@
 @implementation CupModel
 
 - (void)caculateGrade{
-    self.bakeGrade = self.dryAndWet + self.flavor + self.aftermath + self.acid + self.taste + self.sweet + self.balance + self.overFeel;
-    self.defectGrade = self.deveUnfull + self.overDeve + self.bakePaste + self.injure + self.germInjure + self.beanFaceInjure;
+    self.bakeGrade = self.dryAndWet/2 + self.flavor/2 + self.aftermath + self.acid*2 + self.taste*2 + self.sweet*2 + self.balance + self.overFeel;
+    self.defectGrade = (self.deveUnfull + self.overDeve + self.bakePaste + self.injure + self.germInjure + self.beanFaceInjure) / 2;
     self.grade = self.bakeGrade - self.defectGrade;
 }
 

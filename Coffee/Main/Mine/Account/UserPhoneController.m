@@ -104,7 +104,7 @@ static float HEIGHT_CELL = 50.f;
             [_saveBtn.titleLabel setFont:[UIFont systemFontOfSize:16.f]];
             [_saveBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
             [_saveBtn setBackgroundColor:[UIColor colorWithRed:71/255.0 green:120/255.0 blue:204/255.0 alpha:0.4]];
-            [_saveBtn addTarget:self action:@selector(savePassword) forControlEvents:UIControlEventTouchUpInside];
+            [_saveBtn addTarget:self action:@selector(saveNewPhone) forControlEvents:UIControlEventTouchUpInside];
             _saveBtn.center = footView.center;
             _saveBtn.layer.borderWidth = 0.5;
             _saveBtn.layer.borderColor = [UIColor colorWithHexString:@"4778CC"].CGColor;
@@ -145,6 +145,13 @@ static float HEIGHT_CELL = 50.f;
                 _nextBtn.backgroundColor = [UIColor colorWithRed:71/255.0 green:120/255.0 blue:204/255.0 alpha:1];
             }
         };
+        cell.BtnBlock = ^BOOL{
+            PhoneVerifyCell *cell1 = [self.phoneTable1 cellForRowAtIndexPath:[NSIndexPath indexPathForRow:1 inSection:0]];
+            [cell1.codeTF resignFirstResponder];
+            
+            BOOL result = [self getVerifyCode:[DataBase shareDataBase].mobile];
+            return result;
+        };
         return cell;
     }else{
         if (indexPath.row == 1) {
@@ -155,6 +162,15 @@ static float HEIGHT_CELL = 50.f;
             cell.TFBlock = ^(NSString *text) {
                 _codeNew = text;
                 [self textFieldChange];
+            };
+            cell.BtnBlock = ^BOOL{
+                PhoneVerifyCell *cell1 = [self.phoneTable2 cellForRowAtIndexPath:[NSIndexPath indexPathForRow:1 inSection:0]];
+                [cell1.codeTF resignFirstResponder];
+                PhoneTFCell *cell2 = [self.phoneTable2 cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
+                [cell2.phoneTF resignFirstResponder];
+
+                BOOL result = [self getVerifyCode:_phoneNew];
+                return result;
             };
             return cell;
         }else{
@@ -211,8 +227,49 @@ static float HEIGHT_CELL = 50.f;
 }
 
 #pragma mark - Actions
-- (void)savePassword{
+- (void)saveNewPhone{
+    PhoneVerifyCell *cell1 = [self.phoneTable2 cellForRowAtIndexPath:[NSIndexPath indexPathForRow:1 inSection:0]];
+    [cell1.codeTF resignFirstResponder];
+    PhoneTFCell *cell2 = [self.phoneTable2 cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
+    [cell2.phoneTF resignFirstResponder];
+
+    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+    //设置超时时间
+    [manager.requestSerializer willChangeValueForKey:@"timeoutInterval"];
+    manager.requestSerializer.timeoutInterval = 6.f;
+    [manager.requestSerializer didChangeValueForKey:@"timeoutInterval"];
     
+    [manager.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+    
+    NSDictionary *parameters = [[NSDictionary alloc] init];
+    if ([NSString validateMobile:_phoneNew] && _codeNew.length == 6){
+        parameters = @{@"mobile":_phoneNew,@"code":_codeNew};
+    }else{
+        [NSObject showHudTipStr:LocalString(@"更改手机号失败，请检查您填写的信息")];
+        return;
+    }
+    
+    [manager PUT:@"http://139.196.90.97:8080/coffee/user/mobile" parameters:parameters
+         success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+             NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableContainers|NSJSONReadingMutableLeaves error:nil];
+             NSData * data = [NSJSONSerialization dataWithJSONObject:responseDic options:(NSJSONWritingOptions)0 error:nil];
+             NSString * daetr = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
+             NSLog(@"success:%@",daetr);
+             if ([[responseDic objectForKey:@"errno"] intValue] == 0) {
+                 [NSObject showHudTipStr:LocalString(@"更改手机号成功")];
+                 [self.navigationController popViewControllerAnimated:YES];
+             }else{
+                 [NSObject showHudTipStr:LocalString(@"更改手机号失败，请检查验证码是否填写错误")];
+             }
+         } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+             NSLog(@"Error:%@",error);
+             if (error.code == -1001) {
+                 [NSObject showHudTipStr:LocalString(@"当前网络状况不佳") withTime:1.5];
+             }else{
+                 [NSObject showHudTipStr:LocalString(@"未知错误") withTime:1.5];
+             }
+         }
+     ];
 }
 
 - (void)nextTable{
@@ -220,14 +277,54 @@ static float HEIGHT_CELL = 50.f;
         _phoneTable1.frame = CGRectMake(-ScreenWidth, 0, ScreenWidth, ScreenHeight - 64);
         _phoneTable2.frame = CGRectMake(0, 0, ScreenWidth, ScreenHeight - 64);
     }];
+    _phoneTable1.hidden = YES;
 }
 
 - (void)textFieldChange{
     if (![_codeNew isEqualToString:@""] && ![_phoneNew isEqualToString:@""]) {
         [_saveBtn setBackgroundColor:[UIColor colorWithRed:71/255.0 green:120/255.0 blue:204/255.0 alpha:1]];
+        _saveBtn.enabled = YES;
     }else{
         [_saveBtn setBackgroundColor:[UIColor colorWithRed:71/255.0 green:120/255.0 blue:204/255.0 alpha:0.4]];
+        _saveBtn.enabled = NO;
     }
+}
+
+- (BOOL)getVerifyCode:(NSString *)phone{
+    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+    
+    //设置超时时间
+    [manager.requestSerializer willChangeValueForKey:@"timeoutInterval"];
+    manager.requestSerializer.timeoutInterval = 6.f;
+    [manager.requestSerializer didChangeValueForKey:@"timeoutInterval"];
+    
+    NSString *url;
+    if ([NSString validateMobile:phone]){
+        url = [NSString stringWithFormat:@"http://139.196.90.97:8080/coffee/util/smsCode?mobile=%@",phone];
+        url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet characterSetWithCharactersInString:@"`#%^{}\"[]|\\<> "].invertedSet];
+    }else {
+        [NSObject showHudTipStr:LocalString(@"手机号码不正确")];
+        return NO;
+    }
+    
+    [manager POST:url parameters:nil progress:nil
+          success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+              NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableContainers|NSJSONReadingMutableLeaves error:nil];
+              NSData * data = [NSJSONSerialization dataWithJSONObject:responseDic options:(NSJSONWritingOptions)0 error:nil];
+              NSString * daetr = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
+              NSLog(@"success:%@",daetr);
+              if ([[responseDic objectForKey:@"errno"] intValue] == 0) {
+                  [NSObject showHudTipStr:LocalString(@"已向您的手机发送验证码")];
+              }else{
+                  [NSObject showHudTipStr:[responseDic objectForKey:@"error"]];
+              }
+          } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+              NSLog(@"Error:%@",error);
+              [NSObject showHudTipStr:LocalString(@"操作失败")];
+              
+          }
+    ];
+    return YES;
 }
 
 @end

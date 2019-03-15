@@ -534,6 +534,9 @@ sectionForSectionIndexTitle:(NSString *)title
 #pragma mark - Data Source
 - (void)getAllCup{
     _cupArr = [[DataBase shareDataBase] queryAllCup];
+    for (CupModel *cup in _cupArr) {
+        [cup caculateGrade];
+    }
     [self afterGetCupArr];
 }
 

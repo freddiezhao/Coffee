@@ -164,8 +164,40 @@ NSString *const CellIdentifier_EditBakeBean = @"CellID_EditBakeBean";
                 if (bean.weight > 0) {
                     cell.weightTF.text = [NSString stringWithFormat:@"%.1f",bean.weight];
                 }
+                __block typeof(cell) blockCell = cell;
                 cell.TFBlock = ^(NSString *text) {
-                    bean.weight = [text floatValue];
+                    float weight = [text floatValue];
+                    DataBase *db = [DataBase shareDataBase];
+                    //把当前单位的重量转为kg
+                    if ([db.setting.weightUnit isEqualToString:@"g"]){
+                        weight = weight / 1000.f;
+                    }else if ([db.setting.weightUnit isEqualToString:@"lb"]){
+                        weight = weight / 2.2046f;
+                    }else{
+                        //设置为kg
+                        weight = weight;
+                    }
+                    if (weight > bean.stock) {
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            [NSObject showHudTipStr:LocalString(@"输入值超过库存量")];
+                        });
+                        weight = bean.stock;
+                        bean.weight = weight;
+                        
+                        //把重量转为当前单位
+                        if ([db.setting.weightUnit isEqualToString:@"g"]){
+                            weight = weight * 1000.f;
+                        }else if ([db.setting.weightUnit isEqualToString:@"lb"]){
+                            weight = weight * 2.2046f;
+                        }else{
+                            //设置为kg
+                            weight = weight;
+                        }
+                        blockCell.weightTF.text = [NSString stringWithFormat:@"%.1f",weight];
+                    }else{
+                        weight = [text floatValue];
+                        bean.weight = weight;
+                    }
                 };
                 return cell;
             }

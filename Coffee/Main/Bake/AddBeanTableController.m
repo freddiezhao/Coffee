@@ -116,14 +116,41 @@ NSString *const CellIdentifier_curveInfo = @"CellID_curveInfo_add";
                     if (bean.weight > 0) {
                         cell.weightTF.text = [NSString stringWithFormat:@"%.1f",[NSString diffWeightUnitStringWithWeight:bean.weight]];
                     }
+                    __block typeof(cell) blockCell = cell;
                     cell.TFBlock = ^(NSString *text) {
+                        float weight = [text floatValue];
+                    
                         DataBase *db = [DataBase shareDataBase];
-                        if ([db.setting.weightUnit isEqualToString:@"kg"]) {
-                            bean.weight = [text floatValue];
-                        }else if ([db.setting.weightUnit isEqualToString:@"g"]){
-                            bean.weight = [text floatValue] / 1000.f;
+                        //把当前单位的重量转为kg
+                        if ([db.setting.weightUnit isEqualToString:@"g"]){
+                            weight = weight / 1000.f;
                         }else if ([db.setting.weightUnit isEqualToString:@"lb"]){
-                            bean.weight = [text floatValue] / 2.2046f;
+                            weight = weight / 2.2046f;
+                        }else{
+                            //设置为kg
+                            weight = weight;
+                        }
+                        
+                        if (weight > bean.stock) {
+                            dispatch_async(dispatch_get_main_queue(), ^{
+                                [NSObject showHudTipStr:LocalString(@"输入值超过库存量")];
+                            });
+                            weight = bean.stock;
+                            bean.weight = weight;
+                            
+                            //把重量转为当前单位
+                            if ([db.setting.weightUnit isEqualToString:@"g"]){
+                                weight = weight * 1000.f;
+                            }else if ([db.setting.weightUnit isEqualToString:@"lb"]){
+                                weight = weight * 2.2046f;
+                            }else{
+                                //设置为kg
+                                weight = weight;
+                            }
+                            blockCell.weightTF.text = [NSString stringWithFormat:@"%.1f",weight];
+                        }else{
+                            weight = [text floatValue];
+                            bean.weight = weight;
                         }
                     };
                     return cell;
@@ -246,29 +273,5 @@ NSString *const CellIdentifier_curveInfo = @"CellID_curveInfo_add";
         [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
     }
 }
-
-/*
-// Override to support rearranging the table view.
-- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath {
-}
-*/
-
-/*
-// Override to support conditional rearranging of the table view.
-- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath {
-    // Return NO if you do not want the item to be re-orderable.
-    return YES;
-}
-*/
-
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
 
 @end

@@ -31,7 +31,7 @@
 
 
 + (instancetype)shareDataBase;
-- (BOOL)initDB;
+- (void)initDB;
 - (void)getSettingByApi;
 
 ///@brief DB action
@@ -63,6 +63,6 @@
 - (BOOL)insertSetting;
 - (BOOL)deleteSetting;
 
-- (BOOL)createTable;
+- (void)createTable;
 - (void)deleteAllTable;
 @end

@@ -13,6 +13,7 @@
 #import "MainViewController.h"
 #import "DataWithApi.h"
 #import "SettingModel.h"
+#import "ForgetPasswordController.h"
 
 @interface LoginViewController () <UITextFieldDelegate>
 
@@ -247,8 +248,10 @@
           success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
               //保存账号密码
               NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+              BOOL isECSUpdate = [[userDefaults objectForKey:self.phoneTF.text] boolValue];
               [userDefaults setObject:self.phoneTF.text forKey:@"mobile"];
               [userDefaults setObject:self.passwordTF.text forKey:@"passWord"];
+              [userDefaults setObject:@1 forKey:self.phoneTF.text];
               [userDefaults synchronize];
               
               NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableContainers|NSJSONReadingMutableLeaves error:nil];
@@ -262,13 +265,15 @@
                   db.userName = [dic objectForKey:@"userName"];
                   NSLog(@"%@",db.userName);
                   db.token = [[dic objectForKey:@"token"] copy];
-                  BOOL isCreated = [db initDB];
-                  if (![[dic objectForKey:@"lastMobile"] isEqualToString:[[[UIDevice currentDevice] identifierForVendor] UUIDString]] || !isCreated) {
+                  [db initDB];
+                  if (![[dic objectForKey:@"lastMobile"] isEqualToString:[[[UIDevice currentDevice] identifierForVendor] UUIDString]] || !isECSUpdate) {
                       [db deleteAllTable];
                       [db createTable];
                       [[DataBase shareDataBase] getSettingByApi];
                       DataWithApi *data = [[DataWithApi alloc] init];
-                      [data startGetInfo];
+                      [data startGetInfoWithFailBlock:^{
+                          [userDefaults setObject:@0 forKey:self.phoneTF.text];
+                      }];
                   }
                   MainViewController *mainVC = [[MainViewController alloc] init];
                   [self presentViewController:mainVC animated:NO completion:nil];
@@ -310,6 +315,7 @@
 }
 
 - (void)forgetPW{
-    
+    ForgetPasswordController *forgetVC = [[ForgetPasswordController alloc] init];
+    [self.navigationController pushViewController:forgetVC animated:YES];
 }
 @end

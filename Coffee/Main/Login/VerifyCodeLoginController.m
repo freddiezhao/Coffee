@@ -207,13 +207,20 @@ static float HEIGHT_CELL = 50.f;
                   db.userId = [[dic objectForKey:@"userId"] copy];
                   db.userName = [dic objectForKey:@"userName"];
                   db.token = [[dic objectForKey:@"token"] copy];
-                  BOOL isCreated = [db initDB];
-                  if (![[dic objectForKey:@"lastMobile"] isEqualToString:[[[UIDevice currentDevice] identifierForVendor] UUIDString]] || !isCreated) {
+                  [db initDB];
+                  NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+                  BOOL isECSUpdate = [[userDefaults objectForKey:_phone] boolValue];
+                  [userDefaults setObject:@1 forKey:_phone];
+                  [userDefaults synchronize];
+
+                  if (![[dic objectForKey:@"lastMobile"] isEqualToString:[[[UIDevice currentDevice] identifierForVendor] UUIDString]] || !isECSUpdate) {
                       [db deleteAllTable];
                       [db createTable];
                       [[DataBase shareDataBase] getSettingByApi];
                       DataWithApi *data = [[DataWithApi alloc] init];
-                      [data startGetInfo];
+                      [data startGetInfoWithFailBlock:^{
+                          [userDefaults setObject:@0 forKey:_phone];
+                      }];
                   }
                   MainViewController *mainVC = [[MainViewController alloc] init];
                   [self presentViewController:mainVC animated:NO completion:nil];

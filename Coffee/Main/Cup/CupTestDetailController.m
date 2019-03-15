@@ -300,7 +300,7 @@ static float HEIGHT_HEADER = 15.f;
             }
             
             cell.gradeProgress = _cup.bakeGrade/100;
-            cell.defectProgress = _cup.defectGrade/100;
+            cell.defectProgress = _cup.defectGrade/30;
             cell.resultProgress = _cup.grade/100;
             cell.bakeGrade.text = [NSString stringWithFormat:@"%.1f",_cup.bakeGrade];
             cell.bakeDefect.text = [NSString stringWithFormat:@"%.1f",_cup.defectGrade];

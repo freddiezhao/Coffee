@@ -67,6 +67,7 @@
 		BB345C332153A4AA000537DD /* AFImageDownloader.m in Sources */ = {isa = PBXBuildFile; fileRef = BB345C242153A4A9000537DD /* AFImageDownloader.m */; };
 		BB345C362153C7D6000537DD /* NSString+Common.m in Sources */ = {isa = PBXBuildFile; fileRef = BB345C342153C7D6000537DD /* NSString+Common.m */; };
 		BB3811FA20EA1C3C00F0B2B7 /* BakeCurveViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB3811F920EA1C3C00F0B2B7 /* BakeCurveViewController.m */; };
+		BB412405223B903F00E69EC7 /* ForgetPasswordController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB412404223B903F00E69EC7 /* ForgetPasswordController.m */; };
 		BB4A4C78214F474E0010A9A1 /* DetailGradeCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BB4A4C77214F474E0010A9A1 /* DetailGradeCell.m */; };
 		BB4A4C7B214F4A0B0010A9A1 /* ArcProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = BB4A4C7A214F4A0B0010A9A1 /* ArcProgressView.m */; };
 		BB4A4C7E214F82F90010A9A1 /* CupLightCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BB4A4C7D214F82F90010A9A1 /* CupLightCell.m */; };
@@ -525,6 +526,8 @@
 		BB345C352153C7D6000537DD /* NSString+Common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+Common.h"; sourceTree = "<group>"; };
 		BB3811F820EA1C3C00F0B2B7 /* BakeCurveViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BakeCurveViewController.h; sourceTree = "<group>"; };
 		BB3811F920EA1C3C00F0B2B7 /* BakeCurveViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BakeCurveViewController.m; sourceTree = "<group>"; };
+		BB412403223B903F00E69EC7 /* ForgetPasswordController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ForgetPasswordController.h; sourceTree = "<group>"; };
+		BB412404223B903F00E69EC7 /* ForgetPasswordController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ForgetPasswordController.m; sourceTree = "<group>"; };
 		BB41EAB6215B7E2900A58DFA /* Coffee.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Coffee.entitlements; sourceTree = "<group>"; };
 		BB4A4C76214F474E0010A9A1 /* DetailGradeCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DetailGradeCell.h; sourceTree = "<group>"; };
 		BB4A4C77214F474E0010A9A1 /* DetailGradeCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DetailGradeCell.m; sourceTree = "<group>"; };
@@ -1418,6 +1421,8 @@
 				BB345BFD21534F99000537DD /* RegisterController.m */,
 				BB345BFF21538EE7000537DD /* CompleteInfoController.h */,
 				BB345C0021538EE7000537DD /* CompleteInfoController.m */,
+				BB412403223B903F00E69EC7 /* ForgetPasswordController.h */,
+				BB412404223B903F00E69EC7 /* ForgetPasswordController.m */,
 			);
 			path = Login;
 			sourceTree = "<group>";
@@ -2466,6 +2471,7 @@
 				BBA7B965212AC531004943DC /* CollectEventCell.m in Sources */,
 				BB4A4C84214FA2DB0010A9A1 /* EditCupNameCell.m in Sources */,
 				BB6CD7E0214A561D0046A792 /* BalloonMarker.swift in Sources */,
+				BB412405223B903F00E69EC7 /* ForgetPasswordController.m in Sources */,
 				BB2DF8022150FE6400BC8DFB /* MineNormalCell.m in Sources */,
 				BB6E0B7E2122D5B0008F20FC /* YAlertViewController.m in Sources */,
 				BB7835E821476D20000E2FCB /* EditBakeBeanCell.m in Sources */,
