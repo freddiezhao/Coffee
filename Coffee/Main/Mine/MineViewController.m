@@ -80,6 +80,8 @@ static float HEIGHT_CELL = 51.f;
             make.centerX.equalTo(self.headerView.mas_centerX);
             make.top.equalTo(self.headerView.mas_top).offset(64/HScale);
         }];
+        _headButton.layer.masksToBounds = YES;
+        _headButton.layer.cornerRadius = 35.f/WScale;
         
         _nickLabel = [[UILabel alloc] init];
         _nickLabel.text = @"红鲤鱼与绿鲤鱼";

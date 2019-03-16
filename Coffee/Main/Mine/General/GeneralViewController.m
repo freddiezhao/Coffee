@@ -191,7 +191,7 @@ NSString *const CellIdentifier_GeneralLR = @"CellID_GeneralLR";
             [self showSheetWithTitle:LocalString(@"请选择温度单位") actions:@[@"℃",@"℉"] indexpath:indexPath];
         }
         if (indexPath.row == 2) {
-            [self showSheetWithTitle:LocalString(@"请选择烘焙色度参考标准") actions:@[@"Agron",@"colortrack",@"lighttell",@"tonino",@"javalytics"] indexpath:indexPath];
+            [self showSheetWithTitle:LocalString(@"请选择烘焙色度参考标准") actions:@[@"agron",@"colortrack",@"lighttell",@"tonino",@"javalytics"] indexpath:indexPath];
         }
     }
     if (indexPath.section == 4) {
@@ -313,33 +313,39 @@ NSString *const CellIdentifier_GeneralLR = @"CellID_GeneralLR";
     UIAlertController *alert = [UIAlertController alertControllerWithTitle:title message:nil preferredStyle:UIAlertControllerStyleActionSheet];
     
     for (int i = 0; i < actions.count; i++) {
-        NSString *title = actions[i];
-        UIAlertAction *alertAction = [UIAlertAction actionWithTitle:title style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
+        NSString *actionTitle = actions[i];
+        UIAlertAction *alertAction = [UIAlertAction actionWithTitle:actionTitle style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
             //响应事件
             NSLog(@"action = %@", action);
             dispatch_async(dispatch_get_main_queue(), ^{
                 if (indexpath.section == 1) {
                     if (indexpath.row == 0) {
-                        _myData.setting.weightUnit = title;
+                        _myData.setting.weightUnit = actionTitle;
                     }else if (indexpath.row == 1){
-                        if (![_myData.setting.tempUnit isEqualToString:title]) {
-                            _myData.setting.tempUnit = title;
+                        if (![_myData.setting.tempUnit isEqualToString:actionTitle]) {
+                            _myData.setting.tempUnit = actionTitle;
                             //将曲线数据转化单位
                             [self transformValuesWithDifferentTempUnit];
                         }
                         
                     }else if (indexpath.row == 2){
-                        _myData.setting.bakeChromaReferStandard = title;
+                        _myData.setting.bakeChromaReferStandard = actionTitle;
                     }
                 }else if (indexpath.section == 4){
-                    _myData.setting.language = title;
+                    _myData.setting.language = actionTitle;
                 }
                 [_generalTable reloadData];
                 [self updateSetting];
             });
-            
         }];
         [alertAction setValue:[UIColor colorWithHexString:@"333333"] forKey:@"_titleTextColor"];
+        if ([title isEqualToString:LocalString(@"请选择烘焙色度参考标准")]) {
+            if ([actionTitle isEqualToString:[DataBase shareDataBase].setting.bakeChromaReferStandard]) {
+                [alertAction setValue:[UIColor colorWithHexString:@"333333"] forKey:@"_titleTextColor"];
+            }else{
+                [alertAction setValue:[UIColor colorWithHexString:@"999999"] forKey:@"_titleTextColor"];
+            }
+        }
         [alert addAction:alertAction];
     }
     UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:^(UIAlertAction * action) {

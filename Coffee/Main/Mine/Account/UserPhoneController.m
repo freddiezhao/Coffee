@@ -240,7 +240,9 @@ static float HEIGHT_CELL = 50.f;
     [manager.requestSerializer didChangeValueForKey:@"timeoutInterval"];
     
     [manager.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
-    
+    [manager.requestSerializer setValue:[DataBase shareDataBase].userId forHTTPHeaderField:@"userId"];
+    [manager.requestSerializer setValue:[NSString stringWithFormat:@"bearer %@",[DataBase shareDataBase].token] forHTTPHeaderField:@"Authorization"];
+
     NSDictionary *parameters = [[NSDictionary alloc] init];
     if ([NSString validateMobile:_phoneNew] && _codeNew.length == 6){
         parameters = @{@"mobile":_phoneNew,@"code":_codeNew};
@@ -257,7 +259,7 @@ static float HEIGHT_CELL = 50.f;
              NSLog(@"success:%@",daetr);
              if ([[responseDic objectForKey:@"errno"] intValue] == 0) {
                  [NSObject showHudTipStr:LocalString(@"更改手机号成功")];
-                 [self.navigationController popViewControllerAnimated:YES];
+                 [self getUserInfoByApi];
              }else{
                  [NSObject showHudTipStr:LocalString(@"更改手机号失败，请检查验证码是否填写错误")];
              }
@@ -311,7 +313,7 @@ static float HEIGHT_CELL = 50.f;
           success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
               NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableContainers|NSJSONReadingMutableLeaves error:nil];
               NSData * data = [NSJSONSerialization dataWithJSONObject:responseDic options:(NSJSONWritingOptions)0 error:nil];
-              NSString * daetr = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
+              NSString * daetr = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
               NSLog(@"success:%@",daetr);
               if ([[responseDic objectForKey:@"errno"] intValue] == 0) {
                   [NSObject showHudTipStr:LocalString(@"已向您的手机发送验证码")];
@@ -325,6 +327,50 @@ static float HEIGHT_CELL = 50.f;
           }
     ];
     return YES;
+}
+
+- (void)getUserInfoByApi{
+    [SVProgressHUD show];
+    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+    
+    [manager.requestSerializer willChangeValueForKey:@"timeoutInterval"];
+    manager.requestSerializer.timeoutInterval = 6.f;
+    [manager.requestSerializer didChangeValueForKey:@"timeoutInterval"];
+    
+    NSString *url = [NSString stringWithFormat:@"http://139.196.90.97:8080/coffee/user?userId=%@",[DataBase shareDataBase].userId];
+    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet characterSetWithCharactersInString:@"`#%^{}\"[]|\\<> "].invertedSet];
+    
+    [manager.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+    [manager.requestSerializer setValue:[NSString stringWithFormat:@"bearer %@",[DataBase shareDataBase].token] forHTTPHeaderField:@"Authorization"];
+    [manager GET:url parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableContainers|NSJSONReadingMutableLeaves error:nil];
+        NSData * data = [NSJSONSerialization dataWithJSONObject:responseDic options:(NSJSONWritingOptions)0 error:nil];
+        NSString * daetr = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
+        if ([[responseDic objectForKey:@"errno"] intValue] == 0) {
+            NSLog(@"success:%@",daetr);
+            if ([responseDic objectForKey:@"data"]) {
+                NSDictionary *beansDic = [responseDic objectForKey:@"data"];
+                DataBase *db = [DataBase shareDataBase];
+                db.userName = [beansDic objectForKey:@"userName"];
+                db.mobile = [beansDic objectForKey:@"mobile"];
+                db.imageUrl = [beansDic objectForKey:@"image"];
+            }
+        }else{
+            [NSObject showHudTipStr:LocalString(@"更新用户信息失败")];
+            NSLog(@"获取用户信息失败");
+        }
+        [self.navigationController popViewControllerAnimated:YES];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [SVProgressHUD dismiss];
+        });
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        NSLog(@"Error:%@",error);
+        [NSObject showHudTipStr:LocalString(@"更新用户信息失败")];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [SVProgressHUD dismiss];
+        });
+        [self.navigationController popViewControllerAnimated:YES];
+    }];
 }
 
 @end
