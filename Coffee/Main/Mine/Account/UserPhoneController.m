@@ -141,8 +141,11 @@ static float HEIGHT_CELL = 50.f;
         cell.TFBlock = ^(NSString *text) {
             if ([text isEqualToString:@""]) {
                 _nextBtn.backgroundColor = [UIColor colorWithRed:71/255.0 green:120/255.0 blue:204/255.0 alpha:0.4];
+                _nextBtn.enabled = NO;
             }else{
                 _nextBtn.backgroundColor = [UIColor colorWithRed:71/255.0 green:120/255.0 blue:204/255.0 alpha:1];
+                _nextBtn.enabled = YES;
+                _codeNew = text;
             }
         };
         cell.BtnBlock = ^BOOL{
@@ -275,11 +278,51 @@ static float HEIGHT_CELL = 50.f;
 }
 
 - (void)nextTable{
-    [UIView animateWithDuration:0.5 animations:^{
-        _phoneTable1.frame = CGRectMake(-ScreenWidth, 0, ScreenWidth, ScreenHeight - 64);
-        _phoneTable2.frame = CGRectMake(0, 0, ScreenWidth, ScreenHeight - 64);
-    }];
-    _phoneTable1.hidden = YES;
+    PhoneVerifyCell *cell1 = [self.phoneTable1 cellForRowAtIndexPath:[NSIndexPath indexPathForRow:1 inSection:0]];
+    [cell1.codeTF resignFirstResponder];
+    
+    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+    //设置超时时间
+    [manager.requestSerializer willChangeValueForKey:@"timeoutInterval"];
+    manager.requestSerializer.timeoutInterval = 6.f;
+    [manager.requestSerializer didChangeValueForKey:@"timeoutInterval"];
+    
+    [manager.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+    [manager.requestSerializer setValue:[DataBase shareDataBase].userId forHTTPHeaderField:@"userId"];
+    [manager.requestSerializer setValue:[NSString stringWithFormat:@"bearer %@",[DataBase shareDataBase].token] forHTTPHeaderField:@"Authorization"];
+    
+    NSDictionary *parameters = [[NSDictionary alloc] init];
+    if ([NSString validateMobile:[DataBase shareDataBase].mobile] && _codeNew.length == 6){
+        parameters = @{@"mobile":[DataBase shareDataBase].mobile,@"code":_codeNew};
+    }else{
+        [NSObject showHudTipStr:LocalString(@"验证码错误")];
+        return;
+    }
+    
+    [manager PUT:@"http://139.196.90.97:8080/coffee/user/mobile" parameters:parameters
+         success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+             NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableContainers|NSJSONReadingMutableLeaves error:nil];
+             NSData * data = [NSJSONSerialization dataWithJSONObject:responseDic options:(NSJSONWritingOptions)0 error:nil];
+             NSString * daetr = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
+             NSLog(@"success:%@",daetr);
+             if ([[responseDic objectForKey:@"errno"] intValue] == 0) {
+                 [UIView animateWithDuration:0.5 animations:^{
+                     _phoneTable1.frame = CGRectMake(-ScreenWidth, 0, ScreenWidth, ScreenHeight - 64);
+                     _phoneTable2.frame = CGRectMake(0, 0, ScreenWidth, ScreenHeight - 64);
+                 }];
+                 _phoneTable1.hidden = YES;
+             }else{
+                 [NSObject showHudTipStr:LocalString(@"验证码错误")];
+             }
+         } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+             NSLog(@"Error:%@",error);
+             if (error.code == -1001) {
+                 [NSObject showHudTipStr:LocalString(@"当前网络状况不佳") withTime:1.5];
+             }else{
+                 [NSObject showHudTipStr:LocalString(@"未知错误") withTime:1.5];
+             }
+         }
+     ];
 }
 
 - (void)textFieldChange{
@@ -293,6 +336,8 @@ static float HEIGHT_CELL = 50.f;
 }
 
 - (BOOL)getVerifyCode:(NSString *)phone{
+    PhoneVerifyCell *cell1 = [self.phoneTable1 cellForRowAtIndexPath:[NSIndexPath indexPathForRow:1 inSection:0]];
+    [cell1.codeTF resignFirstResponder];
     AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
     
     //设置超时时间

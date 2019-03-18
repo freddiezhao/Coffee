@@ -81,7 +81,7 @@ NSString *const CellIdentifier_GeneralLR = @"CellID_GeneralLR";
     }else if (section == 2){
         return 2;
     }else if (section == 3){
-        return 2;
+        return 1;
         //return 3;曲线颜色好像不需要了
     }else if (section == 4){
         return 1;
@@ -150,19 +150,9 @@ NSString *const CellIdentifier_GeneralLR = @"CellID_GeneralLR";
         if (cell == nil) {
             cell = [[LlabelRlabelCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier_GeneralLR];
         }
-        if (indexPath.row == 0) {
-            cell.leftLabel.text = LocalString(@"温度曲线平滑");
-            cell.rightLabel.text = [NSString stringWithFormat:@"%ld",_myData.setting.tempCurveSmooth];
-            return cell;
-        }else if (indexPath.row == 1){
-            cell.leftLabel.text = LocalString(@"升温率平滑");
-            cell.rightLabel.text = [NSString stringWithFormat:@"%ld",_myData.setting.tempRateSmooth];
-            return cell;
-        }else{
-            cell.leftLabel.text = LocalString(@"曲线颜色");
-            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-            return cell;
-        }
+        cell.leftLabel.text = LocalString(@"升温率平滑");
+        cell.rightLabel.text = [NSString stringWithFormat:@"%ld",_myData.setting.tempRateSmooth];
+        return cell;
     }else{
         
         LlabelRlabelCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_GeneralLR];
@@ -236,23 +226,6 @@ NSString *const CellIdentifier_GeneralLR = @"CellID_GeneralLR";
     }
     if (indexPath.section == 3) {
         if (indexPath.row == 0) {
-            NSMutableArray *array = [[NSMutableArray alloc] init];
-            for (int i = 0; i < 30; i++) {
-                [array addObject:[NSNumber numberWithInt:i]];
-            }
-            YPickerAlertController *VC = [[YPickerAlertController alloc] init];
-            VC.pickerArr = [array mutableCopy];
-            VC.index = _myData.setting.tempCurveSmooth;
-            VC.pickerBlock = ^(NSInteger picker) {
-                _myData.setting.tempCurveSmooth = picker;
-                [_generalTable reloadData];
-                [self updateSetting];
-            };
-            VC.modalPresentationStyle = UIModalPresentationOverCurrentContext;
-            VC.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
-            [self presentViewController:VC animated:YES completion:nil];
-            VC.titleLabel.text = LocalString(@"温度平滑系数");
-        }else{
             NSMutableArray *array = [[NSMutableArray alloc] init];
             for (int i = 0; i < 30; i++) {
                 [array addObject:[NSNumber numberWithInt:i]];

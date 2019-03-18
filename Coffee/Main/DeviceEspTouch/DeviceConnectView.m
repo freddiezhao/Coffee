@@ -15,6 +15,8 @@
 #import "ESPTouchDelegate.h"
 #import "ESPAES.h"
 #import "DeviceViewController.h"
+#import "GCDAsyncUdpSocket.h"
+#import <netdb.h>
 
 @interface EspTouchDelegateImpl : NSObject<ESPTouchDelegate>
 
@@ -32,7 +34,7 @@
 
 @end
 
-@interface DeviceConnectView ()
+@interface DeviceConnectView () <GCDAsyncUdpSocketDelegate>
 
 @property (nonatomic, strong) NSCondition *condition;
 
@@ -43,9 +45,28 @@
 @property (nonatomic, strong) EspTouchDelegateImpl *espTouchDelegate;
 @property (atomic, strong) ESPTouchTask *esptouchTask;
 
+@property (strong, nonatomic) NSTimer *udpTimer;;
+@property (strong, nonatomic) GCDAsyncUdpSocket *udpSocket;
+
 @end
 
 @implementation DeviceConnectView
+
+- (instancetype)init
+{
+    self = [super init];
+    if (self) {
+        if (!_udpSocket) {
+            dispatch_queue_t queue = dispatch_queue_create("udpQueue", DISPATCH_QUEUE_SERIAL);
+            _udpSocket = [[GCDAsyncUdpSocket alloc] initWithDelegate:self delegateQueue:queue];
+        }
+        if (!_udpTimer) {
+            _udpTimer = [NSTimer scheduledTimerWithTimeInterval:5.f target:self selector:@selector(broadcast) userInfo:nil repeats:YES];
+            [_udpTimer setFireDate:[NSDate distantFuture]];
+        }
+    }
+    return self;
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -59,6 +80,12 @@
     _image =[self image];
     _cancelBtn = [self cancelBtn];
     [self startEsptouchConnect];
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        sleep(10);
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.udpTimer setFireDate:[NSDate date]];
+        });
+    });
     //[self fail];
 }
 
@@ -68,92 +95,44 @@
     self.navigationController.navigationBar.topItem.title = @"";
 }
 
-#pragma mark - lazy load
-- (UIActivityIndicatorView *)spinner{
-    if (!_spinner) {
-        _spinner = [[UIActivityIndicatorView alloc] init];
-        [_spinner setActivityIndicatorViewStyle:UIActivityIndicatorViewStyleGray];
-        [_spinner setHidesWhenStopped:NO];
-        //[_spinner setColor:[UIColor blueColor]];
-        [self.view addSubview:_spinner];
-        [_spinner mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.size.mas_equalTo(CGSizeMake(15 / WScale, 15 / HScale));
-            make.top.equalTo(self.view.mas_top).offset(337 / HScale);
-            make.left.equalTo(self.view.mas_left).offset(128.5 / WScale);
-        }];
-        
-        UILabel *tipLabel = [[UILabel alloc] init];
-        tipLabel.text = LocalString(@"正在搜索设备...");
-        tipLabel.font = [UIFont fontWithName:@"PingFangSC-Regular" size:14];
-        tipLabel.textColor = [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1];
-        [self.view addSubview:tipLabel];
-        [tipLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.size.mas_equalTo(CGSizeMake(100 / WScale, 20 / HScale));
-            make.centerY.equalTo(self.spinner.mas_centerY);
-            make.left.equalTo(_spinner.mas_right).offset(8 / WScale);
-        }];
-    }
-    return _spinner;
+#pragma mark - udp
+- (void)broadcast{
+    NSLog(@"asdfasdf");
+    NSString *host = @"255.255.255.255";
+    NSTimeInterval timeout = 2000;
+    NSString *request = @"whereareyou\r\n";
+    NSData *data = [NSData dataWithData:[request dataUsingEncoding:NSASCIIStringEncoding]];
+    UInt16 port = 17888;
+    
+    [_udpSocket sendData:data toHost:host port:port withTimeout:timeout tag:200];
+    
 }
 
-- (UIImageView *)image{
-    if (!_image) {
-        _image = [[UIImageView alloc] init];
-        _image.image = [UIImage imageNamed:@"img_peak_edmund"];
-        [self.view addSubview:_image];
-        
-        [_image mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.size.mas_equalTo(CGSizeMake(225 / WScale, 150 / HScale));
-            make.centerX.equalTo(self.view.mas_centerX);
-            make.top.equalTo(self.view.mas_top).offset(82 / HScale);
-        }];
-        
-        UILabel *tipLabel1 = [[UILabel alloc] init];
-        tipLabel1.text = LocalString(@"请将手机和烘焙机的距离保持在5米以内");
-        tipLabel1.font = [UIFont fontWithName:@"PingFangSC-Regular" size:14];
-        tipLabel1.textColor = [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1];
-        tipLabel1.textAlignment = NSTextAlignmentCenter;
-        [self.view addSubview:tipLabel1];
-        
-        UILabel *tipLabel2 = [[UILabel alloc] init];
-        tipLabel2.text = LocalString(@"连接过程中请不要操作咖啡烘焙机");
-        tipLabel2.font = [UIFont fontWithName:@"PingFangSC-Regular" size:14];
-        tipLabel2.textColor = [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1];
-        tipLabel2.textAlignment = NSTextAlignmentCenter;
-        [self.view addSubview:tipLabel2];
-        
-        [tipLabel1 mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.size.mas_equalTo(CGSizeMake(ScreenWidth, 20 / HScale));
-            make.centerX.equalTo(self.view.mas_centerX);
-            make.top.equalTo(self.image.mas_bottom).offset(18 / HScale);
-        }];
-        [tipLabel2 mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.size.mas_equalTo(CGSizeMake(ScreenWidth, 20 / HScale));
-            make.centerX.equalTo(self.view.mas_centerX);
-            make.top.equalTo(tipLabel1.mas_bottom).offset(8 / HScale);
-        }];
-    }
-    return _image;
-}
+- (void)udpSocket:(GCDAsyncUdpSocket *)sock didReceiveData:(NSData *)data fromAddress:(NSData *)address withFilterContext:(id)filterContext{
+    NSLog(@"UDP接收数据……………………………………………………");
+    if (1) {
+        /**
+         *获取IP地址
+         **/
+        // Copy data to a "sockaddr_storage" structure.
+        struct sockaddr_storage sa;
+        socklen_t salen = sizeof(sa);
+        [address getBytes:&sa length:salen];
+        // Get host from socket address as C string:
+        char host[NI_MAXHOST];
+        getnameinfo((struct sockaddr *)&sa, salen, host, sizeof(host), NULL, 0, NI_NUMERICHOST);
+        // Convert C string to NSString:
+        NSString *ipAddress = [[NSString alloc] initWithBytes:host length:strlen(host) encoding:NSUTF8StringEncoding];
+        NSLog(@"%@",ipAddress);
+        [NetWork shareNetWork].ipAddr = ipAddress;
 
-- (UIButton *)cancelBtn{
-    if (!_cancelBtn) {
-        _cancelBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        [_cancelBtn setTitleColor:[UIColor colorWithRed:71/255.0 green:120/255.0 blue:204/255.0 alpha:1] forState:UIControlStateNormal];
-        [_cancelBtn setTitle:LocalString(@"取消") forState:UIControlStateNormal];
-        [_cancelBtn.titleLabel setFont:[UIFont fontWithName:@"PingFangSC-Medium" size:16]];
-        [_cancelBtn setBackgroundColor:[UIColor colorWithRed:255/255.0 green:255/255.0 blue:255/255.0 alpha:0.8]];
-        [_cancelBtn setButtonStyleWithColor:[UIColor colorWithRed:71/255.0 green:120/255.0 blue:204/255.0 alpha:1] Width:1.5 cornerRadius:18.f / HScale];
-        [_cancelBtn addTarget:self action:@selector(cancel) forControlEvents:UIControlEventTouchUpInside];
-        [self.view addSubview:_cancelBtn];
-
-        [_cancelBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.size.mas_equalTo(CGSizeMake(92.f / WScale, 36.f / HScale));
-            make.centerX.equalTo(self.view.mas_centerX);
-            make.bottom.equalTo(self.view.mas_bottom).offset(-40 / HScale);
-        }];
+        for (UIViewController *controller in self.navigationController.viewControllers) {
+            if ([controller isKindOfClass:[DeviceViewController class]]) {
+                [self.navigationController popToViewController:controller animated:YES];
+            }
+        }
+        [NSObject showHudTipStr:LocalString(@"连接成功，请进行设备的选择")];
     }
-    return _cancelBtn;
 }
 
 #pragma mark - start Esptouch
@@ -294,5 +273,93 @@
         [alert.leftBtn setTitle:LocalString(@"以后再说") forState:UIControlStateNormal];
         [alert.rightBtn setTitle:LocalString(@"重新添加") forState:UIControlStateNormal];
     }];
+}
+
+#pragma mark - setters and getters
+- (UIActivityIndicatorView *)spinner{
+    if (!_spinner) {
+        _spinner = [[UIActivityIndicatorView alloc] init];
+        [_spinner setActivityIndicatorViewStyle:UIActivityIndicatorViewStyleGray];
+        [_spinner setHidesWhenStopped:NO];
+        //[_spinner setColor:[UIColor blueColor]];
+        [self.view addSubview:_spinner];
+        [_spinner mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.size.mas_equalTo(CGSizeMake(15 / WScale, 15 / HScale));
+            make.top.equalTo(self.view.mas_top).offset(337 / HScale);
+            make.left.equalTo(self.view.mas_left).offset(128.5 / WScale);
+        }];
+        
+        UILabel *tipLabel = [[UILabel alloc] init];
+        tipLabel.text = LocalString(@"正在搜索设备...");
+        tipLabel.font = [UIFont fontWithName:@"PingFangSC-Regular" size:14];
+        tipLabel.textColor = [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1];
+        [self.view addSubview:tipLabel];
+        [tipLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.size.mas_equalTo(CGSizeMake(100 / WScale, 20 / HScale));
+            make.centerY.equalTo(self.spinner.mas_centerY);
+            make.left.equalTo(_spinner.mas_right).offset(8 / WScale);
+        }];
+    }
+    return _spinner;
+}
+
+- (UIImageView *)image{
+    if (!_image) {
+        _image = [[UIImageView alloc] init];
+        _image.image = [UIImage imageNamed:@"img_peak_edmund"];
+        [self.view addSubview:_image];
+        
+        [_image mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.size.mas_equalTo(CGSizeMake(225 / WScale, 150 / HScale));
+            make.centerX.equalTo(self.view.mas_centerX);
+            make.top.equalTo(self.view.mas_top).offset(82 / HScale);
+        }];
+        
+        UILabel *tipLabel1 = [[UILabel alloc] init];
+        tipLabel1.text = LocalString(@"请将手机和烘焙机的距离保持在5米以内");
+        tipLabel1.font = [UIFont fontWithName:@"PingFangSC-Regular" size:14];
+        tipLabel1.textColor = [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1];
+        tipLabel1.textAlignment = NSTextAlignmentCenter;
+        [self.view addSubview:tipLabel1];
+        
+        UILabel *tipLabel2 = [[UILabel alloc] init];
+        tipLabel2.text = LocalString(@"连接过程中请不要操作咖啡烘焙机");
+        tipLabel2.font = [UIFont fontWithName:@"PingFangSC-Regular" size:14];
+        tipLabel2.textColor = [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1];
+        tipLabel2.textAlignment = NSTextAlignmentCenter;
+        [self.view addSubview:tipLabel2];
+        
+        [tipLabel1 mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.size.mas_equalTo(CGSizeMake(ScreenWidth, 20 / HScale));
+            make.centerX.equalTo(self.view.mas_centerX);
+            make.top.equalTo(self.image.mas_bottom).offset(18 / HScale);
+        }];
+        [tipLabel2 mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.size.mas_equalTo(CGSizeMake(ScreenWidth, 20 / HScale));
+            make.centerX.equalTo(self.view.mas_centerX);
+            make.top.equalTo(tipLabel1.mas_bottom).offset(8 / HScale);
+        }];
+    }
+    return _image;
+}
+
+- (UIButton *)cancelBtn{
+    if (!_cancelBtn) {
+        _cancelBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        [_cancelBtn setTitleColor:[UIColor colorWithRed:71/255.0 green:120/255.0 blue:204/255.0 alpha:1] forState:UIControlStateNormal];
+        [_cancelBtn setTitle:LocalString(@"取消") forState:UIControlStateNormal];
+        [_cancelBtn.titleLabel setFont:[UIFont fontWithName:@"PingFangSC-Medium" size:16]];
+        [_cancelBtn setBackgroundColor:[UIColor colorWithRed:255/255.0 green:255/255.0 blue:255/255.0 alpha:0.8]];
+        [_cancelBtn setButtonStyleWithColor:[UIColor colorWithRed:71/255.0 green:120/255.0 blue:204/255.0 alpha:1] Width:1.5 cornerRadius:18.f / HScale];
+        [_cancelBtn addTarget:self action:@selector(cancel) forControlEvents:UIControlEventTouchUpInside];
+        [self.view addSubview:_cancelBtn];
+        
+        [_cancelBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.size.mas_equalTo(CGSizeMake(92.f / WScale, 36.f / HScale));
+            make.centerX.equalTo(self.view.mas_centerX);
+            make.bottom.equalTo(self.view.mas_bottom).offset(-40 / HScale);
+        }];
+    }
+    return _cancelBtn;
 }
 @end
