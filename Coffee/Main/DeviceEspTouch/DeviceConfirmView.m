@@ -40,6 +40,7 @@
     _nextButton = [self nextButton];
     _checkBtn = [self checkBtn];
     [self uiMasonry];
+    [self setDeviceImage];
 }
 
 - (void)viewWillAppear:(BOOL)animated{
@@ -56,6 +57,41 @@
     }];
 }
 
+- (void)setDeviceImage{
+    switch ([[NetWork shareNetWork].deviceType integerValue]) {
+        case 0:
+        {
+            _image.image = [UIImage imageNamed:@"img_hb_m6g_small"];
+        }
+            break;
+            
+        case 1:
+        {
+            _image.image = [UIImage imageNamed:@"img_hb_m6g_small"];
+        }
+            break;
+            
+        case 2:
+        {
+            _image.image = [UIImage imageNamed:@"img_hb_l2_small"];
+        }
+            break;
+            
+        case 3:
+        {
+            _image.image = [UIImage imageNamed:@"img_peak_edmund_small"];
+        }
+            break;
+            
+        case 4:{
+            _image.image = [UIImage imageNamed:@"img_logo_gray"];
+        }
+            break;
+            
+        default:
+            break;
+    }
+}
 #pragma mark - lazy load
 - (UIButton *)nextButton{
     if (!_nextButton) {

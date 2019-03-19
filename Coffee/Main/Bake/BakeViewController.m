@@ -124,6 +124,7 @@
     
     if (_myNet.connectedDevice) {
         self.navigationItem.title = _myNet.connectedDevice.deviceName;
+        NSLog(@"%@",_myNet.connectedDevice.deviceName);
         switch ([_myNet.connectedDevice.deviceType integerValue]) {
             case Coffee_HB_M6G:
             case Coffee_HB_M6E:
@@ -159,6 +160,10 @@
                 _deviceImage.image = [UIImage imageNamed:@"img_logo_gray"];
                 break;
         }
+    }else{
+        self.navigationItem.title = LocalString(@"烘焙机名称");
+        _deviceImage.frame = CGRectMake(117/WScale, 37/HScale, 140/WScale, 112/HScale);
+        _deviceImage.image = [UIImage imageNamed:@"img_logo_gray"];
     }
     if (_beanNameView) {
         _beanNameView = [self beanNameView];
@@ -175,6 +180,12 @@
         _statusView2.layer.backgroundColor = [UIColor colorWithRed:213/255.0 green:218/255.0 blue:224/255.0 alpha:1].CGColor;
     }
     
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(mysocketDidDisconnect) name:@"mysocketDidDisconnect" object:nil];
+}
+
+- (void)viewWillDisappear:(BOOL)animated{
+    [super viewWillDisappear:animated];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"mysocketDidDisconnect" object:nil];
 }
 
 - (void)dealloc{
@@ -186,6 +197,276 @@
     [_myNet removeObserver:self forKeyPath:@"connectedDevice"];
     [_myNet removeObserver:self forKeyPath:@"deviceTimerStatus"];
 }
+
+#pragma mark - Actions
+- (void)goBakeCurveViewController{
+    if (_myNet.connectedDevice) {
+        BakeCurveViewController *bakeCurveVC = [[BakeCurveViewController alloc] init];
+        bakeCurveVC.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+        [self presentViewController:bakeCurveVC animated:YES completion:nil];
+    }else{
+        YAlertViewController *alert = [[YAlertViewController alloc] init];
+        alert.modalPresentationStyle = UIModalPresentationOverCurrentContext;
+        alert.rBlock = ^{
+            [self.rdv_tabBarController setTabBarHidden:NO animated:YES];
+        };
+        alert.lBlock = ^{
+            [self.rdv_tabBarController setTabBarHidden:NO animated:YES];
+        };
+        [self presentViewController:alert animated:NO completion:^{
+            [self.rdv_tabBarController setTabBarHidden:YES animated:YES];
+            alert.WScale_alert = WScale;
+            alert.HScale_alert = HScale;
+            [alert showView];
+            alert.titleLabel.text = LocalString(@"提示");
+            alert.messageLabel.text = LocalString(@"请先连接咖啡机设备");
+            [alert.leftBtn setTitle:LocalString(@"取消") forState:UIControlStateNormal];
+            [alert.rightBtn setTitle:LocalString(@"确认") forState:UIControlStateNormal];
+        }];
+    }
+}
+
+- (void)addCoffeeBean{
+    AddBeanTableController *addBeanVC = [[AddBeanTableController alloc] init];
+    [self.navigationController pushViewController:addBeanVC animated:YES];
+}
+
+- (void)showControlView:(UIButton *)sender{
+    if (sender.tag == unselect) {
+        sender.tag = select;
+        [UIView animateWithDuration:0.5 animations:^{
+            CGSize size = _mainView.frame.size;
+            _mainView.frame = CGRectMake(0, (ScreenHeight - 64 - (tabbarHeight + kSafeArea_Bottom) - 400/HScale - 90/HScale), size.width, size.height);//154是控制按钮view高度，刚好把控制按钮隐藏，90是bottonview高度
+            [sender setImage:[UIImage imageNamed:@"btn_collapse"] forState:UIControlStateNormal];
+        }];
+    }else{
+        sender.tag = unselect;
+        [UIView animateWithDuration:0.5 animations:^{
+            CGSize size = _mainView.frame.size;
+            _mainView.frame = CGRectMake(0, (ScreenHeight - 64 - (tabbarHeight + kSafeArea_Bottom) - 400/HScale + 154/HScale - 90/HScale), size.width, size.height);//154是控制按钮view高度，刚好把控制按钮隐藏，90是bottonview高度
+            [sender setImage:[UIImage imageNamed:@"btn_expand"] forState:UIControlStateNormal];
+        }];
+    }
+}
+
+- (void)connectMachine{
+    DeviceViewController *deviceVC = [[DeviceViewController alloc] init];
+    [self.navigationController pushViewController:deviceVC animated:YES];
+}
+
+- (void)setPower{
+    if (_myNet.powerStatus) {
+        [_myNet setPower:[NSNumber numberWithUnsignedInteger:0x00]];
+    }else{
+        [_myNet setPower:[NSNumber numberWithUnsignedInteger:0xFF]];
+    }
+    _myNet.powerStatus = !_myNet.powerStatus;
+}
+
+- (void)setFire{
+    if (_myNet.fireStatus) {
+        [[NetWork shareNetWork] setFire:[NSNumber numberWithUnsignedInteger:0x00]];
+    }else{
+        [[NetWork shareNetWork] setFire:[NSNumber numberWithUnsignedInteger:0xFF]];
+    }
+    _myNet.fireStatus = !_myNet.fireStatus;
+}
+
+- (void)setStir{
+    if (_myNet.stirStatus && _myNet.coolStatus) {
+        [_myNet setColdAndStir:[NSNumber numberWithUnsignedInteger:0x01]];
+    }else if (!_myNet.stirStatus && _myNet.coolStatus){
+        [_myNet setColdAndStir:[NSNumber numberWithUnsignedInteger:0x03]];
+    }else if (_myNet.stirStatus && !_myNet.coolStatus){
+        [_myNet setColdAndStir:[NSNumber numberWithUnsignedInteger:0x00]];
+    }else if (!_myNet.stirStatus && !_myNet.coolStatus){
+        [_myNet setColdAndStir:[NSNumber numberWithUnsignedInteger:0x02]];
+    }
+    _myNet.stirStatus = !_myNet.stirStatus;
+}
+
+- (void)setCold{
+    if (_myNet.stirStatus && _myNet.coolStatus) {
+        [_myNet setColdAndStir:[NSNumber numberWithUnsignedInteger:0x02]];
+    }else if (!_myNet.stirStatus && _myNet.coolStatus){
+        [_myNet setColdAndStir:[NSNumber numberWithUnsignedInteger:0x00]];
+    }else if (_myNet.stirStatus && !_myNet.coolStatus){
+        [_myNet setColdAndStir:[NSNumber numberWithUnsignedInteger:0x03]];
+    }else if (!_myNet.stirStatus && !_myNet.coolStatus){
+        [_myNet setColdAndStir:[NSNumber numberWithUnsignedInteger:0x01]];
+    }
+    _myNet.coolStatus = !_myNet.coolStatus;
+}
+
+- (void)getCurve{
+    
+}
+
+//豆名滚动UI点击动作
+-(void)handleTapGesture:( UITapGestureRecognizer *)tapRecognizer
+{
+    // 先取消任何操作???????这句话存在的意义？？？
+    [NSObject cancelPreviousPerformRequestsWithTarget:self];
+    AddBeanTableController *addBeanVC = [[AddBeanTableController alloc] init];
+    [self.navigationController pushViewController:addBeanVC animated:YES];
+}
+
+- (void)mysocketDidDisconnect{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        self.navigationItem.title = LocalString(@"烘焙机名称");
+        self.deviceImage.frame = CGRectMake(117/WScale, 37/HScale, 140/WScale, 112/HScale);
+        self.deviceImage.image = [UIImage imageNamed:@"img_logo_gray"];
+    });
+}
+#pragma mark - kvo
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context{
+    NetWork *net = [NetWork shareNetWork];
+    if ([keyPath isEqualToString:@"tempData"]) {
+        NSMutableArray *data = [_myNet.recivedData68 copy];
+        double tempOut = ([data[6] intValue] * 256 + [data[7] intValue]) / 10.0;
+        double tempIn = ([data[8] intValue] * 256 + [data[9] intValue]) / 10.0;
+        double tempBean = ([data[10] intValue] * 256 + [data[11] intValue]) / 10.0;
+        double tempEnvironment = ([data[12] intValue] * 256 + [data[13] intValue]) / 10.0;
+        
+        //_beanTempRateLabel.text = [NSString stringWithFormat:@"%f℃/min",tempOut];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            //当顺时针旋转120度时，指针转到129
+            _pointerImage.transform = CGAffineTransformMakeRotation((tempBean / 129.f * 120.0) / 180 * M_PI);
+            _beanTempLabel.text = [NSString stringWithFormat:@"%.1f",[NSString diffTempUnitStringWithTemp:tempBean]];
+            _inTempLabel.text = [NSString stringWithFormat:@"%.1f%@",[NSString diffTempUnitStringWithTemp:tempIn],[DataBase shareDataBase].setting.tempUnit];
+            _outTempLabel.text = [NSString stringWithFormat:@"%.1f%@",[NSString diffTempUnitStringWithTemp:tempOut],[DataBase shareDataBase].setting.tempUnit];
+            _environTempLabel.text = [NSString stringWithFormat:@"%.1f%@",[NSString diffTempUnitStringWithTemp:tempEnvironment],[DataBase shareDataBase].setting.tempUnit];
+            if (net.BeanArr.count > 5) {
+                _beanTempRateLabel.text = [NSString stringWithFormat:@"%.1f%@/min",([NSString diffTempUnitStringWithTemp:[net.BeanArr[net.BeanArr.count-1] doubleValue]] - [NSString diffTempUnitStringWithTemp:[net.BeanArr[net.BeanArr.count-6] doubleValue]])/5*60,[DataBase shareDataBase].setting.tempUnit];
+            }
+        });
+        
+    }else if ([keyPath isEqualToString:@"powerStatus"]){
+        dispatch_async(dispatch_get_main_queue(), ^{
+            _powerBtn.enabled = YES;
+            
+            if (_myNet.powerStatus) {
+                [_powerBtn setImage:[UIImage imageWithContentsOfFile:[_resourcePath stringByAppendingPathComponent:@"btn_power_on@2x.png"]] forState:UIControlStateNormal];
+                _fireBtn.enabled = YES;
+                _coldBtn.enabled = YES;
+                _stirBtn.enabled = YES;
+                _windPBtn.enabled = NO;
+                _firePBtn.enabled = NO;
+                _status.text = LocalString(@"电源开启");
+                _statusView.layer.backgroundColor = [UIColor colorWithRed:126/255.0 green:211/255.0 blue:33/255.0 alpha:1].CGColor;
+                _statusView.layer.shadowColor = [UIColor colorWithRed:106/255.0 green:255/255.0 blue:77/255.0 alpha:1].CGColor;
+                _statusView.layer.shadowOffset = CGSizeMake(0,0);
+                _statusView.layer.shadowOpacity = 1;
+                _statusView.layer.shadowRadius = 8;
+            }else{
+                //电源关闭后所有按钮关闭
+                [_powerBtn setImage:[UIImage imageWithContentsOfFile:[_resourcePath stringByAppendingPathComponent:@"btn_power_off@2x.png"]] forState:UIControlStateNormal];
+                [_fireBtn setImage:[UIImage imageWithContentsOfFile:[_resourcePath stringByAppendingPathComponent:@"btn_fire_off@2x.png"]] forState:UIControlStateNormal];
+                [_coldBtn setImage:[UIImage imageWithContentsOfFile:[_resourcePath stringByAppendingPathComponent:@"btn_cold_off@2x.png"]] forState:UIControlStateNormal];
+                [_stirBtn setImage:[UIImage imageWithContentsOfFile:[_resourcePath stringByAppendingPathComponent:@"btn_stir_off@2x.png"]] forState:UIControlStateNormal];
+                
+                //所有状态为关闭
+                _myNet.coolStatus = NO;
+                _myNet.fireStatus = NO;
+                _myNet.stirStatus = NO;
+                
+                //所有功能不能使用
+                _fireBtn.enabled = NO;
+                _coldBtn.enabled = NO;
+                _stirBtn.enabled = NO;
+                _windPBtn.enabled = NO;
+                _firePBtn.enabled = NO;
+                _status.text = LocalString(@"电源关闭");
+                _statusView.layer.backgroundColor = [UIColor colorWithRed:254/255.0 green:71/255.0 blue:51/255.0 alpha:1].CGColor;
+                _statusView.layer.shadowColor = [UIColor colorWithRed:254/255.0 green:71/255.0 blue:52/255.0 alpha:1].CGColor;
+                _statusView.layer.shadowOffset = CGSizeMake(0,0);
+                _statusView.layer.shadowOpacity = 1;
+            }
+        });
+    }else if ([keyPath isEqualToString:@"fireStatus"]){
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (_myNet.fireStatus) {
+                [_fireBtn setImage:[UIImage imageWithContentsOfFile:[_resourcePath stringByAppendingPathComponent:@"btn_fire_on@2x.png"]] forState:UIControlStateNormal];
+                
+                _status1.textColor = [UIColor colorWithHexString:@"333333"];
+                
+                _statusView1.layer.backgroundColor = [UIColor colorWithRed:255/255.0 green:128/255.0 blue:0/255.0 alpha:1].CGColor;
+                _statusView1.layer.shadowColor = [UIColor colorWithRed:255/255.0 green:128/255.0 blue:0/255.0 alpha:1].CGColor;
+                _statusView1.layer.shadowOffset = CGSizeMake(0,0);
+                _statusView1.layer.shadowOpacity = 1;
+                _statusView1.layer.shadowRadius = 8;
+            }else{
+                [_fireBtn setImage:[UIImage imageWithContentsOfFile:[_resourcePath stringByAppendingPathComponent:@"btn_fire_off@2x.png"]] forState:UIControlStateNormal];
+                
+                _status1.textColor = [UIColor colorWithHexString:@"999999"];
+                
+                _statusView1.layer.backgroundColor = [UIColor colorWithRed:213/255.0 green:218/255.0 blue:224/255.0 alpha:1].CGColor;
+                _statusView1.layer.shadowOpacity = 0;
+            }
+        });
+    }else if ([keyPath isEqualToString:@"coolStatus"]){
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (_myNet.coolStatus) {
+                [_coldBtn setImage:[UIImage imageWithContentsOfFile:[_resourcePath stringByAppendingPathComponent:@"btn_cold_on@2x.png"]] forState:UIControlStateNormal];
+                
+                _status3.textColor = [UIColor colorWithHexString:@"333333"];
+                
+                _statusView3.layer.backgroundColor = [UIColor colorWithRed:73/255.0 green:152/255.0 blue:242/255.0 alpha:1].CGColor;
+                _statusView3.layer.shadowColor = [UIColor colorWithRed:73/255.0 green:152/255.0 blue:242/255.0 alpha:1].CGColor;
+                _statusView3.layer.shadowOffset = CGSizeMake(0,0);
+                _statusView3.layer.shadowOpacity = 1;
+                _statusView3.layer.shadowRadius = 8;
+            }else{
+                [_coldBtn setImage:[UIImage imageWithContentsOfFile:[_resourcePath stringByAppendingPathComponent:@"btn_cold_off@2x.png"]] forState:UIControlStateNormal];
+                
+                _status3.textColor = [UIColor colorWithHexString:@"999999"];
+                
+                _statusView3.layer.backgroundColor = [UIColor colorWithRed:213/255.0 green:218/255.0 blue:224/255.0 alpha:1].CGColor;
+                _statusView3.layer.shadowOpacity = 0;
+            }
+        });
+    }else if ([keyPath isEqualToString:@"stirStatus"]){
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (_myNet.stirStatus) {
+                [_stirBtn setImage:[UIImage imageWithContentsOfFile:[_resourcePath stringByAppendingPathComponent:@"btn_stir_on@2x.png"]] forState:UIControlStateNormal];
+            }else{
+                [_stirBtn setImage:[UIImage imageWithContentsOfFile:[_resourcePath stringByAppendingPathComponent:@"btn_stir_off@2x.png"]] forState:UIControlStateNormal];
+            }
+        });
+    }
+    else if ([keyPath isEqualToString:@"connectedDevice"]){
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (_myNet.connectedDevice != nil) {
+                _status.text = LocalString(@"设备已连接");
+            }else{
+                _status.text = LocalString(@"设备未连接");
+                _statusView.layer.backgroundColor = [UIColor colorWithRed:254/255.0 green:71/255.0 blue:51/255.0 alpha:1].CGColor;
+                _statusView.layer.shadowColor = [UIColor colorWithRed:254/255.0 green:71/255.0 blue:52/255.0 alpha:1].CGColor;
+                _statusView.layer.shadowOffset = CGSizeMake(0,0);
+                _statusView.layer.shadowOpacity = 1;
+                
+                _beanTempLabel.text = [NSString stringWithFormat:@"%.1f",0.0];
+                _inTempLabel.text = [NSString stringWithFormat:@"%.1f%@",0.0,[DataBase shareDataBase].setting.tempUnit];
+                _outTempLabel.text = [NSString stringWithFormat:@"%.1f%@",0.0,[DataBase shareDataBase].setting.tempUnit];
+                _environTempLabel.text = [NSString stringWithFormat:@"%.1f%@",0.0,[DataBase shareDataBase].setting.tempUnit];
+                _beanTempRateLabel.text = [NSString stringWithFormat:@"%.1f%@/min",0.0,[DataBase shareDataBase].setting.tempUnit];
+                
+                _deviceImage.frame = CGRectMake(117/WScale, 37/HScale, 140/WScale, 112/HScale);
+                _deviceImage.image = [UIImage imageNamed:@"img_logo_gray"];
+            }
+        });
+    }else if ([keyPath isEqualToString:@"deviceTimerStatus"]){
+        NSLog(@"adsas");
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (!_myNet.deviceTimerStatus && _myNet.connectedDevice) {
+                _statusView2.layer.backgroundColor = [UIColor colorWithRed:255/255.0 green:221/255.0 blue:51/255.0 alpha:1.0].CGColor;
+            }else{
+                _statusView2.layer.backgroundColor = [UIColor colorWithRed:213/255.0 green:218/255.0 blue:224/255.0 alpha:1].CGColor;
+            }
+        });
+    }
+}
+
 
 #pragma mark - Lazy Load
 - (NSMutableArray *)beanArray{
@@ -768,266 +1049,5 @@
 
 }
 
-#pragma mark - Actions
-- (void)goBakeCurveViewController{    
-    if (_myNet.connectedDevice) {
-        BakeCurveViewController *bakeCurveVC = [[BakeCurveViewController alloc] init];
-        bakeCurveVC.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
-        [self presentViewController:bakeCurveVC animated:YES completion:nil];
-    }else{
-        YAlertViewController *alert = [[YAlertViewController alloc] init];
-        alert.modalPresentationStyle = UIModalPresentationOverCurrentContext;
-        alert.rBlock = ^{
-            [self.rdv_tabBarController setTabBarHidden:NO animated:YES];
-        };
-        alert.lBlock = ^{
-            [self.rdv_tabBarController setTabBarHidden:NO animated:YES];
-        };
-        [self presentViewController:alert animated:NO completion:^{
-            [self.rdv_tabBarController setTabBarHidden:YES animated:YES];
-            alert.WScale_alert = WScale;
-            alert.HScale_alert = HScale;
-            [alert showView];
-            alert.titleLabel.text = LocalString(@"提示");
-            alert.messageLabel.text = LocalString(@"请先连接咖啡机设备");
-            [alert.leftBtn setTitle:LocalString(@"取消") forState:UIControlStateNormal];
-            [alert.rightBtn setTitle:LocalString(@"确认") forState:UIControlStateNormal];
-        }];
-    }
-}
-
-- (void)addCoffeeBean{
-    AddBeanTableController *addBeanVC = [[AddBeanTableController alloc] init];
-    [self.navigationController pushViewController:addBeanVC animated:YES];
-}
-
-- (void)showControlView:(UIButton *)sender{
-    if (sender.tag == unselect) {
-        sender.tag = select;
-        [UIView animateWithDuration:0.5 animations:^{
-            CGSize size = _mainView.frame.size;
-            _mainView.frame = CGRectMake(0, (ScreenHeight - 64 - (tabbarHeight + kSafeArea_Bottom) - 400/HScale - 90/HScale), size.width, size.height);//154是控制按钮view高度，刚好把控制按钮隐藏，90是bottonview高度
-            [sender setImage:[UIImage imageNamed:@"btn_collapse"] forState:UIControlStateNormal];
-        }];
-    }else{
-        sender.tag = unselect;
-        [UIView animateWithDuration:0.5 animations:^{
-            CGSize size = _mainView.frame.size;
-            _mainView.frame = CGRectMake(0, (ScreenHeight - 64 - (tabbarHeight + kSafeArea_Bottom) - 400/HScale + 154/HScale - 90/HScale), size.width, size.height);//154是控制按钮view高度，刚好把控制按钮隐藏，90是bottonview高度
-            [sender setImage:[UIImage imageNamed:@"btn_expand"] forState:UIControlStateNormal];
-        }];
-    }
-}
-
-- (void)connectMachine{
-    DeviceViewController *deviceVC = [[DeviceViewController alloc] init];
-    [self.navigationController pushViewController:deviceVC animated:YES];
-}
-
-- (void)setPower{
-    if (_myNet.powerStatus) {
-        [_myNet setPower:[NSNumber numberWithUnsignedInteger:0x00]];
-    }else{
-        [_myNet setPower:[NSNumber numberWithUnsignedInteger:0xFF]];
-    }
-    _myNet.powerStatus = !_myNet.powerStatus;
-}
-
-- (void)setFire{
-    if (_myNet.fireStatus) {
-        [[NetWork shareNetWork] setFire:[NSNumber numberWithUnsignedInteger:0x00]];
-    }else{
-        [[NetWork shareNetWork] setFire:[NSNumber numberWithUnsignedInteger:0xFF]];
-    }
-    _myNet.fireStatus = !_myNet.fireStatus;
-}
-
-- (void)setStir{
-    if (_myNet.stirStatus && _myNet.coolStatus) {
-        [_myNet setColdAndStir:[NSNumber numberWithUnsignedInteger:0x01]];
-    }else if (!_myNet.stirStatus && _myNet.coolStatus){
-        [_myNet setColdAndStir:[NSNumber numberWithUnsignedInteger:0x03]];
-    }else if (_myNet.stirStatus && !_myNet.coolStatus){
-        [_myNet setColdAndStir:[NSNumber numberWithUnsignedInteger:0x00]];
-    }else if (!_myNet.stirStatus && !_myNet.coolStatus){
-        [_myNet setColdAndStir:[NSNumber numberWithUnsignedInteger:0x02]];
-    }
-    _myNet.stirStatus = !_myNet.stirStatus;
-}
-
-- (void)setCold{
-    if (_myNet.stirStatus && _myNet.coolStatus) {
-        [_myNet setColdAndStir:[NSNumber numberWithUnsignedInteger:0x02]];
-    }else if (!_myNet.stirStatus && _myNet.coolStatus){
-        [_myNet setColdAndStir:[NSNumber numberWithUnsignedInteger:0x00]];
-    }else if (_myNet.stirStatus && !_myNet.coolStatus){
-        [_myNet setColdAndStir:[NSNumber numberWithUnsignedInteger:0x03]];
-    }else if (!_myNet.stirStatus && !_myNet.coolStatus){
-        [_myNet setColdAndStir:[NSNumber numberWithUnsignedInteger:0x01]];
-    }
-    _myNet.coolStatus = !_myNet.coolStatus;
-}
-
-- (void)getCurve{
-    
-}
-
-//豆名滚动UI点击动作
--(void)handleTapGesture:( UITapGestureRecognizer *)tapRecognizer
-{
-    // 先取消任何操作???????这句话存在的意义？？？
-    [NSObject cancelPreviousPerformRequestsWithTarget:self];
-    AddBeanTableController *addBeanVC = [[AddBeanTableController alloc] init];
-    [self.navigationController pushViewController:addBeanVC animated:YES];
-}
-
-#pragma mark - kvo
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context{
-    NetWork *net = [NetWork shareNetWork];
-    if ([keyPath isEqualToString:@"tempData"]) {
-        NSMutableArray *data = [_myNet.recivedData68 copy];
-        double tempOut = ([data[6] intValue] * 256 + [data[7] intValue]) / 10.0;
-        double tempIn = ([data[8] intValue] * 256 + [data[9] intValue]) / 10.0;
-        double tempBean = ([data[10] intValue] * 256 + [data[11] intValue]) / 10.0;
-        double tempEnvironment = ([data[12] intValue] * 256 + [data[13] intValue]) / 10.0;
-        
-        //_beanTempRateLabel.text = [NSString stringWithFormat:@"%f℃/min",tempOut];
-        dispatch_async(dispatch_get_main_queue(), ^{
-            //当顺时针旋转120度时，指针转到129
-            _pointerImage.transform = CGAffineTransformMakeRotation((tempBean / 129.f * 120.0) / 180 * M_PI);
-            _beanTempLabel.text = [NSString stringWithFormat:@"%.1f",[NSString diffTempUnitStringWithTemp:tempBean]];
-            _inTempLabel.text = [NSString stringWithFormat:@"%.1f%@",[NSString diffTempUnitStringWithTemp:tempIn],[DataBase shareDataBase].setting.tempUnit];
-            _outTempLabel.text = [NSString stringWithFormat:@"%.1f%@",[NSString diffTempUnitStringWithTemp:tempOut],[DataBase shareDataBase].setting.tempUnit];
-            _environTempLabel.text = [NSString stringWithFormat:@"%.1f%@",[NSString diffTempUnitStringWithTemp:tempEnvironment],[DataBase shareDataBase].setting.tempUnit];
-            if (net.BeanArr.count > 5) {
-                _beanTempRateLabel.text = [NSString stringWithFormat:@"%.1f%@/min",([NSString diffTempUnitStringWithTemp:[net.BeanArr[net.BeanArr.count-1] doubleValue]] - [NSString diffTempUnitStringWithTemp:[net.BeanArr[net.BeanArr.count-6] doubleValue]])/5*60,[DataBase shareDataBase].setting.tempUnit];
-            }
-        });
-        
-    }else if ([keyPath isEqualToString:@"powerStatus"]){
-        dispatch_async(dispatch_get_main_queue(), ^{
-            _powerBtn.enabled = YES;
-            
-            if (_myNet.powerStatus) {
-                [_powerBtn setImage:[UIImage imageWithContentsOfFile:[_resourcePath stringByAppendingPathComponent:@"btn_power_on@2x.png"]] forState:UIControlStateNormal];
-                _fireBtn.enabled = YES;
-                _coldBtn.enabled = YES;
-                _stirBtn.enabled = YES;
-                _windPBtn.enabled = NO;
-                _firePBtn.enabled = NO;
-                _status.text = LocalString(@"电源开启");
-                _statusView.layer.backgroundColor = [UIColor colorWithRed:126/255.0 green:211/255.0 blue:33/255.0 alpha:1].CGColor;
-                _statusView.layer.shadowColor = [UIColor colorWithRed:106/255.0 green:255/255.0 blue:77/255.0 alpha:1].CGColor;
-                _statusView.layer.shadowOffset = CGSizeMake(0,0);
-                _statusView.layer.shadowOpacity = 1;
-                _statusView.layer.shadowRadius = 8;
-            }else{
-                //电源关闭后所有按钮关闭
-                [_powerBtn setImage:[UIImage imageWithContentsOfFile:[_resourcePath stringByAppendingPathComponent:@"btn_power_off@2x.png"]] forState:UIControlStateNormal];
-                [_fireBtn setImage:[UIImage imageWithContentsOfFile:[_resourcePath stringByAppendingPathComponent:@"btn_fire_off@2x.png"]] forState:UIControlStateNormal];
-                [_coldBtn setImage:[UIImage imageWithContentsOfFile:[_resourcePath stringByAppendingPathComponent:@"btn_cold_off@2x.png"]] forState:UIControlStateNormal];
-                [_stirBtn setImage:[UIImage imageWithContentsOfFile:[_resourcePath stringByAppendingPathComponent:@"btn_stir_off@2x.png"]] forState:UIControlStateNormal];
-                
-                //所有状态为关闭
-                _myNet.coolStatus = NO;
-                _myNet.fireStatus = NO;
-                _myNet.stirStatus = NO;
-
-                //所有功能不能使用
-                _fireBtn.enabled = NO;
-                _coldBtn.enabled = NO;
-                _stirBtn.enabled = NO;
-                _windPBtn.enabled = NO;
-                _firePBtn.enabled = NO;
-                _status.text = LocalString(@"电源关闭");
-                _statusView.layer.backgroundColor = [UIColor colorWithRed:254/255.0 green:71/255.0 blue:51/255.0 alpha:1].CGColor;
-                _statusView.layer.shadowColor = [UIColor colorWithRed:254/255.0 green:71/255.0 blue:52/255.0 alpha:1].CGColor;
-                _statusView.layer.shadowOffset = CGSizeMake(0,0);
-                _statusView.layer.shadowOpacity = 1;
-            }
-        });
-    }else if ([keyPath isEqualToString:@"fireStatus"]){
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if (_myNet.fireStatus) {
-                [_fireBtn setImage:[UIImage imageWithContentsOfFile:[_resourcePath stringByAppendingPathComponent:@"btn_fire_on@2x.png"]] forState:UIControlStateNormal];
-
-                _status1.textColor = [UIColor colorWithHexString:@"333333"];
-                
-                _statusView1.layer.backgroundColor = [UIColor colorWithRed:255/255.0 green:128/255.0 blue:0/255.0 alpha:1].CGColor;
-                _statusView1.layer.shadowColor = [UIColor colorWithRed:255/255.0 green:128/255.0 blue:0/255.0 alpha:1].CGColor;
-                _statusView1.layer.shadowOffset = CGSizeMake(0,0);
-                _statusView1.layer.shadowOpacity = 1;
-                _statusView1.layer.shadowRadius = 8;
-            }else{
-                [_fireBtn setImage:[UIImage imageWithContentsOfFile:[_resourcePath stringByAppendingPathComponent:@"btn_fire_off@2x.png"]] forState:UIControlStateNormal];
-
-                _status1.textColor = [UIColor colorWithHexString:@"999999"];
-                
-                _statusView1.layer.backgroundColor = [UIColor colorWithRed:213/255.0 green:218/255.0 blue:224/255.0 alpha:1].CGColor;
-                _statusView1.layer.shadowOpacity = 0;
-            }
-        });
-    }else if ([keyPath isEqualToString:@"coolStatus"]){
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if (_myNet.coolStatus) {
-                [_coldBtn setImage:[UIImage imageWithContentsOfFile:[_resourcePath stringByAppendingPathComponent:@"btn_cold_on@2x.png"]] forState:UIControlStateNormal];
-
-                _status3.textColor = [UIColor colorWithHexString:@"333333"];
-                
-                _statusView3.layer.backgroundColor = [UIColor colorWithRed:73/255.0 green:152/255.0 blue:242/255.0 alpha:1].CGColor;
-                _statusView3.layer.shadowColor = [UIColor colorWithRed:73/255.0 green:152/255.0 blue:242/255.0 alpha:1].CGColor;
-                _statusView3.layer.shadowOffset = CGSizeMake(0,0);
-                _statusView3.layer.shadowOpacity = 1;
-                _statusView3.layer.shadowRadius = 8;
-            }else{
-                [_coldBtn setImage:[UIImage imageWithContentsOfFile:[_resourcePath stringByAppendingPathComponent:@"btn_cold_off@2x.png"]] forState:UIControlStateNormal];
-
-                _status3.textColor = [UIColor colorWithHexString:@"999999"];
-                
-                _statusView3.layer.backgroundColor = [UIColor colorWithRed:213/255.0 green:218/255.0 blue:224/255.0 alpha:1].CGColor;
-                _statusView3.layer.shadowOpacity = 0;
-            }
-        });
-    }else if ([keyPath isEqualToString:@"stirStatus"]){
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if (_myNet.stirStatus) {
-                [_stirBtn setImage:[UIImage imageWithContentsOfFile:[_resourcePath stringByAppendingPathComponent:@"btn_stir_on@2x.png"]] forState:UIControlStateNormal];
-            }else{
-                [_stirBtn setImage:[UIImage imageWithContentsOfFile:[_resourcePath stringByAppendingPathComponent:@"btn_stir_off@2x.png"]] forState:UIControlStateNormal];
-            }
-        });
-    }
-    else if ([keyPath isEqualToString:@"connectedDevice"]){
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if (_myNet.connectedDevice != nil) {
-                _status.text = LocalString(@"设备已连接");
-            }else{
-                _status.text = LocalString(@"设备未连接");
-                _statusView.layer.backgroundColor = [UIColor colorWithRed:254/255.0 green:71/255.0 blue:51/255.0 alpha:1].CGColor;
-                _statusView.layer.shadowColor = [UIColor colorWithRed:254/255.0 green:71/255.0 blue:52/255.0 alpha:1].CGColor;
-                _statusView.layer.shadowOffset = CGSizeMake(0,0);
-                _statusView.layer.shadowOpacity = 1;
-                
-                _beanTempLabel.text = [NSString stringWithFormat:@"%.1f",0.0];
-                _inTempLabel.text = [NSString stringWithFormat:@"%.1f%@",0.0,[DataBase shareDataBase].setting.tempUnit];
-                _outTempLabel.text = [NSString stringWithFormat:@"%.1f%@",0.0,[DataBase shareDataBase].setting.tempUnit];
-                _environTempLabel.text = [NSString stringWithFormat:@"%.1f%@",0.0,[DataBase shareDataBase].setting.tempUnit];
-                _beanTempRateLabel.text = [NSString stringWithFormat:@"%.1f%@/min",0.0,[DataBase shareDataBase].setting.tempUnit];
-                
-                _deviceImage.frame = CGRectMake(117/WScale, 37/HScale, 140/WScale, 112/HScale);
-                _deviceImage.image = [UIImage imageNamed:@"img_logo_gray"];
-            }
-        });
-    }else if ([keyPath isEqualToString:@"deviceTimerStatus"]){
-        NSLog(@"adsas");
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if (!_myNet.deviceTimerStatus && _myNet.connectedDevice) {
-                _statusView2.layer.backgroundColor = [UIColor colorWithRed:255/255.0 green:221/255.0 blue:51/255.0 alpha:1.0].CGColor;
-            }else{
-                _statusView2.layer.backgroundColor = [UIColor colorWithRed:213/255.0 green:218/255.0 blue:224/255.0 alpha:1].CGColor;
-            }
-        });
-    }
-}
 
 @end

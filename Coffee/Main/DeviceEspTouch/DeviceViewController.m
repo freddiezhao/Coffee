@@ -85,10 +85,12 @@ NSString *const CellIdentifier_device = @"CellID_device";
     if (self.devieceTable) {
         [self queryDevices];
     }
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(mysocketDidDisconnect) name:@"mysocketDidDisconnect" object:nil];
 }
 
 - (void)viewWillDisappear:(BOOL)animated{
     [super viewWillDisappear:animated];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"mysocketDidDisconnect" object:nil];
     
     [_timer setFireDate:[NSDate distantFuture]];
     [_timer invalidate];
@@ -800,6 +802,12 @@ NSString *const CellIdentifier_device = @"CellID_device";
         });
 
     }];
+}
+
+- (void)mysocketDidDisconnect{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.devieceTable reloadData];
+    });
 }
 
 #pragma mark - Data Source

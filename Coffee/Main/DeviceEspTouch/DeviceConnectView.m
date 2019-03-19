@@ -80,6 +80,7 @@
     _image =[self image];
     _cancelBtn = [self cancelBtn];
     [self startEsptouchConnect];
+    [self sendSearchBroadcast];
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
         sleep(10);
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -95,9 +96,32 @@
     self.navigationController.navigationBar.topItem.title = @"";
 }
 
+- (void)viewWillDisappear:(BOOL)animated{
+    [super viewWillDisappear:animated];
+    [_udpTimer setFireDate:[NSDate distantFuture]];
+    [_udpTimer invalidate];
+    _udpTimer = nil;
+}
+
 #pragma mark - udp
+- (void)sendSearchBroadcast{
+    [_udpSocket localPort];
+    
+    NSError *error;
+    
+    //设置广播
+    [_udpSocket enableBroadcast:YES error:&error];
+    
+    //开启接收数据
+    [_udpSocket beginReceiving:&error];
+    if (error) {
+        NSLog(@"开启接收数据:%@",error);
+        return;
+    }
+    
+}
+
 - (void)broadcast{
-    NSLog(@"asdfasdf");
     NSString *host = @"255.255.255.255";
     NSTimeInterval timeout = 2000;
     NSString *request = @"whereareyou\r\n";
@@ -126,13 +150,35 @@
         NSLog(@"%@",ipAddress);
         [NetWork shareNetWork].ipAddr = ipAddress;
 
-        for (UIViewController *controller in self.navigationController.viewControllers) {
-            if ([controller isKindOfClass:[DeviceViewController class]]) {
-                [self.navigationController popToViewController:controller animated:YES];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            for (UIViewController *controller in self.navigationController.viewControllers) {
+                if ([controller isKindOfClass:[DeviceViewController class]]) {
+                    [self.navigationController popToViewController:controller animated:YES];
+                }
             }
-        }
-        [NSObject showHudTipStr:LocalString(@"连接成功，请进行设备的选择")];
+            [NSObject showHudTipStr:LocalString(@"连接成功，请进行设备的选择")];
+        });
     }
+}
+
+- (void)udpSocket:(GCDAsyncUdpSocket *)sock didNotConnect:(NSError *)error{
+    NSLog(@"断开连接");
+}
+
+- (void)udpSocket:(GCDAsyncUdpSocket *)sock didSendDataWithTag:(long)tag{
+    NSLog(@"发送的消息");
+}
+
+- (void)udpSocket:(GCDAsyncUdpSocket *)sock didConnectToAddress:(NSData *)address{
+    NSLog(@"已经连接");
+}
+
+- (void)udpSocketDidClose:(GCDAsyncUdpSocket *)sock withError:(NSError *)error{
+    NSLog(@"断开连接");
+}
+
+- (void)udpSocket:(GCDAsyncUdpSocket *)sock didNotSendDataWithTag:(long)tag dueToError:(NSError *)error{
+    NSLog(@"没有发送数据");
 }
 
 #pragma mark - start Esptouch
@@ -167,7 +213,7 @@
                     if (ipAddrDataStr==nil) {
                         ipAddrDataStr = [ESP_NetUtil descriptionInetAddr6ByData:firstResult.ipAddrData];
                     }
-                    [NetWork shareNetWork].ipAddr = ipAddrDataStr;
+                    //[NetWork shareNetWork].ipAddr = ipAddrDataStr;
                     NSLog(@"%@",[NetWork shareNetWork].ipAddr);
 
                     for (int i = 0; i < [esptouchResultArray count]; ++i)

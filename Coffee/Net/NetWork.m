@@ -178,6 +178,7 @@ static NSString *curveUid;
     });
     [self setConnectedDevice:nil];
     [_myTimer setFireDate:[NSDate distantFuture]];
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"mysocketDidDisconnect" object:nil userInfo:nil];
 }
 
 - (void)socket:(GCDAsyncSocket *)sock didReadData:(NSData *)data withTag:(long)tag
@@ -276,65 +277,6 @@ static NSString *curveUid;
     {
         NSLog(@"Socket未连接");
     }
-
-//    @synchronized(self) {
-//        //NSLog(@"%D",[self.mySocket isDisconnected]);
-//        if (![self.mySocket isDisconnected])
-//        {
-//            NSUInteger len = msg.count;
-//            UInt8 sendBuffer[len];
-//            for (int i = 0; i < len; i++)
-//            {
-//                sendBuffer[i] = [[msg objectAtIndex:i] unsignedCharValue];
-//            }
-//
-//            NSData *sendData = [NSData dataWithBytes:sendBuffer length:len];
-//            NSLog(@"发送一条帧： %@",sendData);
-//            if (tag == 100) {
-//                [self.mySocket writeData:sendData withTimeout:-1 tag:1];
-//                [_mySocket readDataWithTimeout:-1 tag:1];
-//                //重发
-//                if (resendCount > 3) {
-//                    NSLog(@"四次重发没回信息，断开连接");
-//                    dispatch_async(dispatch_get_main_queue(), ^{
-//                        [NSObject showHudTipStr:LocalString(@"wifi断开")];
-//                        [_myTimer setFireDate:[NSDate distantFuture]];
-//                    });
-//                    if (![_mySocket isDisconnected]) {
-//                        NSLog(@"主动断开");
-//                        [_mySocket disconnect];
-//                    }
-//                }
-//                resendCount++;
-//
-//            }else if(tag == 101){
-//                [self.mySocket writeData:sendData withTimeout:-1 tag:2];
-//                if (sendCount - recvCount == 4) {
-//                    NSLog(@"四秒没回信息，断开连接");
-//                    dispatch_async(dispatch_get_main_queue(), ^{
-//                        [NSObject showHudTipStr:LocalString(@"wifi断开")];
-//                        [_myTimer setFireDate:[NSDate distantFuture]];
-//                    });
-//                    if (![_mySocket isDisconnected]) {
-//                        NSLog(@"主动断开");
-//                        [_mySocket disconnect];
-//                    }
-//                }
-//                sendCount++;
-//            }else if(tag == 102){
-//                //设置
-//                [self.mySocket writeData:sendData withTimeout:-1 tag:1];
-//                [_mySocket readDataWithTimeout:-1 tag:1];
-//            }
-//
-//            [NSThread sleepForTimeInterval:0.6];
-//
-//        }
-//        else
-//        {
-//            NSLog(@"Socket未连接");
-//        }
-//    }
 }
 
 /**
