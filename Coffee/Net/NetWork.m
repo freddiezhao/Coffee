@@ -497,6 +497,7 @@ static NSString *curveUid;
 }
 
 - (void)setFire:(NSNumber *)isFire{
+    NSLog(@"点火%@",isFire);
     NSMutableArray *setFire = [[NSMutableArray alloc ] init];
     [setFire addObject:[NSNumber numberWithUnsignedChar:0x68]];
     [setFire addObject:[NSNumber numberWithUnsignedChar:0x01]];
@@ -518,7 +519,7 @@ static NSString *curveUid;
 }
 
 - (void)setPower:(NSNumber *)isPower{
-    NSLog(@"%@",isPower);
+    NSLog(@"开关%@",isPower);
     NSMutableArray *setPower = [[NSMutableArray alloc ] init];
     [setPower addObject:[NSNumber numberWithUnsignedChar:0x68]];
     [setPower addObject:[NSNumber numberWithUnsignedChar:0x01]];
@@ -540,7 +541,7 @@ static NSString *curveUid;
 }
 
 - (void)setColdAndStir:(NSNumber *)isColdAndStir{
-    NSLog(@"%@",isColdAndStir);
+    NSLog(@"冷却搅拌%@",isColdAndStir);
     NSMutableArray *setColdAndStir = [[NSMutableArray alloc ] init];
     [setColdAndStir addObject:[NSNumber numberWithUnsignedChar:0x68]];
     [setColdAndStir addObject:[NSNumber numberWithUnsignedChar:0x01]];

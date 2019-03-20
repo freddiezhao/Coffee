@@ -388,6 +388,8 @@
 		BBC4AB862103347100F49BDC /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = BBC4AB852103347100F49BDC /* libsqlite3.tbd */; };
 		BBC695F020F5B31A006628E0 /* ic_mine_history_line@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = BBC695EF20F5B31A006628E0 /* ic_mine_history_line@2x.png */; };
 		BBC695F220F5B334006628E0 /* ic_mine_history_line.png in Resources */ = {isa = PBXBuildFile; fileRef = BBC695F120F5B334006628E0 /* ic_mine_history_line.png */; };
+		BBCD3AB0224228B000439B71 /* CurveDetailClickCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BBCD3AAF224228B000439B71 /* CurveDetailClickCell.m */; };
+		BBCD3AB32242307600439B71 /* ReportCurveDetailController.m in Sources */ = {isa = PBXBuildFile; fileRef = BBCD3AB22242307600439B71 /* ReportCurveDetailController.m */; };
 		BBDE8F992238F4E700B8B8F5 /* LogOutCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BBDE8F972238F4E600B8B8F5 /* LogOutCell.m */; };
 		BBED09AE20F7354200D6010A /* ic_bake_bean.png in Resources */ = {isa = PBXBuildFile; fileRef = BBED09AA20F7354200D6010A /* ic_bake_bean.png */; };
 		BBED09AF20F7354200D6010A /* ic_baked.png in Resources */ = {isa = PBXBuildFile; fileRef = BBED09AB20F7354200D6010A /* ic_baked.png */; };
@@ -967,6 +969,10 @@
 		BBC4AB852103347100F49BDC /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
 		BBC695EF20F5B31A006628E0 /* ic_mine_history_line@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ic_mine_history_line@2x.png"; sourceTree = "<group>"; };
 		BBC695F120F5B334006628E0 /* ic_mine_history_line.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ic_mine_history_line.png; sourceTree = "<group>"; };
+		BBCD3AAE224228B000439B71 /* CurveDetailClickCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CurveDetailClickCell.h; sourceTree = "<group>"; };
+		BBCD3AAF224228B000439B71 /* CurveDetailClickCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CurveDetailClickCell.m; sourceTree = "<group>"; };
+		BBCD3AB12242307600439B71 /* ReportCurveDetailController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ReportCurveDetailController.h; sourceTree = "<group>"; };
+		BBCD3AB22242307600439B71 /* ReportCurveDetailController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ReportCurveDetailController.m; sourceTree = "<group>"; };
 		BBDE8F972238F4E600B8B8F5 /* LogOutCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LogOutCell.m; sourceTree = "<group>"; };
 		BBDE8F982238F4E600B8B8F5 /* LogOutCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LogOutCell.h; sourceTree = "<group>"; };
 		BBED09AA20F7354200D6010A /* ic_bake_bean.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ic_bake_bean.png; sourceTree = "<group>"; };
@@ -1436,6 +1442,8 @@
 				BB61D756210D619E0068A0A6 /* BakeReportController.m */,
 				BB232C3F2192831D0097F3D6 /* ShareReportController.h */,
 				BB232C402192831D0097F3D6 /* ShareReportController.m */,
+				BBCD3AB12242307600439B71 /* ReportCurveDetailController.h */,
+				BBCD3AB22242307600439B71 /* ReportCurveDetailController.m */,
 				BB28E73E2146832B005B884C /* ReportEditController.h */,
 				BB28E73F2146832B005B884C /* ReportEditController.m */,
 				BB7835E92147E898000E2FCB /* EditBeanController_bakeAdd.h */,
@@ -1483,6 +1491,8 @@
 				BB68B5FD2128124D001CABE5 /* BeanInfoCell.m */,
 				BB68B5FF21282262001CABE5 /* ReportCurveCell.h */,
 				BB68B60021282262001CABE5 /* ReportCurveCell.m */,
+				BBCD3AAE224228B000439B71 /* CurveDetailClickCell.h */,
+				BBCD3AAF224228B000439B71 /* CurveDetailClickCell.m */,
 				BBA7B959212AA0A0004943DC /* CollectInfoCell.h */,
 				BBA7B95A212AA0A0004943DC /* CollectInfoCell.m */,
 				BBA7B966212ACAB2004943DC /* TempPer30sCell.h */,
@@ -2514,6 +2524,7 @@
 				BB7300DB21743DEB00E80AFA /* ProdQRCodeView.m in Sources */,
 				BB4A4C7E214F82F90010A9A1 /* CupLightCell.m in Sources */,
 				BB8F7BDF20DA513B00BE5CFC /* main.m in Sources */,
+				BBCD3AB32242307600439B71 /* ReportCurveDetailController.m in Sources */,
 				BB345C262153A4A9000537DD /* AFHTTPSessionManager.m in Sources */,
 				BB18D5B521358597006CA5A7 /* CurveController_bakeRela.m in Sources */,
 				BB73BA1E212F9CF7001D9258 /* AddNewBeanController.m in Sources */,
@@ -2535,6 +2546,7 @@
 				BB345C2A2153A4AA000537DD /* AFSecurityPolicy.m in Sources */,
 				BB73BA2A212FE6F2001D9258 /* SortModel.m in Sources */,
 				BB635D282108781C005F42D6 /* CurveColorViewController.m in Sources */,
+				BBCD3AB0224228B000439B71 /* CurveDetailClickCell.m in Sources */,
 				BB796280216F538F000373A3 /* AboutViewController.m in Sources */,
 				BB635D1F210862E8005F42D6 /* FastEventViewController.m in Sources */,
 				BBFE861220E62FDF005C6CE5 /* DeviceSelectView.m in Sources */,

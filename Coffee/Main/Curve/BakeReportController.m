@@ -21,11 +21,14 @@
 #import "TempPer30sCell.h"
 #import "ReportEditController.h"
 #import "ProdQRCodeView.h"
+#import "CurveDetailClickCell.h"
+#import "ReportCurveDetailController.h"
 
 NSString *const CellIdentifier_reportLight = @"CellID_reportLight";
 NSString *const CellIdentifier_reportBeanHeader = @"CellID_reportBeanHeader";
 NSString *const CellIdentifier_reportBeanInfo = @"CellID_reportBeanInfo";
 NSString *const CellIdentifier_reportCurve = @"CellID_reportCurve";
+NSString *const CellIdentifier_reportCurveDetail = @"CellID_reportCurveDetail";
 NSString *const CellIdentifier_collect = @"CellID_collect";
 NSString *const CellIdentifier_TempPer30 = @"CellID_TempPer30";
 
@@ -111,6 +114,7 @@ NSString *const CellIdentifier_TempPer30 = @"CellID_TempPer30";
             [tableView registerClass:[BeanHeaderCell class] forCellReuseIdentifier:CellIdentifier_reportBeanHeader];
             [tableView registerClass:[BeanInfoCell class] forCellReuseIdentifier:CellIdentifier_reportBeanInfo];
             [tableView registerClass:[ReportCurveCell class] forCellReuseIdentifier:CellIdentifier_reportCurve];
+            [tableView registerClass:[CurveDetailClickCell class] forCellReuseIdentifier:CellIdentifier_reportCurveDetail];
             [tableView registerClass:[CollectInfoCell class] forCellReuseIdentifier:CellIdentifier_collect];
             [tableView registerClass:[TempPer30sCell class] forCellReuseIdentifier:CellIdentifier_TempPer30];
             [self.view addSubview:tableView];
@@ -147,7 +151,7 @@ NSString *const CellIdentifier_TempPer30 = @"CellID_TempPer30";
             break;
             
         case 2:
-            return 1;
+            return 2;
             break;
             
         case 3:
@@ -184,7 +188,13 @@ NSString *const CellIdentifier_TempPer30 = @"CellID_TempPer30";
             break;
             
         case 2:
-            return 202.f/HScale;
+        {
+            if (indexPath.row == 0) {
+                return 202.f/HScale;
+            }else{
+                return 40.f/HScale;
+            }
+        }
             break;
             
         case 3:
@@ -229,6 +239,7 @@ NSString *const CellIdentifier_TempPer30 = @"CellID_TempPer30";
             if (cell == nil) {
                 cell = [[BeanHeaderCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_reportBeanHeader];
             }
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
             if (_beanArray.count>0) {
                 NSString *nameString = LocalString(@"");
                 for (BeanModel *model in _beanArray) {
@@ -250,6 +261,7 @@ NSString *const CellIdentifier_TempPer30 = @"CellID_TempPer30";
             if (cell == nil) {
                 cell = [[BeanInfoCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_reportBeanInfo];
             }
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
             BeanModel *bean = _beanArray[indexPath.row - 1];
             if (bean.name) {
                 cell.beanName.text = bean.name;
@@ -304,19 +316,27 @@ NSString *const CellIdentifier_TempPer30 = @"CellID_TempPer30";
             return cell;
         }
     }else if (indexPath.section == 2){
-        ReportCurveCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_reportCurve];
-        if (cell == nil) {
-            cell = [[ReportCurveCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_reportCurve];
+        if (indexPath.row == 0) {
+            ReportCurveCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_reportCurve];
+            if (cell == nil) {
+                cell = [[ReportCurveCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_reportCurve];
+            }
+            if (_yVals_In.count > 0 && _yVals_Out.count > 0 && _yVals_Bean.count > 0 && _yVals_Environment.count > 0) {
+                cell.yVals_In = _yVals_In;
+                cell.yVals_Out = _yVals_Out;
+                cell.yVals_Bean = _yVals_Bean;
+                cell.yVals_Environment = _yVals_Environment;
+                cell.yVals_Diff = _yVals_Diff;
+                [cell setDataValue];
+            }
+            return cell;
+        }else{
+            CurveDetailClickCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_reportCurveDetail];
+            if (cell == nil) {
+                cell = [[CurveDetailClickCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_reportCurveDetail];
+            }
+            return cell;
         }
-        if (_yVals_In.count > 0 && _yVals_Out.count > 0 && _yVals_Bean.count > 0 && _yVals_Environment.count > 0) {
-            cell.yVals_In = _yVals_In;
-            cell.yVals_Out = _yVals_Out;
-            cell.yVals_Bean = _yVals_Bean;
-            cell.yVals_Environment = _yVals_Environment;
-            cell.yVals_Diff = _yVals_Diff;
-            [cell setDataValue];
-        }
-        return cell;
     }else if (indexPath.section == 3){
         CollectInfoCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_collect];
         if (cell == nil) {
@@ -385,6 +405,15 @@ NSString *const CellIdentifier_TempPer30 = @"CellID_TempPer30";
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    if (indexPath.section == 2 && indexPath.row == 1) {
+        ReportCurveDetailController *vc = [[ReportCurveDetailController alloc] init];
+        vc.yVals_In = _yVals_In;
+        vc.yVals_Out = _yVals_Out;
+        vc.yVals_Bean = _yVals_Bean;
+        vc.yVals_Environment = _yVals_Environment;
+        vc.yVals_Diff = _yVals_Diff;
+        [self presentViewController:vc animated:YES completion:nil];
+    }
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{

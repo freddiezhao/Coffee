@@ -215,6 +215,7 @@ static BOOL isRelaOn = NO;
         //leftAxis.gridLineDashLengths = @[@5.f,@5.f];//虚线
         leftAxis.drawZeroLineEnabled = NO;
         leftAxis.granularityEnabled = YES;
+        leftAxis.granularity = 50.f;
         
         ChartYAxis *rightAxis = _chartView.rightAxis;
         rightAxis.labelFont = [UIFont fontWithName:@"Avenir-Light" size:12];
