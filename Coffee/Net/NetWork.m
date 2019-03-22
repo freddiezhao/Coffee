@@ -748,7 +748,7 @@ static NSString *curveUid;
                 [_yVals_Environment addObject:[[ChartDataEntry alloc] initWithX:[_yVals_Environment count] y:[NSString diffTempUnitStringWithTemp:tempEnvironment]]];
                 [_yVals_Diff removeAllObjects];
                 _yVals_Diff = [self getBeanTempRorWithArr:_BeanArr];
-                
+                [self caculateBackTemperaturePoint];//回温点计算
                 
                 [self setTempData:_recivedData68];
                 
@@ -1549,6 +1549,44 @@ static NSString *curveUid;
     }
     
     return rorArr;
+}
+
+#pragma mark - 生成回温点
+static bool isRorStartNegative = NO;
+static int rorNegativeCount = 0;
+static bool isRorStartPositive = NO;
+static int backTempPointCount = 0;
+- (void)caculateBackTemperaturePoint{
+    if (_yVals_Diff[_yVals_Diff.count-1] <= 0) {
+        if (rorNegativeCount > 10) {
+            isRorStartNegative = YES;
+        }else{
+            rorNegativeCount++;
+        }
+    }else{
+        rorNegativeCount = 0;
+    }
+    if (isRorStartNegative && _yVals_Diff[_yVals_Diff.count-1] > 0) {
+        isRorStartPositive = YES;
+    }
+    if (isRorStartNegative && isRorStartPositive) {
+        EventModel *event = [[EventModel alloc] init];
+        event.eventId = 7;//类型为7
+        event.eventTime = self.timerValue;
+        event.eventText = LocalString(@"回温点");
+        if (self.BeanArr.count > 0) {
+            event.eventBeanTemp = [self.BeanArr[self.BeanArr.count - 1] floatValue];
+        }else{
+            event.eventBeanTemp = 0.0;
+        }
+        for (EventModel *event in self.eventArray) {
+            if (event.eventId == 7) {
+                [self.eventArray removeObject:event];
+                break;
+            }
+        }
+        [self.eventArray addObject:event];
+    }
 }
 
 @end

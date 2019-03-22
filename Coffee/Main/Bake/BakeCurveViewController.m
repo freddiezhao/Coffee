@@ -952,7 +952,7 @@ static BOOL isRelaOn = NO;
     else
     {
         
-        set1 = [[LineChartDataSet alloc] initWithValues:_myNet.yVals_Out label:LocalString(@"进风温")];
+        set1 = [[LineChartDataSet alloc] initWithValues:_myNet.yVals_In label:LocalString(@"进风温")];
         set1.axisDependency = AxisDependencyLeft;
         [set1 setColor:[UIColor colorWithRed:123/255.0 green:179/255.0 blue:64/255.0 alpha:1]];
         [set1 setCircleColor:UIColor.whiteColor];
@@ -968,7 +968,7 @@ static BOOL isRelaOn = NO;
         //set1.mode = LineChartModeCubicBezier;
         
         
-        set2 = [[LineChartDataSet alloc] initWithValues:_myNet.yVals_In label:LocalString(@"出风温")];
+        set2 = [[LineChartDataSet alloc] initWithValues:_myNet.yVals_Out label:LocalString(@"出风温")];
         set2.axisDependency = AxisDependencyLeft;
         [set2 setColor:[UIColor colorWithRed:80/255.0 green:227/255.0 blue:194/255.0 alpha:1]];
         [set2 setCircleColor:UIColor.whiteColor];

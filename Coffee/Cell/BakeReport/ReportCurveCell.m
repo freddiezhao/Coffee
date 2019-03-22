@@ -54,18 +54,21 @@
             xAxis.drawGridLinesEnabled = NO;
             xAxis.drawAxisLineEnabled = NO;
             xAxis.labelPosition = XAxisLabelPositionBottom;
-            //xAxis.axisRange = 30;
-            //xAxis.granularityEnabled = YES;
-            //xAxis.granularity = 10.0;
             xAxis.valueFormatter = self;
-            
+            xAxis.axisRange = self.yVals_Bean.count;
+            xAxis.granularity = 60;
+            if (self.yVals_Bean.count > (60 * 3)) {
+                xAxis.axisMaximum = self.yVals_Bean.count;
+            }else{
+                xAxis.axisMaximum = 60 * 3;
+            }
             
             ChartYAxis *leftAxis = _chartView.leftAxis;
             leftAxis.labelTextColor = [UIColor colorWithRed:184/255.0 green:190/255.0 blue:204/255.0 alpha:1];
             leftAxis.labelFont = [UIFont fontWithName:@"Avenir-Light" size:12];
-            leftAxis.axisMaximum = 400 - 0.5;
+            leftAxis.axisMaximum = [NSString diffTempUnitStringWithTemp:[DataBase shareDataBase].setting.tempAxis - 0.5];
             //leftAxisMax = 140 - 0.5;
-            leftAxis.axisMinimum = 0.0;
+            leftAxis.axisMinimum = 50.0;
             leftAxis.spaceTop = 30.f;
             leftAxis.drawGridLinesEnabled = YES;
             leftAxis.gridLineWidth = 0.6f;
@@ -73,6 +76,7 @@
             //leftAxis.gridLineDashLengths = @[@5.f,@5.f];//虚线
             leftAxis.drawZeroLineEnabled = NO;
             leftAxis.granularityEnabled = YES;
+            leftAxis.granularity = 50.f;
             
             ChartYAxis *rightAxis = _chartView.rightAxis;
             rightAxis.labelFont = [UIFont fontWithName:@"Avenir-Light" size:12];
@@ -120,7 +124,7 @@
     }
     else
     {
-        set1 = [[LineChartDataSet alloc] initWithValues:_yVals_Out label:LocalString(@"进风温")];
+        set1 = [[LineChartDataSet alloc] initWithValues:_yVals_In label:LocalString(@"进风温")];
         set1.axisDependency = AxisDependencyLeft;
         [set1 setColor:[UIColor colorWithRed:123/255.0 green:179/255.0 blue:64/255.0 alpha:1]];
         [set1 setCircleColor:UIColor.whiteColor];
@@ -135,7 +139,7 @@
         set1.highlightEnabled = NO;//选中拐点,是否开启高亮效果(显示十字线)
         //set1.mode = LineChartModeCubicBezier;
         
-        set2 = [[LineChartDataSet alloc] initWithValues:_yVals_In label:LocalString(@"出风温")];
+        set2 = [[LineChartDataSet alloc] initWithValues:_yVals_Out label:LocalString(@"出风温")];
         set2.axisDependency = AxisDependencyLeft;
         [set2 setColor:[UIColor colorWithRed:80/255.0 green:227/255.0 blue:194/255.0 alpha:1]];
         [set2 setCircleColor:UIColor.whiteColor];
