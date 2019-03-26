@@ -69,7 +69,7 @@ static DataBase *_dataBase = nil;
         _setting.bakeChromaReferStandard = @"argon";
         _setting.timeAxis = 10;
         _setting.tempAxis = 300;
-        _setting.tempCurveSmooth = 5;
+        _setting.tempCurveSmooth = 5;//现在已经不用了，先留着
         _setting.tempRateSmooth = 5;
         _setting.language = LocalString(@"中文");
     }

@@ -747,7 +747,7 @@ static NSString *curveUid;
                 [_yVals_Bean addObject:entry];
                 [_yVals_Environment addObject:[[ChartDataEntry alloc] initWithX:[_yVals_Environment count] y:[NSString diffTempUnitStringWithTemp:tempEnvironment]]];
                 [_yVals_Diff removeAllObjects];
-                _yVals_Diff = [self getBeanTempRorWithArr:_BeanArr];
+                _yVals_Diff = [self getBeanTempRorWithArr:_InArr];
                 [self caculateBackTemperaturePoint];//回温点计算
                 
                 [self setTempData:_recivedData68];
@@ -1557,19 +1557,29 @@ static int rorNegativeCount = 0;
 static bool isRorStartPositive = NO;
 static int backTempPointCount = 0;
 - (void)caculateBackTemperaturePoint{
-    if (_yVals_Diff[_yVals_Diff.count-1] <= 0) {
+    if (_yVals_Diff.count < 1) {
+        return;
+    }
+    NSLog(@"%@",_yVals_Diff[_yVals_Diff.count-1]);
+    NSLog(@"%d",rorNegativeCount);
+    ChartDataEntry *entry = _yVals_Diff[_yVals_Diff.count-1];
+    if (entry.y < 0) {
         if (rorNegativeCount > 10) {
             isRorStartNegative = YES;
+            NSLog(@"回温点1");
         }else{
+            NSLog(@"%@",@"adasfsf");
             rorNegativeCount++;
         }
     }else{
         rorNegativeCount = 0;
     }
-    if (isRorStartNegative && _yVals_Diff[_yVals_Diff.count-1] > 0) {
+    if (isRorStartNegative && entry.y > 0) {
         isRorStartPositive = YES;
+        NSLog(@"回温点2");
     }
     if (isRorStartNegative && isRorStartPositive) {
+        NSLog(@"回温点3");
         EventModel *event = [[EventModel alloc] init];
         event.eventId = 7;//类型为7
         event.eventTime = self.timerValue;

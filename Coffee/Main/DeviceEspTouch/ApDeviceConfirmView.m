@@ -1,16 +1,15 @@
 //
-//  DeviceConfirmView.m
+//  ApDeviceConfirmView.m
 //  Coffee
 //
-//  Created by 杭州轨物科技有限公司 on 2018/6/29.
-//  Copyright © 2018年 杭州轨物科技有限公司. All rights reserved.
+//  Created by 杭州轨物科技有限公司 on 2019/3/25.
+//  Copyright © 2019年 杭州轨物科技有限公司. All rights reserved.
 //
 
-#import "DeviceConfirmView.h"
-#import "DeviceConnectView.h"
 #import "ApDeviceConfirmView.h"
+#import <SystemConfiguration/CaptiveNetwork.h>
 
-@interface DeviceConfirmView ()
+@interface ApDeviceConfirmView ()
 
 @property (nonatomic, strong) UIButton *nextButton;
 @property (nonatomic, strong) UIImageView *image;
@@ -18,7 +17,7 @@
 
 @end
 
-@implementation DeviceConfirmView{
+@implementation ApDeviceConfirmView{
     NSArray *deviceTypeNameArray;
 }
 
@@ -34,29 +33,22 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self.view setBackgroundColor:[UIColor colorWithRed:250/255.0 green:250/255.0 blue:250/255.0 alpha:1]];
-
+    
+    self.navigationItem.title = LocalString(@"AP模式");
     
     _image = [self image];
     _nextButton = [self nextButton];
     _checkBtn = [self checkBtn];
     [self setDeviceImage];
-    [self setNavItem];
 }
 
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
     //去掉返回键的文字
     self.navigationController.navigationBar.topItem.title = @"";
-    self.navigationItem.title = LocalString(@"确认设备处于待连接状态");
 }
 
-- (void)setNavItem{
-    self.navigationItem.title = LocalString(@"确认设备处于待连接状态");
-
-    UIBarButtonItem *rightBar = [[UIBarButtonItem alloc] initWithTitle:LocalString(@"AP模式") style:UIBarButtonItemStylePlain target:self action:@selector(goApView)];
-    self.navigationItem.rightBarButtonItem = rightBar;
-}
-
+#pragma mark - private methods
 - (void)setDeviceImage{
     switch ([[NetWork shareNetWork].deviceType integerValue]) {
         case 0:
@@ -92,17 +84,80 @@
             break;
     }
 }
+
+- (void)applicationWillEnterForeground{
+    UIApplication *app = [UIApplication sharedApplication];
+    [[NSNotificationCenter defaultCenter]addObserverForName:UIApplicationWillEnterForegroundNotification  object:app queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
+        [self confirmWifiName];
+    }];
+}
+
+- (void)confirmWifiName{
+    NSDictionary *netInfo = [self fetchNetInfo];
+    NSString *ssid = [netInfo objectForKey:@"SSID"];
+    if ([ssid hasPrefix:@"ESP"]) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self goAPProcess];
+        });
+    }
+}
+
+- (NSDictionary *)fetchNetInfo
+{
+    NSArray *interfaceNames = CFBridgingRelease(CNCopySupportedInterfaces());
+    //    NSLog(@"%s: Supported interfaces: %@", __func__, interfaceNames);
+    
+    NSDictionary *SSIDInfo;
+    for (NSString *interfaceName in interfaceNames) {
+        SSIDInfo = CFBridgingRelease(CNCopyCurrentNetworkInfo((__bridge CFStringRef)interfaceName));
+        //NSLog(@"%s: %@ => %@", __func__, interfaceName, SSIDInfo);
+        BOOL isNotEmpty = (SSIDInfo.count > 0);
+        if (isNotEmpty) {
+            break;
+        }
+    }
+    return SSIDInfo;
+}
+
+- (void)jump2Settings{
+    NSURL * url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
+    if([[UIApplication sharedApplication] canOpenURL:url]) {
+        if (@available(iOS 10.0, *)) {
+            [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
+        } else {
+            [[UIApplication sharedApplication] openURL:url];
+        }
+    }
+}
+
+- (void)goAPProcess{
+    
+}
+
+- (void)checkDevice{
+    if (_checkBtn.tag == unselect) {
+        _checkBtn.tag = select;
+        [_checkBtn setImage:[UIImage imageNamed:@"tick"] forState:UIControlStateNormal];
+        [_nextButton setBackgroundColor:[UIColor colorWithRed:71/255.0 green:120/255.0 blue:204/255.0 alpha:1]];
+        _nextButton.enabled = YES;
+    }else{
+        _checkBtn.tag = unselect;
+        [_checkBtn setImage:[UIImage imageNamed:@"untick"] forState:UIControlStateNormal];
+        [_nextButton setBackgroundColor:[UIColor colorWithRed:71/255.0 green:120/255.0 blue:204/255.0 alpha:0.4]];
+        _nextButton.enabled = NO;
+    }
+}
 #pragma mark - lazy load
 - (UIButton *)nextButton{
     if (!_nextButton) {
         _nextButton = [UIButton buttonWithType:UIButtonTypeCustom];
         [_nextButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-        [_nextButton setTitle:LocalString(@"下一步") forState:UIControlStateNormal];
+        [_nextButton setTitle:LocalString(@"去连接") forState:UIControlStateNormal];
         [_nextButton.titleLabel setFont:[UIFont fontWithName:@"PingFangSC-Medium" size:16]];
         [_nextButton setBackgroundColor:[UIColor colorWithRed:71/255.0 green:120/255.0 blue:204/255.0 alpha:0.4]];
         _nextButton.enabled = NO;
         [_nextButton setButtonStyle1];
-        [_nextButton addTarget:self action:@selector(goNextView) forControlEvents:UIControlEventTouchUpInside];
+        [_nextButton addTarget:self action:@selector(jump2Settings) forControlEvents:UIControlEventTouchUpInside];
         [self.view addSubview:_nextButton];
         
         [_nextButton mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -110,6 +165,7 @@
             make.centerX.equalTo(self.view.mas_centerX);
             make.top.equalTo(self.checkBtn.mas_bottom).offset(20 / HScale);
         }];
+
     }
     return _nextButton;
 }
@@ -180,29 +236,7 @@
     }
     return _checkBtn;
 }
-#pragma mark - action
-- (void)goNextView{
-    DeviceConnectView *connectVC = [[DeviceConnectView alloc] init];
-    [self.navigationController pushViewController:connectVC animated:YES];
-}
 
-- (void)goApView{
-    ApDeviceConfirmView *apVC = [[ApDeviceConfirmView alloc] init];
-    [self.navigationController pushViewController:apVC animated:YES];
-}
 
-- (void)checkDevice{
-    if (_checkBtn.tag == unselect) {
-        _checkBtn.tag = select;
-        [_checkBtn setImage:[UIImage imageNamed:@"tick"] forState:UIControlStateNormal];
-        [_nextButton setBackgroundColor:[UIColor colorWithRed:71/255.0 green:120/255.0 blue:204/255.0 alpha:1]];
-        _nextButton.enabled = YES;
-    }else{
-        _checkBtn.tag = unselect;
-        [_checkBtn setImage:[UIImage imageNamed:@"untick"] forState:UIControlStateNormal];
-        [_nextButton setBackgroundColor:[UIColor colorWithRed:71/255.0 green:120/255.0 blue:204/255.0 alpha:0.4]];
-        _nextButton.enabled = NO;
-    }
-}
 
 @end
