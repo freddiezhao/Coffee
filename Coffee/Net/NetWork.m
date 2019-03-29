@@ -508,7 +508,6 @@ static NSString *curveUid;
     });
 }
 
-static int setFireCount = 0;
 - (void)setFire:(NSNumber *)isFire{
     NSMutableArray *setFire = [[NSMutableArray alloc ] init];
     [setFire addObject:[NSNumber numberWithUnsignedChar:0x68]];
@@ -526,12 +525,15 @@ static int setFireCount = 0;
         [self send:setFire withTag:102];
         NSLog(@"点火%@",isFire);
     });
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self performSelector:@selector(setFire:) withObject:isFire afterDelay:3.0f];
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        sleep(3.0);
+        if (self.setFireCount > 0 && [isFire isEqual:self.isFire]) {
+            [self setFire:isFire];
+            self.setFireCount--;
+        }
     });
 }
 
-static int setPowerCount = 0;
 - (void)setPower:(NSNumber *)isPower{
     NSMutableArray *setPower = [[NSMutableArray alloc ] init];
     [setPower addObject:[NSNumber numberWithUnsignedChar:0x68]];
@@ -549,12 +551,15 @@ static int setPowerCount = 0;
         [self send:setPower withTag:102];
         NSLog(@"开关%@",isPower);
     });
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self performSelector:@selector(setPower:) withObject:isPower afterDelay:3.0f];
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        sleep(3.0);
+        if (self.setPowerCount > 0 && [isPower isEqual:self.isPower]) {
+            [self setPower:isPower];
+            self.setPowerCount--;
+        }
     });
 }
 
-static int setColdAndStirCount = 0;
 - (void)setColdAndStir:(NSNumber *)isColdAndStir{
     NSMutableArray *setColdAndStir = [[NSMutableArray alloc ] init];
     [setColdAndStir addObject:[NSNumber numberWithUnsignedChar:0x68]];
@@ -572,8 +577,12 @@ static int setColdAndStirCount = 0;
         [self send:setColdAndStir withTag:102];
         NSLog(@"冷却搅拌%@",isColdAndStir);
     });
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self performSelector:@selector(setColdAndStir:) withObject:isColdAndStir afterDelay:3.0f];
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        sleep(3.0);
+        if (self.setColdAndStirCount > 0 && [isColdAndStir isEqual:self.isColdAndStir]) {
+            [self setColdAndStir:isColdAndStir];
+            self.setColdAndStirCount--;
+        }
     });
 }
 
@@ -929,19 +938,13 @@ static int setColdAndStirCount = 0;
 
                 }
             }else if (self.msg68Type == getPowerStatus){
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [NSObject cancelPreviousPerformRequestsWithTarget:self];
-                });
+                self.setPowerCount = 0;
                 resendCount = 0;
             }else if (self.msg68Type == fire){
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [NSObject cancelPreviousPerformRequestsWithTarget:self];
-                });
+                self.setFireCount = 0;
                 resendCount = 0;
             }else if (self.msg68Type == coolAndStir){
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [NSObject cancelPreviousPerformRequestsWithTarget:self];
-                });
+                self.setColdAndStirCount = 0;
                 resendCount = 0;
             }
         }else if (self.frame68Type == commandFrame){

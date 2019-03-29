@@ -121,6 +121,13 @@ static NSInteger tempCountVer = 1000;
 @property (nonatomic) BOOL fireStatus;
 @property (nonatomic) BOOL coolStatus;
 @property (nonatomic) BOOL stirStatus;
+///@brief 用于重发机制判断
+@property (nonatomic) int setFireCount;
+@property (nonatomic) int setPowerCount;
+@property (nonatomic) int setColdAndStirCount;
+@property (nonatomic, strong) NSNumber *isFire;
+@property (nonatomic, strong) NSNumber *isPower;
+@property (nonatomic, strong) NSNumber *isColdAndStir;
 
 ///@brief 帧计数器
 @property (nonatomic, assign) UInt8 frameCount;
