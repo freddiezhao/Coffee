@@ -226,6 +226,8 @@ static NSString *curveUid;
             //重发
             if (resendCount > 3) {
                 NSLog(@"四次重发没回信息，断开连接");
+                [self setConnectedDevice:nil];
+                [[NSNotificationCenter defaultCenter] postNotificationName:@"mysocketDidDisconnect" object:nil userInfo:nil];
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [NSObject showHudTipStr:LocalString(@"wifi断开")];
                     [_myTimer setFireDate:[NSDate distantFuture]];
@@ -241,6 +243,8 @@ static NSString *curveUid;
             [self.mySocket writeData:sendData withTimeout:-1 tag:2];
             if (sendCount - recvCount == 4) {
                 NSLog(@"四秒没回信息，断开连接");
+                [self setConnectedDevice:nil];
+                [[NSNotificationCenter defaultCenter] postNotificationName:@"mysocketDidDisconnect" object:nil userInfo:nil];
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [NSObject showHudTipStr:LocalString(@"wifi断开")];
                     [_myTimer setFireDate:[NSDate distantFuture]];
@@ -256,18 +260,23 @@ static NSString *curveUid;
             [self.mySocket writeData:sendData withTimeout:-1 tag:1];
             [_mySocket readDataWithTimeout:-1 tag:1];
             
-            if (resendCount > 3) {
-                NSLog(@"四次重发没回信息，断开连接");
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [NSObject showHudTipStr:LocalString(@"wifi断开")];
-                    [_myTimer setFireDate:[NSDate distantFuture]];
-                });
-                if (![_mySocket isDisconnected]) {
-                    NSLog(@"主动断开");
-                    [_mySocket disconnect];
-                }
-            }
-            resendCount++;
+//            if (resendCount > 3) {
+//                dispatch_async(dispatch_get_main_queue(), ^{
+//                    [NSObject cancelPreviousPerformRequestsWithTarget:self];
+//                });
+//                NSLog(@"四次重发没回信息，断开连接");
+//                [self setConnectedDevice:nil];
+//                [[NSNotificationCenter defaultCenter] postNotificationName:@"mysocketDidDisconnect" object:nil userInfo:nil];
+//                dispatch_async(dispatch_get_main_queue(), ^{
+//                    [NSObject showHudTipStr:LocalString(@"wifi断开")];
+//                    [_myTimer setFireDate:[NSDate distantFuture]];
+//                });
+//                if (![_mySocket isDisconnected]) {
+//                    NSLog(@"主动断开");
+//                    [_mySocket disconnect];
+//                }
+//            }
+//            resendCount++;
         }
         
         //[NSThread sleepForTimeInterval:0.6];
@@ -276,6 +285,9 @@ static NSString *curveUid;
     else
     {
         NSLog(@"Socket未连接");
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [NSObject cancelPreviousPerformRequestsWithTarget:self];
+        });
     }
 }
 
@@ -496,8 +508,8 @@ static NSString *curveUid;
     });
 }
 
+static int setFireCount = 0;
 - (void)setFire:(NSNumber *)isFire{
-    NSLog(@"点火%@",isFire);
     NSMutableArray *setFire = [[NSMutableArray alloc ] init];
     [setFire addObject:[NSNumber numberWithUnsignedChar:0x68]];
     [setFire addObject:[NSNumber numberWithUnsignedChar:0x01]];
@@ -512,14 +524,15 @@ static NSString *curveUid;
     [setFire addObject:[NSNumber numberWithUnsignedChar:0x0A]];
     dispatch_async(_queue, ^{
         [self send:setFire withTag:102];
+        NSLog(@"点火%@",isFire);
     });
     dispatch_async(dispatch_get_main_queue(), ^{
         [self performSelector:@selector(setFire:) withObject:isFire afterDelay:3.0f];
     });
 }
 
+static int setPowerCount = 0;
 - (void)setPower:(NSNumber *)isPower{
-    NSLog(@"开关%@",isPower);
     NSMutableArray *setPower = [[NSMutableArray alloc ] init];
     [setPower addObject:[NSNumber numberWithUnsignedChar:0x68]];
     [setPower addObject:[NSNumber numberWithUnsignedChar:0x01]];
@@ -534,14 +547,15 @@ static NSString *curveUid;
     [setPower addObject:[NSNumber numberWithUnsignedChar:0x0A]];
     dispatch_async(_queue, ^{
         [self send:setPower withTag:102];
+        NSLog(@"开关%@",isPower);
     });
     dispatch_async(dispatch_get_main_queue(), ^{
         [self performSelector:@selector(setPower:) withObject:isPower afterDelay:3.0f];
     });
 }
 
+static int setColdAndStirCount = 0;
 - (void)setColdAndStir:(NSNumber *)isColdAndStir{
-    NSLog(@"冷却搅拌%@",isColdAndStir);
     NSMutableArray *setColdAndStir = [[NSMutableArray alloc ] init];
     [setColdAndStir addObject:[NSNumber numberWithUnsignedChar:0x68]];
     [setColdAndStir addObject:[NSNumber numberWithUnsignedChar:0x01]];
@@ -556,6 +570,7 @@ static NSString *curveUid;
     [setColdAndStir addObject:[NSNumber numberWithUnsignedChar:0x0A]];
     dispatch_async(_queue, ^{
         [self send:setColdAndStir withTag:102];
+        NSLog(@"冷却搅拌%@",isColdAndStir);
     });
     dispatch_async(dispatch_get_main_queue(), ^{
         [self performSelector:@selector(setColdAndStir:) withObject:isColdAndStir afterDelay:3.0f];
@@ -1547,7 +1562,6 @@ static NSString *curveUid;
     for (NSInteger i = beanRorDiffCount; i < [arr count]; i = i + beanRorDiffCount) {
         [rorArr addObject:[[ChartDataEntry alloc] initWithX:i y:([NSString diffTempUnitStringWithTemp:[arr[i] doubleValue]] - [NSString diffTempUnitStringWithTemp:[arr[i - beanRorDiffCount] doubleValue]]) * (60.f/beanRorDiffCount)]];
     }
-    
     return rorArr;
 }
 
@@ -1560,15 +1574,15 @@ static int backTempPointCount = 0;
     if (_yVals_Diff.count < 1) {
         return;
     }
-    NSLog(@"%@",_yVals_Diff[_yVals_Diff.count-1]);
-    NSLog(@"%d",rorNegativeCount);
+    //NSLog(@"%@",_yVals_Diff[_yVals_Diff.count-1]);
+    //NSLog(@"%d",rorNegativeCount);
     ChartDataEntry *entry = _yVals_Diff[_yVals_Diff.count-1];
     if (entry.y < 0) {
         if (rorNegativeCount > 10) {
             isRorStartNegative = YES;
-            NSLog(@"回温点1");
+            //NSLog(@"回温点1");
         }else{
-            NSLog(@"%@",@"adasfsf");
+            //NSLog(@"%@",@"adasfsf");
             rorNegativeCount++;
         }
     }else{
@@ -1576,10 +1590,10 @@ static int backTempPointCount = 0;
     }
     if (isRorStartNegative && entry.y > 0) {
         isRorStartPositive = YES;
-        NSLog(@"回温点2");
+        //NSLog(@"回温点2");
     }
     if (isRorStartNegative && isRorStartPositive) {
-        NSLog(@"回温点3");
+        //NSLog(@"回温点3");
         EventModel *event = [[EventModel alloc] init];
         event.eventId = 7;//类型为7
         event.eventTime = self.timerValue;

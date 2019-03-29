@@ -602,4 +602,6 @@ static float HEIGHT_HEADER = 36.f;
         _myBean.time = [NSDate date];
     }
 }
+
+
 @end

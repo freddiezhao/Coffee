@@ -512,7 +512,7 @@ sectionForSectionIndexTitle:(NSString *)title
 #pragma mark - actions
 - (void)addBean{
     AddNewBeanController *addNewVC = [[AddNewBeanController alloc] init];
-    UINavigationController *NAV = [[UINavigationController alloc] initWithRootViewController:addNewVC];
+    BaseNavigationController *NAV = [[BaseNavigationController alloc] initWithRootViewController:addNewVC];
     [self presentViewController:NAV animated:YES completion:nil];
 }
 

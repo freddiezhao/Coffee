@@ -261,6 +261,7 @@
 		BB63B3FF2149012F00EAC364 /* BeanDetailCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BB63B3FE2149012F00EAC364 /* BeanDetailCell.m */; };
 		BB63B40221490EB500EAC364 /* EditBeanController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB63B40121490EB500EAC364 /* EditBeanController.m */; };
 		BB63B40521491CC600EAC364 /* BeanRelaCurveController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB63B40421491CC600EAC364 /* BeanRelaCurveController.m */; };
+		BB647BED224E1D7F00DCB992 /* BaseNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB647BEC224E1D7F00DCB992 /* BaseNavigationController.m */; };
 		BB65C25120FD8F0400BB684E /* tick@1x.png in Resources */ = {isa = PBXBuildFile; fileRef = BB65C24B20FD8F0300BB684E /* tick@1x.png */; };
 		BB65C25220FD8F0400BB684E /* tick@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = BB65C24C20FD8F0300BB684E /* tick@2x.png */; };
 		BB65C25320FD8F0400BB684E /* untick@1x.png in Resources */ = {isa = PBXBuildFile; fileRef = BB65C24D20FD8F0400BB684E /* untick@1x.png */; };
@@ -758,6 +759,8 @@
 		BB63B40121490EB500EAC364 /* EditBeanController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EditBeanController.m; sourceTree = "<group>"; };
 		BB63B40321491CC600EAC364 /* BeanRelaCurveController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeanRelaCurveController.h; sourceTree = "<group>"; };
 		BB63B40421491CC600EAC364 /* BeanRelaCurveController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeanRelaCurveController.m; sourceTree = "<group>"; };
+		BB647BEB224E1D7F00DCB992 /* BaseNavigationController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BaseNavigationController.h; sourceTree = "<group>"; };
+		BB647BEC224E1D7F00DCB992 /* BaseNavigationController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BaseNavigationController.m; sourceTree = "<group>"; };
 		BB65C24B20FD8F0300BB684E /* tick@1x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tick@1x.png"; sourceTree = "<group>"; };
 		BB65C24C20FD8F0300BB684E /* tick@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tick@2x.png"; sourceTree = "<group>"; };
 		BB65C24D20FD8F0400BB684E /* untick@1x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "untick@1x.png"; sourceTree = "<group>"; };
@@ -1465,6 +1468,8 @@
 			children = (
 				BB6A784920E36E7200EE3E2E /* BaseViewController.h */,
 				BB6A784A20E36E7200EE3E2E /* BaseViewController.m */,
+				BB647BEB224E1D7F00DCB992 /* BaseNavigationController.h */,
+				BB647BEC224E1D7F00DCB992 /* BaseNavigationController.m */,
 			);
 			path = Base;
 			sourceTree = "<group>";
@@ -2424,6 +2429,7 @@
 				BB79627A216EDD2A000373A3 /* SearchBeanController.m in Sources */,
 				BB3811FA20EA1C3C00F0B2B7 /* BakeCurveViewController.m in Sources */,
 				BB593FA9210F172D007ECB1D /* NSDate+Common.m in Sources */,
+				BB647BED224E1D7F00DCB992 /* BaseNavigationController.m in Sources */,
 				BBA7B968212ACAB2004943DC /* TempPer30sCell.m in Sources */,
 				BB8AA4E820DFD18D00610316 /* UIColor+ColorChange.m in Sources */,
 				BB813E6E214BAABE00D68F7B /* CupModel.m in Sources */,

@@ -21,6 +21,7 @@
 #import "NSData+Common.h"
 #import "NSString+Common.h"
 #import "BaseViewController.h"
+#import "BaseNavigationController.h"
 #import "NetWork.h"
 #import "DataBase.h"
 #import "YAlertViewController.h"

@@ -213,7 +213,7 @@ static float HEIGHT_HEADER = 15.f;
 #pragma mark - Actions
 - (void)editBeanInfo{
     EditBeanController *editVC = [[EditBeanController alloc] init];
-    UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:editVC];
+    BaseNavigationController *nav = [[BaseNavigationController alloc] initWithRootViewController:editVC];
     editVC.myBean = _myBean;
     [self presentViewController:nav animated:YES completion:nil];
 }
