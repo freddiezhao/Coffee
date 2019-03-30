@@ -36,4 +36,8 @@
 //单位转换
 + (double)diffWeightUnitStringWithWeight:(double)weight;
 + (double)diffTempUnitStringWithTemp:(double)temp;
+
+///@brief 是否包含中文
+- (BOOL)includeChinese;
+
 @end

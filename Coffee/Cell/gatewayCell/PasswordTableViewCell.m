@@ -12,8 +12,8 @@
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {
-    self.selectionStyle = UITableViewCellSelectionStyleNone;
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
+    self.selectionStyle = UITableViewCellSelectionStyleNone;
     if (self) {
         if (!_passwordTF) {
             _passwordTF = [[UITextField alloc] init];

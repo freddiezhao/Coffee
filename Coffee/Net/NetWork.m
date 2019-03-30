@@ -16,7 +16,7 @@
 #import "MainViewController.h"
 
 ///@brife 可判断的数据帧类型数量
-#define LEN 8
+#define LEN 10
 
 ///@brife 一次最大读取温度
 #define maxTempCount 20
@@ -87,13 +87,14 @@ static NSString *curveUid;
             _eventArray = [[NSMutableArray alloc] init];
         }
         _frameCount = 0;
+        _isAp = NO;
         _myTimer = [self myTimer];
         _queue = dispatch_queue_create("com.thingcom.queue", DISPATCH_QUEUE_SERIAL);
         if (!_signal) {
             _signal = dispatch_semaphore_create(0);
         }
         if (!_sendSignal) {
-            _sendSignal = dispatch_semaphore_create(2);
+            _sendSignal = dispatch_semaphore_create(0);
         }
         _deviceTimerStatus = 100;//预设值，防止未连接设备时判断为正在计时状态（0）
     }
@@ -161,9 +162,12 @@ static NSString *curveUid;
 {
     NSLog(@"连接成功");
     
-    [self resetState];
-
-    [self inquireTimer];
+    if (!_isAp) {
+        [self resetState];
+        [self inquireTimer];
+    }else{
+        [self tcpSendSSID];
+    }
     
     [_mySocket readDataWithTimeout:-1 tag:1];
     [_mySocket readDataWithTimeout:-1 tag:1];
@@ -628,6 +632,85 @@ static NSString *curveUid;
     });
 }
 
+- (void)tcpSendSSID{
+    NSString *ssid;
+    NSMutableArray *ssidArray = [[NSMutableArray alloc] init];
+    if ([self.ssid includeChinese]) {
+        ssid = [self.ssid stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet uppercaseLetterCharacterSet]];
+        NSMutableArray *array = [[ssid componentsSeparatedByString:@"%"] mutableCopy];
+        NSLog(@"%@",ssid);
+        [array removeObjectAtIndex:0];
+        for (int i = 0; i < array.count; i++) {
+            NSString *hexStr = array[i];
+            int hex = [NSString stringScanToInt:hexStr];
+            [ssidArray addObject:[NSNumber numberWithInt:hex]];
+        }
+    }else{
+        ssid = self.ssid;
+        NSInteger length = ssid.length;
+        ssidArray = [[NSMutableArray alloc] init];
+        for (int i = 0; i < length; i++) {
+            int asciiCode = [ssid characterAtIndex:i];
+            NSNumber *asciiSSID = [NSNumber numberWithInt:asciiCode];
+            [ssidArray addObject:asciiSSID];
+        }
+    }
+    [self sendSSID:ssidArray];
+}
+
+- (void)tcpSendPassword{
+    NSInteger length = self.apPwd.length;
+    NSMutableArray *passwordArray = [[NSMutableArray alloc] init];
+    for (int i = 0; i < length; i++) {
+        int asciiCode = [self.apPwd characterAtIndex:i];
+        NSNumber *asciiSSID = [NSNumber numberWithInt:asciiCode];
+        [passwordArray addObject:asciiSSID];
+    }
+    [self sendPassword:passwordArray];
+}
+
+- (void)sendSSID:(NSArray *)ssid{
+    NSMutableArray *sendSSID = [[NSMutableArray alloc ] init];
+    [sendSSID addObject:[NSNumber numberWithUnsignedChar:0x68]];
+    [sendSSID addObject:[NSNumber numberWithUnsignedChar:0x01]];
+    [sendSSID addObject:[NSNumber numberWithUnsignedChar:_frameCount]];
+    [sendSSID addObject:[NSNumber numberWithUnsignedChar:0x00]];
+    [sendSSID addObject:[NSNumber numberWithUnsignedChar:ssid.count+1]];
+    [sendSSID addObject:[NSNumber numberWithUnsignedChar:0x20]];
+    [sendSSID addObjectsFromArray:ssid];
+    [sendSSID addObject:[NSNumber numberWithUnsignedChar:[NSObject getCS:sendSSID]]];
+    [sendSSID addObject:[NSNumber numberWithUnsignedChar:0x16]];
+    [sendSSID addObject:[NSNumber numberWithUnsignedChar:0x0D]];
+    [sendSSID addObject:[NSNumber numberWithUnsignedChar:0x0A]];
+    dispatch_async(_queue, ^{
+        [self send:sendSSID withTag:102];
+    });
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self performSelector:@selector(sendSSID:) withObject:ssid afterDelay:3.0f];
+    });
+}
+
+- (void)sendPassword:(NSArray *)password{
+    NSMutableArray *sendPassword = [[NSMutableArray alloc ] init];
+    [sendPassword addObject:[NSNumber numberWithUnsignedChar:0x68]];
+    [sendPassword addObject:[NSNumber numberWithUnsignedChar:0x01]];
+    [sendPassword addObject:[NSNumber numberWithUnsignedChar:_frameCount]];
+    [sendPassword addObject:[NSNumber numberWithUnsignedChar:0x00]];
+    [sendPassword addObject:[NSNumber numberWithUnsignedChar:password.count+1]];
+    [sendPassword addObject:[NSNumber numberWithUnsignedChar:0x21]];
+    [sendPassword addObjectsFromArray:password];
+    [sendPassword addObject:[NSNumber numberWithUnsignedChar:[NSObject getCS:sendPassword]]];
+    [sendPassword addObject:[NSNumber numberWithUnsignedChar:0x16]];
+    [sendPassword addObject:[NSNumber numberWithUnsignedChar:0x0D]];
+    [sendPassword addObject:[NSNumber numberWithUnsignedChar:0x0A]];
+    dispatch_async(_queue, ^{
+        [self send:sendPassword withTag:102];
+    });
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self performSelector:@selector(sendPassword:) withObject:password afterDelay:3.0f];
+    });
+}
+
 #pragma mark - Frame68 接收处理
 - (void)checkOutFrame:(NSData *)data{
     //把读到的数据复制一份
@@ -946,6 +1029,15 @@ static NSString *curveUid;
             }else if (self.msg68Type == coolAndStir){
                 self.setColdAndStirCount = 0;
                 resendCount = 0;
+            }else if (self.msg68Type == sendSSID){
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [NSObject cancelPreviousPerformRequestsWithTarget:self];
+                });
+                [self tcpSendPassword];
+            }else if (self.msg68Type == sendPassword){
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [NSObject cancelPreviousPerformRequestsWithTarget:self];
+                });
             }
         }else if (self.frame68Type == commandFrame){
             if (self.msg68Type == getTimerStatus) {
@@ -1105,7 +1197,7 @@ static NSString *curveUid;
     unsigned char dataType;
     
     unsigned char type[LEN] = {
-      0x00,0x01,0x02,0x04,0x05,0x06,0x10,0x11
+      0x00,0x01,0x02,0x04,0x05,0x06,0x10,0x11,0x20,0x21
     };
     
     dataType = [data[5] unsignedIntegerValue];
@@ -1146,6 +1238,14 @@ static NSString *curveUid;
                     
                 case 7:
                     returnVal = getTimerValue;
+                    break;
+                    
+                case 8:
+                    returnVal = sendSSID;
+                    break;
+                    
+                case 9:
+                    returnVal = sendPassword;
                     break;
                     
                 default:

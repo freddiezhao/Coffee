@@ -12,9 +12,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface APProcessController : UIViewController
 
-@property (nonatomic, strong) NSString *ssid;
-@property (nonatomic, strong) NSString *password;
-
 @end
 
 NS_ASSUME_NONNULL_END

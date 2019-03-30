@@ -8,8 +8,10 @@
 
 #import "APProcessController.h"
 #import "GCDAsyncUdpSocket.h"
+#import "DeviceViewController.h"
 
 #import <netdb.h>//解析udp获取的IP地址
+#import <SystemConfiguration/CaptiveNetwork.h>
 
 @interface APProcessController () <GCDAsyncUdpSocketDelegate>
 
@@ -17,6 +19,8 @@
 @property (nonatomic, strong) GCDAsyncUdpSocket *udpSocket;
 @property (nonatomic, strong) NSTimer *timer;
 @property (nonatomic, strong) NSLock *lock;
+
+@property (nonatomic) dispatch_source_t confirmWifiTimer;//确认Wi-Fi切换时钟
 
 @end
 
@@ -36,20 +40,28 @@
     self.timer = [self timer];
     self.udpSocket = [self udpSocket];
     self.lock = [self lock];
-    
+    self.confirmWifiTimer = [self confirmWifiTimer];
     [self sendSearchBroadcast];
 }
 
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
+    [NetWork shareNetWork].isAp = YES;
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(apSendSucc) name:@"apSendSucc" object:nil];
 }
 
 - (void)viewWillDisappear:(BOOL)animated{
     [super viewWillDisappear:animated];
     
+    [NetWork shareNetWork].isAp = NO;
+    
     [_timer setFireDate:[NSDate distantFuture]];
     [_timer invalidate];
     _timer = nil;
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"apSendSucc" object:nil];
+
+    dispatch_source_cancel(_confirmWifiTimer);
 }
 
 - (void)dealloc{
@@ -107,40 +119,56 @@
         resendTimes--;
     }else{
         resendTimes = 0;
-        [self tcpSendSSID];
-        [self tcpSendPassword];
     }
 }
 
-- (void)tcpSendSSID{
-    NSInteger length = self.ssid.length;
-    NSMutableArray *ssidArray = [[NSMutableArray alloc] init];
-    for (int i = 0; i < length; i++) {
-        int asciiCode = [self.ssid characterAtIndex:i];
-        NSNumber *asciiSSID = [NSNumber numberWithInt:asciiCode];
-        [ssidArray addObject:asciiSSID];
-    }
-    UInt8 controlCode = 0x00;
-    NSMutableArray *data = [@[@0xFE,@0x03,@0x01,@0x01] mutableCopy];
-    [data addObjectsFromArray:ssidArray];
-    NSLog(@"%@",data);
-    //[[NetWork shareNetWork] APsendData69With:controlCode mac:mac data:data];
+static bool isApSendSucc = NO;
+- (void)apSendSucc{
+    isApSendSucc = YES;
 }
 
-- (void)tcpSendPassword{
-    NSInteger length = self.password.length;
-    NSMutableArray *passwordArray = [[NSMutableArray alloc] init];
-    for (int i = 0; i < length; i++) {
-        int asciiCode = [self.password characterAtIndex:i];
-        NSNumber *asciiSSID = [NSNumber numberWithInt:asciiCode];
-        [passwordArray addObject:asciiSSID];
+- (void)confirmWifiName{
+    if (!isApSendSucc) {
+        return;
     }
+    NSDictionary *netInfo = [self fetchNetInfo];
+    NSString *ssid = [netInfo objectForKey:@"SSID"];
+    NSLog(@"%@",ssid);
+    if ([ssid isEqualToString:[NetWork shareNetWork].ssid]) {
+        if (isApSendSucc) {
+            isFind = NO;
+            [self sendSearchBroadcast];
+        }
+    }else if(![ssid hasPrefix:@"ESP"] && [ssid isKindOfClass:[NSString class]]){
+#warning TODO 自动去连接要连接的Wi-Fi
+        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:LocalString(@"配网成功") message:LocalString(@"您未连接到配网的Wi-Fi,会导致搜索不到设备，请注意切换Wi-Fi") preferredStyle:UIAlertControllerStyleAlert];
+        UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+            for (UIViewController *controller in self.navigationController.viewControllers) {
+                if ([controller isKindOfClass:[DeviceViewController class]]) {
+                    [self.navigationController popToViewController:controller animated:YES];
+                }
+            }
+        }];
+        [alertController addAction:cancelAction];
+        [self presentViewController:alertController animated:YES completion:nil];
+    }
+}
 
-    UInt8 controlCode = 0x00;
-    NSMutableArray *data = [@[@0xFE,@0x03,@0x02,@0x01] mutableCopy];
-    [data addObjectsFromArray:passwordArray];
-    NSLog(@"%@",data);
-    //[[NetWork shareNetWork] APsendData69With:controlCode mac:mac data:data];
+- (NSDictionary *)fetchNetInfo
+{
+    NSArray *interfaceNames = CFBridgingRelease(CNCopySupportedInterfaces());
+    //    NSLog(@"%s: Supported interfaces: %@", __func__, interfaceNames);
+    
+    NSDictionary *SSIDInfo;
+    for (NSString *interfaceName in interfaceNames) {
+        SSIDInfo = CFBridgingRelease(CNCopyCurrentNetworkInfo((__bridge CFStringRef)interfaceName));
+        //NSLog(@"%s: %@ => %@", __func__, interfaceName, SSIDInfo);
+        BOOL isNotEmpty = (SSIDInfo.count > 0);
+        if (isNotEmpty) {
+            break;
+        }
+    }
+    return SSIDInfo;
 }
 
 #pragma mark - udp delegate
@@ -148,7 +176,7 @@
     [_lock lock];
     NSLog(@"UDP接收数据……………………………………………………");
     isFind = YES;//停止发送udp
-    if (1) {
+    if (!isApSendSucc) {
         /**
          *获取IP地址
          **/
@@ -169,6 +197,23 @@
         
         resendTimes = 3;
         [self tcpActions:ipAddress];
+    }else{
+        /**
+         *发送玩账号密码后在Wi-Fi里查询udp
+         **/
+        NSString *msg = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+        NSLog(@"%@",msg);
+        NSString *newMac = [msg substringWithRange:NSMakeRange(0, 8)];
+        if ([newMac isEqualToString:mac]) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                for (UIViewController *controller in self.navigationController.viewControllers) {
+                    if ([controller isKindOfClass:[DeviceViewController class]]) {
+                        [self.navigationController popToViewController:controller animated:YES];
+                    }
+                }
+                [NSObject showHudTipStr:LocalString(@"连接成功，请进行设备的选择")];
+            });
+        }
     }
     [_lock unlock];
 }
@@ -245,5 +290,17 @@
     return _lock;
 }
 
+- (dispatch_source_t)confirmWifiTimer{
+    if (!_confirmWifiTimer) {
+        dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+        _confirmWifiTimer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, queue);
+        dispatch_source_set_timer(_confirmWifiTimer, dispatch_walltime(NULL, 0), 1.f * NSEC_PER_SEC, 0);
+        dispatch_source_set_event_handler(_confirmWifiTimer, ^{
+            [self confirmWifiName];
+        });
+        dispatch_resume(_confirmWifiTimer);
+    }
+    return _confirmWifiTimer;
+}
 
 @end

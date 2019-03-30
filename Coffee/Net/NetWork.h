@@ -20,6 +20,8 @@ typedef enum{
     getPowerStatus,
     getTimerStatus,
     getTimerValue,
+    sendSSID,
+    sendPassword,
     otherMsgType
 }MsgType68;
 
@@ -150,6 +152,9 @@ static NSInteger tempCountVer = 1000;
 - (void)setColdAndStir:(NSNumber *)isColdAndStir;
 - (void)setTimerStatusOn;
 - (void)setTimerStatusOff;
+
+///@brief ap配网
+@property (nonatomic) BOOL isAp;
 
 - (void)showBakeOverAlertAction;
 - (NSMutableArray *)getBeanTempRorWithArr:(NSMutableArray *)arr;

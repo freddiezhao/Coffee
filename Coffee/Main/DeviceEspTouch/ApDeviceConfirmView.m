@@ -8,6 +8,7 @@
 
 #import "ApDeviceConfirmView.h"
 #import <SystemConfiguration/CaptiveNetwork.h>
+#import "APProcessController.h"
 
 @interface ApDeviceConfirmView ()
 
@@ -40,6 +41,7 @@
     _nextButton = [self nextButton];
     _checkBtn = [self checkBtn];
     [self setDeviceImage];
+    [self applicationWillEnterForeground];
 }
 
 - (void)viewWillAppear:(BOOL)animated{
@@ -131,7 +133,8 @@
 }
 
 - (void)goAPProcess{
-    
+    APProcessController *apVC = [[APProcessController alloc] init];
+    [self.navigationController pushViewController:apVC animated:YES];
 }
 
 - (void)checkDevice{
