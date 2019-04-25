@@ -541,7 +541,12 @@ sectionForSectionIndexTitle:(NSString *)title
     if (sender.tag == sortUnselect) {
         sender.tag = sortSelect;
     }
-    [sender setTitleColor:[UIColor colorWithHexString:@"4778CC"] forState:UIControlStateNormal];
+    
+    //设置按钮颜色
+    [_sort_generalBtn setTitleColor:[UIColor colorWithHexString:@"4778CC"] forState:UIControlStateNormal];
+    [_sort_weightBtn setTitleColor:[UIColor colorWithHexString:@"999999"] forState:UIControlStateNormal];
+    [_sort_nameBtn setTitleColor:[UIColor colorWithHexString:@"999999"] forState:UIControlStateNormal];
+    
     [self.beanTable reloadData];
 }
 
@@ -550,8 +555,12 @@ sectionForSectionIndexTitle:(NSString *)title
     _sort_weightBtn.tag = sortUnselect;
     [_sort_weightBtn setImage:[UIImage imageNamed:@"ic_rank1"] forState:UIControlStateNormal];
     _sort_generalBtn.tag = sortUnselect;
-    [_sort_generalBtn setTitleColor:[UIColor colorWithHexString:@"999999"] forState:UIControlStateNormal];
     
+    //设置按钮颜色
+    [_sort_generalBtn setTitleColor:[UIColor colorWithHexString:@"999999"] forState:UIControlStateNormal];
+    [_sort_weightBtn setTitleColor:[UIColor colorWithHexString:@"999999"] forState:UIControlStateNormal];
+    [_sort_nameBtn setTitleColor:[UIColor colorWithHexString:@"4778CC"] forState:UIControlStateNormal];
+
     if (sender.tag == sortUnselect) {
         sender.tag = sortUp;
         [sender setImage:[UIImage imageNamed:@"ic_rank3"] forState:UIControlStateNormal];
@@ -569,7 +578,12 @@ sectionForSectionIndexTitle:(NSString *)title
 - (void)weightSort:(UIButton *)sender{
     _beanArr = [[DataBase shareDataBase] queryAllBean];
     _sort_generalBtn.tag = sortUnselect;
+    
+    //设置按钮颜色
     [_sort_generalBtn setTitleColor:[UIColor colorWithHexString:@"999999"] forState:UIControlStateNormal];
+    [_sort_weightBtn setTitleColor:[UIColor colorWithHexString:@"4778CC"] forState:UIControlStateNormal];
+    [_sort_nameBtn setTitleColor:[UIColor colorWithHexString:@"999999"] forState:UIControlStateNormal];
+    
     _sort_nameBtn.tag = sortUnselect;
     [_sort_nameBtn setImage:[UIImage imageNamed:@"ic_rank1"] forState:UIControlStateNormal];
     if (sender.tag == sortUnselect) {

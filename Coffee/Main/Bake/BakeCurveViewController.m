@@ -66,8 +66,6 @@ static BOOL isRelaOn = NO;
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    //强制亮屏
-    [[UIApplication sharedApplication] setIdleTimerDisabled:YES];
     
     _myNet = [NetWork shareNetWork];
     

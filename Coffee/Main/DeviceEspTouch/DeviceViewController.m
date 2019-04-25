@@ -333,6 +333,9 @@ NSString *const CellIdentifier_device = @"CellID_device";
                           }
                       } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
                           NSLog(@"Error:%@",error);
+                          if (error.code == -1001) {
+                              [NSObject showHudTipStr:LocalString(@"当前网络状况不佳")];
+                          }
                       }];
             }else{
                 for (int i = 0; i < _deviceArray.count; i++) {
@@ -378,6 +381,9 @@ NSString *const CellIdentifier_device = @"CellID_device";
                               }
                           } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
                               NSLog(@"Error:%@",error);
+                              if (error.code == -1001) {
+                                  [NSObject showHudTipStr:LocalString(@"当前网络状况不佳")];
+                              }
                           }];
                 }
             }
@@ -647,15 +653,11 @@ NSString *const CellIdentifier_device = @"CellID_device";
                 [NSObject showHudTipStr:LocalString(@"删除设备失败")];
             }
         } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-            
-            NSData *errorData = error.userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey];
-            
-            NSDictionary *serializedData = [NSJSONSerialization JSONObjectWithData: errorData options:kNilOptions error:nil];
-            
-            NSLog(@"error--%@",serializedData);
-            
-            
-            [NSObject showHudTipStr:LocalString(@"删除设备失败")];
+            if (error.code == -1001) {
+                [NSObject showHudTipStr:LocalString(@"当前网络状况不佳")];
+            }else{
+                [NSObject showHudTipStr:LocalString(@"删除设备失败")];
+            }
             NSLog(@"Error:%@",error);
         }];
 
@@ -796,9 +798,13 @@ NSString *const CellIdentifier_device = @"CellID_device";
         
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         NSLog(@"Error:%@",error);
+        if (error.code == -1001) {
+            [NSObject showHudTipStr:LocalString(@"当前网络状况不佳")];
+        }else{
+            [NSObject showHudTipStr:@"修改设备名称失败"];
+        }
         dispatch_async(dispatch_get_main_queue(), ^{
             [SVProgressHUD dismiss];
-            [NSObject showHudTipStr:@"修改设备名称失败"];
         });
 
     }];
@@ -881,9 +887,13 @@ NSString *const CellIdentifier_device = @"CellID_device";
         });
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         NSLog(@"Error:%@",error);
+        if (error.code == -1001) {
+            [NSObject showHudTipStr:LocalString(@"当前网络状况不佳")];
+        }else{
+            [NSObject showHudTipStr:@"从服务器获取咖啡机信息失败"];
+        }
         dispatch_async(dispatch_get_main_queue(), ^{
             [SVProgressHUD dismiss];
-            [NSObject showHudTipStr:@"从服务器获取咖啡机信息失败"];
         });
     }];
 }

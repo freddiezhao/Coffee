@@ -591,7 +591,11 @@ static float HEIGHT_HEADER = 36.f;
             [SVProgressHUD dismiss];
         });
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        [NSObject showHudTipStr:LocalString(@"编辑咖啡豆失败")];
+        if (error.code == -1001) {
+            [NSObject showHudTipStr:LocalString(@"当前网络状况不佳")];
+        }else{
+            [NSObject showHudTipStr:LocalString(@"编辑咖啡豆失败")];
+        }
         dispatch_async(dispatch_get_main_queue(), ^{
             [SVProgressHUD dismiss];
         });

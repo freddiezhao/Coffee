@@ -9,15 +9,18 @@
 #import "GeneralViewController.h"
 #import "LlabelRlabelCell.h"
 #import "SubtitileCell.h"
+#import "LogOutCell.h"
 #import "FastEventViewController.h"
 #import "CurveColorViewController.h"
 #import "SettingModel.h"
 #import "YPickerAlertController.h"
 #import <Charts/Charts-Swift.h>
+#import "LoginViewController.h"
 
 
 NSString *const CellIdentifier_GeneralSub = @"CellID_GeneralSub";
 NSString *const CellIdentifier_GeneralLR = @"CellID_GeneralLR";
+NSString *const CellIdentifier_GeneralLogout = @"CellID_GeneralLogout";
 
 @interface GeneralViewController () <UITableViewDelegate, UITableViewDataSource>
 
@@ -57,7 +60,8 @@ NSString *const CellIdentifier_GeneralLR = @"CellID_GeneralLR";
             tableView.separatorColor = [UIColor colorWithRed:0/255.0 green:0/255.0 blue:0/255.0 alpha:0.08];
             [tableView registerClass:[SubtitileCell class] forCellReuseIdentifier:CellIdentifier_GeneralSub];
             [tableView registerClass:[LlabelRlabelCell class] forCellReuseIdentifier:CellIdentifier_GeneralLR];
-            
+            [tableView registerClass:[LogOutCell class] forCellReuseIdentifier:CellIdentifier_GeneralLogout];
+
             [self.view addSubview:tableView];
             
             //tableView.scrollEnabled = NO;
@@ -70,7 +74,7 @@ NSString *const CellIdentifier_GeneralLR = @"CellID_GeneralLR";
 
 #pragma mark - UITableView Delegate
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView{
-    return 5;
+    return 6;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
@@ -84,6 +88,8 @@ NSString *const CellIdentifier_GeneralLR = @"CellID_GeneralLR";
         return 1;
         //return 3;曲线颜色好像不需要了
     }else if (section == 4){
+        return 1;
+    }else if (section == 5){
         return 1;
     }else{
         return 0;
@@ -153,8 +159,7 @@ NSString *const CellIdentifier_GeneralLR = @"CellID_GeneralLR";
         cell.leftLabel.text = LocalString(@"升温率平滑");
         cell.rightLabel.text = [NSString stringWithFormat:@"%ld",_myData.setting.tempRateSmooth];
         return cell;
-    }else{
-        
+    }else if (indexPath.section == 4){
         LlabelRlabelCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_GeneralLR];
         cell.leftLabel.font = [UIFont systemFontOfSize:15.0];
         cell.rightLabel.font = [UIFont systemFontOfSize:15.f];
@@ -164,6 +169,12 @@ NSString *const CellIdentifier_GeneralLR = @"CellID_GeneralLR";
         cell.leftLabel.text = LocalString(@"语言");
         cell.rightLabel.text = _myData.setting.language;
         return cell;
+    }else{
+        LogOutCell *cell1 = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_GeneralLogout];
+        if (cell1 == nil) {
+            cell1 = [[LogOutCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_GeneralLogout];
+        }
+        return cell1;
     }
 }
 
@@ -186,6 +197,31 @@ NSString *const CellIdentifier_GeneralLR = @"CellID_GeneralLR";
     }
     if (indexPath.section == 4) {
         [self showSheetWithTitle:LocalString(@"请选择语言") actions:@[@"中文",@"英文"] indexpath:indexPath];
+    }
+    if (indexPath.section == 5) {
+        YAlertViewController *alert = [[YAlertViewController alloc] init];
+        alert.lBlock = ^{
+            
+        };
+        alert.rBlock = ^{
+            //清除单例
+            [NetWork destroyInstance];
+            
+            LoginViewController *loginVC = [[LoginViewController alloc] init];
+            UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:loginVC];
+            [UIApplication sharedApplication].keyWindow.rootViewController = nav;
+        };
+        alert.modalPresentationStyle = UIModalPresentationOverCurrentContext;
+        [self presentViewController:alert animated:NO completion:^{
+            alert.WScale_alert = WScale;
+            alert.HScale_alert = HScale;
+            [alert showView];
+            alert.titleLabel.text = LocalString(@"提示");
+            alert.messageLabel.text = LocalString(@"确定退出登录吗？");
+            [alert.leftBtn setTitle:LocalString(@"取消") forState:UIControlStateNormal];
+            [alert.rightBtn setTitle:LocalString(@"确认") forState:UIControlStateNormal];
+        }];
+        
     }
     if (indexPath.section == 2) {
         if (indexPath.row == 0) {
@@ -401,7 +437,11 @@ NSString *const CellIdentifier_GeneralLR = @"CellID_GeneralLR";
             [SVProgressHUD dismiss];
         });
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        [NSObject showHudTipStr:LocalString(@"更新设置失败")];
+        if (error.code == -1001) {
+            [NSObject showHudTipStr:LocalString(@"当前网络状况不佳")];
+        }else{
+            [NSObject showHudTipStr:LocalString(@"更新设置失败")];
+        }
         dispatch_async(dispatch_get_main_queue(), ^{
             [SVProgressHUD dismiss];
         });

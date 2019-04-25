@@ -577,7 +577,11 @@ NSString *const CellIdentifier_TempPer30Share = @"CellID_TempPer30Share";
         }
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         NSLog(@"Error:%@",error);
-        [NSObject showHudTipStr:LocalString(@"从服务器获取烘焙报告失败")];
+        if (error.code == -1001) {
+            [NSObject showHudTipStr:LocalString(@"当前网络状况不佳")];
+        }else{
+            [NSObject showHudTipStr:LocalString(@"从服务器获取烘焙报告失败")];
+        }
         dispatch_async(dispatch_get_main_queue(), ^{
             [SVProgressHUD dismiss];
         });

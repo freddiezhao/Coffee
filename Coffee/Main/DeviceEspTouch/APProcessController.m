@@ -220,7 +220,7 @@ static bool isApSendSucc = NO;
 
 
 - (void)udpSocket:(GCDAsyncUdpSocket *)sock didNotConnect:(NSError *)error{
-    NSLog(@"断开连接");
+    NSLog(@"失去连接");
 }
 
 - (void)udpSocket:(GCDAsyncUdpSocket *)sock didSendDataWithTag:(long)tag{

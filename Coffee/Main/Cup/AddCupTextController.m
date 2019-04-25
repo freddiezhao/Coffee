@@ -814,7 +814,11 @@ NSString *const CellIdentifier_cupAddBadScore = @"CellID_cupAddBadScore";
               });
           } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
               NSLog(@"Error:%@",error);
-              [NSObject showHudTipStr:LocalString(@"杯测信息添加服务器失败")];
+              if (error.code == -1001) {
+                  [NSObject showHudTipStr:LocalString(@"当前网络状况不佳")];
+              }else{
+                  [NSObject showHudTipStr:LocalString(@"杯测信息添加服务器失败")];
+              }
               dispatch_async(dispatch_get_main_queue(), ^{
                   [SVProgressHUD dismiss];
               });

@@ -22,6 +22,7 @@
             _codeTF.font = [UIFont fontWithName:@"Arial" size:16.0f];
             _codeTF.textColor = [UIColor colorWithHexString:@"222222"];
             //_codeTF.borderStyle = UITextBorderStyleRoundedRect;
+            _codeTF.keyboardType = UIKeyboardTypeNumberPad;
             _codeTF.clearButtonMode = UITextFieldViewModeWhileEditing;
             _codeTF.autocorrectionType = UITextAutocorrectionTypeNo;
             _codeTF.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;

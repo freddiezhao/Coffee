@@ -234,14 +234,14 @@
 - (void)showControlView:(UIButton *)sender{
     if (sender.tag == unselect) {
         sender.tag = select;
-        [UIView animateWithDuration:0.5 animations:^{
+        [UIView animateWithDuration:0.2 animations:^{
             CGSize size = _mainView.frame.size;
             _mainView.frame = CGRectMake(0, (ScreenHeight - 64 - (tabbarHeight + kSafeArea_Bottom) - 400/HScale - 90/HScale), size.width, size.height);//154是控制按钮view高度，刚好把控制按钮隐藏，90是bottonview高度
             [sender setImage:[UIImage imageNamed:@"btn_collapse"] forState:UIControlStateNormal];
         }];
     }else{
         sender.tag = unselect;
-        [UIView animateWithDuration:0.5 animations:^{
+        [UIView animateWithDuration:0.2 animations:^{
             CGSize size = _mainView.frame.size;
             _mainView.frame = CGRectMake(0, (ScreenHeight - 64 - (tabbarHeight + kSafeArea_Bottom) - 400/HScale + 154/HScale - 90/HScale), size.width, size.height);//154是控制按钮view高度，刚好把控制按钮隐藏，90是bottonview高度
             [sender setImage:[UIImage imageNamed:@"btn_expand"] forState:UIControlStateNormal];
@@ -348,6 +348,11 @@
         dispatch_async(dispatch_get_main_queue(), ^{
             //当顺时针旋转120度时，指针转到129
             _pointerImage.transform = CGAffineTransformMakeRotation((tempBean / 129.f * 120.0) / 180 * M_PI);
+            if (tempBean > 235) {
+                _beanTempLabel.textColor = [UIColor colorWithHexString:@"FF4733"];
+            }else{
+                _beanTempLabel.textColor = [UIColor colorWithHexString:@"4778CC"];
+            }
             _beanTempLabel.text = [NSString stringWithFormat:@"%.1f",[NSString diffTempUnitStringWithTemp:tempBean]];
             _inTempLabel.text = [NSString stringWithFormat:@"%.1f%@",[NSString diffTempUnitStringWithTemp:tempIn],[DataBase shareDataBase].setting.tempUnit];
             _outTempLabel.text = [NSString stringWithFormat:@"%.1f%@",[NSString diffTempUnitStringWithTemp:tempOut],[DataBase shareDataBase].setting.tempUnit];

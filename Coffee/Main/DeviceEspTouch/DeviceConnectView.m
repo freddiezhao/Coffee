@@ -78,6 +78,7 @@
     self.espTouchDelegate = [[EspTouchDelegateImpl alloc] init];
     _spinner = [self spinner];
     _image =[self image];
+    [self setImage];
     _cancelBtn = [self cancelBtn];
     [self startEsptouchConnect];
     [self sendSearchBroadcast];
@@ -101,6 +102,13 @@
     [_udpTimer setFireDate:[NSDate distantFuture]];
     [_udpTimer invalidate];
     _udpTimer = nil;
+}
+
+- (void)didMoveToParentViewController:(UIViewController *)parent{
+    [super didMoveToParentViewController:parent];
+    if (!parent) {
+        [self cancel];
+    }
 }
 
 #pragma mark - udp
@@ -387,6 +395,42 @@
         }];
     }
     return _image;
+}
+
+- (void)setImage{
+    switch ([[NetWork shareNetWork].deviceType integerValue]) {
+        case 0:
+        {
+            _image.image = [UIImage imageNamed:@"img_hb_m6g_small"];
+        }
+            break;
+            
+        case 1:
+        {
+            _image.image = [UIImage imageNamed:@"img_hb_m6g_small"];
+        }
+            break;
+            
+        case 2:
+        {
+            _image.image = [UIImage imageNamed:@"img_hb_l2_small"];
+        }
+            break;
+            
+        case 3:
+        {
+            _image.image = [UIImage imageNamed:@"img_peak_edmund_small"];
+        }
+            break;
+            
+        case 4:{
+            _image.image = [UIImage imageNamed:@"img_logo_gray"];
+        }
+            break;
+            
+        default:
+            break;
+    }
 }
 
 - (UIButton *)cancelBtn{

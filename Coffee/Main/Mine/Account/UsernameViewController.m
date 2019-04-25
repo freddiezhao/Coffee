@@ -110,7 +110,11 @@
             [SVProgressHUD dismiss];
         });
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        [NSObject showHudTipStr:LocalString(@"修改用户名失败")];
+        if (error.code == -1001) {
+            [NSObject showHudTipStr:LocalString(@"当前网络状况不佳")];
+        }else{
+            [NSObject showHudTipStr:LocalString(@"修改用户名失败")];
+        }
         dispatch_async(dispatch_get_main_queue(), ^{
             [SVProgressHUD dismiss];
         });

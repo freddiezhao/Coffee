@@ -12,11 +12,13 @@
 #import "FeedSelectCell.h"
 #import "FeedTextFieldCell.h"
 
+#import <MessageUI/MessageUI.h>
+
 NSString *const CellIdentifier_FeedTextView = @"CellID_FeedTextView";
 NSString *const CellIdentifier_FeedSelect = @"CellID_FeedSelect";
 NSString *const CellIdentifier_FeedTextField = @"CellID_FeedTextField";
 
-@interface FeedbackViewController () <UITableViewDelegate, UITableViewDataSource>
+@interface FeedbackViewController () <UITableViewDelegate, UITableViewDataSource, MFMessageComposeViewControllerDelegate>
 
 @property (nonatomic, strong) UITableView *feedTable;
 
@@ -35,6 +37,76 @@ NSString *const CellIdentifier_FeedTextField = @"CellID_FeedTextField";
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
     [self.rdv_tabBarController setTabBarHidden:YES animated:YES];
+}
+
+#pragma mark - private methods
+- (void)submitFeedback{
+    // 判断设备能不能发送短信
+    if([MFMessageComposeViewController canSendText]){
+        
+        MFMessageComposeViewController *picker = [[MFMessageComposeViewController alloc] init];
+        // 设置委托
+        picker.messageComposeDelegate= self;
+        // 默认信息内容(可以去服务器进行拉取内容)
+        picker.body = @"ABCD";
+        // 默认收件人(可多个)
+        picker.recipients = @[@"274194059@qq.com"];
+        
+        [self presentViewController:picker animated:YES completion:nil];
+        
+    }else{
+        // 提示用户不能发送短信
+        YAlertViewController *alert = [[YAlertViewController alloc] init];
+        alert.rBlock = ^{
+        };
+        alert.modalPresentationStyle = UIModalPresentationOverCurrentContext;
+        [self presentViewController:alert animated:NO completion:^{
+            if (ScreenWidth > ScreenHeight) {
+                alert.WScale_alert = 667.0 / ScreenWidth;
+                alert.HScale_alert = 375.0 / ScreenHeight;
+            }else{
+                alert.WScale_alert = WScale;
+                alert.HScale_alert = HScale;
+            }
+            [alert showView];
+            alert.titleLabel.text = LocalString(@"提示");
+            alert.messageLabel.text = LocalString(@"该设备不支持邮件功能");
+            [alert.leftBtn setTitle:LocalString(@"取消") forState:UIControlStateNormal];
+            [alert.rightBtn setTitle:LocalString(@"确认") forState:UIControlStateNormal];
+        }];
+    }
+}
+
+#pragma mark MFMessageComposeViewControllerDelegate
+- (void)messageComposeViewController:(MFMessageComposeViewController *)controller didFinishWithResult:(MessageComposeResult)result {
+    
+    // 不管任何状态返回之前界面
+    [controller dismissViewControllerAnimated:YES completion:nil];
+    
+    NSString *message;
+    switch (result){
+        case MessageComposeResultCancelled:
+        {
+            NSLog(@"取消发送");
+            message = @"取消发送";
+        }
+            break;
+        case MessageComposeResultFailed:
+        {
+            NSLog(@"发送失败");
+            message = @"发送失败";
+        }
+            break;
+        case MessageComposeResultSent:
+        {
+            NSLog(@"发送成功");
+            message = @"发送成功";
+        }
+            break;
+            
+        default:
+            break;
+    }
 }
 
 #pragma mark - Lazyload
@@ -230,8 +302,4 @@ NSString *const CellIdentifier_FeedTextField = @"CellID_FeedTextField";
     return view;
 }
 
-#pragma mark - Action
-- (void)submitFeedback{
-    
-}
 @end

@@ -58,7 +58,7 @@ NSString *const CellIdentifier_password = @"CellID_password";
         [_nextBtn.titleLabel setFont:[UIFont fontWithName:@"PingFangSC-Medium" size:16]];
         [_nextBtn setBackgroundColor:[UIColor colorWithRed:71/255.0 green:120/255.0 blue:204/255.0 alpha:0.4]];
         [_nextBtn setButtonStyle1];
-        //_nextBtn.enabled = NO;
+        _nextBtn.enabled = NO;
         [_nextBtn addTarget:self action:@selector(goNextView) forControlEvents:UIControlEventTouchUpInside];
         [self.view addSubview:_nextBtn];
     }

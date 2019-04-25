@@ -330,14 +330,11 @@ static float HEIGHT_HEADER = 36.f;
             }
         } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
             
-            NSData *errorData = error.userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey];
-            
-            NSDictionary *serializedData = [NSJSONSerialization JSONObjectWithData: errorData options:kNilOptions error:nil];
-            
-            NSLog(@"error--%@",serializedData);
-            
-            
-            [NSObject showHudTipStr:LocalString(@"删除失败")];
+            if (error.code == -1001) {
+                [NSObject showHudTipStr:LocalString(@"当前网络状况不佳")];
+            }else{
+                [NSObject showHudTipStr:LocalString(@"删除失败")];
+            }
             NSLog(@"Error:%@",error);
         }];
         

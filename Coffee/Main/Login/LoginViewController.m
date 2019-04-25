@@ -83,7 +83,7 @@
         _phoneTF.autocorrectionType = UITextAutocorrectionTypeNo;
         _phoneTF.delegate = self;
         _phoneTF.autocorrectionType = UITextAutocorrectionTypeNo;
-        _phoneTF.keyboardType = UIKeyboardTypeNumbersAndPunctuation;
+        _phoneTF.keyboardType = UIKeyboardTypePhonePad;
         [_phoneTF addTarget:self action:@selector(textFieldTextChange:) forControlEvents:UIControlEventEditingChanged];
         [self.view addSubview:_phoneTF];
         [_phoneTF mas_makeConstraints:^(MASConstraintMaker *make) {

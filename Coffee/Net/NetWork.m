@@ -48,6 +48,9 @@ static NSString *curveUid;
 - (instancetype)init{
     self = [super init];
     if (self) {
+        //强制亮屏
+        [[UIApplication sharedApplication] setIdleTimerDisabled:YES];
+        
         dispatch_queue_t queue = dispatch_queue_create("netQueue", DISPATCH_QUEUE_SERIAL);
         if (!_mySocket) {
             _mySocket = [[GCDAsyncSocket alloc] initWithDelegate:self delegateQueue:queue];
@@ -94,7 +97,7 @@ static NSString *curveUid;
             _signal = dispatch_semaphore_create(0);
         }
         if (!_sendSignal) {
-            _sendSignal = dispatch_semaphore_create(0);
+            _sendSignal = dispatch_semaphore_create(1);
         }
         _deviceTimerStatus = 100;//预设值，防止未连接设备时判断为正在计时状态（0）
     }
@@ -190,7 +193,12 @@ static NSString *curveUid;
     NSLog(@"接收到消息%@",data);
     NSLog(@"socket成功收到帧, tag: %ld", tag);
     [self checkOutFrame:data];
-    dispatch_semaphore_signal(_sendSignal);
+    
+    //以下操作保证收到上报帧或者回复帧后只有一个信号量，不会一次发出多条帧
+    dispatch_time_t time = dispatch_time(DISPATCH_TIME_NOW, 1.f * NSEC_PER_SEC);
+    dispatch_semaphore_wait(_sendSignal, time);
+    dispatch_semaphore_signal(_sendSignal);//收到信息增加信号量
+
 }
 
 - (void)socket:(GCDAsyncSocket *)sock didWriteDataWithTag:(long)tag{
@@ -513,6 +521,8 @@ static NSString *curveUid;
 }
 
 - (void)setFire:(NSNumber *)isFire{
+    [_myTimer setFireDate:[NSDate distantFuture]];
+    
     NSMutableArray *setFire = [[NSMutableArray alloc ] init];
     [setFire addObject:[NSNumber numberWithUnsignedChar:0x68]];
     [setFire addObject:[NSNumber numberWithUnsignedChar:0x01]];
@@ -539,6 +549,8 @@ static NSString *curveUid;
 }
 
 - (void)setPower:(NSNumber *)isPower{
+    [_myTimer setFireDate:[NSDate distantFuture]];
+    
     NSMutableArray *setPower = [[NSMutableArray alloc ] init];
     [setPower addObject:[NSNumber numberWithUnsignedChar:0x68]];
     [setPower addObject:[NSNumber numberWithUnsignedChar:0x01]];
@@ -565,6 +577,8 @@ static NSString *curveUid;
 }
 
 - (void)setColdAndStir:(NSNumber *)isColdAndStir{
+    [_myTimer setFireDate:[NSDate distantFuture]];
+    
     NSMutableArray *setColdAndStir = [[NSMutableArray alloc ] init];
     [setColdAndStir addObject:[NSNumber numberWithUnsignedChar:0x68]];
     [setColdAndStir addObject:[NSNumber numberWithUnsignedChar:0x01]];
@@ -1023,12 +1037,15 @@ static NSString *curveUid;
             }else if (self.msg68Type == getPowerStatus){
                 self.setPowerCount = 0;
                 resendCount = 0;
+                [_myTimer setFireDate:[NSDate date]];
             }else if (self.msg68Type == fire){
                 self.setFireCount = 0;
                 resendCount = 0;
+                [_myTimer setFireDate:[NSDate date]];
             }else if (self.msg68Type == coolAndStir){
                 self.setColdAndStirCount = 0;
                 resendCount = 0;
+                [_myTimer setFireDate:[NSDate date]];
             }else if (self.msg68Type == sendSSID){
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [NSObject cancelPreviousPerformRequestsWithTarget:self];
@@ -1576,7 +1593,11 @@ static NSString *curveUid;
         dispatch_async(dispatch_get_main_queue(), ^{
             [SVProgressHUD dismiss];
         });
-        [NSObject showHudTipStr:@"后台出现问题，存储曲线失败"];
+        if (error.code == -1001) {
+            [NSObject showHudTipStr:LocalString(@"当前网络状况不佳")];
+        }else{
+            [NSObject showHudTipStr:@"后台出现问题，存储曲线失败"];
+        }
         NSLog(@"Error:%@",error);
     }];
 }

@@ -286,7 +286,9 @@
             [NSObject showHudTipStr:[responseDic objectForKey:@"error"]];
         }
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        
+        if (error.code == -1001) {
+            [NSObject showHudTipStr:LocalString(@"当前网络状况不佳")];
+        }
     }];
 }
 
@@ -334,6 +336,9 @@
               }
           } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
               NSLog(@"Error:%@",error);
+              if (error.code == -1001) {
+                  [NSObject showHudTipStr:LocalString(@"当前网络状况不佳")];
+              }
           }];
     
 }
@@ -408,6 +413,9 @@
         }
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         NSLog(@"修改昵称失败");
+        if (error.code == -1001) {
+            [NSObject showHudTipStr:LocalString(@"当前网络状况不佳")];
+        }
     }];
 }
 @end
