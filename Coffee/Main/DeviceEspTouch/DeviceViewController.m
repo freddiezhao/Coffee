@@ -275,6 +275,7 @@ NSString *const CellIdentifier_device = @"CellID_device";
         int isContain = 0;
         for (DeviceModel *device in _onlineDeviceArray) {
             if ([ipAddress isEqualToString:device.ipAddress]) {
+                [_onlineDeviceArray removeObject:device];
                 isContain = 1;
                 break;
             }
@@ -343,8 +344,8 @@ NSString *const CellIdentifier_device = @"CellID_device";
                     if ([[msg substringWithRange:NSMakeRange(0, 8)] isEqualToString:device.sn]) {
                         dModel.deviceName = device.deviceName;
                         dModel.deviceType = device.deviceType;
-                        [_deviceArray removeObjectAtIndex:i];
-                        NSLog(@"%@",device.deviceType);
+                        [_deviceArray removeObject:device];
+                        NSLog(@"devicetype%@",dModel.deviceType);
                         break;
                     }
                 }
@@ -401,8 +402,8 @@ NSString *const CellIdentifier_device = @"CellID_device";
                 [_devieceTable reloadData];
             });
         }
-        
     }
+    sleep(1.f);
     [_lock unlock];
 }
 

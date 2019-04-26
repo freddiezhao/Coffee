@@ -94,6 +94,8 @@ NSString *const CellIdentifier_FeedTextField = @"CellID_FeedTextField";
               NSString * daetr = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
               if ([[responseDic objectForKey:@"errno"] intValue] == 0) {
                   NSLog(@"success:%@",daetr);
+                  [NSObject showHudTipStr:LocalString(@"发送邮件成功")];
+                  [self.navigationController popViewControllerAnimated:YES];
               }else{
                   [NSObject showHudTipStr:LocalString(@"发送邮件失败，请重试")];
               }

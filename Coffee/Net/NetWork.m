@@ -253,7 +253,7 @@ static NSString *curveUid;
             
         }else if(tag == 101){
             [self.mySocket writeData:sendData withTimeout:-1 tag:2];
-            if (sendCount - recvCount == 4) {
+            if (sendCount - recvCount == 7) {
                 NSLog(@"四秒没回信息，断开连接");
                 [self setConnectedDevice:nil];
                 [[NSNotificationCenter defaultCenter] postNotificationName:@"mysocketDidDisconnect" object:nil userInfo:nil];
