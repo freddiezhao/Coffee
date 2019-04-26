@@ -8,12 +8,15 @@
 
 #import <UIKit/UIKit.h>
 
+typedef void(^textBlock)(NSString *text);
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface FeedTextViewCell : UITableViewCell <UITextViewDelegate>
 
 @property (nonatomic, strong) UITextView *info;
 @property (nonatomic, strong) UILabel *limitLabel;
+@property (nonatomic) textBlock textBlock;
 
 @end
 

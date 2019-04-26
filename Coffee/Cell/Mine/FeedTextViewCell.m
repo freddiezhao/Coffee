@@ -66,6 +66,10 @@
     if (textView.text.length == 0) {
         textView.text = LocalString(@"请详细描述您遇到的问题");
         textView.textColor = [UIColor colorWithRed:206/255.0 green:206/255.0 blue:206/255.0 alpha:1];
+    }else{
+        if (self.textBlock) {
+            self.textBlock(textView.text);
+        }
     }
 }
 

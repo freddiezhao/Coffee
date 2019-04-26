@@ -12,26 +12,33 @@
 #import "FeedSelectCell.h"
 #import "FeedTextFieldCell.h"
 
-#import <MessageUI/MessageUI.h>
 
 NSString *const CellIdentifier_FeedTextView = @"CellID_FeedTextView";
 NSString *const CellIdentifier_FeedSelect = @"CellID_FeedSelect";
 NSString *const CellIdentifier_FeedTextField = @"CellID_FeedTextField";
 
-@interface FeedbackViewController () <UITableViewDelegate, UITableViewDataSource, MFMessageComposeViewControllerDelegate>
+@interface FeedbackViewController () <UITableViewDelegate, UITableViewDataSource>
 
 @property (nonatomic, strong) UITableView *feedTable;
+@property (nonatomic, strong) NSArray *messageArray;
 
 @end
 
-@implementation FeedbackViewController
+@implementation FeedbackViewController{
+    NSString *content;
+    NSString *shortMessage;
+    NSString *contact;
+    NSString *mobile;
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.view.layer.backgroundColor = [UIColor colorWithRed:246/255.0 green:246/255.0 blue:246/255.0 alpha:1].CGColor;
     [self setNavItem];
     
+    self.messageArray = @[LocalString(@"连不上路由器"),LocalString(@"升温不够快"),LocalString(@"豆子烤焦了"),LocalString(@"机器抖的厉害")];
     _feedTable = [self feedTable];
+    
 }
 
 - (void)viewWillAppear:(BOOL)animated{
@@ -41,74 +48,70 @@ NSString *const CellIdentifier_FeedTextField = @"CellID_FeedTextField";
 
 #pragma mark - private methods
 - (void)submitFeedback{
-    // 判断设备能不能发送短信
-    if([MFMessageComposeViewController canSendText]){
-        
-        MFMessageComposeViewController *picker = [[MFMessageComposeViewController alloc] init];
-        // 设置委托
-        picker.messageComposeDelegate= self;
-        // 默认信息内容(可以去服务器进行拉取内容)
-        picker.body = @"ABCD";
-        // 默认收件人(可多个)
-        picker.recipients = @[@"274194059@qq.com"];
-        
-        [self presentViewController:picker animated:YES completion:nil];
-        
-    }else{
-        // 提示用户不能发送短信
-        YAlertViewController *alert = [[YAlertViewController alloc] init];
-        alert.rBlock = ^{
-        };
-        alert.modalPresentationStyle = UIModalPresentationOverCurrentContext;
-        [self presentViewController:alert animated:NO completion:^{
-            if (ScreenWidth > ScreenHeight) {
-                alert.WScale_alert = 667.0 / ScreenWidth;
-                alert.HScale_alert = 375.0 / ScreenHeight;
-            }else{
-                alert.WScale_alert = WScale;
-                alert.HScale_alert = HScale;
-            }
-            [alert showView];
-            alert.titleLabel.text = LocalString(@"提示");
-            alert.messageLabel.text = LocalString(@"该设备不支持邮件功能");
-            [alert.leftBtn setTitle:LocalString(@"取消") forState:UIControlStateNormal];
-            [alert.rightBtn setTitle:LocalString(@"确认") forState:UIControlStateNormal];
-        }];
+    if (![NSString validateMobile:mobile]) {
+        [NSObject showHudTipStr:@"手机号码错误"];
+        return;
     }
-}
-
-#pragma mark MFMessageComposeViewControllerDelegate
-- (void)messageComposeViewController:(MFMessageComposeViewController *)controller didFinishWithResult:(MessageComposeResult)result {
     
-    // 不管任何状态返回之前界面
-    [controller dismissViewControllerAnimated:YES completion:nil];
-    
-    NSString *message;
-    switch (result){
-        case MessageComposeResultCancelled:
-        {
-            NSLog(@"取消发送");
-            message = @"取消发送";
+    NSString *shortMessage = @"";
+    for (int i = 0; i < 4; i++) {
+        FeedSelectCell *cell = [self.feedTable cellForRowAtIndexPath:[NSIndexPath indexPathForRow:i inSection:1]];
+        if (cell.tag == select) {
+            shortMessage = [shortMessage stringByAppendingString:self.messageArray[i]];
+            shortMessage = [shortMessage stringByAppendingString:@"、"];
         }
-            break;
-        case MessageComposeResultFailed:
-        {
-            NSLog(@"发送失败");
-            message = @"发送失败";
-        }
-            break;
-        case MessageComposeResultSent:
-        {
-            NSLog(@"发送成功");
-            message = @"发送成功";
-        }
-            break;
-            
-        default:
-            break;
     }
-}
+    if (shortMessage.length > 0) {
+        shortMessage = [shortMessage substringToIndex:shortMessage.length-1];
+    }
+    if (content.length <= 0) {
+        content = @"";
+    }
+    if (contact.length <= 0) {
+        contact = @"";
+    }
 
+    [SVProgressHUD show];
+    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+    
+    [manager.requestSerializer willChangeValueForKey:@"timeoutInterval"];
+    manager.requestSerializer.timeoutInterval = 6.f;
+    [manager.requestSerializer didChangeValueForKey:@"timeoutInterval"];
+    
+    NSString *url = [NSString stringWithFormat:@"http://139.196.90.97:8080/coffee/util/email"];
+    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet characterSetWithCharactersInString:@"`#%^{}\"[]|\\<> "].invertedSet];
+    
+    [manager.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+    [manager.requestSerializer setValue:[DataBase shareDataBase].userId forHTTPHeaderField:@"userId"];
+    [manager.requestSerializer setValue:[NSString stringWithFormat:@"bearer %@",[DataBase shareDataBase].token] forHTTPHeaderField:@"Authorization"];
+    
+    NSDictionary *parameters = @{@"content":content,@"shortMessage":shortMessage,@"contact":contact,@"mobile":mobile};
+    NSLog(@"%@",parameters);
+    [manager POST:url parameters:parameters progress:nil
+          success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+              NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableContainers|NSJSONReadingMutableLeaves error:nil];
+              NSData * data = [NSJSONSerialization dataWithJSONObject:responseDic options:(NSJSONWritingOptions)0 error:nil];
+              NSString * daetr = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
+              if ([[responseDic objectForKey:@"errno"] intValue] == 0) {
+                  NSLog(@"success:%@",daetr);
+              }else{
+                  [NSObject showHudTipStr:LocalString(@"发送邮件失败，请重试")];
+              }
+              dispatch_async(dispatch_get_main_queue(), ^{
+                  [SVProgressHUD dismiss];
+              });
+          } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+              NSLog(@"Error:%@",error);
+              if (error.code == -1001) {
+                  [NSObject showHudTipStr:LocalString(@"当前网络状况不佳")];
+              }else{
+                  [NSObject showHudTipStr:LocalString(@"发送邮件失败")];
+              }
+              dispatch_async(dispatch_get_main_queue(), ^{
+                  [SVProgressHUD dismiss];
+              });
+          }];
+}
 #pragma mark - Lazyload
 - (void)setNavItem{
     self.navigationItem.title = LocalString(@"我要反馈");
@@ -172,6 +175,9 @@ NSString *const CellIdentifier_FeedTextField = @"CellID_FeedTextField";
             if (cell == nil) {
                 cell = [[FeedTextViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_FeedTextView];
             }
+            cell.textBlock = ^(NSString *text) {
+                content = text;
+            };
             return cell;
         }
             break;
@@ -183,15 +189,7 @@ NSString *const CellIdentifier_FeedTextField = @"CellID_FeedTextField";
                 cell = [[FeedSelectCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_FeedSelect];
             }
             cell.tag = unselect;
-            if (indexPath.row == 0) {
-                cell.infoLabel.text = LocalString(@"连不上路由器");
-            }else if (indexPath.row == 1){
-                cell.infoLabel.text = LocalString(@"升温不够快");
-            }else if (indexPath.row == 2){
-                cell.infoLabel.text = LocalString(@"豆子烤焦了");
-            }else{
-                cell.infoLabel.text = LocalString(@"机器抖的厉害");
-            }
+            cell.infoLabel.text = self.messageArray[indexPath.row];
             return cell;
         }
             break;
@@ -205,9 +203,15 @@ NSString *const CellIdentifier_FeedTextField = @"CellID_FeedTextField";
             if (indexPath.row == 0) {
                 cell.nameLabel.text = LocalString(@"联系人");
                 cell.contentTF.placeholder = LocalString(@"请输入您的姓名");
+                cell.TFBlock = ^(NSString *text) {
+                    contact = text;
+                };
             }else{
                 cell.nameLabel.text = LocalString(@"手机号");
                 cell.contentTF.placeholder = LocalString(@"请输入您的联系方式");
+                cell.TFBlock = ^(NSString *text) {
+                    mobile = text;
+                };
             }
             return cell;
         }

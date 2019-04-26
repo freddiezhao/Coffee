@@ -270,7 +270,7 @@ static float HEIGHT_SELECT = 44.f;
         _sort_nameBtn = [UIButton buttonWithType:UIButtonTypeCustom];
         _sort_nameBtn.hidden = YES;
         _sort_nameBtn.tag = sortUnselect;
-        [_sort_nameBtn setImage:[UIImage imageNamed:@"ic_rank1"] forState:UIControlStateNormal];
+        //[_sort_nameBtn setImage:[UIImage imageNamed:@"ic_rank1"] forState:UIControlStateNormal];
         [_sort_nameBtn setTitle:LocalString(@"名称") forState:UIControlStateNormal];
         [_sort_nameBtn setTitleColor:[UIColor colorWithHexString:@"999999"] forState:UIControlStateNormal];
         [_sort_nameBtn.titleLabel setFont:[UIFont fontWithName:@"PingFangSC-Medium" size:14]];
@@ -283,8 +283,8 @@ static float HEIGHT_SELECT = 44.f;
             make.left.equalTo(self.sort_generalBtn.mas_right);
             make.top.equalTo(self.view.mas_top);
         }];
-        [_sort_nameBtn setTitleEdgeInsets:UIEdgeInsetsMake(0, -_sort_nameBtn.imageView.bounds.size.width, 0, _sort_nameBtn.imageView.bounds.size.width)];
-        [_sort_nameBtn setImageEdgeInsets:UIEdgeInsetsMake(0,_sort_nameBtn.titleLabel.bounds.size.width, 0, -_sort_nameBtn.titleLabel.bounds.size.width)];
+//        [_sort_nameBtn setTitleEdgeInsets:UIEdgeInsetsMake(0, -_sort_nameBtn.imageView.bounds.size.width, 0, _sort_nameBtn.imageView.bounds.size.width)];
+//        [_sort_nameBtn setImageEdgeInsets:UIEdgeInsetsMake(0,_sort_nameBtn.titleLabel.bounds.size.width, 0, -_sort_nameBtn.titleLabel.bounds.size.width)];
 
     }
     return _sort_nameBtn;
@@ -536,7 +536,7 @@ sectionForSectionIndexTitle:(NSString *)title
     _sort_weightBtn.tag = sortUnselect;
     [_sort_weightBtn setImage:[UIImage imageNamed:@"ic_rank1"] forState:UIControlStateNormal];
     _sort_nameBtn.tag = sortUnselect;
-    [_sort_nameBtn setImage:[UIImage imageNamed:@"ic_rank1"] forState:UIControlStateNormal];
+    //[_sort_nameBtn setImage:[UIImage imageNamed:@"ic_rank1"] forState:UIControlStateNormal];
     
     if (sender.tag == sortUnselect) {
         sender.tag = sortSelect;
@@ -563,14 +563,14 @@ sectionForSectionIndexTitle:(NSString *)title
 
     if (sender.tag == sortUnselect) {
         sender.tag = sortUp;
-        [sender setImage:[UIImage imageNamed:@"ic_rank3"] forState:UIControlStateNormal];
+        //[sender setImage:[UIImage imageNamed:@"ic_rank3"] forState:UIControlStateNormal];
         [self setObjects:_beanArr];
     }else if (sender.tag == sortUp){
         sender.tag = sortDown;
-        [sender setImage:[UIImage imageNamed:@"ic_rank3"] forState:UIControlStateNormal];
+        //[sender setImage:[UIImage imageNamed:@"ic_rank3"] forState:UIControlStateNormal];
     }else{
         sender.tag = sortUp;
-        [sender setImage:[UIImage imageNamed:@"ic_rank3"] forState:UIControlStateNormal];
+        //[sender setImage:[UIImage imageNamed:@"ic_rank3"] forState:UIControlStateNormal];
     }
     [self.beanTable reloadData];
 }
@@ -585,7 +585,7 @@ sectionForSectionIndexTitle:(NSString *)title
     [_sort_nameBtn setTitleColor:[UIColor colorWithHexString:@"999999"] forState:UIControlStateNormal];
     
     _sort_nameBtn.tag = sortUnselect;
-    [_sort_nameBtn setImage:[UIImage imageNamed:@"ic_rank1"] forState:UIControlStateNormal];
+    //[_sort_nameBtn setImage:[UIImage imageNamed:@"ic_rank1"] forState:UIControlStateNormal];
     if (sender.tag == sortUnselect) {
         [self upSortByWeight:_beanArr];
         sender.tag = sortUp;
