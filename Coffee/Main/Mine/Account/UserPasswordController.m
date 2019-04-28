@@ -61,7 +61,7 @@ static float HEIGHT_CELL = 50.f;
             [_saveBtn.titleLabel setFont:[UIFont systemFontOfSize:16.f]];
             [_saveBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
             [_saveBtn setBackgroundColor:[UIColor colorWithRed:71/255.0 green:120/255.0 blue:204/255.0 alpha:0.4]];
-            [_saveBtn addTarget:self action:@selector(savePassword) forControlEvents:UIControlEventTouchUpInside];
+            [_saveBtn addTarget:self action:@selector(showConfirmAlert) forControlEvents:UIControlEventTouchUpInside];
             _saveBtn.center = footView.center;
             _saveBtn.layer.borderWidth = 0.5;
             _saveBtn.layer.borderColor = [UIColor colorWithHexString:@"4778CC"].CGColor;
@@ -147,6 +147,26 @@ static float HEIGHT_CELL = 50.f;
 }
 
 #pragma mark - Actions
+- (void)showConfirmAlert{
+    YAlertViewController *alert = [[YAlertViewController alloc] init];
+    alert.lBlock = ^{
+        
+    };
+    alert.rBlock = ^{
+        [self savePassword];
+    };
+    alert.modalPresentationStyle = UIModalPresentationOverCurrentContext;
+    [self presentViewController:alert animated:NO completion:^{
+        alert.WScale_alert = WScale;
+        alert.HScale_alert = HScale;
+        [alert showView];
+        alert.titleLabel.text = LocalString(@"提示");
+        alert.messageLabel.text = LocalString(@"确定修改密码吗？");
+        [alert.leftBtn setTitle:LocalString(@"取消") forState:UIControlStateNormal];
+        [alert.rightBtn setTitle:LocalString(@"确认") forState:UIControlStateNormal];
+    }];
+}
+
 - (void)savePassword{
     [SVProgressHUD show];
     AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
@@ -170,6 +190,8 @@ static float HEIGHT_CELL = 50.f;
         NSLog(@"%@",daetr);
         if ([[responseDic objectForKey:@"errno"] intValue] == 0) {
             [NSObject showHudTipStr:@"修改密码成功"];
+            NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+            [userDefaults setObject:_PWnew forKey:@"passWord"];
             [self resignFirstResponder];
             [self.navigationController popViewControllerAnimated:YES];
         }else{

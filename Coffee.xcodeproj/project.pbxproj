@@ -383,6 +383,7 @@
 		BB94EAA120DB8CE700370A95 /* RDVTabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB94EA9E20DB8CE700370A95 /* RDVTabBarController.m */; };
 		BB94EAA220DB8CE700370A95 /* RDVTabBarItem.m in Sources */ = {isa = PBXBuildFile; fileRef = BB94EA9F20DB8CE700370A95 /* RDVTabBarItem.m */; };
 		BB94EAA520DBA9C800370A95 /* MainViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB94EAA420DBA9C800370A95 /* MainViewController.m */; };
+		BB9D003C2275A6FC009098C3 /* SearchSpicesController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB9D003B2275A6FC009098C3 /* SearchSpicesController.m */; };
 		BBA593C92249FF68009D5941 /* APProcessController.m in Sources */ = {isa = PBXBuildFile; fileRef = BBA593C72249FF68009D5941 /* APProcessController.m */; };
 		BBA7B95B212AA0A0004943DC /* CollectInfoCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BBA7B95A212AA0A0004943DC /* CollectInfoCell.m */; };
 		BBA7B95F212AA586004943DC /* CollectInfoCellCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BBA7B95E212AA586004943DC /* CollectInfoCellCell.m */; };
@@ -965,6 +966,8 @@
 		BB94EA9F20DB8CE700370A95 /* RDVTabBarItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RDVTabBarItem.m; sourceTree = "<group>"; };
 		BB94EAA320DBA9C800370A95 /* MainViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MainViewController.h; sourceTree = "<group>"; };
 		BB94EAA420DBA9C800370A95 /* MainViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MainViewController.m; sourceTree = "<group>"; };
+		BB9D003A2275A6FC009098C3 /* SearchSpicesController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SearchSpicesController.h; sourceTree = "<group>"; };
+		BB9D003B2275A6FC009098C3 /* SearchSpicesController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SearchSpicesController.m; sourceTree = "<group>"; };
 		BBA593C72249FF68009D5941 /* APProcessController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = APProcessController.m; sourceTree = "<group>"; };
 		BBA593C82249FF68009D5941 /* APProcessController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = APProcessController.h; sourceTree = "<group>"; };
 		BBA7B959212AA0A0004943DC /* CollectInfoCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CollectInfoCell.h; sourceTree = "<group>"; };
@@ -1061,6 +1064,8 @@
 				BB73BA26212FE0E2001D9258 /* GradeSelController.m */,
 				BB73BA2B212FE903001D9258 /* SpicesSelController.h */,
 				BB73BA2C212FE903001D9258 /* SpicesSelController.m */,
+				BB9D003A2275A6FC009098C3 /* SearchSpicesController.h */,
+				BB9D003B2275A6FC009098C3 /* SearchSpicesController.m */,
 				BB73BA2E212FEA44001D9258 /* ProcessSelController.h */,
 				BB73BA2F212FEA44001D9258 /* ProcessSelController.m */,
 				BB73BA31212FED92001D9258 /* BuyDateSelController.h */,
@@ -2574,6 +2579,7 @@
 				BB7D08AF2170438A00FFBA4D /* FeedSelectCell.m in Sources */,
 				BB8AA4D720DFBFA400610316 /* TouchTableView.m in Sources */,
 				BB8AA4CD20DFB9CA00610316 /* ESPUDPSocketClient.m in Sources */,
+				BB9D003C2275A6FC009098C3 /* SearchSpicesController.m in Sources */,
 				BBA593C92249FF68009D5941 /* APProcessController.m in Sources */,
 				BB5A3BF1211193180030ACA5 /* DeviceModel.m in Sources */,
 				BB8AA4CE20DFB9CA00610316 /* ESPTouchTaskParameter.m in Sources */,

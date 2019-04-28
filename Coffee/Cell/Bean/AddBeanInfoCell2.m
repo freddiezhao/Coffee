@@ -37,6 +37,7 @@
             //_contentTF.borderStyle = UITextBorderStyleRoundedRect;
             _contentTF.layer.cornerRadius = 15.f/HScale;
             _contentTF.clearButtonMode = UITextFieldViewModeWhileEditing;
+            _contentTF.keyboardType = UIKeyboardTypeDecimalPad;
             _contentTF.autocorrectionType = UITextAutocorrectionTypeNo;
             _contentTF.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;
             _contentTF.textAlignment = NSTextAlignmentCenter;

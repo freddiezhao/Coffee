@@ -8,6 +8,7 @@
 
 #import "SpicesSelController.h"
 #import "SortModel.h"
+#import "SearchSpicesController.h"
 
 NSString *const CellIdentifier_SpicesSel = @"CellID_SpicesSel";
 
@@ -162,6 +163,19 @@ sectionForSectionIndexTitle:(NSString *)title
 
 #pragma mark - Actions
 - (void)searchBean{
-    
+    SearchSpicesController *searchVC = [[SearchSpicesController alloc] init];
+    searchVC.beanSpicesArr = self.spicesArray;
+    searchVC.selBlock = ^(NSString *spices) {
+        if (self.spicesBlock) {
+            self.spicesBlock(spices);
+        }
+        [self.navigationController popViewControllerAnimated:YES];
+    };
+    UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:searchVC];
+    nav.modalPresentationStyle = UIModalPresentationOverCurrentContext;
+    nav.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+    [self.navigationController setDefinesPresentationContext:YES];
+    [self presentViewController:nav animated:YES completion:nil];
+
 }
 @end
