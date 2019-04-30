@@ -395,6 +395,7 @@
 		BBCD3AB0224228B000439B71 /* CurveDetailClickCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BBCD3AAF224228B000439B71 /* CurveDetailClickCell.m */; };
 		BBCD3AB32242307600439B71 /* ReportCurveDetailController.m in Sources */ = {isa = PBXBuildFile; fileRef = BBCD3AB22242307600439B71 /* ReportCurveDetailController.m */; };
 		BBDE8F992238F4E700B8B8F5 /* LogOutCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BBDE8F972238F4E600B8B8F5 /* LogOutCell.m */; };
+		BBE91C8422784F1A00755E9F /* UIImage+Compression.m in Sources */ = {isa = PBXBuildFile; fileRef = BBE91C8322784F1A00755E9F /* UIImage+Compression.m */; };
 		BBED09AE20F7354200D6010A /* ic_bake_bean.png in Resources */ = {isa = PBXBuildFile; fileRef = BBED09AA20F7354200D6010A /* ic_bake_bean.png */; };
 		BBED09AF20F7354200D6010A /* ic_baked.png in Resources */ = {isa = PBXBuildFile; fileRef = BBED09AB20F7354200D6010A /* ic_baked.png */; };
 		BBED09B020F7354200D6010A /* ic_bake_baking_outwind.png in Resources */ = {isa = PBXBuildFile; fileRef = BBED09AC20F7354200D6010A /* ic_bake_baking_outwind.png */; };
@@ -987,6 +988,8 @@
 		BBCD3AB22242307600439B71 /* ReportCurveDetailController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ReportCurveDetailController.m; sourceTree = "<group>"; };
 		BBDE8F972238F4E600B8B8F5 /* LogOutCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LogOutCell.m; sourceTree = "<group>"; };
 		BBDE8F982238F4E600B8B8F5 /* LogOutCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LogOutCell.h; sourceTree = "<group>"; };
+		BBE91C8222784F1A00755E9F /* UIImage+Compression.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UIImage+Compression.h"; sourceTree = "<group>"; };
+		BBE91C8322784F1A00755E9F /* UIImage+Compression.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UIImage+Compression.m"; sourceTree = "<group>"; };
 		BBED09AA20F7354200D6010A /* ic_bake_bean.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ic_bake_bean.png; sourceTree = "<group>"; };
 		BBED09AB20F7354200D6010A /* ic_baked.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ic_baked.png; sourceTree = "<group>"; };
 		BBED09AC20F7354200D6010A /* ic_bake_baking_outwind.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ic_bake_baking_outwind.png; sourceTree = "<group>"; };
@@ -1811,6 +1814,8 @@
 				BB8AA4E720DFD18D00610316 /* UIColor+ColorChange.m */,
 				BB1C156520E1E8AD006D7053 /* UIButton+Common.h */,
 				BB1C156420E1E8AD006D7053 /* UIButton+Common.m */,
+				BBE91C8222784F1A00755E9F /* UIImage+Compression.h */,
+				BBE91C8322784F1A00755E9F /* UIImage+Compression.m */,
 			);
 			path = OC_Category;
 			sourceTree = "<group>";
@@ -1992,7 +1997,6 @@
 				BB8F7BC920DA513B00BE5CFC /* Frameworks */,
 				BB8F7BCA20DA513B00BE5CFC /* Resources */,
 				620E50EB59957392E78B5237 /* [CP] Embed Pods Frameworks */,
-				91E3FBC406D1297894AE8ECB /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -2356,6 +2360,7 @@
 			);
 			inputPaths = (
 				"${SRCROOT}/Pods/Target Support Files/Pods-Coffee/Pods-Coffee-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/AliyunOSSiOS/AliyunOSSiOS.framework",
 				"${BUILT_PRODUCTS_DIR}/Charts/Charts.framework",
 				"${BUILT_PRODUCTS_DIR}/CocoaAsyncSocket/CocoaAsyncSocket.framework",
 				"${BUILT_PRODUCTS_DIR}/FMDB/FMDB.framework",
@@ -2369,6 +2374,7 @@
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AliyunOSSiOS.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Charts.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CocoaAsyncSocket.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FMDB.framework",
@@ -2383,26 +2389,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Coffee/Pods-Coffee-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		91E3FBC406D1297894AE8ECB /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-Coffee/Pods-Coffee-resources.sh",
-				"${PODS_ROOT}/IQKeyboardManager/IQKeyboardManager/Resources/IQKeyboardManager.bundle",
-				"${PODS_ROOT}/MJRefresh/MJRefresh/MJRefresh.bundle",
-				"${PODS_ROOT}/SVProgressHUD/SVProgressHUD/SVProgressHUD.bundle",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Coffee/Pods-Coffee-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		F03E865615A236E625D46D27 /* [CP] Check Pods Manifest.lock */ = {
@@ -2456,6 +2442,7 @@
 				BB8AA49A20DE475200610316 /* BakeViewController.m in Sources */,
 				BB232C412192831D0097F3D6 /* ShareReportController.m in Sources */,
 				BB68F2F5215A115500D40336 /* DetailScoreCell.m in Sources */,
+				BBE91C8422784F1A00755E9F /* UIImage+Compression.m in Sources */,
 				BB8AA4C920DFB9CA00610316 /* ESP_WifiUtil.m in Sources */,
 				BB63B3FC2148FE8F00EAC364 /* BeanDetailController.m in Sources */,
 				BB94EAA220DB8CE700370A95 /* RDVTabBarItem.m in Sources */,

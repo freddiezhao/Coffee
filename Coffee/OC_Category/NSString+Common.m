@@ -63,7 +63,15 @@
     return fieldInt;
 }
 
-
+///@brief 反转字符串
+- (NSString *)reversalString{
+    NSString *resultStr = @"";
+    for (NSInteger i = self.length -1; i >= 0; i--) {
+        NSString *indexStr = [self substringWithRange:NSMakeRange(i, 1)];
+        resultStr = [resultStr stringByAppendingString:indexStr];
+    }
+    return resultStr;
+}
 
 /*
  *用整数位小数位和单位组成数据string

@@ -40,4 +40,6 @@
 ///@brief 是否包含中文
 - (BOOL)includeChinese;
 
+///@brief 反转字符串
+- (NSString *)reversalString;
 @end

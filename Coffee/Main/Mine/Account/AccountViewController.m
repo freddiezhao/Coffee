@@ -13,6 +13,9 @@
 #import "UserPhoneController.h"
 #import "LogOutCell.h"
 #import "LoginViewController.h"
+#import <AliyunOSSiOS/AliyunOSSiOS.h>
+#import "UIButton+WebCache.h"
+#import "UIImage+Compression.h"
 
 NSString *const CellIdentifier_Accountll = @"CellID_Accountll";
 NSString *const CellIdentifier_AccountLogout = @"CellID_AccountLogout";
@@ -23,10 +26,16 @@ NSString *const CellIdentifier_AccountLogout = @"CellID_AccountLogout";
 @property (nonatomic, strong) UIView *headerView;
 @property (nonatomic, strong) UIButton *headButton;
 @property (nonatomic, strong) DataBase *database;
+@property (nonatomic, strong) OSSClient *client;
 
 @end
 
-@implementation AccountViewController
+@implementation AccountViewController{
+    NSString *accessKeySecret;
+    NSString *accessKeyId;
+    NSString *expiration;
+    NSString *securityToken;
+}
 static float HEIGHT_CELL = 50.f;
 
 - (void)viewDidLoad {
@@ -38,6 +47,8 @@ static float HEIGHT_CELL = 50.f;
     
     _database = [DataBase shareDataBase];
     _headerView = [self headerView];
+    
+    [self getClientInfoByApi];
 }
 
 - (void)viewWillAppear:(BOOL)animated{
@@ -46,6 +57,190 @@ static float HEIGHT_CELL = 50.f;
     if (_accountTableView) {
         [_accountTableView reloadData];
     }
+}
+
+- (void)didMoveToParentViewController:(UIViewController *)parent{
+    [super didMoveToParentViewController:parent];
+    if (!parent && self.popBlock) {
+        self.popBlock();
+    }
+}
+
+#pragma mark - private methods
+- (void)saveEdit{
+    
+}
+
+static NSString *endpoint = @"oss-cn-hangzhou.aliyuncs.com";
+- (void)initOOSClient{
+    id<OSSCredentialProvider> credential = [[OSSStsTokenCredentialProvider alloc] initWithAccessKeyId:accessKeyId secretKeyId:accessKeySecret securityToken:securityToken];
+    _client = [[OSSClient alloc] initWithEndpoint:endpoint credentialProvider:credential];
+}
+
+- (void)putFile:(UIImage *)image{
+    OSSPutObjectRequest * put = [OSSPutObjectRequest new];
+    
+    NSDate *date = [NSDate date];
+    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+    [formatter setDateStyle:NSDateFormatterMediumStyle];
+    [formatter setTimeStyle:NSDateFormatterShortStyle];
+    [formatter setDateFormat:@"YYYY-MM-dd-hh:mm:ss"];
+    NSString *DateTime = [formatter stringFromDate:date];
+    NSString *DateTimeReverse = [DateTime reversalString];
+    
+    put.bucketName = @"hb-coffee-image";
+    put.objectKey = [NSString stringWithFormat:@"%@%@.png",[DataBase shareDataBase].userId,DateTimeReverse];
+    NSLog(@"%@",put.objectKey);
+    
+    put.uploadingData = UIImageJPEGRepresentation(image, 1.f); // 直接上传NSData
+    put.uploadProgress = ^(int64_t bytesSent, int64_t totalByteSent, int64_t totalBytesExpectedToSend) {
+        NSLog(@"%lld, %lld, %lld", bytesSent, totalByteSent, totalBytesExpectedToSend);
+    };
+    
+    OSSTask *putTask = [_client putObject:put];
+    
+    [putTask continueWithBlock:^id(OSSTask *task) {
+        if (!task.error) {
+            NSLog(@"upload object success!");
+            NSString *imageUrl = [NSString stringWithFormat:@"http://%@.%@/%@",put.bucketName,endpoint,put.objectKey];
+            NSLog(@"%@",imageUrl);
+            [self setUserImageWithImageUrl:imageUrl];
+        } else {
+            NSLog(@"upload object failed, error: %@" , task.error);
+        }
+        return nil;
+    }];
+    [putTask waitUntilFinished];
+}
+
+- (void)showSheet:(UIButton *)sender {
+    //显示弹出框列表选择
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"请选择您的照片"
+                                                                   message:nil
+                                                            preferredStyle:UIAlertControllerStyleActionSheet];
+    
+    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel
+                                                         handler:^(UIAlertAction * action) {
+                                                             //响应事件
+                                                             NSLog(@"action = %@", action);
+                                                         }];
+    UIAlertAction *cameraAction = [UIAlertAction actionWithTitle:@"拍照" style:UIAlertActionStyleDefault
+                                                         handler:^(UIAlertAction * action) {
+                                                             //响应事件
+                                                             NSLog(@"action = %@", action);
+                                                         }];
+    UIAlertAction *albumAction = [UIAlertAction actionWithTitle:@"从相册选择" style:UIAlertActionStyleDefault
+                                                        handler:^(UIAlertAction * action) {
+                                                            //响应事件
+                                                            NSLog(@"action = %@", action);
+                                                            UIImagePickerController *ipcVC = [[UIImagePickerController alloc] init];
+                                                            [ipcVC setSourceType:UIImagePickerControllerSourceTypePhotoLibrary];
+                                                            [ipcVC setDelegate:self];
+                                                            [self presentViewController:ipcVC animated:YES completion:^{
+                                                                
+                                                            }];
+                                                        }];
+    [alert addAction:cameraAction];
+    [alert addAction:albumAction];
+    [alert addAction:cancelAction];
+    [self presentViewController:alert animated:YES completion:nil];
+}
+
+#pragma mark - api methods
+- (void)getClientInfoByApi{
+    [SVProgressHUD show];
+    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+    
+    [manager.requestSerializer willChangeValueForKey:@"timeoutInterval"];
+    manager.requestSerializer.timeoutInterval = 6.f;
+    [manager.requestSerializer didChangeValueForKey:@"timeoutInterval"];
+    
+    NSString *url = [NSString stringWithFormat:@"http://139.196.90.97:10011/app/sts"];
+    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet characterSetWithCharactersInString:@"`#%^{}\"[]|\\<> "].invertedSet];
+    
+    [manager GET:url parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableContainers|NSJSONReadingMutableLeaves error:nil];
+        NSData * data = [NSJSONSerialization dataWithJSONObject:responseDic options:(NSJSONWritingOptions)0 error:nil];
+        NSString * daetr = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
+        if ([[responseDic objectForKey:@"statusCode"] intValue] == 200) {
+            NSLog(@"success:%@",daetr);
+            accessKeySecret = [responseDic objectForKey:@"accessKeySecret"];
+            accessKeyId = [responseDic objectForKey:@"accessKeyId"];
+            expiration = [responseDic objectForKey:@"expiration"];
+            securityToken = [responseDic objectForKey:@"securityToken"];
+            [self initOOSClient];
+        }else{
+            NSLog(@"获取sts信息失败");
+        }
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [SVProgressHUD dismiss];
+        });
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        NSLog(@"Error:%@",error);
+        if (error.code == -1001) {
+            [NSObject showHudTipStr:LocalString(@"当前网络状况不佳")];
+        }else{
+            [NSObject showHudTipStr:LocalString(@"获取sts信息失败")];
+        }
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [SVProgressHUD dismiss];
+        });
+    }];
+}
+
+- (void)setUserImageWithImageUrl:(NSString *)imageUrl{
+    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+    
+    [manager.requestSerializer willChangeValueForKey:@"timeoutInterval"];
+    manager.requestSerializer.timeoutInterval = 6.f;
+    [manager.requestSerializer didChangeValueForKey:@"timeoutInterval"];
+    
+    NSString *url = [NSString stringWithFormat:@"http://139.196.90.97:8080/coffee/user/image"];
+    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet characterSetWithCharactersInString:@"`#%^{}\"[]|\\<> "].invertedSet];
+    
+    [manager.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+    [manager.requestSerializer setValue:[DataBase shareDataBase].userId forHTTPHeaderField:@"userId"];
+    [manager.requestSerializer setValue:[NSString stringWithFormat:@"bearer %@",[DataBase shareDataBase].token] forHTTPHeaderField:@"Authorization"];
+    
+    NSDictionary *parameters = @{@"image":imageUrl};
+    
+    [manager PUT:url parameters:parameters success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableContainers|NSJSONReadingMutableLeaves error:nil];
+        NSData * data = [NSJSONSerialization dataWithJSONObject:responseDic options:(NSJSONWritingOptions)0 error:nil];
+        NSString * daetr = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
+        NSLog(@"%@",daetr);
+        if ([[responseDic objectForKey:@"errno"] intValue] == 0) {
+            NSLog(@"修改头像成功");
+            [NSObject showHudTipStr:LocalString(@"修改头像成功")];
+        }else{
+            [NSObject showHudTipStr:LocalString(@"修改头像失败")];
+            NSLog(@"修改头像失败");
+        }
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        NSLog(@"修改头像失败");
+        if (error.code == -1001) {
+            [NSObject showHudTipStr:LocalString(@"当前网络状况不佳")];
+        }
+    }];
+}
+
+#pragma mark - ImagePicker
+-(void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary<NSString *,id> *)info{
+    UIImage *image = [info objectForKey:UIImagePickerControllerOriginalImage];
+    image = [image imageByScalingAndCroppingForSize:CGSizeMake(140/WScale, 140/WScale)];
+    [_headButton setImage:image forState:UIControlStateNormal];
+    [picker dismissViewControllerAnimated:YES completion:nil];
+    [SVProgressHUD show];
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        [self putFile:image];
+        [SVProgressHUD dismiss];
+    });
+}
+
+- (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker{
+    [picker dismissViewControllerAnimated:YES completion:^{
+        
+    }];
 }
 
 #pragma mark - Lazyload
@@ -66,7 +261,8 @@ static float HEIGHT_CELL = 50.f;
         [self.view addSubview:_headerView];
         
         _headButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        [_headButton setImage:[UIImage imageNamed:@"ic_default_headportrait"] forState:UIControlStateNormal];
+        [_headButton sd_setImageWithURL:[NSURL URLWithString:[DataBase shareDataBase].imageUrl] forState:UIControlStateNormal placeholderImage:[UIImage imageNamed:@"ic_default_headportrait"]];
+
         [_headButton addTarget:self action:@selector(showSheet:) forControlEvents:UIControlEventTouchUpInside];
         [_headerView addSubview:_headButton];
         [_headButton mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -74,10 +270,12 @@ static float HEIGHT_CELL = 50.f;
             make.centerX.equalTo(self.headerView.mas_centerX);
             make.top.equalTo(self.headerView.mas_top).offset(30/HScale);
         }];
+        _headButton.layer.masksToBounds = YES;
         _headButton.layer.cornerRadius = 35.f/HScale;
         _headButton.imageView.layer.cornerRadius = _headButton.bounds.size.height/2.0;
         
         UIButton *cameraBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        [cameraBtn addTarget:self action:@selector(showSheet:) forControlEvents:UIControlEventTouchUpInside];
         [cameraBtn setImage:[UIImage imageNamed:@"ic_account_pic"] forState:UIControlStateNormal];
         [_headerView addSubview:cameraBtn];
         [_headerView bringSubviewToFront:cameraBtn];
@@ -233,58 +431,6 @@ static float HEIGHT_CELL = 50.f;
     UIView *view=[[UIView alloc] initWithFrame:CGRectMake(0, 0, ScreenWidth, 0)];
     view.backgroundColor = [UIColor clearColor];
     return view;
-}
-
-#pragma mark - ImagePicker
--(void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary<NSString *,id> *)info{
-    UIImage *image = [info objectForKey:UIImagePickerControllerOriginalImage];
-    [_headButton setImage:image forState:UIControlStateNormal];
-    [picker dismissViewControllerAnimated:YES completion:nil];
-}
-
-- (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker{
-    [picker dismissViewControllerAnimated:YES completion:^{
-        
-    }];
-}
-
-#pragma mark - Actions
-- (void)saveEdit{
-    
-}
-
-
-- (void)showSheet:(UIButton *)sender {
-    //显示弹出框列表选择
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"请选择您的照片"
-                                                                   message:nil
-                                                            preferredStyle:UIAlertControllerStyleActionSheet];
-    
-    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel
-                                                         handler:^(UIAlertAction * action) {
-                                                             //响应事件
-                                                             NSLog(@"action = %@", action);
-                                                         }];
-    UIAlertAction *cameraAction = [UIAlertAction actionWithTitle:@"拍照" style:UIAlertActionStyleDefault
-                                                         handler:^(UIAlertAction * action) {
-                                                             //响应事件
-                                                             NSLog(@"action = %@", action);
-                                                         }];
-    UIAlertAction *albumAction = [UIAlertAction actionWithTitle:@"从相册选择" style:UIAlertActionStyleDefault
-                                                       handler:^(UIAlertAction * action) {
-                                                           //响应事件
-                                                           NSLog(@"action = %@", action);
-                                                           UIImagePickerController *ipcVC = [[UIImagePickerController alloc] init];
-                                                           [ipcVC setSourceType:UIImagePickerControllerSourceTypePhotoLibrary];
-                                                           [ipcVC setDelegate:self];
-                                                           [self presentViewController:ipcVC animated:YES completion:^{
-                                                               
-                                                           }];
-                                                       }];
-    [alert addAction:cameraAction];
-    [alert addAction:albumAction];
-    [alert addAction:cancelAction];
-    [self presentViewController:alert animated:YES completion:nil];
 }
 
 

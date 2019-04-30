@@ -222,6 +222,9 @@ static float HEIGHT_CELL = 51.f;
 #pragma mark - Actions
 - (void)accountSetAction{
     AccountViewController *accountVC = [[AccountViewController alloc] init];
+    accountVC.popBlock = ^{
+        [self getUserInfoByApi];
+    };
     [self.navigationController pushViewController:accountVC animated:YES];
 }
 
@@ -256,7 +259,8 @@ static float HEIGHT_CELL = 51.f;
                 DataBase *db = [DataBase shareDataBase];
                 db.userName = [beansDic objectForKey:@"userName"];
                 db.mobile = [beansDic objectForKey:@"mobile"];
-                db.imageUrl = [beansDic objectForKey:@"image"];
+                NSString *imageUrl = [beansDic objectForKey:@"image"];
+                db.imageUrl = [imageUrl stringByReplacingOccurrencesOfString:@"\\" withString:@""];
                 _nickLabel.text = db.userName;
                 [_headButton sd_setImageWithURL:[NSURL URLWithString:db.imageUrl] forState:UIControlStateNormal placeholderImage:[UIImage imageNamed:@"ic_default_headportrait"]];
             }
