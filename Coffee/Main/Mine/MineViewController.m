@@ -284,4 +284,94 @@ static float HEIGHT_CELL = 51.f;
     }];
 }
 
+#pragma mark - 检查更新
+-(void)checkVersionUpdata{
+    
+#warning Todo app上传后更改下面的ID就可以实现检查更新功能
+    NSString *urlStr    = @"http://itunes.apple.com/lookup?id=1329918420";//id替换即可
+    
+    NSURL *url          = [NSURL URLWithString:urlStr];
+    
+    NSURLRequest *req   = [NSURLRequest requestWithURL:url];
+    
+    [NSURLConnection connectionWithRequest:req delegate:self];
+    
+}
+
+//2. 网络连接
+
+-(void)connection:(NSURLConnection *)connection didReceiveData:(nonnull NSData *)data
+
+{
+    
+    NSError *error;
+    
+    id jsonObject           = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:&error];
+    
+    NSDictionary *appInfo   = (NSDictionary*)jsonObject;
+    
+    NSArray *infoContent    = [appInfo objectForKey:@"results"];
+    
+    NSString * version      = [[infoContent objectAtIndex:0]objectForKey:@"version"];//线上最新版本
+    
+    // 获取当前版本
+    
+    NSString *currentVersion    = [self version];//当前用户版本
+    
+    BOOL result          = [currentVersion compare:version] == NSOrderedAscending;
+    
+    if (result) {//需要更新
+        
+        
+        NSLog(@"不是最新版本需要更新");
+        
+        NSString *updateStr = [NSString stringWithFormat:@"发现新版本V%@\n为保证软件的正常运行\n请及时更新到最新版本",version];
+        
+        [self creatAlterView:updateStr];
+        
+    } else {//已经是最新版；
+        
+        NSLog(@"最新版本不需要更新");
+        
+    }
+}
+
+//3. 弹框提示
+
+-(void)creatAlterView:(NSString *)msg{
+    
+    UIAlertController *alertText = [UIAlertController alertControllerWithTitle:@"更新提醒" message:msg preferredStyle:UIAlertControllerStyleAlert];
+    
+    //增加按钮
+    
+    [alertText addAction:[UIAlertAction actionWithTitle:@"我再想想" style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
+        
+    }]];
+    
+    [alertText addAction:[UIAlertAction actionWithTitle:@"立即更新" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+#warning Todo app上传后更改下面的ID就可以实现检查更新功能
+        NSString *str = @"itms-apps://itunes.apple.com/cn/app/id1329918420?mt=8"; //更换id即可
+        
+        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:str]];
+        
+    }]];
+    
+    [self presentViewController:alertText animated:YES completion:nil];
+    
+}
+
+//版本
+
+-(NSString *)version
+
+{
+    
+    NSDictionary *infoDictionary = [[NSBundle mainBundle] infoDictionary];
+    
+    NSString *app_Version       = [infoDictionary objectForKey:@"CFBundleShortVersionString"];
+    
+    return app_Version;
+    
+}
+
 @end
