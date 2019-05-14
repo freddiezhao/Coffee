@@ -154,7 +154,7 @@ static NSString *curveUid;
 #pragma mark - Lazy load
 - (NSTimer *)myTimer{
     if (!_myTimer) {
-        _myTimer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(getTemp) userInfo:nil repeats:YES];
+        _myTimer = [NSTimer scheduledTimerWithTimeInterval:1.3 target:self selector:@selector(getTemp) userInfo:nil repeats:YES];
         [_myTimer setFireDate:[NSDate distantFuture]];
     }
     return _myTimer;
@@ -175,6 +175,12 @@ static NSString *curveUid;
     [_mySocket readDataWithTimeout:-1 tag:1];
     [_mySocket readDataWithTimeout:-1 tag:1];
     [_mySocket readDataWithTimeout:-1 tag:1];
+    [_mySocket readDataWithTimeout:-1 tag:1];
+    [_mySocket readDataWithTimeout:-1 tag:1];
+    [_mySocket readDataWithTimeout:-1 tag:1];
+    [_mySocket readDataWithTimeout:-1 tag:1];
+    [_mySocket readDataWithTimeout:-1 tag:1];
+
 }
 
 - (void)socketDidDisconnect:(GCDAsyncSocket *)sock withError:(NSError *)err
@@ -192,18 +198,24 @@ static NSString *curveUid;
 {
     NSLog(@"接收到消息%@",data);
     NSLog(@"socket成功收到帧, tag: %ld", tag);
+    [_mySocket readDataWithTimeout:-1 tag:1];
+    [_mySocket readDataWithTimeout:-1 tag:1];
+
     [self checkOutFrame:data];
     
-    //以下操作保证收到上报帧或者回复帧后只有一个信号量，不会一次发出多条帧
-    dispatch_time_t time = dispatch_time(DISPATCH_TIME_NOW, 1.f * NSEC_PER_SEC);
-    dispatch_semaphore_wait(_sendSignal, time);
-    dispatch_semaphore_signal(_sendSignal);//收到信息增加信号量
+//    //以下操作保证收到上报帧或者回复帧后只有一个信号量，不会一次发出多条帧
+//    dispatch_time_t time = dispatch_time(DISPATCH_TIME_NOW, 1.3 * NSEC_PER_SEC);
+//    dispatch_semaphore_wait(_sendSignal, time);
+//    dispatch_semaphore_signal(_sendSignal);//收到信息增加信号量
 
 }
 
 - (void)socket:(GCDAsyncSocket *)sock didWriteDataWithTag:(long)tag{
-    _frameCount++;
-    //NSLog(@"发送了一条帧");
+    NSLog(@"发送了一条帧%d",_frameCount);
+    [_mySocket readDataWithTimeout:-1 tag:1];
+    [_mySocket readDataWithTimeout:-1 tag:1];
+    [_mySocket readDataWithTimeout:-1 tag:1];
+
 }
 
 #pragma mark - Actions
@@ -219,7 +231,12 @@ static NSString *curveUid;
 //帧的发送
 - (void)send:(NSMutableArray *)msg withTag:(NSUInteger)tag
 {
-    dispatch_time_t time = dispatch_time(DISPATCH_TIME_NOW, 1.f * 1000 * 1000 * 1000);
+    _frameCount++;
+    [_mySocket readDataWithTimeout:-1 tag:1];
+    [_mySocket readDataWithTimeout:-1 tag:1];
+    [_mySocket readDataWithTimeout:-1 tag:1];
+
+    dispatch_time_t time = dispatch_time(DISPATCH_TIME_NOW, 1.3 * NSEC_PER_SEC);
     dispatch_semaphore_wait(_sendSignal, time);
     if (![self.mySocket isDisconnected])
     {
@@ -233,8 +250,7 @@ static NSString *curveUid;
         NSData *sendData = [NSData dataWithBytes:sendBuffer length:len];
         NSLog(@"发送一条帧： %@",sendData);
         if (tag == 100) {
-            [self.mySocket writeData:sendData withTimeout:-1 tag:1];
-            [_mySocket readDataWithTimeout:-1 tag:1];
+            [self.mySocket writeData:sendData withTimeout:1.f tag:1];
             //重发
             if (resendCount > 3) {
                 NSLog(@"四次重发没回信息，断开连接");
@@ -252,7 +268,7 @@ static NSString *curveUid;
             resendCount++;
             
         }else if(tag == 101){
-            [self.mySocket writeData:sendData withTimeout:-1 tag:2];
+            [self.mySocket writeData:sendData withTimeout:1.f tag:2];
             if (sendCount - recvCount == 7) {
                 NSLog(@"四秒没回信息，断开连接");
                 [self setConnectedDevice:nil];
@@ -269,30 +285,8 @@ static NSString *curveUid;
             sendCount++;
         }else if(tag == 102){
             //设置
-            [self.mySocket writeData:sendData withTimeout:-1 tag:1];
-            [_mySocket readDataWithTimeout:-1 tag:1];
-            
-//            if (resendCount > 3) {
-//                dispatch_async(dispatch_get_main_queue(), ^{
-//                    [NSObject cancelPreviousPerformRequestsWithTarget:self];
-//                });
-//                NSLog(@"四次重发没回信息，断开连接");
-//                [self setConnectedDevice:nil];
-//                [[NSNotificationCenter defaultCenter] postNotificationName:@"mysocketDidDisconnect" object:nil userInfo:nil];
-//                dispatch_async(dispatch_get_main_queue(), ^{
-//                    [NSObject showHudTipStr:LocalString(@"wifi断开")];
-//                    [_myTimer setFireDate:[NSDate distantFuture]];
-//                });
-//                if (![_mySocket isDisconnected]) {
-//                    NSLog(@"主动断开");
-//                    [_mySocket disconnect];
-//                }
-//            }
-//            resendCount++;
+            [self.mySocket writeData:sendData withTimeout:1.f tag:1];
         }
-        
-        //[NSThread sleepForTimeInterval:0.6];
-        
     }
     else
     {
@@ -538,6 +532,7 @@ static NSString *curveUid;
     dispatch_async(_queue, ^{
         [self send:setFire withTag:102];
         NSLog(@"点火%@",isFire);
+        NSLog(@"点火%d",_frameCount);
     });
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
         sleep(3.0);
@@ -594,6 +589,7 @@ static NSString *curveUid;
     dispatch_async(_queue, ^{
         [self send:setColdAndStir withTag:102];
         NSLog(@"冷却搅拌%@",isColdAndStir);
+        NSLog(@"冷却搅拌%d",_frameCount);
     });
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
         sleep(3.0);

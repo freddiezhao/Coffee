@@ -83,7 +83,7 @@
     [self startEsptouchConnect];
     [self sendSearchBroadcast];
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
-        sleep(10);
+        sleep(15);
         dispatch_async(dispatch_get_main_queue(), ^{
             [self.udpTimer setFireDate:[NSDate date]];
         });
@@ -107,7 +107,12 @@
 - (void)didMoveToParentViewController:(UIViewController *)parent{
     [super didMoveToParentViewController:parent];
     if (!parent) {
-        [self cancel];
+        [self.condition lock];
+        if (self.esptouchTask != nil)
+        {
+            [self.esptouchTask interrupt];
+        }
+        [self.condition unlock];
     }
 }
 
@@ -305,7 +310,7 @@
         }
         [self.condition unlock];
         [self.navigationController popViewControllerAnimated:YES];
-        [NSObject showHudTipStr:LocalString(@"取消配置，你可以重新选择配置")];
+        [NSObject showHudTipStr:LocalString(@"配置失败，你可以重新选择配置")];
     };
     alert.rBlock = ^{
         [self.condition lock];
@@ -315,7 +320,7 @@
         }
         [self.condition unlock];
         [self.navigationController popViewControllerAnimated:YES];
-        [NSObject showHudTipStr:LocalString(@"取消配置，你可以重新选择配置")];
+        [NSObject showHudTipStr:LocalString(@"配置失败，你可以重新选择配置")];
     };
     alert.modalPresentationStyle = UIModalPresentationOverCurrentContext;
     [self presentViewController:alert animated:NO completion:^{
