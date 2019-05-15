@@ -236,8 +236,6 @@ static NSString *curveUid;
     [_mySocket readDataWithTimeout:-1 tag:1];
     [_mySocket readDataWithTimeout:-1 tag:1];
 
-    dispatch_time_t time = dispatch_time(DISPATCH_TIME_NOW, 1.3 * NSEC_PER_SEC);
-    dispatch_semaphore_wait(_sendSignal, time);
     if (![self.mySocket isDisconnected])
     {
         NSUInteger len = msg.count;
@@ -250,7 +248,10 @@ static NSString *curveUid;
         NSData *sendData = [NSData dataWithBytes:sendBuffer length:len];
         NSLog(@"发送一条帧： %@",sendData);
         if (tag == 100) {
-            [self.mySocket writeData:sendData withTimeout:1.f tag:1];
+            dispatch_time_t time = dispatch_time(DISPATCH_TIME_NOW, 1.3 * NSEC_PER_SEC);
+            dispatch_semaphore_wait(_sendSignal, time);
+
+            [self.mySocket writeData:sendData withTimeout:-1 tag:1];
             //重发
             if (resendCount > 3) {
                 NSLog(@"四次重发没回信息，断开连接");
@@ -268,7 +269,10 @@ static NSString *curveUid;
             resendCount++;
             
         }else if(tag == 101){
-            [self.mySocket writeData:sendData withTimeout:1.f tag:2];
+            dispatch_time_t time = dispatch_time(DISPATCH_TIME_NOW, 1.3 * NSEC_PER_SEC);
+            dispatch_semaphore_wait(_sendSignal, time);
+
+            [self.mySocket writeData:sendData withTimeout:-1 tag:2];
             if (sendCount - recvCount == 7) {
                 NSLog(@"四秒没回信息，断开连接");
                 [self setConnectedDevice:nil];
@@ -285,7 +289,7 @@ static NSString *curveUid;
             sendCount++;
         }else if(tag == 102){
             //设置
-            [self.mySocket writeData:sendData withTimeout:1.f tag:1];
+            [self.mySocket writeData:sendData withTimeout:-1 tag:1];
         }
     }
     else
@@ -1039,9 +1043,11 @@ static NSString *curveUid;
                 resendCount = 0;
                 [_myTimer setFireDate:[NSDate date]];
             }else if (self.msg68Type == coolAndStir){
-                self.setColdAndStirCount = 0;
-                resendCount = 0;
-                [_myTimer setFireDate:[NSDate date]];
+                if ([data[6] intValue] == [self.isColdAndStir intValue]) {
+                    self.setColdAndStirCount = 0;
+                    resendCount = 0;
+                    [_myTimer setFireDate:[NSDate date]];
+                }
             }else if (self.msg68Type == sendSSID){
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [NSObject cancelPreviousPerformRequestsWithTarget:self];

@@ -186,7 +186,7 @@
         }];
         
         UILabel *tipLabel1 = [[UILabel alloc] init];
-        tipLabel1.text = LocalString(@"接通电源，长按点火键和冷却键，直到Wi-Fi指示灯闪烁");
+        tipLabel1.text = LocalString(@"接通电源，长按屏幕切换按键，直到Wi-Fi指示灯闪烁");
         tipLabel1.font = [UIFont fontWithName:@"PingFangSC-Regular" size:14];
         tipLabel1.textColor = [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1];
         tipLabel1.textAlignment = NSTextAlignmentCenter;

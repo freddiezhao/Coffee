@@ -42,6 +42,8 @@ NSString *const CellIdentifier_password = @"CellID_password";
     _nextBtn = [self nextBtn];
     [self uiMasonry];
     
+    [self applicationWillEnterForeground];
+
 }
 
 - (void)didReceiveMemoryWarning {
@@ -105,6 +107,38 @@ NSString *const CellIdentifier_password = @"CellID_password";
     DeviceSelectView *selectVC = [[DeviceSelectView alloc] init];
     [self.navigationController pushViewController:selectVC animated:YES];
 }
+
+- (void)applicationWillEnterForeground{
+    UIApplication *app = [UIApplication sharedApplication];
+    [[NSNotificationCenter defaultCenter]addObserverForName:UIApplicationWillEnterForegroundNotification  object:app queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
+        [self confirmWifiName];
+    }];
+}
+
+- (void)confirmWifiName{
+    NSDictionary *netInfo = [self fetchNetInfo];
+    NSString *ssid = [netInfo objectForKey:@"SSID"];
+    _ssid = ssid;
+    [self.ssidPasswordTable reloadData];
+}
+
+- (NSDictionary *)fetchNetInfo
+{
+    NSArray *interfaceNames = CFBridgingRelease(CNCopySupportedInterfaces());
+    //    NSLog(@"%s: Supported interfaces: %@", __func__, interfaceNames);
+    
+    NSDictionary *SSIDInfo;
+    for (NSString *interfaceName in interfaceNames) {
+        SSIDInfo = CFBridgingRelease(CNCopyCurrentNetworkInfo((__bridge CFStringRef)interfaceName));
+        //NSLog(@"%s: %@ => %@", __func__, interfaceName, SSIDInfo);
+        BOOL isNotEmpty = (SSIDInfo.count > 0);
+        if (isNotEmpty) {
+            break;
+        }
+    }
+    return SSIDInfo;
+}
+
 
 
 #pragma mark - tableview
