@@ -12,10 +12,14 @@
 
 #import <netdb.h>//解析udp获取的IP地址
 #import <SystemConfiguration/CaptiveNetwork.h>
+#import <NetworkExtension/NEHotspotConfigurationManager.h>
 
 @interface APProcessController () <GCDAsyncUdpSocketDelegate>
 
+@property (nonatomic, strong) UIImageView *image;
 @property (nonatomic, strong) UIActivityIndicatorView *spinner;
+@property (nonatomic, strong) UIButton *cancelBtn;
+
 @property (nonatomic, strong) GCDAsyncUdpSocket *udpSocket;
 @property (nonatomic, strong) NSTimer *timer;
 @property (nonatomic, strong) NSLock *lock;
@@ -36,7 +40,11 @@
     
     self.navigationItem.title = LocalString(@"AP配网");
 
-    self.spinner = [self spinner];
+    _spinner = [self spinner];
+    _image =[self image];
+    [self setImage];
+    _cancelBtn = [self cancelBtn];
+
     self.timer = [self timer];
     self.udpSocket = [self udpSocket];
     self.lock = [self lock];
@@ -55,7 +63,8 @@
     [super viewWillDisappear:animated];
     
     [NetWork shareNetWork].isAp = NO;
-    
+    [_spinner stopAnimating];
+
     [_timer setFireDate:[NSDate distantFuture]];
     [_timer invalidate];
     _timer = nil;
@@ -127,7 +136,10 @@ static bool isApSendSucc = NO;
     isApSendSucc = YES;
 }
 
+static int hotspotAlertTime = 3;
 - (void)confirmWifiName{
+    NetWork *net = [NetWork shareNetWork];
+
     if (!isApSendSucc) {
         return;
     }
@@ -141,16 +153,35 @@ static bool isApSendSucc = NO;
         }
     }else if(![ssid hasPrefix:@"ESP"] && [ssid isKindOfClass:[NSString class]]){
 #warning TODO 自动去连接要连接的Wi-Fi
-        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:LocalString(@"配网成功") message:LocalString(@"您未连接到配网的Wi-Fi,会导致搜索不到设备，请注意切换Wi-Fi") preferredStyle:UIAlertControllerStyleAlert];
-        UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
-            for (UIViewController *controller in self.navigationController.viewControllers) {
-                if ([controller isKindOfClass:[DeviceViewController class]]) {
-                    [self.navigationController popToViewController:controller animated:YES];
-                }
+        if (@available(iOS 11.0, *)) {
+            if (hotspotAlertTime > 0) {
+                hotspotAlertTime--;
+                return;
             }
-        }];
-        [alertController addAction:cancelAction];
-        [self presentViewController:alertController animated:YES completion:nil];
+            hotspotAlertTime = 3;
+            NEHotspotConfiguration *hotspotConfig = [[NEHotspotConfiguration alloc] initWithSSID:net.ssid];
+            [[NEHotspotConfigurationManager sharedManager] applyConfiguration:hotspotConfig completionHandler:^(NSError * _Nullable error) {
+                NSLog(@"%@",error);
+                if (error && error.code != 13 && error.code != 7) {
+                    hotspotAlertTime = 0;//马上弹出框
+                }else if(error.code ==7){//error code = 7 ：用户点击了弹框取消按钮
+                    hotspotAlertTime = 0;
+                }else{// error code = 13 ：已连接
+                    hotspotAlertTime = 100000;
+                }
+            }];
+        } else {
+            UIAlertController *alertController = [UIAlertController alertControllerWithTitle:LocalString(@"配网成功") message:LocalString(@"您未连接到配网的Wi-Fi,会导致搜索不到设备，请注意切换Wi-Fi") preferredStyle:UIAlertControllerStyleAlert];
+            UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+                for (UIViewController *controller in self.navigationController.viewControllers) {
+                    if ([controller isKindOfClass:[DeviceViewController class]]) {
+                        [self.navigationController popToViewController:controller animated:YES];
+                    }
+                }
+            }];
+            [alertController addAction:cancelAction];
+            [self presentViewController:alertController animated:YES completion:nil];
+        }
     }
 }
 
@@ -169,6 +200,13 @@ static bool isApSendSucc = NO;
         }
     }
     return SSIDInfo;
+}
+
+- (void) cancel
+{
+    [_spinner stopAnimating];
+    [self.navigationController popViewControllerAnimated:YES];
+    [NSObject showHudTipStr:LocalString(@"取消配置，你可以重新选择配置")];
 }
 
 #pragma mark - udp delegate
@@ -233,6 +271,10 @@ static bool isApSendSucc = NO;
 
 - (void)udpSocketDidClose:(GCDAsyncUdpSocket *)sock withError:(NSError *)error{
     NSLog(@"断开连接");
+    if (isApSendSucc) {
+        isFind = NO;
+    }
+    [self sendSearchBroadcast];
 }
 
 - (void)udpSocket:(GCDAsyncUdpSocket *)sock didNotSendDataWithTag:(long)tag dueToError:(NSError *)error{
@@ -246,12 +288,13 @@ static bool isApSendSucc = NO;
         _spinner = [[UIActivityIndicatorView alloc] init];
         [_spinner setActivityIndicatorViewStyle:UIActivityIndicatorViewStyleGray];
         [_spinner setHidesWhenStopped:NO];
+        [_spinner startAnimating];
         //[_spinner setColor:[UIColor blueColor]];
         [self.view addSubview:_spinner];
         [_spinner mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.size.mas_equalTo(CGSizeMake(15.f, 15.f));
-            make.top.equalTo(self.view.mas_top).offset(337.f/HScale);
-            make.left.equalTo(self.view.mas_left).offset(128.5/WScale);
+            make.size.mas_equalTo(CGSizeMake(15 / WScale, 15 / HScale));
+            make.top.equalTo(self.view.mas_top).offset(337 / HScale);
+            make.left.equalTo(self.view.mas_left).offset(128.5 / WScale);
         }];
         
         UILabel *tipLabel = [[UILabel alloc] init];
@@ -260,13 +303,110 @@ static bool isApSendSucc = NO;
         tipLabel.textColor = [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1];
         [self.view addSubview:tipLabel];
         [tipLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.size.mas_equalTo(CGSizeMake(100/WScale, 20.f));
+            make.size.mas_equalTo(CGSizeMake(100 / WScale, 20 / HScale));
             make.centerY.equalTo(self.spinner.mas_centerY);
-            make.left.equalTo(self.spinner.mas_right).offset(8.f);
+            make.left.equalTo(_spinner.mas_right).offset(8 / WScale);
         }];
     }
     return _spinner;
 }
+
+- (UIImageView *)image{
+    if (!_image) {
+        _image = [[UIImageView alloc] init];
+        _image.image = [UIImage imageNamed:@"img_peak_edmund"];
+        [self.view addSubview:_image];
+        
+        [_image mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.size.mas_equalTo(CGSizeMake(225 / WScale, 150 / HScale));
+            make.centerX.equalTo(self.view.mas_centerX);
+            make.top.equalTo(self.view.mas_top).offset(82 / HScale);
+        }];
+        
+        UILabel *tipLabel1 = [[UILabel alloc] init];
+        tipLabel1.text = LocalString(@"请将手机和烘焙机的距离保持在5米以内");
+        tipLabel1.font = [UIFont fontWithName:@"PingFangSC-Regular" size:14];
+        tipLabel1.textColor = [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1];
+        tipLabel1.textAlignment = NSTextAlignmentCenter;
+        [self.view addSubview:tipLabel1];
+        
+        UILabel *tipLabel2 = [[UILabel alloc] init];
+        tipLabel2.text = LocalString(@"连接过程中请不要操作咖啡烘焙机");
+        tipLabel2.font = [UIFont fontWithName:@"PingFangSC-Regular" size:14];
+        tipLabel2.textColor = [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1];
+        tipLabel2.textAlignment = NSTextAlignmentCenter;
+        [self.view addSubview:tipLabel2];
+        
+        [tipLabel1 mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.size.mas_equalTo(CGSizeMake(ScreenWidth, 20 / HScale));
+            make.centerX.equalTo(self.view.mas_centerX);
+            make.top.equalTo(self.image.mas_bottom).offset(18 / HScale);
+        }];
+        [tipLabel2 mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.size.mas_equalTo(CGSizeMake(ScreenWidth, 20 / HScale));
+            make.centerX.equalTo(self.view.mas_centerX);
+            make.top.equalTo(tipLabel1.mas_bottom).offset(8 / HScale);
+        }];
+    }
+    return _image;
+}
+
+- (void)setImage{
+    switch ([[NetWork shareNetWork].deviceType integerValue]) {
+        case 0:
+        {
+            _image.image = [UIImage imageNamed:@"img_hb_m6g_small"];
+        }
+            break;
+            
+        case 1:
+        {
+            _image.image = [UIImage imageNamed:@"img_hb_m6g_small"];
+        }
+            break;
+            
+        case 2:
+        {
+            _image.image = [UIImage imageNamed:@"img_hb_l2_small"];
+        }
+            break;
+            
+        case 3:
+        {
+            _image.image = [UIImage imageNamed:@"img_peak_edmund_small"];
+        }
+            break;
+            
+        case 4:{
+            _image.image = [UIImage imageNamed:@"img_logo_gray"];
+        }
+            break;
+            
+        default:
+            break;
+    }
+}
+
+- (UIButton *)cancelBtn{
+    if (!_cancelBtn) {
+        _cancelBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        [_cancelBtn setTitleColor:[UIColor colorWithRed:71/255.0 green:120/255.0 blue:204/255.0 alpha:1] forState:UIControlStateNormal];
+        [_cancelBtn setTitle:LocalString(@"取消") forState:UIControlStateNormal];
+        [_cancelBtn.titleLabel setFont:[UIFont fontWithName:@"PingFangSC-Medium" size:16]];
+        [_cancelBtn setBackgroundColor:[UIColor colorWithRed:255/255.0 green:255/255.0 blue:255/255.0 alpha:0.8]];
+        [_cancelBtn setButtonStyleWithColor:[UIColor colorWithRed:71/255.0 green:120/255.0 blue:204/255.0 alpha:1] Width:1.5 cornerRadius:18.f / HScale];
+        [_cancelBtn addTarget:self action:@selector(cancel) forControlEvents:UIControlEventTouchUpInside];
+        [self.view addSubview:_cancelBtn];
+        
+        [_cancelBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.size.mas_equalTo(CGSizeMake(92.f / WScale, 36.f / HScale));
+            make.centerX.equalTo(self.view.mas_centerX);
+            make.bottom.equalTo(self.view.mas_bottom).offset(-40 / HScale);
+        }];
+    }
+    return _cancelBtn;
+}
+
 
 - (GCDAsyncUdpSocket *)udpSocket{
     if (!_udpSocket) {

@@ -187,7 +187,9 @@ static NSString *curveUid;
 {
     NSLog(@"连接失败");
     dispatch_async(dispatch_get_main_queue(), ^{
-        [NSObject showHudTipStr:LocalString(@"连接已断开")];
+        if (!_isAp) {
+            [NSObject showHudTipStr:LocalString(@"连接已断开")];
+        }
     });
     [self setConnectedDevice:nil];
     [_myTimer setFireDate:[NSDate distantFuture]];
@@ -199,7 +201,8 @@ static NSString *curveUid;
     NSLog(@"接收到消息%@",data);
     NSLog(@"socket成功收到帧, tag: %ld", tag);
     [_mySocket readDataWithTimeout:-1 tag:1];
-    [_mySocket readDataWithTimeout:-1 tag:1];
+    [_mySocket readDataWithTimeout:-1 tag:2];
+    [_mySocket readDataWithTimeout:-1 tag:3];
 
     [self checkOutFrame:data];
     
@@ -211,11 +214,9 @@ static NSString *curveUid;
 }
 
 - (void)socket:(GCDAsyncSocket *)sock didWriteDataWithTag:(long)tag{
-    NSLog(@"发送了一条帧%d",_frameCount);
-    [_mySocket readDataWithTimeout:-1 tag:1];
-    [_mySocket readDataWithTimeout:-1 tag:1];
-    [_mySocket readDataWithTimeout:-1 tag:1];
-
+    NSLog(@"发送了一条帧%d,tag:%ld",_frameCount,tag);
+    [_mySocket readDataWithTimeout:-1 tag:tag];
+    [_mySocket readDataWithTimeout:-1 tag:tag];
 }
 
 #pragma mark - Actions
@@ -232,9 +233,6 @@ static NSString *curveUid;
 - (void)send:(NSMutableArray *)msg withTag:(NSUInteger)tag
 {
     _frameCount++;
-    [_mySocket readDataWithTimeout:-1 tag:1];
-    [_mySocket readDataWithTimeout:-1 tag:1];
-    [_mySocket readDataWithTimeout:-1 tag:1];
 
     if (![self.mySocket isDisconnected])
     {
@@ -271,7 +269,6 @@ static NSString *curveUid;
         }else if(tag == 101){
             dispatch_time_t time = dispatch_time(DISPATCH_TIME_NOW, 1.3 * NSEC_PER_SEC);
             dispatch_semaphore_wait(_sendSignal, time);
-
             [self.mySocket writeData:sendData withTimeout:-1 tag:2];
             if (sendCount - recvCount == 7) {
                 NSLog(@"四秒没回信息，断开连接");
@@ -289,7 +286,7 @@ static NSString *curveUid;
             sendCount++;
         }else if(tag == 102){
             //设置
-            [self.mySocket writeData:sendData withTimeout:-1 tag:1];
+            [self.mySocket writeData:sendData withTimeout:-1 tag:3];
         }
     }
     else
@@ -1037,16 +1034,25 @@ static NSString *curveUid;
             }else if (self.msg68Type == getPowerStatus){
                 self.setPowerCount = 0;
                 resendCount = 0;
-                [_myTimer setFireDate:[NSDate date]];
+                
+                if (self.setFireCount == 0 && self.setColdAndStirCount == 0) {
+                    [_myTimer setFireDate:[NSDate date]];
+                }
             }else if (self.msg68Type == fire){
                 self.setFireCount = 0;
                 resendCount = 0;
-                [_myTimer setFireDate:[NSDate date]];
+                
+                if (self.setPowerCount == 0 && self.setColdAndStirCount == 0) {
+                    [_myTimer setFireDate:[NSDate date]];
+                }
             }else if (self.msg68Type == coolAndStir){
                 if ([data[6] intValue] == [self.isColdAndStir intValue]) {
                     self.setColdAndStirCount = 0;
                     resendCount = 0;
-                    [_myTimer setFireDate:[NSDate date]];
+                    
+                    if (self.setPowerCount == 0 && self.setFireCount == 0) {
+                        [_myTimer setFireDate:[NSDate date]];
+                    }
                 }
             }else if (self.msg68Type == sendSSID){
                 dispatch_async(dispatch_get_main_queue(), ^{
@@ -1057,6 +1063,7 @@ static NSString *curveUid;
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [NSObject cancelPreviousPerformRequestsWithTarget:self];
                 });
+                [[NSNotificationCenter defaultCenter] postNotificationName:@"apSendSucc" object:nil userInfo:nil];
             }
         }else if (self.frame68Type == commandFrame){
             if (self.msg68Type == getTimerStatus) {

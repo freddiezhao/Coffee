@@ -102,6 +102,7 @@
     [_udpTimer setFireDate:[NSDate distantFuture]];
     [_udpTimer invalidate];
     _udpTimer = nil;
+    [_spinner stopAnimating];
 }
 
 - (void)didMoveToParentViewController:(UIViewController *)parent{
@@ -296,6 +297,7 @@
         [self.esptouchTask interrupt];
     }
     [self.condition unlock];
+    [_spinner stopAnimating];
     [self.navigationController popViewControllerAnimated:YES];
     [NSObject showHudTipStr:LocalString(@"取消配置，你可以重新选择配置")];
 }
@@ -340,6 +342,7 @@
         _spinner = [[UIActivityIndicatorView alloc] init];
         [_spinner setActivityIndicatorViewStyle:UIActivityIndicatorViewStyleGray];
         [_spinner setHidesWhenStopped:NO];
+        [_spinner startAnimating];
         //[_spinner setColor:[UIColor blueColor]];
         [self.view addSubview:_spinner];
         [_spinner mas_makeConstraints:^(MASConstraintMaker *make) {
