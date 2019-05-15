@@ -168,10 +168,11 @@
     if (_beanNameView) {
         _beanNameView = [self beanNameView];
     }
-    _beanTempRateLabel.text = [NSString stringWithFormat:@"%.1f %@/min",0.0,[DataBase shareDataBase].setting.tempUnit];
-    _inTempLabel.text = [NSString stringWithFormat:@"%.1f%@",0.0,[DataBase shareDataBase].setting.tempUnit];
-    _outTempLabel.text = [NSString stringWithFormat:@"%.1f%@",0.0,[DataBase shareDataBase].setting.tempUnit];
-    _environTempLabel.text = [NSString stringWithFormat:@"%.1f%@",0.0,[DataBase shareDataBase].setting.tempUnit];
+    _beanTempLabel.text = [NSString stringWithFormat:@"%.1f",[NSString diffTempUnitStringWithTemp:0.0]];
+    _beanTempRateLabel.text = [NSString stringWithFormat:@"%.1f %@/min",[NSString diffTempUnitStringWithTemp:0.0],[DataBase shareDataBase].setting.tempUnit];
+    _inTempLabel.text = [NSString stringWithFormat:@"%.1f%@",[NSString diffTempUnitStringWithTemp:0.0],[DataBase shareDataBase].setting.tempUnit];
+    _outTempLabel.text = [NSString stringWithFormat:@"%.1f%@",[NSString diffTempUnitStringWithTemp:0.0],[DataBase shareDataBase].setting.tempUnit];
+    _environTempLabel.text = [NSString stringWithFormat:@"%.1f%@",[NSString diffTempUnitStringWithTemp:0.0],[DataBase shareDataBase].setting.tempUnit];
     _beanTempUnitLabel.text = [DataBase shareDataBase].setting.tempUnit;
     
     if (_myNet.deviceTimerStatus == 0 && _myNet.connectedDevice) {
@@ -466,11 +467,11 @@
                 _statusView.layer.shadowOffset = CGSizeMake(0,0);
                 _statusView.layer.shadowOpacity = 1;
                 
-                _beanTempLabel.text = [NSString stringWithFormat:@"%.1f",0.0];
-                _inTempLabel.text = [NSString stringWithFormat:@"%.1f%@",0.0,[DataBase shareDataBase].setting.tempUnit];
-                _outTempLabel.text = [NSString stringWithFormat:@"%.1f%@",0.0,[DataBase shareDataBase].setting.tempUnit];
-                _environTempLabel.text = [NSString stringWithFormat:@"%.1f%@",0.0,[DataBase shareDataBase].setting.tempUnit];
-                _beanTempRateLabel.text = [NSString stringWithFormat:@"%.1f%@/min",0.0,[DataBase shareDataBase].setting.tempUnit];
+                _beanTempLabel.text = [NSString stringWithFormat:@"%.1f",[NSString diffTempUnitStringWithTemp:0.0]];
+                _inTempLabel.text = [NSString stringWithFormat:@"%.1f%@",[NSString diffTempUnitStringWithTemp:0.0],[DataBase shareDataBase].setting.tempUnit];
+                _outTempLabel.text = [NSString stringWithFormat:@"%.1f%@",[NSString diffTempUnitStringWithTemp:0.0],[DataBase shareDataBase].setting.tempUnit];
+                _environTempLabel.text = [NSString stringWithFormat:@"%.1f%@",[NSString diffTempUnitStringWithTemp:0.0],[DataBase shareDataBase].setting.tempUnit];
+                _beanTempRateLabel.text = [NSString stringWithFormat:@"%.1f%@/min",[NSString diffTempUnitStringWithTemp:0.0],[DataBase shareDataBase].setting.tempUnit];
                 
                 _deviceImage.frame = CGRectMake(117/WScale, 37/HScale, 140/WScale, 112/HScale);
                 _deviceImage.image = [UIImage imageNamed:@"img_logo_gray"];
@@ -780,7 +781,7 @@
     if (!_beanTempLabel) {
         _beanTempLabel = [[UILabel alloc] init];
         _beanTempLabel.frame = CGRectMake(205/WScale,47/HScale,60/WScale,50/HScale);
-        _beanTempLabel.text = LocalString(@"0.0");
+        _beanTempLabel.text = [NSString stringWithFormat:@"%.1f",[NSString diffTempUnitStringWithTemp:0.0]];
         _beanTempLabel.textAlignment = NSTextAlignmentLeft;
         _beanTempLabel.textColor = [UIColor colorWithHexString:@"4778CC"];
         _beanTempLabel.font = [UIFont fontWithName:@"Avenir" size:40.f];
@@ -818,7 +819,7 @@
     if (!_beanTempRateLabel) {
         _beanTempRateLabel = [[UILabel alloc] init];
         _beanTempRateLabel.frame = CGRectMake(210/WScale,93/HScale,100/WScale,20/HScale);
-        _beanTempRateLabel.text = [NSString stringWithFormat:@"%.1f %@/min",0.0,[DataBase shareDataBase].setting.tempUnit];
+        _beanTempRateLabel.text = [NSString stringWithFormat:@"%.1f %@/min",[NSString diffTempUnitStringWithTemp:0.0],[DataBase shareDataBase].setting.tempUnit];
         _beanTempRateLabel.textAlignment = NSTextAlignmentLeft;
         _beanTempRateLabel.textColor = [UIColor colorWithHexString:@"4778CC"];
         _beanTempRateLabel.font = [UIFont fontWithName:@"Avenir" size:16.f];
@@ -832,7 +833,7 @@
     if (!_inTempLabel) {
         _inTempLabel = [[UILabel alloc] init];
         _inTempLabel.frame = CGRectMake(70/WScale,181/HScale,80/WScale,25/WScale);
-        _inTempLabel.text = [NSString stringWithFormat:@"%.1f%@",0.0,[DataBase shareDataBase].setting.tempUnit];
+        _inTempLabel.text = [NSString stringWithFormat:@"%.1f%@",[NSString diffTempUnitStringWithTemp:0.0],[DataBase shareDataBase].setting.tempUnit];
         _inTempLabel.textAlignment = NSTextAlignmentLeft;
         _inTempLabel.textColor = [UIColor colorWithHexString:@"4778CC"];
         _inTempLabel.font = [UIFont fontWithName:@"Avenir" size:18.f];
@@ -866,7 +867,7 @@
     if (!_outTempLabel) {
         _outTempLabel = [[UILabel alloc] init];
         _outTempLabel.frame = CGRectMake(182/WScale,181/HScale,80/WScale,25/WScale);
-        _outTempLabel.text = [NSString stringWithFormat:@"%.1f%@",0.0,[DataBase shareDataBase].setting.tempUnit];
+        _outTempLabel.text = [NSString stringWithFormat:@"%.1f%@",[NSString diffTempUnitStringWithTemp:0.0],[DataBase shareDataBase].setting.tempUnit];
         _outTempLabel.textAlignment = NSTextAlignmentLeft;
         _outTempLabel.textColor = [UIColor colorWithHexString:@"4778CC"];
         _outTempLabel.font = [UIFont fontWithName:@"Avenir" size:18.f];
@@ -900,7 +901,7 @@
     if (!_environTempLabel) {
         _environTempLabel = [[UILabel alloc] init];
         _environTempLabel.frame = CGRectMake(294/WScale,181/HScale,80/WScale,25/WScale);
-        _environTempLabel.text = [NSString stringWithFormat:@"%.1f%@",0.0,[DataBase shareDataBase].setting.tempUnit];
+        _environTempLabel.text = [NSString stringWithFormat:@"%.1f%@",[NSString diffTempUnitStringWithTemp:0.0],[DataBase shareDataBase].setting.tempUnit];
         _environTempLabel.textAlignment = NSTextAlignmentLeft;
         _environTempLabel.textColor = [UIColor colorWithHexString:@"4778CC"];
         _environTempLabel.font = [UIFont fontWithName:@"Avenir" size:18.f];
