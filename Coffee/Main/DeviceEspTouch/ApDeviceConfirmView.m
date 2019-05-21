@@ -199,6 +199,13 @@
         tipLabel2.textAlignment = NSTextAlignmentCenter;
         [self.view addSubview:tipLabel2];
         
+        UILabel *tipLabel3 = [[UILabel alloc] init];
+        tipLabel3.text = [NSString stringWithFormat:@"%@",LocalString(@"前往系统设置连接AP热点:ESP-HB,密码为123456789")];
+        tipLabel3.font = [UIFont fontWithName:@"PingFangSC-Regular" size:13];
+        tipLabel3.textColor = [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1];
+        tipLabel3.textAlignment = NSTextAlignmentCenter;
+        [self.view addSubview:tipLabel3];
+        
         [tipLabel1 mas_makeConstraints:^(MASConstraintMaker *make) {
             make.size.mas_equalTo(CGSizeMake(ScreenWidth, 20 / HScale));
             make.centerX.equalTo(self.view.mas_centerX);
@@ -208,6 +215,11 @@
             make.size.mas_equalTo(CGSizeMake(ScreenWidth, 20 / HScale));
             make.centerX.equalTo(self.view.mas_centerX);
             make.top.equalTo(tipLabel1.mas_bottom).offset(8 / HScale);
+        }];
+        [tipLabel3 mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.size.mas_equalTo(CGSizeMake(ScreenWidth, 20 / HScale));
+            make.centerX.equalTo(self.view.mas_centerX);
+            make.top.equalTo(tipLabel2.mas_bottom).offset(8 / HScale);
         }];
     }
     return _image;

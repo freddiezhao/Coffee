@@ -25,6 +25,9 @@
 @property (nonatomic, strong) UILabel *status;
 @property (nonatomic, strong) UIView *statusView;
 @property (nonatomic, strong) UIImageView *deviceImage;
+@property (nonatomic, strong) UIImageView *hongbeiImage;
+@property (nonatomic, strong) UIImageView *rejiImage;
+@property (nonatomic, strong) UIImageView *lengqueImage;
 @property (nonatomic, strong) UILabel *status1;
 @property (nonatomic, strong) UIView *statusView1;
 @property (nonatomic, strong) UILabel *status2;
@@ -81,6 +84,9 @@
 
     _status = [self status];
     _deviceImage = [self deviceImage];
+//    _hongbeiImage = [self hongbeiImage];
+//    _rejiImage = [self rejiImage];
+//    _lengqueImage = [self lengqueImage];
     _status1 = [self status1];
     _status2 = [self status2];
     _status3 = [self status3];
@@ -182,6 +188,9 @@
     }
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(mysocketDidDisconnect) name:@"mysocketDidDisconnect" object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setButtonRecieved) name:@"setButtonRecieved" object:nil];
+
 }
 
 - (void)viewWillDisappear:(BOOL)animated{
@@ -256,6 +265,11 @@
 }
 
 - (void)setPower{
+    if (!_myNet.connectedDevice) {
+        [self showNoConnectDevice];
+        return;
+    }
+    
     _myNet.setPowerCount = 2;
     if (_myNet.powerStatus) {
         [_myNet setPower:[NSNumber numberWithUnsignedInteger:0x00]];
@@ -265,9 +279,35 @@
         _myNet.isPower = [NSNumber numberWithUnsignedInteger:0xFF];
     }
     _myNet.powerStatus = !_myNet.powerStatus;
+    
+    _powerBtn.enabled = NO;
+    _fireBtn.enabled = NO;
+    _stirBtn.enabled = NO;
+    _coldBtn.enabled = NO;
+    
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        sleep(1);
+        dispatch_async(dispatch_get_main_queue(), ^{
+            _powerBtn.enabled = YES;
+            if (_myNet.powerStatus) {
+                _fireBtn.enabled = YES;
+                _stirBtn.enabled = YES;
+                _coldBtn.enabled = YES;
+            }else{
+                _fireBtn.enabled = NO;
+                _stirBtn.enabled = NO;
+                _coldBtn.enabled = NO;
+            }
+        });
+    });
 }
 
 - (void)setFire{
+    if (!_myNet.connectedDevice) {
+        [self showNoConnectDevice];
+        return;
+    }
+    
     _myNet.setFireCount = 2;
     if (_myNet.fireStatus) {
         [[NetWork shareNetWork] setFire:[NSNumber numberWithUnsignedInteger:0x00]];
@@ -277,9 +317,35 @@
         _myNet.isFire = [NSNumber numberWithUnsignedInteger:0xFF];
     }
     _myNet.fireStatus = !_myNet.fireStatus;
+    
+    _powerBtn.enabled = NO;
+    _fireBtn.enabled = NO;
+    _stirBtn.enabled = NO;
+    _coldBtn.enabled = NO;
+    
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        sleep(1);
+        dispatch_async(dispatch_get_main_queue(), ^{
+            _powerBtn.enabled = YES;
+            if (_myNet.powerStatus) {
+                _fireBtn.enabled = YES;
+                _stirBtn.enabled = YES;
+                _coldBtn.enabled = YES;
+            }else{
+                _fireBtn.enabled = NO;
+                _stirBtn.enabled = NO;
+                _coldBtn.enabled = NO;
+            }
+        });
+    });
 }
 
 - (void)setStir{
+    if (!_myNet.connectedDevice) {
+        [self showNoConnectDevice];
+        return;
+    }
+    
     _myNet.setColdAndStirCount = 2;
     if (_myNet.stirStatus && _myNet.coolStatus) {
         [_myNet setColdAndStir:[NSNumber numberWithUnsignedInteger:0x01]];
@@ -295,9 +361,35 @@
         _myNet.isColdAndStir = [NSNumber numberWithUnsignedInteger:0x02];
     }
     _myNet.stirStatus = !_myNet.stirStatus;
+    
+    _powerBtn.enabled = NO;
+    _fireBtn.enabled = NO;
+    _stirBtn.enabled = NO;
+    _coldBtn.enabled = NO;
+    
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        sleep(1);
+        dispatch_async(dispatch_get_main_queue(), ^{
+            _powerBtn.enabled = YES;
+            if (_myNet.powerStatus) {
+                _fireBtn.enabled = YES;
+                _stirBtn.enabled = YES;
+                _coldBtn.enabled = YES;
+            }else{
+                _fireBtn.enabled = NO;
+                _stirBtn.enabled = NO;
+                _coldBtn.enabled = NO;
+            }
+        });
+    });
 }
 
 - (void)setCold{
+    if (!_myNet.connectedDevice) {
+        [self showNoConnectDevice];
+        return;
+    }
+    
     _myNet.setColdAndStirCount = 3;
     if (_myNet.stirStatus && _myNet.coolStatus) {
         [_myNet setColdAndStir:[NSNumber numberWithUnsignedInteger:0x02]];
@@ -313,6 +405,63 @@
         _myNet.isColdAndStir = [NSNumber numberWithUnsignedInteger:0x01];
     }
     _myNet.coolStatus = !_myNet.coolStatus;
+    
+    _powerBtn.enabled = NO;
+    _fireBtn.enabled = NO;
+    _stirBtn.enabled = NO;
+    _coldBtn.enabled = NO;
+    
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        sleep(1);
+        dispatch_async(dispatch_get_main_queue(), ^{
+            _powerBtn.enabled = YES;
+            if (_myNet.powerStatus) {
+                _fireBtn.enabled = YES;
+                _stirBtn.enabled = YES;
+                _coldBtn.enabled = YES;
+            }else{
+                _fireBtn.enabled = NO;
+                _stirBtn.enabled = NO;
+                _coldBtn.enabled = NO;
+            }
+        });
+    });
+}
+
+- (void)setButtonRecieved{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        _powerBtn.enabled = YES;
+        if (_myNet.powerStatus) {
+            _fireBtn.enabled = YES;
+            _stirBtn.enabled = YES;
+            _coldBtn.enabled = YES;
+        }else{
+            _fireBtn.enabled = NO;
+            _stirBtn.enabled = NO;
+            _coldBtn.enabled = NO;
+        }
+    });
+}
+
+- (void)showNoConnectDevice{
+    YAlertViewController *alert = [[YAlertViewController alloc] init];
+    alert.modalPresentationStyle = UIModalPresentationOverCurrentContext;
+    alert.rBlock = ^{
+        [self.rdv_tabBarController setTabBarHidden:NO animated:YES];
+    };
+    alert.lBlock = ^{
+        [self.rdv_tabBarController setTabBarHidden:NO animated:YES];
+    };
+    [self presentViewController:alert animated:NO completion:^{
+        [self.rdv_tabBarController setTabBarHidden:YES animated:YES];
+        alert.WScale_alert = WScale;
+        alert.HScale_alert = HScale;
+        [alert showView];
+        alert.titleLabel.text = LocalString(@"提示");
+        alert.messageLabel.text = LocalString(@"请先连接咖啡机设备");
+        [alert.leftBtn setTitle:LocalString(@"取消") forState:UIControlStateNormal];
+        [alert.rightBtn setTitle:LocalString(@"确认") forState:UIControlStateNormal];
+    }];
 }
 
 - (void)getCurve{
@@ -374,6 +523,7 @@
                 _stirBtn.enabled = YES;
                 _windPBtn.enabled = NO;
                 _firePBtn.enabled = NO;
+                _powerBtn.enabled = YES;
                 _status.text = LocalString(@"电源开启");
                 _statusView.layer.backgroundColor = [UIColor colorWithRed:126/255.0 green:211/255.0 blue:33/255.0 alpha:1].CGColor;
                 _statusView.layer.shadowColor = [UIColor colorWithRed:106/255.0 green:255/255.0 blue:77/255.0 alpha:1].CGColor;
@@ -398,6 +548,7 @@
                 _stirBtn.enabled = NO;
                 _windPBtn.enabled = NO;
                 _firePBtn.enabled = NO;
+                _powerBtn.enabled = YES;
                 _status.text = LocalString(@"电源关闭");
                 _statusView.layer.backgroundColor = [UIColor colorWithRed:254/255.0 green:71/255.0 blue:51/255.0 alpha:1].CGColor;
                 _statusView.layer.shadowColor = [UIColor colorWithRed:254/255.0 green:71/255.0 blue:52/255.0 alpha:1].CGColor;
@@ -530,6 +681,37 @@
     return _deviceImage;
 }
 
+- (UIImageView *)hongbeiImage{
+    if (!_hongbeiImage) {
+        _hongbeiImage = [[UIImageView alloc] initWithFrame:CGRectMake(117/WScale, 37/HScale, 140/WScale, 112/HScale)];
+        _hongbeiImage.image = [UIImage imageNamed:@"img_signal_light_hongbei2"];
+        [self.view addSubview:_hongbeiImage];
+        
+    }
+    return _hongbeiImage;
+}
+
+- (UIImageView *)rejiImage{
+    if (!_rejiImage) {
+        _rejiImage = [[UIImageView alloc] initWithFrame:CGRectMake(117/WScale, 37/HScale, 140/WScale, 112/HScale)];
+        _rejiImage.image = [UIImage imageNamed:@"img_signal_light_reji2"];
+        [self.view addSubview:_rejiImage];
+        
+    }
+    return _rejiImage;
+}
+
+- (UIImageView *)lengqueImage{
+    if (!_lengqueImage) {
+        _lengqueImage = [[UIImageView alloc] initWithFrame:CGRectMake(117/WScale, 37/HScale, 140/WScale, 112/HScale)];
+        _lengqueImage.image = [UIImage imageNamed:@"img_signal_light_lengque2"];
+        [self.view addSubview:_lengqueImage];
+        
+    }
+    return _lengqueImage;
+}
+
+
 - (UILabel *)status1{
     if (!_status1) {
         _status1 = [[UILabel alloc] initWithFrame:CGRectMake(87/WScale, 175/HScale, 50/WScale, 17/HScale)];
@@ -597,6 +779,7 @@
         
         _powerBtn = [[UIButton alloc] init];
         _powerBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        _powerBtn.adjustsImageWhenDisabled = NO;
         if (_myNet.powerStatus) {
             [_powerBtn setImage:[UIImage imageWithContentsOfFile:[_resourcePath stringByAppendingPathComponent:@"btn_power_on@2x.png"]] forState:UIControlStateNormal];
         }else{
@@ -608,6 +791,7 @@
         
         _fireBtn = [[UIButton alloc] init];
         _fireBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        _fireBtn.adjustsImageWhenDisabled = NO;
         if (_myNet.fireStatus) {
             [_fireBtn setImage:[UIImage imageWithContentsOfFile:[_resourcePath stringByAppendingPathComponent:@"btn_fire_on@2x.png"]] forState:UIControlStateNormal];
         }else{
@@ -619,6 +803,7 @@
         
         _stirBtn = [[UIButton alloc] init];
         _stirBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        _stirBtn.adjustsImageWhenDisabled = NO;
         if (_myNet.stirStatus) {
             [_stirBtn setImage:[UIImage imageWithContentsOfFile:[_resourcePath stringByAppendingPathComponent:@"btn_stir_on@2x.png"]] forState:UIControlStateNormal];
         }else{
@@ -630,6 +815,7 @@
         
         _coldBtn = [[UIButton alloc] init];
         _coldBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        _coldBtn.adjustsImageWhenDisabled = NO;
         if (_myNet.coolStatus) {
             [_coldBtn setImage:[UIImage imageWithContentsOfFile:[_resourcePath stringByAppendingPathComponent:@"btn_cold_on@2x.png"]] forState:UIControlStateNormal];
         }else{
@@ -641,6 +827,7 @@
         
         _firePBtn = [[UIButton alloc] init];
         _firePBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        
         [_firePBtn setImage:[UIImage imageWithContentsOfFile:[_resourcePath stringByAppendingPathComponent:@"btn_firepower_disable@2x.png"]] forState:UIControlStateNormal];
         [_firePBtn addTarget:self action:@selector(setFirePower) forControlEvents:UIControlEventTouchUpInside];
         _firePBtn.enabled = NO;

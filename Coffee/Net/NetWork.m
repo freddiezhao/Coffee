@@ -154,7 +154,7 @@ static NSString *curveUid;
 #pragma mark - Lazy load
 - (NSTimer *)myTimer{
     if (!_myTimer) {
-        _myTimer = [NSTimer scheduledTimerWithTimeInterval:1.3 target:self selector:@selector(getTemp) userInfo:nil repeats:YES];
+        _myTimer = [NSTimer scheduledTimerWithTimeInterval:1.f target:self selector:@selector(getTemp) userInfo:nil repeats:YES];
         [_myTimer setFireDate:[NSDate distantFuture]];
     }
     return _myTimer;
@@ -169,6 +169,7 @@ static NSString *curveUid;
         [self resetState];
         [self inquireTimer];
     }else{
+        //是ap模式下tcp连接，发送ssid
         [self tcpSendSSID];
     }
     
@@ -191,7 +192,7 @@ static NSString *curveUid;
             [NSObject showHudTipStr:LocalString(@"连接已断开")];
         }
     });
-    [self setConnectedDevice:nil];
+    //[self setConnectedDevice:nil];
     [_myTimer setFireDate:[NSDate distantFuture]];
     [[NSNotificationCenter defaultCenter] postNotificationName:@"mysocketDidDisconnect" object:nil userInfo:nil];
 }
@@ -225,6 +226,7 @@ static NSString *curveUid;
     if (![_mySocket isDisconnected]) {
         NSLog(@"主动断开");
         [_mySocket disconnect];
+        [self setConnectedDevice:nil];
     }
     return [_mySocket connectToHost:host onPort:port error:errPtr];
 }
@@ -246,9 +248,6 @@ static NSString *curveUid;
         NSData *sendData = [NSData dataWithBytes:sendBuffer length:len];
         NSLog(@"发送一条帧： %@",sendData);
         if (tag == 100) {
-            dispatch_time_t time = dispatch_time(DISPATCH_TIME_NOW, 1.3 * NSEC_PER_SEC);
-            dispatch_semaphore_wait(_sendSignal, time);
-
             [self.mySocket writeData:sendData withTimeout:-1 tag:1];
             //重发
             if (resendCount > 3) {
@@ -262,16 +261,17 @@ static NSString *curveUid;
                 if (![_mySocket isDisconnected]) {
                     NSLog(@"主动断开");
                     [_mySocket disconnect];
+                    [self setConnectedDevice:nil];
                 }
             }
             resendCount++;
             
         }else if(tag == 101){
-            dispatch_time_t time = dispatch_time(DISPATCH_TIME_NOW, 1.3 * NSEC_PER_SEC);
-            dispatch_semaphore_wait(_sendSignal, time);
+//            dispatch_time_t time = dispatch_time(DISPATCH_TIME_NOW, 1.3 * NSEC_PER_SEC);
+//            dispatch_semaphore_wait(_sendSignal, time);
             [self.mySocket writeData:sendData withTimeout:-1 tag:2];
             if (sendCount - recvCount == 7) {
-                NSLog(@"四秒没回信息，断开连接");
+                NSLog(@"七秒没回信息，断开连接");
                 [self setConnectedDevice:nil];
                 [[NSNotificationCenter defaultCenter] postNotificationName:@"mysocketDidDisconnect" object:nil userInfo:nil];
                 dispatch_async(dispatch_get_main_queue(), ^{
@@ -281,6 +281,7 @@ static NSString *curveUid;
                 if (![_mySocket isDisconnected]) {
                     NSLog(@"主动断开");
                     [_mySocket disconnect];
+                    [self setConnectedDevice:nil];
                 }
             }
             sendCount++;
@@ -389,6 +390,7 @@ static NSString *curveUid;
                         if (![_mySocket isDisconnected]) {
                             NSLog(@"主动断开");
                             [_mySocket disconnect];
+                            [self setConnectedDevice:nil];
                         }
                     }
                     i -= maxTempCount;
@@ -516,8 +518,6 @@ static NSString *curveUid;
 }
 
 - (void)setFire:(NSNumber *)isFire{
-    [_myTimer setFireDate:[NSDate distantFuture]];
-    
     NSMutableArray *setFire = [[NSMutableArray alloc ] init];
     [setFire addObject:[NSNumber numberWithUnsignedChar:0x68]];
     [setFire addObject:[NSNumber numberWithUnsignedChar:0x01]];
@@ -533,7 +533,6 @@ static NSString *curveUid;
     dispatch_async(_queue, ^{
         [self send:setFire withTag:102];
         NSLog(@"点火%@",isFire);
-        NSLog(@"点火%d",_frameCount);
     });
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
         sleep(3.0);
@@ -545,8 +544,6 @@ static NSString *curveUid;
 }
 
 - (void)setPower:(NSNumber *)isPower{
-    [_myTimer setFireDate:[NSDate distantFuture]];
-    
     NSMutableArray *setPower = [[NSMutableArray alloc ] init];
     [setPower addObject:[NSNumber numberWithUnsignedChar:0x68]];
     [setPower addObject:[NSNumber numberWithUnsignedChar:0x01]];
@@ -573,8 +570,6 @@ static NSString *curveUid;
 }
 
 - (void)setColdAndStir:(NSNumber *)isColdAndStir{
-    [_myTimer setFireDate:[NSDate distantFuture]];
-    
     NSMutableArray *setColdAndStir = [[NSMutableArray alloc ] init];
     [setColdAndStir addObject:[NSNumber numberWithUnsignedChar:0x68]];
     [setColdAndStir addObject:[NSNumber numberWithUnsignedChar:0x01]];
@@ -590,7 +585,6 @@ static NSString *curveUid;
     dispatch_async(_queue, ^{
         [self send:setColdAndStir withTag:102];
         NSLog(@"冷却搅拌%@",isColdAndStir);
-        NSLog(@"冷却搅拌%d",_frameCount);
     });
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
         sleep(3.0);
@@ -1036,24 +1030,33 @@ static NSString *curveUid;
                 resendCount = 0;
                 
                 if (self.setFireCount == 0 && self.setColdAndStirCount == 0) {
-                    [_myTimer setFireDate:[NSDate date]];
+                    //[_myTimer setFireDate:[NSDate date]];
                 }
+                
+                [[NSNotificationCenter defaultCenter] postNotificationName:@"setButtonRecieved" object:nil userInfo:nil];
+
             }else if (self.msg68Type == fire){
                 self.setFireCount = 0;
                 resendCount = 0;
                 
                 if (self.setPowerCount == 0 && self.setColdAndStirCount == 0) {
-                    [_myTimer setFireDate:[NSDate date]];
+                    //[_myTimer setFireDate:[NSDate date]];
                 }
+                
+                [[NSNotificationCenter defaultCenter] postNotificationName:@"setButtonRecieved" object:nil userInfo:nil];
+
             }else if (self.msg68Type == coolAndStir){
                 if ([data[6] intValue] == [self.isColdAndStir intValue]) {
                     self.setColdAndStirCount = 0;
                     resendCount = 0;
                     
                     if (self.setPowerCount == 0 && self.setFireCount == 0) {
-                        [_myTimer setFireDate:[NSDate date]];
+                        //[_myTimer setFireDate:[NSDate date]];
                     }
                 }
+                
+                [[NSNotificationCenter defaultCenter] postNotificationName:@"setButtonRecieved" object:nil userInfo:nil];
+
             }else if (self.msg68Type == sendSSID){
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [NSObject cancelPreviousPerformRequestsWithTarget:self];
@@ -1194,23 +1197,31 @@ static NSString *curveUid;
 {
     NSUInteger count = data.count;
     UInt8 front = [data[0] unsignedCharValue];
-    UInt8 end1 = [data[count-3] unsignedCharValue];
-    UInt8 end2 = [data[count-2] unsignedCharValue];
+//    UInt8 end1 = [data[count-3] unsignedCharValue];
+//    UInt8 end2 = [data[count-2] unsignedCharValue];
     UInt8 end3 = [data[count-1] unsignedCharValue];
     
+//    //判断帧头帧尾
+//    if (front != 0x68 || end1 != 0x16 || end2 != 0x0D || end3 != 0x0A)
+//    {
+//        NSLog(@"帧头帧尾错误");
+//        return NO;
+//    }
+    
     //判断帧头帧尾
-    if (front != 0x68 || end1 != 0x16 || end2 != 0x0D || end3 != 0x0A)
+    if (front != 0x68 || end3 != 0x16)
     {
         NSLog(@"帧头帧尾错误");
         return NO;
     }
+    
     //判断cs位
     UInt8 csTemp = 0x00;
-    for (int i = 0; i < count - 4; i++)
+    for (int i = 0; i < count - 2; i++)
     {
         csTemp += [data[i] unsignedCharValue];
     }
-    if (csTemp != [data[count-4] unsignedCharValue])
+    if (csTemp != [data[count-2] unsignedCharValue])
     {
         NSLog(@"校验错误");
         return NO;

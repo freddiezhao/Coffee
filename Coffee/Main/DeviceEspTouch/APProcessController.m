@@ -9,10 +9,12 @@
 #import "APProcessController.h"
 #import "GCDAsyncUdpSocket.h"
 #import "DeviceViewController.h"
+#import "DeviceModel.h"
 
 #import <netdb.h>//解析udp获取的IP地址
 #import <SystemConfiguration/CaptiveNetwork.h>
 #import <NetworkExtension/NEHotspotConfigurationManager.h>
+#import "FMDB.h"
 
 @interface APProcessController () <GCDAsyncUdpSocketDelegate>
 
@@ -50,6 +52,7 @@
     self.lock = [self lock];
     self.confirmWifiTimer = [self confirmWifiTimer];
     [self sendSearchBroadcast];
+#warning 提示：ap账号密码实在network中tcp连接的target中发送
 }
 
 - (void)viewWillAppear:(BOOL)animated{
@@ -152,36 +155,48 @@ static int hotspotAlertTime = 3;
             [self sendSearchBroadcast];
         }
     }else if(![ssid hasPrefix:@"ESP"] && [ssid isKindOfClass:[NSString class]]){
-#warning TODO 自动去连接要连接的Wi-Fi
-        if (@available(iOS 11.0, *)) {
-            if (hotspotAlertTime > 0) {
-                hotspotAlertTime--;
-                return;
+        ///2019.5.21更新，在查到udp后直接绑定，再发送ssid和password
+        [self bindDevice:mac success:^{
+            for (UIViewController *controller in self.navigationController.viewControllers) {
+                if ([controller isKindOfClass:[DeviceViewController class]]) {
+                    [self.navigationController popToViewController:controller animated:YES];
+                }
             }
-            hotspotAlertTime = 3;
-            NEHotspotConfiguration *hotspotConfig = [[NEHotspotConfiguration alloc] initWithSSID:net.ssid];
-            [[NEHotspotConfigurationManager sharedManager] applyConfiguration:hotspotConfig completionHandler:^(NSError * _Nullable error) {
-                NSLog(@"%@",error);
-                if (error && error.code != 13 && error.code != 7) {
-                    hotspotAlertTime = 0;//马上弹出框
-                }else if(error.code ==7){//error code = 7 ：用户点击了弹框取消按钮
-                    hotspotAlertTime = 0;
-                }else{// error code = 13 ：已连接
-                    hotspotAlertTime = 100000;
-                }
-            }];
-        } else {
-            UIAlertController *alertController = [UIAlertController alertControllerWithTitle:LocalString(@"配网成功") message:LocalString(@"您未连接到配网的Wi-Fi,会导致搜索不到设备，请注意切换Wi-Fi") preferredStyle:UIAlertControllerStyleAlert];
-            UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
-                for (UIViewController *controller in self.navigationController.viewControllers) {
-                    if ([controller isKindOfClass:[DeviceViewController class]]) {
-                        [self.navigationController popToViewController:controller animated:YES];
-                    }
-                }
-            }];
-            [alertController addAction:cancelAction];
-            [self presentViewController:alertController animated:YES completion:nil];
-        }
+            [NSObject showHudTipStr:LocalString(@"您未连接到配网的Wi-Fi,会导致搜索不到设备，请注意切换Wi-Fi")];
+        } failure:^{
+            [NSObject showHudTipStr:LocalString(@"网络状况不佳")];
+        }];
+
+#warning TODO 自动去连接要连接的Wi-Fi
+//        if (@available(iOS 11.0, *)) {
+//            if (hotspotAlertTime > 0) {
+//                hotspotAlertTime--;
+//                return;
+//            }
+//            hotspotAlertTime = 3;
+//            NEHotspotConfiguration *hotspotConfig = [[NEHotspotConfiguration alloc] initWithSSID:net.ssid passphrase:net.apPwd isWEP:NO];
+//            [[NEHotspotConfigurationManager sharedManager] applyConfiguration:hotspotConfig completionHandler:^(NSError * _Nullable error) {
+//                NSLog(@"%@",error);
+//                if (error && error.code != 13 && error.code != 7) {
+//                    hotspotAlertTime = 0;//马上弹出框
+//                }else if(error.code ==7){//error code = 7 ：用户点击了弹框取消按钮
+//                    hotspotAlertTime = 0;
+//                }else{// error code = 13 ：已连接
+//                    hotspotAlertTime = 100000;
+//                }
+//            }];
+//        } else {
+//            UIAlertController *alertController = [UIAlertController alertControllerWithTitle:LocalString(@"配网成功") message:LocalString(@"您未连接到配网的Wi-Fi,会导致搜索不到设备，请注意切换Wi-Fi") preferredStyle:UIAlertControllerStyleAlert];
+//            UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+//                for (UIViewController *controller in self.navigationController.viewControllers) {
+//                    if ([controller isKindOfClass:[DeviceViewController class]]) {
+//                        [self.navigationController popToViewController:controller animated:YES];
+//                    }
+//                }
+//            }];
+//            [alertController addAction:cancelAction];
+//            [self presentViewController:alertController animated:YES completion:nil];
+//        }
     }
 }
 
@@ -207,6 +222,105 @@ static int hotspotAlertTime = 3;
     [_spinner stopAnimating];
     [self.navigationController popViewControllerAnimated:YES];
     [NSObject showHudTipStr:LocalString(@"取消配置，你可以重新选择配置")];
+}
+
+- (void)bindDevice:(NSString *)mac success:(void(^)(void))success failure:(void(^)(void))failure{
+    //判断本地是否已经存储过，如果有则将_deviceArray中的该设备删除，如果没有则存储该设备
+    NSNumber *deviceType = [NetWork shareNetWork].deviceType;
+
+    BOOL isStored = [[DataBase shareDataBase] queryDevice:mac];
+    if (!isStored) {
+        AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+        
+        //设置超时时间
+        [manager.requestSerializer willChangeValueForKey:@"timeoutInterval"];
+        manager.requestSerializer.timeoutInterval = 6.f;
+        [manager.requestSerializer didChangeValueForKey:@"timeoutInterval"];
+        
+        [manager.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+        [manager.requestSerializer setValue:[NSString stringWithFormat:@"Bearer %@",[DataBase shareDataBase].token] forHTTPHeaderField:@"Authorization"];
+        [manager.requestSerializer setValue:[DataBase shareDataBase].userId forHTTPHeaderField:@"userId"];
+        
+        NSDictionary *parameters = @{@"sn":mac,@"name":mac,@"userId":[DataBase shareDataBase].userId,@"deviceType":deviceType};
+        [manager POST:@"http://139.196.90.97:8080/coffee/roaster" parameters:parameters progress:nil
+              success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+                  NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableContainers|NSJSONReadingMutableLeaves error:nil];
+                  if ([[responseDic objectForKey:@"errno"] intValue] == 0) {
+                      [NSObject showHudTipStr:LocalString(@"添加新设备到服务器成功")];
+                      
+                      [[DataBase shareDataBase].queueDB inDatabase:^(FMDatabase * _Nonnull db) {
+                          BOOL result = [db executeUpdate:@"INSERT INTO device (sn,deviceName,deviceType) VALUES (?,?,?)",mac,mac,deviceType];
+                          if (result) {
+                              NSLog(@"插入新设备到device成功");
+                              [NetWork shareNetWork].ipAddr = @"";
+                          }else{
+                              NSLog(@"插入新设备到device失败");
+                          }
+                      }];
+                      
+                      if (success) {
+                          success();
+                      }
+                  }else{
+                      [NSObject showHudTipStr:LocalString(@"添加新设备到服务器失败")];
+                      if (failure) {
+                          failure();
+                      }
+                  }
+              } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+                  NSLog(@"Error:%@",error);
+                  if (error.code == -1001) {
+                      [NSObject showHudTipStr:LocalString(@"当前网络状况不佳")];
+                  }
+                  if (failure) {
+                      failure();
+                  }
+              }];
+    }else{
+        AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+        
+        //设置超时时间
+        [manager.requestSerializer willChangeValueForKey:@"timeoutInterval"];
+        manager.requestSerializer.timeoutInterval = 6.f;
+        [manager.requestSerializer didChangeValueForKey:@"timeoutInterval"];
+        
+        [manager.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+        [manager.requestSerializer setValue:[NSString stringWithFormat:@"Bearer %@",[DataBase shareDataBase].token] forHTTPHeaderField:@"Authorization"];
+        [manager.requestSerializer setValue:[DataBase shareDataBase].userId forHTTPHeaderField:@"userId"];
+
+        NSDictionary *parameters = @{@"sn":mac,@"name":mac,@"userId":[DataBase shareDataBase].userId,@"deviceType":deviceType};
+        [manager PUT:@"http://139.196.90.97:8080/coffee/roaster" parameters:parameters
+             success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+                 NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableContainers|NSJSONReadingMutableLeaves error:nil];
+                 if ([[responseDic objectForKey:@"errno"] intValue] == 0) {
+                     [[DataBase shareDataBase].queueDB inDatabase:^(FMDatabase * _Nonnull db) {
+                         BOOL result = [db executeUpdate:@"UPDATE device SET deviceType = ? WHERE sn = ?",deviceType,mac];
+                         if (result) {
+                             NSLog(@"更新咖啡机到device表成功");
+                         }else{
+                             NSLog(@"更新咖啡机到device表失败");
+                         }
+                     }];
+                     
+                     if (success) {
+                         success();
+                     }
+                 }else{
+                     [NSObject showHudTipStr:LocalString(@"更新咖啡机到服务器失败")];
+                     if (failure) {
+                         failure();
+                     }
+                 }
+             } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+                 NSLog(@"Error:%@",error);
+                 if (error.code == -1001) {
+                     [NSObject showHudTipStr:LocalString(@"当前网络状况不佳")];
+                 }
+                 if (failure) {
+                     failure();
+                 }
+             }];
+    }
 }
 
 #pragma mark - udp delegate
@@ -237,7 +351,7 @@ static int hotspotAlertTime = 3;
         [self tcpActions:ipAddress];
     }else{
         /**
-         *发送玩账号密码后在Wi-Fi里查询udp
+         *发送完账号密码后在Wi-Fi里查询udp
          **/
         NSString *msg = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
         NSLog(@"%@",msg);
