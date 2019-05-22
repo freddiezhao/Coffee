@@ -86,9 +86,9 @@
 
     _status = [self status];
     _deviceImage = [self deviceImage];
-//    _hongbeiImage = [self hongbeiImage];
-//    _rejiImage = [self rejiImage];
-//    _lengqueImage = [self lengqueImage];
+    _hongbeiImage = [self hongbeiImage];
+    _rejiImage = [self rejiImage];
+    _lengqueImage = [self lengqueImage];
     _status1 = [self status1];
     _status2 = [self status2];
     _status3 = [self status3];
@@ -185,8 +185,10 @@
     
     if (_myNet.deviceTimerStatus == 0 && _myNet.connectedDevice) {
         _statusView2.layer.backgroundColor = [UIColor colorWithRed:255/255.0 green:221/255.0 blue:51/255.0 alpha:1.0].CGColor;
+        _hongbeiImage.hidden = NO;
     }else{
         _statusView2.layer.backgroundColor = [UIColor colorWithRed:213/255.0 green:218/255.0 blue:224/255.0 alpha:1].CGColor;
+        _hongbeiImage.hidden = YES;
     }
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(mysocketDidDisconnect) name:@"mysocketDidDisconnect" object:nil];
@@ -489,6 +491,7 @@
         dispatch_async(dispatch_get_main_queue(), ^{
             if (_myNet.fireStatus) {
                 [_fireBtn setImage:[UIImage imageWithContentsOfFile:[_resourcePath stringByAppendingPathComponent:@"btn_fire_on@2x.png"]] forState:UIControlStateNormal];
+                _rejiImage.hidden = NO;
                 
                 _status1.textColor = [UIColor colorWithHexString:@"333333"];
                 
@@ -499,6 +502,7 @@
                 _statusView1.layer.shadowRadius = 8;
             }else{
                 [_fireBtn setImage:[UIImage imageWithContentsOfFile:[_resourcePath stringByAppendingPathComponent:@"btn_fire_off@2x.png"]] forState:UIControlStateNormal];
+                _rejiImage.hidden = YES;
                 
                 _status1.textColor = [UIColor colorWithHexString:@"999999"];
                 
@@ -510,6 +514,7 @@
         dispatch_async(dispatch_get_main_queue(), ^{
             if (_myNet.coolStatus) {
                 [_coldBtn setImage:[UIImage imageWithContentsOfFile:[_resourcePath stringByAppendingPathComponent:@"btn_cold_on@2x.png"]] forState:UIControlStateNormal];
+                _lengqueImage.hidden = NO;
                 
                 _status3.textColor = [UIColor colorWithHexString:@"333333"];
                 
@@ -520,6 +525,7 @@
                 _statusView3.layer.shadowRadius = 8;
             }else{
                 [_coldBtn setImage:[UIImage imageWithContentsOfFile:[_resourcePath stringByAppendingPathComponent:@"btn_cold_off@2x.png"]] forState:UIControlStateNormal];
+                _lengqueImage.hidden = YES;
                 
                 _status3.textColor = [UIColor colorWithHexString:@"999999"];
                 
@@ -562,8 +568,10 @@
         dispatch_async(dispatch_get_main_queue(), ^{
             if (!_myNet.deviceTimerStatus && _myNet.connectedDevice) {
                 _statusView2.layer.backgroundColor = [UIColor colorWithRed:255/255.0 green:221/255.0 blue:51/255.0 alpha:1.0].CGColor;
+                _hongbeiImage.hidden = NO;
             }else{
                 _statusView2.layer.backgroundColor = [UIColor colorWithRed:213/255.0 green:218/255.0 blue:224/255.0 alpha:1].CGColor;
+                _hongbeiImage.hidden = YES;;
             }
         });
     }
@@ -612,30 +620,30 @@
 
 - (UIImageView *)hongbeiImage{
     if (!_hongbeiImage) {
-        _hongbeiImage = [[UIImageView alloc] initWithFrame:CGRectMake(117/WScale, 37/HScale, 140/WScale, 112/HScale)];
+        _hongbeiImage = [[UIImageView alloc] initWithFrame:CGRectMake(75/WScale, 18/HScale, 225/WScale, 150/HScale)];
         _hongbeiImage.image = [UIImage imageNamed:@"img_signal_light_hongbei2"];
         [self.view addSubview:_hongbeiImage];
-        
+        _hongbeiImage.hidden = YES;
     }
     return _hongbeiImage;
 }
 
 - (UIImageView *)rejiImage{
     if (!_rejiImage) {
-        _rejiImage = [[UIImageView alloc] initWithFrame:CGRectMake(117/WScale, 37/HScale, 140/WScale, 112/HScale)];
+        _rejiImage = [[UIImageView alloc] initWithFrame:CGRectMake(75/WScale, 18/HScale, 225/WScale, 150/HScale)];
         _rejiImage.image = [UIImage imageNamed:@"img_signal_light_reji2"];
         [self.view addSubview:_rejiImage];
-        
+        _rejiImage.hidden = YES;
     }
     return _rejiImage;
 }
 
 - (UIImageView *)lengqueImage{
     if (!_lengqueImage) {
-        _lengqueImage = [[UIImageView alloc] initWithFrame:CGRectMake(117/WScale, 37/HScale, 140/WScale, 112/HScale)];
+        _lengqueImage = [[UIImageView alloc] initWithFrame:CGRectMake(75/WScale, 18/HScale, 225/WScale, 150/HScale)];
         _lengqueImage.image = [UIImage imageNamed:@"img_signal_light_lengque2"];
         [self.view addSubview:_lengqueImage];
-        
+        _lengqueImage.hidden = YES;
     }
     return _lengqueImage;
 }
