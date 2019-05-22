@@ -534,13 +534,14 @@ static NSString *curveUid;
         [self send:setFire withTag:102];
         NSLog(@"点火%@",isFire);
     });
-    dispatch_async(dispatch_get_global_queue(0, 0), ^{
-        sleep(3.0);
-        if (self.setFireCount > 0 && [isFire isEqual:self.isFire]) {
-            [self setFire:isFire];
-            self.setFireCount--;
-        }
-    });
+//    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+//        sleep(3.0);
+//        NSLog(@"重发点火%@",isFire);
+//        if (self.setFireCount > 0 && [isFire isEqual:self.isFire]) {
+//            [self setFire:isFire];
+//            self.setFireCount--;
+//        }
+//    });
 }
 
 - (void)setPower:(NSNumber *)isPower{
@@ -560,13 +561,13 @@ static NSString *curveUid;
         [self send:setPower withTag:102];
         NSLog(@"开关%@",isPower);
     });
-    dispatch_async(dispatch_get_global_queue(0, 0), ^{
-        sleep(3.0);
-        if (self.setPowerCount > 0 && [isPower isEqual:self.isPower]) {
-            [self setPower:isPower];
-            self.setPowerCount--;
-        }
-    });
+//    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+//        sleep(3.0);
+//        if (self.setPowerCount > 0 && [isPower isEqual:self.isPower]) {
+//            [self setPower:isPower];
+//            self.setPowerCount--;
+//        }
+//    });
 }
 
 - (void)setColdAndStir:(NSNumber *)isColdAndStir{
@@ -586,13 +587,13 @@ static NSString *curveUid;
         [self send:setColdAndStir withTag:102];
         NSLog(@"冷却搅拌%@",isColdAndStir);
     });
-    dispatch_async(dispatch_get_global_queue(0, 0), ^{
-        sleep(3.0);
-        if (self.setColdAndStirCount > 0 && [isColdAndStir isEqual:self.isColdAndStir]) {
-            [self setColdAndStir:isColdAndStir];
-            self.setColdAndStirCount--;
-        }
-    });
+//    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+//        sleep(3.0);
+//        if (self.setColdAndStirCount > 0 && [isColdAndStir isEqual:self.isColdAndStir]) {
+//            [self setColdAndStir:isColdAndStir];
+//            self.setColdAndStirCount--;
+//        }
+//    });
 }
 
 - (void)setTimerStatusOn{

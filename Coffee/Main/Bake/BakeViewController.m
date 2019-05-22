@@ -270,36 +270,22 @@
         return;
     }
     
-    _myNet.setPowerCount = 2;
-    if (_myNet.powerStatus) {
-        [_myNet setPower:[NSNumber numberWithUnsignedInteger:0x00]];
-        _myNet.isPower = [NSNumber numberWithUnsignedInteger:0x00];
-    }else{
-        [_myNet setPower:[NSNumber numberWithUnsignedInteger:0xFF]];
-        _myNet.isPower = [NSNumber numberWithUnsignedInteger:0xFF];
+    static NSTimeInterval time = 0.0;
+    NSTimeInterval currentTime = [NSDate date].timeIntervalSince1970;//防止暴力点击 两秒内只能点击一次
+    if (currentTime - time > 0.3) {//限制用户点击按钮的时间间隔大于0.3秒钟
+        _myNet.setPowerCount = 2;
+        if (_myNet.powerStatus) {
+            [_myNet setPower:[NSNumber numberWithUnsignedInteger:0x00]];
+            _myNet.isPower = [NSNumber numberWithUnsignedInteger:0x00];
+        }else{
+            [_myNet setPower:[NSNumber numberWithUnsignedInteger:0xFF]];
+            _myNet.isPower = [NSNumber numberWithUnsignedInteger:0xFF];
+        }
+        _myNet.powerStatus = !_myNet.powerStatus;
     }
-    _myNet.powerStatus = !_myNet.powerStatus;
+    time = currentTime;
+
     
-    _powerBtn.enabled = NO;
-    _fireBtn.enabled = NO;
-    _stirBtn.enabled = NO;
-    _coldBtn.enabled = NO;
-    
-    dispatch_async(dispatch_get_global_queue(0, 0), ^{
-        sleep(1);
-        dispatch_async(dispatch_get_main_queue(), ^{
-            _powerBtn.enabled = YES;
-            if (_myNet.powerStatus) {
-                _fireBtn.enabled = YES;
-                _stirBtn.enabled = YES;
-                _coldBtn.enabled = YES;
-            }else{
-                _fireBtn.enabled = NO;
-                _stirBtn.enabled = NO;
-                _coldBtn.enabled = NO;
-            }
-        });
-    });
 }
 
 - (void)setFire{
@@ -308,36 +294,20 @@
         return;
     }
     
-    _myNet.setFireCount = 2;
-    if (_myNet.fireStatus) {
-        [[NetWork shareNetWork] setFire:[NSNumber numberWithUnsignedInteger:0x00]];
-        _myNet.isFire = [NSNumber numberWithUnsignedInteger:0x00];
-    }else{
-        [[NetWork shareNetWork] setFire:[NSNumber numberWithUnsignedInteger:0xFF]];
-        _myNet.isFire = [NSNumber numberWithUnsignedInteger:0xFF];
+    static NSTimeInterval time = 0.0;
+    NSTimeInterval currentTime = [NSDate date].timeIntervalSince1970;//防止暴力点击 两秒内只能点击一次
+    if (currentTime - time > 0.3) {//限制用户点击按钮的时间间隔大于2秒钟
+        _myNet.setFireCount = 2;
+        if (_myNet.fireStatus) {
+            [[NetWork shareNetWork] setFire:[NSNumber numberWithUnsignedInteger:0x00]];
+            _myNet.isFire = [NSNumber numberWithUnsignedInteger:0x00];
+        }else{
+            [[NetWork shareNetWork] setFire:[NSNumber numberWithUnsignedInteger:0xFF]];
+            _myNet.isFire = [NSNumber numberWithUnsignedInteger:0xFF];
+        }
+        _myNet.fireStatus = !_myNet.fireStatus;
     }
-    _myNet.fireStatus = !_myNet.fireStatus;
-    
-    _powerBtn.enabled = NO;
-    _fireBtn.enabled = NO;
-    _stirBtn.enabled = NO;
-    _coldBtn.enabled = NO;
-    
-    dispatch_async(dispatch_get_global_queue(0, 0), ^{
-        sleep(1);
-        dispatch_async(dispatch_get_main_queue(), ^{
-            _powerBtn.enabled = YES;
-            if (_myNet.powerStatus) {
-                _fireBtn.enabled = YES;
-                _stirBtn.enabled = YES;
-                _coldBtn.enabled = YES;
-            }else{
-                _fireBtn.enabled = NO;
-                _stirBtn.enabled = NO;
-                _coldBtn.enabled = NO;
-            }
-        });
-    });
+    time = currentTime;
 }
 
 - (void)setStir{
@@ -346,42 +316,26 @@
         return;
     }
     
-    _myNet.setColdAndStirCount = 2;
-    if (_myNet.stirStatus && _myNet.coolStatus) {
-        [_myNet setColdAndStir:[NSNumber numberWithUnsignedInteger:0x01]];
-        _myNet.isColdAndStir = [NSNumber numberWithUnsignedInteger:0x01];
-    }else if (!_myNet.stirStatus && _myNet.coolStatus){
-        [_myNet setColdAndStir:[NSNumber numberWithUnsignedInteger:0x03]];
-        _myNet.isColdAndStir = [NSNumber numberWithUnsignedInteger:0x03];
-    }else if (_myNet.stirStatus && !_myNet.coolStatus){
-        [_myNet setColdAndStir:[NSNumber numberWithUnsignedInteger:0x00]];
-        _myNet.isColdAndStir = [NSNumber numberWithUnsignedInteger:0x00];
-    }else if (!_myNet.stirStatus && !_myNet.coolStatus){
-        [_myNet setColdAndStir:[NSNumber numberWithUnsignedInteger:0x02]];
-        _myNet.isColdAndStir = [NSNumber numberWithUnsignedInteger:0x02];
+    static NSTimeInterval time = 0.0;
+    NSTimeInterval currentTime = [NSDate date].timeIntervalSince1970;//防止暴力点击 两秒内只能点击一次
+    if (currentTime - time > 0.3) {//限制用户点击按钮的时间间隔大于2秒钟
+        _myNet.setColdAndStirCount = 2;
+        if (_myNet.stirStatus && _myNet.coolStatus) {
+            [_myNet setColdAndStir:[NSNumber numberWithUnsignedInteger:0x01]];
+            _myNet.isColdAndStir = [NSNumber numberWithUnsignedInteger:0x01];
+        }else if (!_myNet.stirStatus && _myNet.coolStatus){
+            [_myNet setColdAndStir:[NSNumber numberWithUnsignedInteger:0x03]];
+            _myNet.isColdAndStir = [NSNumber numberWithUnsignedInteger:0x03];
+        }else if (_myNet.stirStatus && !_myNet.coolStatus){
+            [_myNet setColdAndStir:[NSNumber numberWithUnsignedInteger:0x00]];
+            _myNet.isColdAndStir = [NSNumber numberWithUnsignedInteger:0x00];
+        }else if (!_myNet.stirStatus && !_myNet.coolStatus){
+            [_myNet setColdAndStir:[NSNumber numberWithUnsignedInteger:0x02]];
+            _myNet.isColdAndStir = [NSNumber numberWithUnsignedInteger:0x02];
+        }
+        _myNet.stirStatus = !_myNet.stirStatus;
     }
-    _myNet.stirStatus = !_myNet.stirStatus;
-    
-    _powerBtn.enabled = NO;
-    _fireBtn.enabled = NO;
-    _stirBtn.enabled = NO;
-    _coldBtn.enabled = NO;
-    
-    dispatch_async(dispatch_get_global_queue(0, 0), ^{
-        sleep(1);
-        dispatch_async(dispatch_get_main_queue(), ^{
-            _powerBtn.enabled = YES;
-            if (_myNet.powerStatus) {
-                _fireBtn.enabled = YES;
-                _stirBtn.enabled = YES;
-                _coldBtn.enabled = YES;
-            }else{
-                _fireBtn.enabled = NO;
-                _stirBtn.enabled = NO;
-                _coldBtn.enabled = NO;
-            }
-        });
-    });
+    time = currentTime;
 }
 
 - (void)setCold{
@@ -390,57 +344,30 @@
         return;
     }
     
-    _myNet.setColdAndStirCount = 3;
-    if (_myNet.stirStatus && _myNet.coolStatus) {
-        [_myNet setColdAndStir:[NSNumber numberWithUnsignedInteger:0x02]];
-        _myNet.isColdAndStir = [NSNumber numberWithUnsignedInteger:0x02];
-    }else if (!_myNet.stirStatus && _myNet.coolStatus){
-        [_myNet setColdAndStir:[NSNumber numberWithUnsignedInteger:0x00]];
-        _myNet.isColdAndStir = [NSNumber numberWithUnsignedInteger:0x00];
-    }else if (_myNet.stirStatus && !_myNet.coolStatus){
-        [_myNet setColdAndStir:[NSNumber numberWithUnsignedInteger:0x03]];
-        _myNet.isColdAndStir = [NSNumber numberWithUnsignedInteger:0x03];
-    }else if (!_myNet.stirStatus && !_myNet.coolStatus){
-        [_myNet setColdAndStir:[NSNumber numberWithUnsignedInteger:0x01]];
-        _myNet.isColdAndStir = [NSNumber numberWithUnsignedInteger:0x01];
+    static NSTimeInterval time = 0.0;
+    NSTimeInterval currentTime = [NSDate date].timeIntervalSince1970;//防止暴力点击 两秒内只能点击一次
+    if (currentTime - time > 0.3) {//限制用户点击按钮的时间间隔大于2秒钟
+        _myNet.setColdAndStirCount = 3;
+        if (_myNet.stirStatus && _myNet.coolStatus) {
+            [_myNet setColdAndStir:[NSNumber numberWithUnsignedInteger:0x02]];
+            _myNet.isColdAndStir = [NSNumber numberWithUnsignedInteger:0x02];
+        }else if (!_myNet.stirStatus && _myNet.coolStatus){
+            [_myNet setColdAndStir:[NSNumber numberWithUnsignedInteger:0x00]];
+            _myNet.isColdAndStir = [NSNumber numberWithUnsignedInteger:0x00];
+        }else if (_myNet.stirStatus && !_myNet.coolStatus){
+            [_myNet setColdAndStir:[NSNumber numberWithUnsignedInteger:0x03]];
+            _myNet.isColdAndStir = [NSNumber numberWithUnsignedInteger:0x03];
+        }else if (!_myNet.stirStatus && !_myNet.coolStatus){
+            [_myNet setColdAndStir:[NSNumber numberWithUnsignedInteger:0x01]];
+            _myNet.isColdAndStir = [NSNumber numberWithUnsignedInteger:0x01];
+        }
+        _myNet.coolStatus = !_myNet.coolStatus;
     }
-    _myNet.coolStatus = !_myNet.coolStatus;
-    
-    _powerBtn.enabled = NO;
-    _fireBtn.enabled = NO;
-    _stirBtn.enabled = NO;
-    _coldBtn.enabled = NO;
-    
-    dispatch_async(dispatch_get_global_queue(0, 0), ^{
-        sleep(1);
-        dispatch_async(dispatch_get_main_queue(), ^{
-            _powerBtn.enabled = YES;
-            if (_myNet.powerStatus) {
-                _fireBtn.enabled = YES;
-                _stirBtn.enabled = YES;
-                _coldBtn.enabled = YES;
-            }else{
-                _fireBtn.enabled = NO;
-                _stirBtn.enabled = NO;
-                _coldBtn.enabled = NO;
-            }
-        });
-    });
+    time = currentTime;
 }
 
 - (void)setButtonRecieved{
-    dispatch_async(dispatch_get_main_queue(), ^{
-        _powerBtn.enabled = YES;
-        if (_myNet.powerStatus) {
-            _fireBtn.enabled = YES;
-            _stirBtn.enabled = YES;
-            _coldBtn.enabled = YES;
-        }else{
-            _fireBtn.enabled = NO;
-            _stirBtn.enabled = NO;
-            _coldBtn.enabled = NO;
-        }
-    });
+    //先不用了
 }
 
 - (void)showNoConnectDevice{
