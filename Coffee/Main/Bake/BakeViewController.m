@@ -63,7 +63,9 @@
 @property (nonatomic, strong) NSString *resourcePath;
 @end
 
-@implementation BakeViewController
+@implementation BakeViewController{
+    NSTimeInterval time;
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -191,6 +193,7 @@
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setButtonRecieved) name:@"setButtonRecieved" object:nil];
 
+    time = 0.0;
 }
 
 - (void)viewWillDisappear:(BOOL)animated{
@@ -270,9 +273,8 @@
         return;
     }
     
-    static NSTimeInterval time = 0.0;
     NSTimeInterval currentTime = [NSDate date].timeIntervalSince1970;//防止暴力点击 两秒内只能点击一次
-    if (currentTime - time > 0.3) {//限制用户点击按钮的时间间隔大于0.3秒钟
+    if (currentTime - time > 0.5) {//限制用户点击按钮的时间间隔大于0.3秒钟
         _myNet.setPowerCount = 2;
         if (_myNet.powerStatus) {
             [_myNet setPower:[NSNumber numberWithUnsignedInteger:0x00]];
@@ -282,10 +284,8 @@
             _myNet.isPower = [NSNumber numberWithUnsignedInteger:0xFF];
         }
         _myNet.powerStatus = !_myNet.powerStatus;
+        time = currentTime;
     }
-    time = currentTime;
-
-    
 }
 
 - (void)setFire{
@@ -294,9 +294,8 @@
         return;
     }
     
-    static NSTimeInterval time = 0.0;
     NSTimeInterval currentTime = [NSDate date].timeIntervalSince1970;//防止暴力点击 两秒内只能点击一次
-    if (currentTime - time > 0.3) {//限制用户点击按钮的时间间隔大于2秒钟
+    if (currentTime - time > 0.5) {//限制用户点击按钮的时间间隔大于2秒钟
         _myNet.setFireCount = 2;
         if (_myNet.fireStatus) {
             [[NetWork shareNetWork] setFire:[NSNumber numberWithUnsignedInteger:0x00]];
@@ -306,8 +305,8 @@
             _myNet.isFire = [NSNumber numberWithUnsignedInteger:0xFF];
         }
         _myNet.fireStatus = !_myNet.fireStatus;
+        time = currentTime;
     }
-    time = currentTime;
 }
 
 - (void)setStir{
@@ -316,9 +315,10 @@
         return;
     }
     
-    static NSTimeInterval time = 0.0;
+    NSLog(@"点击");
+    //static NSTimeInterval time = 0.0;
     NSTimeInterval currentTime = [NSDate date].timeIntervalSince1970;//防止暴力点击 两秒内只能点击一次
-    if (currentTime - time > 0.3) {//限制用户点击按钮的时间间隔大于2秒钟
+    if (currentTime - time > 0.5) {//限制用户点击按钮的时间间隔大于2秒钟
         _myNet.setColdAndStirCount = 2;
         if (_myNet.stirStatus && _myNet.coolStatus) {
             [_myNet setColdAndStir:[NSNumber numberWithUnsignedInteger:0x01]];
@@ -334,8 +334,10 @@
             _myNet.isColdAndStir = [NSNumber numberWithUnsignedInteger:0x02];
         }
         _myNet.stirStatus = !_myNet.stirStatus;
+        time = currentTime;
+        NSLog(@"点击发送了");
     }
-    time = currentTime;
+
 }
 
 - (void)setCold{
@@ -344,9 +346,8 @@
         return;
     }
     
-    static NSTimeInterval time = 0.0;
     NSTimeInterval currentTime = [NSDate date].timeIntervalSince1970;//防止暴力点击 两秒内只能点击一次
-    if (currentTime - time > 0.3) {//限制用户点击按钮的时间间隔大于2秒钟
+    if (currentTime - time > 0.5) {//限制用户点击按钮的时间间隔大于2秒钟
         _myNet.setColdAndStirCount = 3;
         if (_myNet.stirStatus && _myNet.coolStatus) {
             [_myNet setColdAndStir:[NSNumber numberWithUnsignedInteger:0x02]];
@@ -362,12 +363,13 @@
             _myNet.isColdAndStir = [NSNumber numberWithUnsignedInteger:0x01];
         }
         _myNet.coolStatus = !_myNet.coolStatus;
+        time = currentTime;
     }
-    time = currentTime;
 }
 
 - (void)setButtonRecieved{
     //先不用了
+    time = 0.0;
 }
 
 - (void)showNoConnectDevice{
@@ -707,6 +709,7 @@
         _powerBtn = [[UIButton alloc] init];
         _powerBtn = [UIButton buttonWithType:UIButtonTypeCustom];
         _powerBtn.adjustsImageWhenDisabled = NO;
+        _powerBtn.adjustsImageWhenHighlighted = NO;
         if (_myNet.powerStatus) {
             [_powerBtn setImage:[UIImage imageWithContentsOfFile:[_resourcePath stringByAppendingPathComponent:@"btn_power_on@2x.png"]] forState:UIControlStateNormal];
         }else{
@@ -719,6 +722,7 @@
         _fireBtn = [[UIButton alloc] init];
         _fireBtn = [UIButton buttonWithType:UIButtonTypeCustom];
         _fireBtn.adjustsImageWhenDisabled = NO;
+        _fireBtn.adjustsImageWhenHighlighted = NO;
         if (_myNet.fireStatus) {
             [_fireBtn setImage:[UIImage imageWithContentsOfFile:[_resourcePath stringByAppendingPathComponent:@"btn_fire_on@2x.png"]] forState:UIControlStateNormal];
         }else{
@@ -731,6 +735,7 @@
         _stirBtn = [[UIButton alloc] init];
         _stirBtn = [UIButton buttonWithType:UIButtonTypeCustom];
         _stirBtn.adjustsImageWhenDisabled = NO;
+        _stirBtn.adjustsImageWhenHighlighted = NO;
         if (_myNet.stirStatus) {
             [_stirBtn setImage:[UIImage imageWithContentsOfFile:[_resourcePath stringByAppendingPathComponent:@"btn_stir_on@2x.png"]] forState:UIControlStateNormal];
         }else{
@@ -743,6 +748,7 @@
         _coldBtn = [[UIButton alloc] init];
         _coldBtn = [UIButton buttonWithType:UIButtonTypeCustom];
         _coldBtn.adjustsImageWhenDisabled = NO;
+        _coldBtn.adjustsImageWhenHighlighted = NO;
         if (_myNet.coolStatus) {
             [_coldBtn setImage:[UIImage imageWithContentsOfFile:[_resourcePath stringByAppendingPathComponent:@"btn_cold_on@2x.png"]] forState:UIControlStateNormal];
         }else{
