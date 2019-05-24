@@ -22,4 +22,7 @@
 
 //逐差法求加速度
 + (NSMutableArray *)evaluateAcceleration:(NSMutableArray *)valueArr;
+
+///@brief 获取当前Wi-Fi的ip
+- (NSString *)getIPAddress;
 @end

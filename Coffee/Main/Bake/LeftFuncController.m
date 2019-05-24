@@ -27,7 +27,9 @@
 
 @end
 
-@implementation LeftFuncController
+@implementation LeftFuncController{
+    NSTimeInterval time;
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -49,6 +51,13 @@
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
     
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setButtonRecieved) name:@"setButtonRecieved" object:nil];
+
+}
+
+- (void)viewWillDisappear:(BOOL)animated{
+    [super viewWillDisappear:animated];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"setButtonRecieved" object:nil];
 }
 
 - (void)dealloc{
@@ -71,6 +80,8 @@
 
 - (void)drawLeftViewContent{
     _powerBtn = [[UIButton alloc] initWithFrame:CGRectMake(15/WScaleT, 26/HScaleT, 50/WScaleT, 50/WScaleT)];
+    _powerBtn.adjustsImageWhenDisabled = NO;
+    _powerBtn.adjustsImageWhenHighlighted = NO;
     [_powerBtn setImage:[UIImage imageNamed:@"btn_power_off"] forState:UIControlStateNormal];
     [_powerBtn addTarget:self action:@selector(setPower) forControlEvents:UIControlEventTouchUpInside];
     _powerBtn.tag = btn_unselect;
@@ -84,6 +95,8 @@
     [_leftFuncView addSubview:label1];
     
     _fireBtn = [[UIButton alloc] initWithFrame:CGRectMake(95/WScaleT, 26/HScaleT, 50/WScaleT, 50/HScaleT)];
+    _fireBtn.adjustsImageWhenDisabled = NO;
+    _fireBtn.adjustsImageWhenHighlighted = NO;
     [_fireBtn setImage:[UIImage imageNamed:@"btn_fire_off"] forState:UIControlStateNormal];
     [_fireBtn addTarget:self action:@selector(clickFire) forControlEvents:UIControlEventTouchUpInside];
     _fireBtn.tag = btn_unselect;
@@ -98,6 +111,8 @@
     [_leftFuncView addSubview:label2];
     
     _stirBtn = [[UIButton alloc] initWithFrame:CGRectMake(15/WScaleT, 151/HScaleT, 50/WScaleT, 50/HScaleT)];
+    _stirBtn.adjustsImageWhenDisabled = NO;
+    _stirBtn.adjustsImageWhenHighlighted = NO;
     [_stirBtn setImage:[UIImage imageNamed:@"btn_stir_off"] forState:UIControlStateNormal];
     [_stirBtn addTarget:self action:@selector(clickStir) forControlEvents:UIControlEventTouchUpInside];
     _stirBtn.tag = btn_unselect;
@@ -112,6 +127,8 @@
     [_leftFuncView addSubview:label3];
     
     _coolingBtn = [[UIButton alloc] initWithFrame:CGRectMake(95/WScaleT, 151/HScaleT, 50/WScaleT, 50/HScaleT)];
+    _coolingBtn.adjustsImageWhenDisabled = NO;
+    _coolingBtn.adjustsImageWhenHighlighted = NO;
     [_coolingBtn setImage:[UIImage imageNamed:@"btn_cold_off"] forState:UIControlStateNormal];
     [_coolingBtn addTarget:self action:@selector(clickCool) forControlEvents:UIControlEventTouchUpInside];
     _coolingBtn.tag = btn_unselect;
@@ -126,6 +143,8 @@
     [_leftFuncView addSubview:label4];
     
     _firePowerBtn = [[UIButton alloc] initWithFrame:CGRectMake(15/WScaleT, 276/HScaleT, 50/WScaleT, 50/HScaleT)];
+    _firePowerBtn.adjustsImageWhenDisabled = NO;
+    _firePowerBtn.adjustsImageWhenHighlighted = NO;
     [_firePowerBtn setImage:[UIImage imageNamed:@"btn_firepower_disable"] forState:UIControlStateNormal];
     [_firePowerBtn addTarget:self action:@selector(clickFP) forControlEvents:UIControlEventTouchUpInside];
     _firePowerBtn.tag = btn_unselect;
@@ -140,6 +159,8 @@
     [_leftFuncView addSubview:label5];
     
     _windPowerBtn = [[UIButton alloc] initWithFrame:CGRectMake(95/WScaleT, 276/HScaleT, 50/WScaleT, 50/HScaleT)];
+    _windPowerBtn.adjustsImageWhenDisabled = NO;
+    _windPowerBtn.adjustsImageWhenHighlighted = NO;
     [_windPowerBtn setImage:[UIImage imageNamed:@"btn_windpower_disable"] forState:UIControlStateNormal];
     [_windPowerBtn addTarget:self action:@selector(clickWP) forControlEvents:UIControlEventTouchUpInside];
     _windPowerBtn.tag = btn_unselect;
@@ -200,60 +221,86 @@
 }
 
 - (void)setPower{
-    if (_myNet.powerStatus) {
-        [_myNet setPower:[NSNumber numberWithUnsignedInteger:0x00]];
-    }else{
-        [_myNet setPower:[NSNumber numberWithUnsignedInteger:0xFF]];
+    NSTimeInterval currentTime = [NSDate date].timeIntervalSince1970;//防止暴力点击 两秒内只能点击一次
+    if (currentTime - time > 0.5) {//限制用户点击按钮的时间间隔大于0.3秒钟
+        _myNet.setPowerCount = 2;
+        if (_myNet.powerStatus) {
+            [_myNet setPower:[NSNumber numberWithUnsignedInteger:0x00]];
+            _myNet.isPower = [NSNumber numberWithUnsignedInteger:0x00];
+        }else{
+            [_myNet setPower:[NSNumber numberWithUnsignedInteger:0xFF]];
+            _myNet.isPower = [NSNumber numberWithUnsignedInteger:0xFF];
+        }
+        _myNet.powerStatus = !_myNet.powerStatus;
+        time = currentTime;
     }
-    _myNet.powerStatus = !_myNet.powerStatus;
 }
 
 - (void)clickFire{
-    _myNet.setFireCount = 2;
-    if (_myNet.fireStatus) {
-        [[NetWork shareNetWork] setFire:[NSNumber numberWithUnsignedInteger:0x00]];
-        _myNet.isFire = [NSNumber numberWithUnsignedInteger:0x00];
-    }else{
-        [[NetWork shareNetWork] setFire:[NSNumber numberWithUnsignedInteger:0xFF]];
-        _myNet.isFire = [NSNumber numberWithUnsignedInteger:0xFF];
+    NSTimeInterval currentTime = [NSDate date].timeIntervalSince1970;//防止暴力点击 两秒内只能点击一次
+    if (currentTime - time > 0.5) {//限制用户点击按钮的时间间隔大于2秒钟
+        _myNet.setFireCount = 2;
+        if (_myNet.fireStatus) {
+            [[NetWork shareNetWork] setFire:[NSNumber numberWithUnsignedInteger:0x00]];
+            _myNet.isFire = [NSNumber numberWithUnsignedInteger:0x00];
+        }else{
+            [[NetWork shareNetWork] setFire:[NSNumber numberWithUnsignedInteger:0xFF]];
+            _myNet.isFire = [NSNumber numberWithUnsignedInteger:0xFF];
+        }
+        _myNet.fireStatus = !_myNet.fireStatus;
+        time = currentTime;
     }
-    _myNet.fireStatus = !_myNet.fireStatus;
 }
 
 - (void)clickStir{
-    _myNet.setColdAndStirCount = 2;
-    if (_myNet.stirStatus && _myNet.coolStatus) {
-        [_myNet setColdAndStir:[NSNumber numberWithUnsignedInteger:0x01]];
-        _myNet.isColdAndStir = [NSNumber numberWithUnsignedInteger:0x01];
-    }else if (!_myNet.stirStatus && _myNet.coolStatus){
-        [_myNet setColdAndStir:[NSNumber numberWithUnsignedInteger:0x03]];
-        _myNet.isColdAndStir = [NSNumber numberWithUnsignedInteger:0x03];
-    }else if (_myNet.stirStatus && !_myNet.coolStatus){
-        [_myNet setColdAndStir:[NSNumber numberWithUnsignedInteger:0x00]];
-        _myNet.isColdAndStir = [NSNumber numberWithUnsignedInteger:0x00];
-    }else if (!_myNet.stirStatus && !_myNet.coolStatus){
-        [_myNet setColdAndStir:[NSNumber numberWithUnsignedInteger:0x02]];
-        _myNet.isColdAndStir = [NSNumber numberWithUnsignedInteger:0x02];
+    NSLog(@"点击");
+    //static NSTimeInterval time = 0.0;
+    NSTimeInterval currentTime = [NSDate date].timeIntervalSince1970;//防止暴力点击 两秒内只能点击一次
+    if (currentTime - time > 0.5) {//限制用户点击按钮的时间间隔大于2秒钟
+        _myNet.setColdAndStirCount = 2;
+        if (_myNet.stirStatus && _myNet.coolStatus) {
+            [_myNet setColdAndStir:[NSNumber numberWithUnsignedInteger:0x01]];
+            _myNet.isColdAndStir = [NSNumber numberWithUnsignedInteger:0x01];
+        }else if (!_myNet.stirStatus && _myNet.coolStatus){
+            [_myNet setColdAndStir:[NSNumber numberWithUnsignedInteger:0x03]];
+            _myNet.isColdAndStir = [NSNumber numberWithUnsignedInteger:0x03];
+        }else if (_myNet.stirStatus && !_myNet.coolStatus){
+            [_myNet setColdAndStir:[NSNumber numberWithUnsignedInteger:0x00]];
+            _myNet.isColdAndStir = [NSNumber numberWithUnsignedInteger:0x00];
+        }else if (!_myNet.stirStatus && !_myNet.coolStatus){
+            [_myNet setColdAndStir:[NSNumber numberWithUnsignedInteger:0x02]];
+            _myNet.isColdAndStir = [NSNumber numberWithUnsignedInteger:0x02];
+        }
+        _myNet.stirStatus = !_myNet.stirStatus;
+        time = currentTime;
+        NSLog(@"点击发送了");
     }
-    _myNet.stirStatus = !_myNet.stirStatus;
 }
 
 - (void)clickCool{
-    _myNet.setColdAndStirCount = 3;
-    if (_myNet.stirStatus && _myNet.coolStatus) {
-        [_myNet setColdAndStir:[NSNumber numberWithUnsignedInteger:0x02]];
-        _myNet.isColdAndStir = [NSNumber numberWithUnsignedInteger:0x02];
-    }else if (!_myNet.stirStatus && _myNet.coolStatus){
-        [_myNet setColdAndStir:[NSNumber numberWithUnsignedInteger:0x00]];
-        _myNet.isColdAndStir = [NSNumber numberWithUnsignedInteger:0x00];
-    }else if (_myNet.stirStatus && !_myNet.coolStatus){
-        [_myNet setColdAndStir:[NSNumber numberWithUnsignedInteger:0x03]];
-        _myNet.isColdAndStir = [NSNumber numberWithUnsignedInteger:0x03];
-    }else if (!_myNet.stirStatus && !_myNet.coolStatus){
-        [_myNet setColdAndStir:[NSNumber numberWithUnsignedInteger:0x01]];
-        _myNet.isColdAndStir = [NSNumber numberWithUnsignedInteger:0x01];
+    NSTimeInterval currentTime = [NSDate date].timeIntervalSince1970;//防止暴力点击 两秒内只能点击一次
+    if (currentTime - time > 0.5) {//限制用户点击按钮的时间间隔大于2秒钟
+        _myNet.setColdAndStirCount = 3;
+        if (_myNet.stirStatus && _myNet.coolStatus) {
+            [_myNet setColdAndStir:[NSNumber numberWithUnsignedInteger:0x02]];
+            _myNet.isColdAndStir = [NSNumber numberWithUnsignedInteger:0x02];
+        }else if (!_myNet.stirStatus && _myNet.coolStatus){
+            [_myNet setColdAndStir:[NSNumber numberWithUnsignedInteger:0x00]];
+            _myNet.isColdAndStir = [NSNumber numberWithUnsignedInteger:0x00];
+        }else if (_myNet.stirStatus && !_myNet.coolStatus){
+            [_myNet setColdAndStir:[NSNumber numberWithUnsignedInteger:0x03]];
+            _myNet.isColdAndStir = [NSNumber numberWithUnsignedInteger:0x03];
+        }else if (!_myNet.stirStatus && !_myNet.coolStatus){
+            [_myNet setColdAndStir:[NSNumber numberWithUnsignedInteger:0x01]];
+            _myNet.isColdAndStir = [NSNumber numberWithUnsignedInteger:0x01];
+        }
+        _myNet.coolStatus = !_myNet.coolStatus;
+        time = currentTime;
     }
-    _myNet.coolStatus = !_myNet.coolStatus;
+}
+
+- (void)setButtonRecieved{
+    time = 0.0;
 }
 
 - (void)clickFP{

@@ -103,6 +103,8 @@
     [_udpTimer invalidate];
     _udpTimer = nil;
     [_spinner stopAnimating];
+    [_udpSocket close];
+    _udpSocket = nil;
 }
 
 - (void)didMoveToParentViewController:(UIViewController *)parent{
@@ -136,11 +138,21 @@
 }
 
 - (void)broadcast{
-    NSString *host = @"255.255.255.255";
+    NSString *currentIP = [NSObject getIPAddress];
+    NSString *host = @"";
+    if ([currentIP isEqualToString:@"error"]) {
+        
+    }else{
+        NSArray *array = [currentIP componentsSeparatedByString:@"."];
+        host = [NSString stringWithFormat:@"%@.%@.%@.255",array[0],array[1],array[2]];
+    }
+
     NSTimeInterval timeout = 2000;
     NSString *request = @"whereareyou\r\n";
     NSData *data = [NSData dataWithData:[request dataUsingEncoding:NSASCIIStringEncoding]];
     UInt16 port = 17888;
+    
+    NSLog(@"ip:%@",host);
     
     [_udpSocket sendData:data toHost:host port:port withTimeout:timeout tag:200];
     
@@ -227,7 +239,7 @@
                     if (ipAddrDataStr==nil) {
                         ipAddrDataStr = [ESP_NetUtil descriptionInetAddr6ByData:firstResult.ipAddrData];
                     }
-                    //[NetWork shareNetWork].ipAddr = ipAddrDataStr;
+                    [NetWork shareNetWork].ipAddr = ipAddrDataStr;
                     NSLog(@"%@",[NetWork shareNetWork].ipAddr);
 
                     for (int i = 0; i < [esptouchResultArray count]; ++i)

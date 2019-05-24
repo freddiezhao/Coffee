@@ -131,8 +131,11 @@
     _myNet = [NetWork shareNetWork];
     
     if (_myNet.connectedDevice) {
-        self.navigationItem.title = _myNet.connectedDevice.deviceName;
-        NSLog(@"%@",_myNet.connectedDevice.deviceName);
+        if (_myNet.connectedDevice.deviceName) {
+            self.navigationItem.title = _myNet.connectedDevice.deviceName;
+        }else{
+            self.navigationItem.title = _myNet.connectedDevice.sn;
+        }
         switch ([_myNet.connectedDevice.deviceType integerValue]) {
             case Coffee_HB_M6G:
             case Coffee_HB_M6E:
@@ -201,6 +204,7 @@
 - (void)viewWillDisappear:(BOOL)animated{
     [super viewWillDisappear:animated];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:@"mysocketDidDisconnect" object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"setButtonRecieved" object:nil];
 }
 
 - (void)dealloc{
@@ -370,7 +374,6 @@
 }
 
 - (void)setButtonRecieved{
-    //先不用了
     time = 0.0;
 }
 

@@ -100,6 +100,7 @@ static NSString *curveUid;
             _sendSignal = dispatch_semaphore_create(1);
         }
         _deviceTimerStatus = 100;//预设值，防止未连接设备时判断为正在计时状态（0）
+        _ssid = @"";
     }
     return self;
 }
@@ -149,6 +150,15 @@ static NSString *curveUid;
 + (void)destroyInstance{
     _netWork = nil;
     oneToken = 0l;
+}
+
+- (void)applicationWillEnterForeground{
+    UIApplication *app = [UIApplication sharedApplication];
+    [[NSNotificationCenter defaultCenter]addObserverForName:UIApplicationWillEnterForegroundNotification  object:app queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
+        if (self.mySocket.isDisconnected) {
+            self.connectedDevice = nil;
+        }
+    }];
 }
 
 #pragma mark - Lazy load
@@ -860,7 +870,7 @@ static NSString *curveUid;
                 [_yVals_Bean addObject:entry];
                 [_yVals_Environment addObject:[[ChartDataEntry alloc] initWithX:[_yVals_Environment count] y:[NSString diffTempUnitStringWithTemp:tempEnvironment]]];
                 [_yVals_Diff removeAllObjects];
-                _yVals_Diff = [self getBeanTempRorWithArr:_InArr];
+                _yVals_Diff = [self getBeanTempRorWithArr:_BeanArr];
                 [self caculateBackTemperaturePoint];//回温点计算
                 
                 [self setTempData:_recivedData68];
@@ -893,7 +903,7 @@ static NSString *curveUid;
                     //数组保存在这里防止页面不慎退出后所有数据丢失
                     [_yVals_Out addObject:[[ChartDataEntry alloc] initWithX:[_yVals_Out count] y:tempOut]];
                     [_yVals_In addObject:[[ChartDataEntry alloc] initWithX:[_yVals_In count] y:tempIn]];
-                    [_yVals_Bean addObject:[[ChartDataEntry alloc] initWithX:[_yVals_In count] y:tempBean]];
+                    [_yVals_Bean addObject:[[ChartDataEntry alloc] initWithX:[_yVals_Bean count] y:tempBean]];
                     [_yVals_Environment addObject:[[ChartDataEntry alloc] initWithX:[_yVals_Environment count] y:tempEnvironment]];
                     [_yVals_Diff removeAllObjects];
                     _yVals_Diff = [self getBeanTempRorWithArr:_BeanArr];

@@ -208,7 +208,7 @@ NSString *const CellIdentifier_password = @"CellID_password";
 
 #pragma mark - passwordTF value change
 - (void)passwordTFTextChange:(UITextField *)sender{
-    if (sender.text.length > 6 && _ssid) {
+    if (sender.text.length > 7 && _ssid) {
         [_nextBtn setBackgroundColor:[UIColor colorWithRed:71/255.0 green:120/255.0 blue:204/255.0 alpha:1]];
         _nextBtn.enabled = YES;
     }else{

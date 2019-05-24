@@ -16,6 +16,7 @@
 #import <NetworkExtension/NEHotspotConfigurationManager.h>
 #import "FMDB.h"
 
+
 @interface APProcessController () <GCDAsyncUdpSocketDelegate>
 
 @property (nonatomic, strong) UIImageView *image;
@@ -60,6 +61,9 @@
     [NetWork shareNetWork].isAp = YES;
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(apSendSucc) name:@"apSendSucc" object:nil];
+    
+    isFind = NO;
+    isApSendSucc = NO;
 }
 
 - (void)viewWillDisappear:(BOOL)animated{
@@ -74,6 +78,10 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self name:@"apSendSucc" object:nil];
 
     dispatch_source_cancel(_confirmWifiTimer);
+    
+    [_udpSocket close];
+    _udpSocket = nil;
+    isFind = NO;
 }
 
 - (void)dealloc{
@@ -112,7 +120,16 @@
         return;
     }
     
-    NSString *host = @"255.255.255.255";
+    NSString *currentIP = [NSObject getIPAddress];
+    NSString *host = @"";
+    if ([currentIP isEqualToString:@"error"]) {
+
+    }else{
+        NSLog(@"%@",currentIP);
+        NSArray *array = [currentIP componentsSeparatedByString:@"."];
+        host = [NSString stringWithFormat:@"%@.%@.%@.255",array[0],array[1],array[2]];
+    }
+    
     NSTimeInterval timeout = 2000;
     NSString *request = @"whereareyou\r\n";
     NSData *data = [NSData dataWithData:[request dataUsingEncoding:NSASCIIStringEncoding]];
@@ -155,14 +172,14 @@ static int hotspotAlertTime = 3;
             [self sendSearchBroadcast];
         }
     }else if(![ssid hasPrefix:@"ESP"] && [ssid isKindOfClass:[NSString class]]){
-        ///2019.5.21更新，在查到udp后直接绑定，再发送ssid和password
+        ///2019.5.21更新，在查到udp后记住mac，在重新连到有网络Wi-Fi后绑定设备
         [self bindDevice:mac success:^{
             for (UIViewController *controller in self.navigationController.viewControllers) {
                 if ([controller isKindOfClass:[DeviceViewController class]]) {
                     [self.navigationController popToViewController:controller animated:YES];
                 }
             }
-            [NSObject showHudTipStr:LocalString(@"您未连接到配网的Wi-Fi,会导致搜索不到设备，请注意切换Wi-Fi")];
+            //[NSObject showHudTipStr:LocalString(@"您未连接到配网的Wi-Fi,会导致搜索不到设备，请注意切换Wi-Fi")];
         } failure:^{
             [NSObject showHudTipStr:LocalString(@"网络状况不佳")];
         }];
@@ -217,6 +234,26 @@ static int hotspotAlertTime = 3;
     return SSIDInfo;
 }
 
+
+- (void)showNoWifiConnect{
+    YAlertViewController *alert = [[YAlertViewController alloc] init];
+    alert.modalPresentationStyle = UIModalPresentationOverCurrentContext;
+    alert.rBlock = ^{
+    };
+    alert.lBlock = ^{
+    };
+    [self presentViewController:alert animated:NO completion:^{
+        [self.rdv_tabBarController setTabBarHidden:YES animated:YES];
+        alert.WScale_alert = WScale;
+        alert.HScale_alert = HScale;
+        [alert showView];
+        alert.titleLabel.text = LocalString(@"提示");
+        alert.messageLabel.text = LocalString(@"请连接Wi-Fi");
+        [alert.leftBtn setTitle:LocalString(@"取消") forState:UIControlStateNormal];
+        [alert.rightBtn setTitle:LocalString(@"确认") forState:UIControlStateNormal];
+    }];
+}
+
 - (void) cancel
 {
     [_spinner stopAnimating];
@@ -227,10 +264,58 @@ static int hotspotAlertTime = 3;
 - (void)bindDevice:(NSString *)mac success:(void(^)(void))success failure:(void(^)(void))failure{
     //判断本地是否已经存储过，如果有则将_deviceArray中的该设备删除，如果没有则存储该设备
     NSNumber *deviceType = [NetWork shareNetWork].deviceType;
+    
+    NSString *name;
+    switch ([deviceType intValue]) {
+        case 0:
+        {
+            name = LocalString(@"HB-M6G咖啡烘焙机");
+        }
+            break;
+            
+        case 1:
+        {
+            name = LocalString(@"HB-M6E咖啡烘焙机");
+        }
+            break;
+            
+        case 2:
+        {
+            name = LocalString(@"HB-L2咖啡烘焙机");
+        }
+            break;
+            
+        case 3:
+        {
+            name = LocalString(@"PEAK-Edmund咖啡烘焙机");
+        }
+            break;
+            
+        case 4:{
+            name = LocalString(@"其他机型咖啡烘焙机");
+        }
+            break;
+            
+        default:
+            name = LocalString(@"其他机型咖啡烘焙机");
+            break;
+    }
 
     BOOL isStored = [[DataBase shareDataBase] queryDevice:mac];
     if (!isStored) {
         AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+        
+        [manager.reachabilityManager setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status) {
+            switch (status) {
+                case AFNetworkReachabilityStatusNotReachable:
+                    NSLog(@"没有网络");
+                    return;
+                    break;
+                    
+                default:
+                    break;
+            }
+        }];
         
         //设置超时时间
         [manager.requestSerializer willChangeValueForKey:@"timeoutInterval"];
@@ -241,7 +326,7 @@ static int hotspotAlertTime = 3;
         [manager.requestSerializer setValue:[NSString stringWithFormat:@"Bearer %@",[DataBase shareDataBase].token] forHTTPHeaderField:@"Authorization"];
         [manager.requestSerializer setValue:[DataBase shareDataBase].userId forHTTPHeaderField:@"userId"];
         
-        NSDictionary *parameters = @{@"sn":mac,@"name":mac,@"userId":[DataBase shareDataBase].userId,@"deviceType":deviceType};
+        NSDictionary *parameters = @{@"sn":mac,@"name":name,@"userId":[DataBase shareDataBase].userId,@"deviceType":deviceType};
         [manager POST:@"http://139.196.90.97:8080/coffee/roaster" parameters:parameters progress:nil
               success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
                   NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableContainers|NSJSONReadingMutableLeaves error:nil];
@@ -249,7 +334,7 @@ static int hotspotAlertTime = 3;
                       [NSObject showHudTipStr:LocalString(@"添加新设备到服务器成功")];
                       
                       [[DataBase shareDataBase].queueDB inDatabase:^(FMDatabase * _Nonnull db) {
-                          BOOL result = [db executeUpdate:@"INSERT INTO device (sn,deviceName,deviceType) VALUES (?,?,?)",mac,mac,deviceType];
+                          BOOL result = [db executeUpdate:@"INSERT INTO device (sn,deviceName,deviceType) VALUES (?,?,?)",mac,name,deviceType];
                           if (result) {
                               NSLog(@"插入新设备到device成功");
                               [NetWork shareNetWork].ipAddr = @"";
@@ -262,7 +347,7 @@ static int hotspotAlertTime = 3;
                           success();
                       }
                   }else{
-                      [NSObject showHudTipStr:LocalString(@"添加新设备到服务器失败")];
+                      //[NSObject showHudTipStr:LocalString(@"添加新设备到服务器失败")];
                       if (failure) {
                           failure();
                       }
@@ -270,7 +355,7 @@ static int hotspotAlertTime = 3;
               } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
                   NSLog(@"Error:%@",error);
                   if (error.code == -1001) {
-                      [NSObject showHudTipStr:LocalString(@"当前网络状况不佳")];
+                      //[NSObject showHudTipStr:LocalString(@"当前网络状况不佳")];
                   }
                   if (failure) {
                       failure();
@@ -288,13 +373,14 @@ static int hotspotAlertTime = 3;
         [manager.requestSerializer setValue:[NSString stringWithFormat:@"Bearer %@",[DataBase shareDataBase].token] forHTTPHeaderField:@"Authorization"];
         [manager.requestSerializer setValue:[DataBase shareDataBase].userId forHTTPHeaderField:@"userId"];
 
-        NSDictionary *parameters = @{@"sn":mac,@"name":mac,@"userId":[DataBase shareDataBase].userId,@"deviceType":deviceType};
+        NSDictionary *parameters = @{@"sn":mac,@"name":name,@"userId":[DataBase shareDataBase].userId,@"deviceType":deviceType};
+        NSLog(@"%@",name);
         [manager PUT:@"http://139.196.90.97:8080/coffee/roaster" parameters:parameters
              success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
                  NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableContainers|NSJSONReadingMutableLeaves error:nil];
                  if ([[responseDic objectForKey:@"errno"] intValue] == 0) {
                      [[DataBase shareDataBase].queueDB inDatabase:^(FMDatabase * _Nonnull db) {
-                         BOOL result = [db executeUpdate:@"UPDATE device SET deviceType = ? WHERE sn = ?",deviceType,mac];
+                         BOOL result = [db executeUpdate:@"UPDATE device SET deviceType = ?,deviceName = ? WHERE sn = ?",deviceType,name,mac];
                          if (result) {
                              NSLog(@"更新咖啡机到device表成功");
                          }else{
@@ -306,7 +392,7 @@ static int hotspotAlertTime = 3;
                          success();
                      }
                  }else{
-                     [NSObject showHudTipStr:LocalString(@"更新咖啡机到服务器失败")];
+                     //[NSObject showHudTipStr:LocalString(@"更新咖啡机到服务器失败")];
                      if (failure) {
                          failure();
                      }
@@ -314,7 +400,7 @@ static int hotspotAlertTime = 3;
              } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
                  NSLog(@"Error:%@",error);
                  if (error.code == -1001) {
-                     [NSObject showHudTipStr:LocalString(@"当前网络状况不佳")];
+                     //[NSObject showHudTipStr:LocalString(@"当前网络状况不佳")];
                  }
                  if (failure) {
                      failure();
