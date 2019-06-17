@@ -657,34 +657,38 @@ NSString *const CellIdentifier_device = @"CellID_device";
         }
         
     }else if (indexPath.section == 0){
-        YAlertViewController *alert = [[YAlertViewController alloc] init];
-        alert.lBlock = ^{
-            
-        };
-        alert.rBlock = ^{
-            if (!net.mySocket.isDisconnected) {
-                [net.mySocket disconnect];
-                [net setConnectedDevice:nil];
-
-                [_udpSocket close];
-                _udpSocket = nil;
-                [_lock unlock];
-                [self queryDevices];
-            }else{
-                [net setConnectedDevice:nil];
-                [_devieceTable reloadData];
-            }
-        };
-        alert.modalPresentationStyle = UIModalPresentationOverCurrentContext;
-        [self presentViewController:alert animated:NO completion:^{
-            alert.WScale_alert = WScale;
-            alert.HScale_alert = HScale;
-            [alert showView];
-            alert.titleLabel.text = LocalString(@"提示");
-            alert.messageLabel.text = LocalString(@"确认断开设备连接吗？");
-            [alert.leftBtn setTitle:LocalString(@"取消") forState:UIControlStateNormal];
-            [alert.rightBtn setTitle:LocalString(@"确认") forState:UIControlStateNormal];
-        }];
+        /*
+         *改成返回主页面
+         */
+        [self.navigationController popViewControllerAnimated:YES];
+//        YAlertViewController *alert = [[YAlertViewController alloc] init];
+//        alert.lBlock = ^{
+//
+//        };
+//        alert.rBlock = ^{
+//            if (!net.mySocket.isDisconnected) {
+//                [net.mySocket disconnect];
+//                [net setConnectedDevice:nil];
+//
+//                [_udpSocket close];
+//                _udpSocket = nil;
+//                [_lock unlock];
+//                [self queryDevices];
+//            }else{
+//                [net setConnectedDevice:nil];
+//                [_devieceTable reloadData];
+//            }
+//        };
+//        alert.modalPresentationStyle = UIModalPresentationOverCurrentContext;
+//        [self presentViewController:alert animated:NO completion:^{
+//            alert.WScale_alert = WScale;
+//            alert.HScale_alert = HScale;
+//            [alert showView];
+//            alert.titleLabel.text = LocalString(@"提示");
+//            alert.messageLabel.text = LocalString(@"确认断开设备连接吗？");
+//            [alert.leftBtn setTitle:LocalString(@"取消") forState:UIControlStateNormal];
+//            [alert.rightBtn setTitle:LocalString(@"确认") forState:UIControlStateNormal];
+//        }];
     }
 }
 

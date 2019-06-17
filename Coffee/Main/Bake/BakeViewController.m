@@ -247,7 +247,8 @@
 
 - (void)addCoffeeBean{
     AddBeanTableController *addBeanVC = [[AddBeanTableController alloc] init];
-    [self.navigationController pushViewController:addBeanVC animated:YES];
+    UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:addBeanVC];
+    [self presentViewController:nav animated:YES completion:nil];
 }
 
 - (void)showControlView:(UIButton *)sender{
@@ -408,7 +409,8 @@
     // 先取消任何操作???????这句话存在的意义？？？
     [NSObject cancelPreviousPerformRequestsWithTarget:self];
     AddBeanTableController *addBeanVC = [[AddBeanTableController alloc] init];
-    [self.navigationController pushViewController:addBeanVC animated:YES];
+    UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:addBeanVC];
+    [self presentViewController:nav animated:YES completion:nil];
 }
 
 - (void)mysocketDidDisconnect{
@@ -972,7 +974,7 @@
         [_mainView addSubview:_inTempLabel];
         
         UILabel *textLabel = [[UILabel alloc] init];
-        textLabel.text = LocalString(@"入风温");
+        textLabel.text = LocalString(@"热风温");
         textLabel.textColor = [UIColor colorWithHexString:@"4778CC"];
         textLabel.textAlignment = NSTextAlignmentLeft;
         textLabel.font = [UIFont systemFontOfSize:12.f];
@@ -1006,7 +1008,7 @@
         [_mainView addSubview:_outTempLabel];
         
         UILabel *textLabel = [[UILabel alloc] init];
-        textLabel.text = LocalString(@"出风温");
+        textLabel.text = LocalString(@"排风温");
         textLabel.textColor = [UIColor colorWithHexString:@"4778CC"];
         textLabel.textAlignment = NSTextAlignmentLeft;
         textLabel.font = [UIFont systemFontOfSize:12.f];

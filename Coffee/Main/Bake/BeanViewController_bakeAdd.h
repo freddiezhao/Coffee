@@ -8,6 +8,10 @@
 
 #import <UIKit/UIKit.h>
 
+typedef void(^popBlock)(BeanModel *bean);
+
 @interface BeanViewController_bakeAdd : UIViewController
 
+@property (nonatomic) popBlock popBlock;
+@property (nonatomic, strong) NSMutableArray *beanArray;
 @end

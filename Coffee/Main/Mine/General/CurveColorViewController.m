@@ -23,7 +23,7 @@ NSString *const CellIdentifier_curveColor = @"CellID_curveColor";
 - (void)viewDidLoad {
     [super viewDidLoad];
     _curveColorTable = [self curveColorTable];
-    _type = @[@"豆温",@"进风温",@"出风温",@"环境温",@"豆温升温率"];
+    _type = @[@"豆温",@"热风温",@"排风温",@"环境温",@"豆温升温率"];
 }
 
 #pragma mark - Lazyload

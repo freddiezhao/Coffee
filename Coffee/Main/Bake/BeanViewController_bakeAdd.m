@@ -390,7 +390,15 @@ static float HEIGHT_HEADER = 36.f;
             return;
         }
     }
-    [[NetWork shareNetWork].beanArray addObject:bean];
+    for (BeanModel *model in self.beanArray) {
+        if ([model.beanUid isEqualToString:bean.beanUid]) {
+            [NSObject showHudTipStr:@"你已经添加该生豆了"];
+            return;
+        }
+    }
+    //改成block回传bean
+    //[[NetWork shareNetWork].beanArray addObject:bean];
+    self.popBlock(bean);
     [self.navigationController popViewControllerAnimated:YES];
 }
 

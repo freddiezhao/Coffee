@@ -419,7 +419,7 @@ static BOOL isRelaOn = NO;
     UILabel *inTempLabelL = [[UILabel alloc] init];
     inTempLabelL.textAlignment = NSTextAlignmentLeft;
     inTempLabelL.font = [UIFont fontWithName:@"PingFangSC-Light" size:12];
-    inTempLabelL.text = @"进风温";
+    inTempLabelL.text = @"热风温";
     inTempLabelL.textColor = [UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1];
     [self.view addSubview:inTempLabelL];
     
@@ -436,7 +436,7 @@ static BOOL isRelaOn = NO;
     UILabel *outTempLabelL = [[UILabel alloc] init];
     outTempLabelL.textAlignment = NSTextAlignmentLeft;
     outTempLabelL.font = [UIFont fontWithName:@"PingFangSC-Light" size:12];
-    outTempLabelL.text = @"出风温";
+    outTempLabelL.text = @"排风温";
     outTempLabelL.textColor = [UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1];
     [self.view addSubview:outTempLabelL];
     
@@ -950,7 +950,7 @@ static BOOL isRelaOn = NO;
     else
     {
         
-        set1 = [[LineChartDataSet alloc] initWithValues:_myNet.yVals_In label:LocalString(@"进风温")];
+        set1 = [[LineChartDataSet alloc] initWithValues:_myNet.yVals_In label:LocalString(@"热风温")];
         set1.axisDependency = AxisDependencyLeft;
         [set1 setColor:[UIColor colorWithRed:123/255.0 green:179/255.0 blue:64/255.0 alpha:1]];
         [set1 setCircleColor:UIColor.whiteColor];
@@ -966,7 +966,7 @@ static BOOL isRelaOn = NO;
         //set1.mode = LineChartModeCubicBezier;
         
         
-        set2 = [[LineChartDataSet alloc] initWithValues:_myNet.yVals_Out label:LocalString(@"出风温")];
+        set2 = [[LineChartDataSet alloc] initWithValues:_myNet.yVals_Out label:LocalString(@"排风温")];
         set2.axisDependency = AxisDependencyLeft;
         [set2 setColor:[UIColor colorWithRed:80/255.0 green:227/255.0 blue:194/255.0 alpha:1]];
         [set2 setCircleColor:UIColor.whiteColor];
@@ -1022,7 +1022,7 @@ static BOOL isRelaOn = NO;
         set5.drawValuesEnabled = NO;//是否在拐点处显示数据
         set5.highlightEnabled = NO;//选中拐点,是否开启高亮效果(显示十字线)
         
-        rela1 = [[LineChartDataSet alloc] initWithValues:_rela_In label:LocalString(@"进风温(rela)")];
+        rela1 = [[LineChartDataSet alloc] initWithValues:_rela_In label:LocalString(@"热风温(rela)")];
         rela1.axisDependency = AxisDependencyRight;
         [rela1 setColor:[UIColor colorWithRed:123/255.0 green:179/255.0 blue:64/255.0 alpha:1]];
         [rela1 setCircleColor:UIColor.whiteColor];
@@ -1036,7 +1036,7 @@ static BOOL isRelaOn = NO;
         rela1.lineDashLengths = @[@5.f,@5.f];
         rela1.visible = NO;
         
-        rela2 = [[LineChartDataSet alloc] initWithValues:_rela_Out label:LocalString(@"出风温(rela)")];
+        rela2 = [[LineChartDataSet alloc] initWithValues:_rela_Out label:LocalString(@"排风温(rela)")];
         rela2.axisDependency = AxisDependencyRight;
         [rela2 setColor:[UIColor colorWithRed:80/255.0 green:227/255.0 blue:194/255.0 alpha:1]];
         [rela2 setCircleColor:UIColor.whiteColor];

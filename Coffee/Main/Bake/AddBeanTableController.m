@@ -23,14 +23,25 @@ NSString *const CellIdentifier_curveInfo = @"CellID_curveInfo_add";
 @interface AddBeanTableController ()
 
 @property (nonatomic, strong) NetWork *myNet;
+@property (nonatomic, strong) NSMutableArray *beanArray;
 
 @end
 
 @implementation AddBeanTableController
 
+- (instancetype)init
+{
+    self = [super init];
+    if (self) {
+        self.beanArray = [[NSMutableArray alloc] init];
+    }
+    return self;
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.navigationItem.title = LocalString(@"添加咖啡豆");
+
+    [self setNavItem];
     
     [self.tableView registerClass:[AddBeanTableViewCell class] forCellReuseIdentifier:CellIdentifier_bakeBean_add];
     [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:CellIdentifier_selectBean];
@@ -43,13 +54,6 @@ NSString *const CellIdentifier_curveInfo = @"CellID_curveInfo_add";
     self.tableView.estimatedSectionHeaderHeight = 0;
     self.tableView.estimatedSectionFooterHeight = 0;
     self.tableView.tableFooterView = [[UIView alloc] init];
-    //tableView.scrollEnabled = NO;
-    //            if ([tableView respondsToSelector:@selector(setSeparatorInset:)]) {
-    //                [tableView setSeparatorInset:UIEdgeInsetsZero];
-    //            }
-    //            if ([tableView respondsToSelector:@selector(setLayoutMargins:)])  {
-    //                [tableView setLayoutMargins:UIEdgeInsetsZero];
-    //            }
 
 }
 
@@ -65,6 +69,42 @@ NSString *const CellIdentifier_curveInfo = @"CellID_curveInfo_add";
     [super viewDidDisappear:animated];
 }
 
+#pragma mark - private methods
+- (void)setNavItem{
+    self.navigationItem.title = LocalString(@"添加咖啡豆");
+    
+    UIButton *leftButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    leftButton.frame = CGRectMake(0, 0, 32, 23);
+    [leftButton setTitle:LocalString(@"取消") forState:UIControlStateNormal];
+    [leftButton setTitleColor:[UIColor colorWithHexString:@"333333"] forState:UIControlStateNormal];
+    leftButton.titleLabel.adjustsFontSizeToFitWidth = YES;
+    [leftButton.titleLabel setFont:[UIFont systemFontOfSize:16.f]];
+    [leftButton addTarget:self action:@selector(cancelAddBean) forControlEvents:UIControlEventTouchUpInside];
+    UIBarButtonItem *leftBarButton = [[UIBarButtonItem alloc] initWithCustomView:leftButton];
+    self.navigationItem.leftBarButtonItem = leftBarButton;
+    
+    UIButton *rightButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    rightButton.frame = CGRectMake(0, 0, 32, 23);
+    [rightButton setTitle:LocalString(@"确定") forState:UIControlStateNormal];
+    [rightButton setTitleColor:[UIColor colorWithHexString:@"4778CC"] forState:UIControlStateNormal];
+    rightButton.titleLabel.adjustsFontSizeToFitWidth = YES;
+    [rightButton.titleLabel setFont:[UIFont systemFontOfSize:16.f]];
+    [rightButton addTarget:self action:@selector(saveAddBean) forControlEvents:UIControlEventTouchUpInside];
+    UIBarButtonItem *rightBarButton = [[UIBarButtonItem alloc] initWithCustomView:rightButton];
+    self.navigationItem.rightBarButtonItem = rightBarButton;
+}
+
+- (void)cancelAddBean{
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)saveAddBean{
+    NSRange range = NSMakeRange(0, self.beanArray.count);
+    NSIndexSet *set = [NSIndexSet indexSetWithIndexesInRange:range];
+    [_myNet.beanArray insertObjects:self.beanArray atIndexes:set];
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
+
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -75,7 +115,7 @@ NSString *const CellIdentifier_curveInfo = @"CellID_curveInfo_add";
     switch (section) {
         case 0:
             {
-                return 1 + _myNet.beanArray.count;
+                return 1 + _myNet.beanArray.count + self.beanArray.count;
             }
             break;
             
@@ -96,7 +136,7 @@ NSString *const CellIdentifier_curveInfo = @"CellID_curveInfo_add";
     switch (indexPath.section) {
         case 0:
             {
-                if (indexPath.row == _myNet.beanArray.count) {
+                if (indexPath.row == (_myNet.beanArray.count+_beanArray.count)) {
                     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_selectBean forIndexPath:indexPath];
                     if (cell == nil) {
                         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_selectBean];
@@ -111,7 +151,12 @@ NSString *const CellIdentifier_curveInfo = @"CellID_curveInfo_add";
                     if (cell == nil) {
                         cell = [[AddBeanTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_bakeBean_add];
                     }
-                    BeanModel *bean = _myNet.beanArray[indexPath.row];
+                    BeanModel *bean;
+                    if (indexPath.row >= self.beanArray.count) {
+                        bean = _myNet.beanArray[indexPath.row-self.beanArray.count];
+                    }else{
+                        bean = self.beanArray[indexPath.row];
+                    }
                     cell.beanName.text = bean.name;
                     if (bean.weight > 0) {
                         cell.weightTF.text = [NSString stringWithFormat:@"%.1f",[NSString diffWeightUnitStringWithWeight:bean.weight]];
@@ -207,6 +252,10 @@ NSString *const CellIdentifier_curveInfo = @"CellID_curveInfo_add";
         case 0:
         {
             BeanViewController_bakeAdd *bakeAdd = [[BeanViewController_bakeAdd alloc] init];
+            bakeAdd.popBlock = ^(BeanModel *bean) {
+                [self.beanArray insertObject:bean atIndex:0];
+            };
+            bakeAdd.beanArray = self.beanArray;
             [self.navigationController pushViewController:bakeAdd animated:YES];
         }
             break;

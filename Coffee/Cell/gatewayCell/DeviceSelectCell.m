@@ -17,6 +17,7 @@
             _checkBtn = [UIButton buttonWithType:UIButtonTypeCustom];
             [_checkBtn setImage:[UIImage imageNamed:@"ic_select"] forState:UIControlStateNormal];
             //[_checkBtn addTarget:self action:@selector(checkDeviceType) forControlEvents:UIControlEventTouchUpInside];
+            _checkBtn.userInteractionEnabled = NO;
             [self.contentView addSubview:_checkBtn];
             [_checkBtn mas_makeConstraints:^(MASConstraintMaker *make) {
                 make.size.mas_equalTo(CGSizeMake(18 / WScale, 18 / HScale));
