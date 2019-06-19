@@ -12,5 +12,7 @@
 
 ///@brief 该页面的唯一入口,整个页面的数据都通过这个键值获得
 @property (nonatomic, strong) NSString *curveUid;
+@property (nonatomic, strong) NSString *name;
+@property (nonatomic) BOOL isEditing;
 
 @end

@@ -79,7 +79,7 @@ NSString *const CellIdentifier_TempPer30Share = @"CellID_TempPer30Share";
 
 #pragma mark - lazy load
 - (void)setNavItem{
-    self.navigationItem.title = LocalString(@"烘焙报告");
+    self.navigationItem.title = self.name;
     
 }
 

@@ -164,6 +164,7 @@ static float HEIGHT_CELL = 50.f;
         
         BakeReportController *reportVC = [[BakeReportController alloc] init];
         reportVC.curveUid = report.curveUid;
+        reportVC.name = report.curveName;
         [self.navigationController pushViewController:reportVC animated:YES];
     }
 }

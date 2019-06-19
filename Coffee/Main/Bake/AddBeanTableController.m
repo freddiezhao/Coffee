@@ -161,6 +161,9 @@ NSString *const CellIdentifier_curveInfo = @"CellID_curveInfo_add";
                     if (bean.weight > 0) {
                         cell.weightTF.text = [NSString stringWithFormat:@"%.1f",[NSString diffWeightUnitStringWithWeight:bean.weight]];
                     }
+                    if (indexPath.row == 0) {
+                        [cell.weightTF becomeFirstResponder];
+                    }
                     __block typeof(cell) blockCell = cell;
                     cell.TFBlock = ^(NSString *text) {
                         float weight = [text floatValue];

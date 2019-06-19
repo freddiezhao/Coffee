@@ -72,16 +72,32 @@ NSString *const CellIdentifier_TempPer30 = @"CellID_TempPer30";
     _yVals_Environment = [[NSMutableArray alloc] init];
     
     [self queryReportInfo];
+    
 }
 
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
     [self.rdv_tabBarController setTabBarHidden:YES animated:YES];
+    
+}
+
+- (void)viewDidAppear:(BOOL)animated{
+    [super viewDidAppear:animated];
+    if (self.isEditing) {
+        self.isEditing = NO;
+        ReportEditController *editVC = [[ReportEditController alloc] init];
+        editVC.beanArray = [_beanArray mutableCopy];
+        editVC.reportModel = _reportModel;
+        editVC.editBlock = ^{
+            [self queryReportInfo];
+        };
+        [self.navigationController pushViewController:editVC animated:YES];
+    }
 }
 
 #pragma mark - lazy load
 - (void)setNavItem{
-    self.navigationItem.title = LocalString(@"烘焙报告");
+    self.navigationItem.title = self.name;
 
     UIView *rightButtonView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 74, 30)];
     
@@ -466,6 +482,7 @@ NSString *const CellIdentifier_TempPer30 = @"CellID_TempPer30";
 #pragma mark - DataSource
 - (void)queryReportInfo{
     _reportModel = [[DataBase shareDataBase] queryReport:_curveUid];
+    self.navigationItem.title = _reportModel.curveName;
     _reportModel.curveUid = _curveUid;
     NSLog(@"%@",_reportModel.date);
     if (_reportModel.curveValueJson) {

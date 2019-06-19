@@ -15,6 +15,7 @@
 #import "BeanModel.h"
 #import "EditBakeBeanCell.h"
 #import "EditBeanController_bakeAdd.h"
+#import "FMDB.h"
 
 NSString *const CellIdentifier_EditName = @"CellID_EditName";
 NSString *const CellIdentifier_EditLight = @"CellID_EditLight";
@@ -213,7 +214,18 @@ NSString *const CellIdentifier_EditBakeBean = @"CellID_EditBakeBean";
             cell.nameLabel.text = LocalString(@"熟豆重量");
             cell.weightTF.text = [NSString stringWithFormat:@"%.1f",_reportModel.bakeBeanWeight];
             cell.TFBlock = ^(NSString *text) {
-                _reportModel.bakeBeanWeight = [text doubleValue];
+                DataBase *db = [DataBase shareDataBase];
+                float weight = [text doubleValue];
+                //把当前单位的重量转为kg
+                if ([db.setting.weightUnit isEqualToString:@"g"]){
+                    weight = weight / 1000.f;
+                }else if ([db.setting.weightUnit isEqualToString:@"lb"]){
+                    weight = weight / 2.2046f;
+                }else{
+                    //设置为kg
+                    weight = weight;
+                }
+                _reportModel.bakeBeanWeight = weight;
             };
             return cell;
         }
@@ -358,9 +370,19 @@ NSString *const CellIdentifier_EditBakeBean = @"CellID_EditBakeBean";
             BOOL result = [[DataBase shareDataBase] updateReportWithReport:_reportModel WithBean:_beanArray];
             if (result) {
                 [NSObject showHudTipStr:LocalString(@"修改报告信息成功")];
+                for (BeanModel *bean in _beanArray) {
+                    [[DataBase shareDataBase].queueDB inDatabase:^(FMDatabase * _Nonnull db) {
+                        BOOL result = [db executeUpdate:@"UPDATE bean_curve SET beanWeight = ? WHERE curveUid = ? AND beanUid = ?",[NSNumber numberWithFloat:bean.weight],bean.beanUid,self.reportModel.curveUid];
+                    }];
+                }
+                [[DataBase shareDataBase].queueDB inDatabase:^(FMDatabase * _Nonnull db) {
+                    BOOL result = [db executeUpdate:@"UPDATE curveInfo SET light = ? WHERE curveUid = ?",[NSNumber numberWithFloat:self.reportModel.light],self.reportModel.curveUid];
+                }];
+                
                 if (self.editBlock) {
                     self.editBlock();
                 }
+                
                 [self.navigationController popViewControllerAnimated:YES];
             }else{
                 [NSObject showHudTipStr:LocalString(@"本地修改报告信息失败")];

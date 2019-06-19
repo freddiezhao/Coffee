@@ -12,7 +12,6 @@
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier{
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
-    self.userInteractionEnabled = NO;
     if (self) {
         self.selectionStyle = UITableViewCellSelectionStyleNone;
         if (!_nameLabel) {
@@ -50,18 +49,19 @@
             
             [self.contentView addSubview:_weightTF];
             [_weightTF mas_makeConstraints:^(MASConstraintMaker *make) {
-                make.size.mas_equalTo(CGSizeMake(70/WScale, 30/HScale));
-                make.right.equalTo(self.contentView.mas_right).offset(-33/WScale);
+                make.size.mas_equalTo(CGSizeMake(100/WScale, 30/HScale));
+                make.right.equalTo(self.contentView.mas_right).offset(-40/WScale);
                 make.centerY.equalTo(self.contentView.mas_centerY);
             }];
         }
         UILabel *label = [[UILabel alloc] init];
-        label.text = @"g";
+        label.text = [DataBase shareDataBase].setting.weightUnit;
         label.font = [UIFont systemFontOfSize:16.f];
         label.textColor = [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1];
         label.textAlignment = NSTextAlignmentRight;
         label.alpha = 1;
         label.numberOfLines = 0;
+        label.adjustsFontSizeToFitWidth = YES;
         [self.contentView addSubview:label];
         
         [label mas_makeConstraints:^(MASConstraintMaker *make) {

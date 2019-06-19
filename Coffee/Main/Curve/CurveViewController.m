@@ -127,7 +127,7 @@ static float HEIGHT_HEADER = 36.f;
 - (UITableView *)currentTable{
     if (!_currentTable) {
         _currentTable = ({
-            TouchTableView *tableView = [[TouchTableView alloc] initWithFrame:CGRectMake(0, 44/HScale, ScreenWidth, ScreenHeight - 64 - (44 + (tabbarHeight + kSafeArea_Bottom))/HScale) style:UITableViewStylePlain];
+            TouchTableView *tableView = [[TouchTableView alloc] initWithFrame:CGRectMake(0, 44/HScale, ScreenWidth, ScreenHeight - getRectNavAndStatusHight - (tabbarHeight + kSafeArea_Bottom) - 44/HScale) style:UITableViewStylePlain];
             tableView.backgroundColor = [UIColor clearColor];
             tableView.separatorColor = [UIColor colorWithRed:0/255.0 green:0/255.0 blue:0/255.0 alpha:0.08];
             tableView.dataSource = self;
@@ -232,10 +232,12 @@ static float HEIGHT_HEADER = 36.f;
     if (report.isShare == 0) {
         BakeReportController *reportVC = [[BakeReportController alloc] init];
         reportVC.curveUid = report.curveUid;
+        reportVC.name = report.curveName;
         [self.navigationController pushViewController:reportVC animated:YES];
     }else{
         ShareReportController *shareVC = [[ShareReportController alloc] init];
         shareVC.curveUid = report.curveUid;
+        shareVC.name = report.curveName;
         [self.navigationController pushViewController:shareVC animated:YES];
     }
 }

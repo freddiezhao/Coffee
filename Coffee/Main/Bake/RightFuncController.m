@@ -359,6 +359,8 @@
 - (void)clickBakeOver{
     NetWork *net = [NetWork shareNetWork];
     net.isDevelop = NO;
+    net.deviceTimerStatus = 1;
+    [net setTimerStatusOff];
 
     EventModel *event = [[EventModel alloc] init];
     event.eventId = 6;//类型为6

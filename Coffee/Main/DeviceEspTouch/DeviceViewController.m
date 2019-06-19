@@ -651,8 +651,6 @@ NSString *const CellIdentifier_device = @"CellID_device";
             NSLog(@"tcp连接错误:%@",error);
         }else{
             [net setConnectedDevice:dModel];
-            [_onlineDeviceArray removeObject:dModel];
-            [tableView reloadData];
             [self.navigationController popViewControllerAnimated:YES];
         }
         

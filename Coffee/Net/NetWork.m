@@ -14,6 +14,7 @@
 #import "DeviceModel.h"
 #import "BakeReportController.h"
 #import "MainViewController.h"
+#import "ReportEditController.h"
 
 ///@brife 可判断的数据帧类型数量
 #define LEN 10
@@ -1464,6 +1465,7 @@ static NSString *curveUid;
         
         BakeReportController *reportVC = [[BakeReportController alloc] init];
         reportVC.curveUid = curveUid;
+        reportVC.isEditing = YES;
         //因为mainVC.selectedViewController是一个自己生成的UINavigationController，所以要获得根vc
         UINavigationController *nav = (UINavigationController *)mainVC.selectedViewController;
         [[nav viewControllers][0].navigationController pushViewController:reportVC animated:YES];

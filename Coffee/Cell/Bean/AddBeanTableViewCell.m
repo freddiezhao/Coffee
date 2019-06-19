@@ -61,7 +61,7 @@
             [self.contentView addSubview:_weightTF];
             [_weightTF mas_makeConstraints:^(MASConstraintMaker *make) {
                 make.size.mas_equalTo(CGSizeMake(100/WScale, 30/HScale));
-                make.right.equalTo(self.contentView.mas_right).offset(-33/WScale);
+                make.right.equalTo(self.contentView.mas_right).offset(-40/WScale);
                 make.centerY.equalTo(self.contentView.mas_centerY);
             }];
         }

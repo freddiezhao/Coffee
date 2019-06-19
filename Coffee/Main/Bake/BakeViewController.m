@@ -274,14 +274,40 @@
     [self.navigationController pushViewController:deviceVC animated:YES];
 }
 
-- (void)setPower{
+- (void)showPowerConfirmAlert{
     if (!_myNet.connectedDevice) {
         [self showNoConnectDevice];
         return;
     }
     
-    NSTimeInterval currentTime = [NSDate date].timeIntervalSince1970;//防止暴力点击 两秒内只能点击一次
-    if (currentTime - time > 0.5) {//限制用户点击按钮的时间间隔大于0.3秒钟
+    YAlertViewController *alert = [[YAlertViewController alloc] init];
+    alert.modalPresentationStyle = UIModalPresentationOverCurrentContext;
+    alert.rBlock = ^{
+        [self.rdv_tabBarController setTabBarHidden:NO animated:YES];
+        [self setPower];
+    };
+    alert.lBlock = ^{
+        [self.rdv_tabBarController setTabBarHidden:NO animated:YES];
+    };
+    [self presentViewController:alert animated:NO completion:^{
+        [self.rdv_tabBarController setTabBarHidden:YES animated:YES];
+        alert.WScale_alert = WScale;
+        alert.HScale_alert = HScale;
+        [alert showView];
+        alert.titleLabel.text = LocalString(@"提示");
+        if (_myNet.powerStatus) {
+            alert.messageLabel.text = LocalString(@"是否确认关闭电源");
+        }else{
+            alert.messageLabel.text = LocalString(@"是否确认开启电源");
+        }
+        [alert.leftBtn setTitle:LocalString(@"取消") forState:UIControlStateNormal];
+        [alert.rightBtn setTitle:LocalString(@"确认") forState:UIControlStateNormal];
+    }];
+}
+
+- (void)setPower{
+    NSTimeInterval currentTime = [NSDate date].timeIntervalSince1970;//防止暴力点击
+    if (currentTime - time > 0.5) {//限制用户点击按钮的时间间隔大于0.5秒钟
         _myNet.setPowerCount = 2;
         if (_myNet.powerStatus) {
             [_myNet setPower:[NSNumber numberWithUnsignedInteger:0x00]];
@@ -301,8 +327,8 @@
         return;
     }
     
-    NSTimeInterval currentTime = [NSDate date].timeIntervalSince1970;//防止暴力点击 两秒内只能点击一次
-    if (currentTime - time > 0.5) {//限制用户点击按钮的时间间隔大于2秒钟
+    NSTimeInterval currentTime = [NSDate date].timeIntervalSince1970;//防止暴力点击
+    if (currentTime - time > 0.5) {//限制用户点击按钮的时间间隔大于0.5秒钟
         _myNet.setFireCount = 2;
         if (_myNet.fireStatus) {
             [[NetWork shareNetWork] setFire:[NSNumber numberWithUnsignedInteger:0x00]];
@@ -324,8 +350,8 @@
     
     NSLog(@"点击");
     //static NSTimeInterval time = 0.0;
-    NSTimeInterval currentTime = [NSDate date].timeIntervalSince1970;//防止暴力点击 两秒内只能点击一次
-    if (currentTime - time > 0.5) {//限制用户点击按钮的时间间隔大于2秒钟
+    NSTimeInterval currentTime = [NSDate date].timeIntervalSince1970;//防止暴力点击
+    if (currentTime - time > 0.5) {//限制用户点击按钮的时间间隔大于0.5秒钟
         _myNet.setColdAndStirCount = 2;
         if (_myNet.stirStatus && _myNet.coolStatus) {
             [_myNet setColdAndStir:[NSNumber numberWithUnsignedInteger:0x01]];
@@ -353,8 +379,8 @@
         return;
     }
     
-    NSTimeInterval currentTime = [NSDate date].timeIntervalSince1970;//防止暴力点击 两秒内只能点击一次
-    if (currentTime - time > 0.5) {//限制用户点击按钮的时间间隔大于2秒钟
+    NSTimeInterval currentTime = [NSDate date].timeIntervalSince1970;//防止暴力点击 
+    if (currentTime - time > 0.5) {//限制用户点击按钮的时间间隔大于0.5秒钟
         _myNet.setColdAndStirCount = 3;
         if (_myNet.stirStatus && _myNet.coolStatus) {
             [_myNet setColdAndStir:[NSNumber numberWithUnsignedInteger:0x02]];
@@ -728,7 +754,7 @@
         }else{
             [_powerBtn setImage:[UIImage imageWithContentsOfFile:[_resourcePath stringByAppendingPathComponent:@"btn_power_off@2x.png"]] forState:UIControlStateNormal];
         }
-        [_powerBtn addTarget:self action:@selector(setPower) forControlEvents:UIControlEventTouchUpInside];
+        [_powerBtn addTarget:self action:@selector(showPowerConfirmAlert) forControlEvents:UIControlEventTouchUpInside];
         //_powerBtn.enabled = NO;
         [_mainView addSubview:_powerBtn];
         
