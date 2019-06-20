@@ -930,7 +930,7 @@ static NSString *curveUid;
                         
                         self.isStartBake = YES;
                         EventModel *event = [[EventModel alloc] init];
-                        event.eventId = 0;//类型为0
+                        event.eventId = StartBake;//类型为0
                         event.eventTime = 0;
                         event.eventText = LocalString(@"烘焙开始");
                         NSLog(@"烘焙开始事件");
@@ -940,7 +940,7 @@ static NSString *curveUid;
                             event.eventBeanTemp = [self.BeanArr[self.BeanArr.count - 1] floatValue];
                         }
                         for (EventModel *event in self.eventArray) {
-                            if (event.eventId == 0) {
+                            if (event.eventId == StartBake) {
                                 [self.eventArray removeObject:event];
                                 break;
                             }
@@ -1019,7 +1019,7 @@ static NSString *curveUid;
                     [_myTimer setFireDate:[NSDate date]];
                     
                     EventModel *event = [[EventModel alloc] init];
-                    event.eventId = 0;//类型为0
+                    event.eventId = StartBake;//类型为0
                     event.eventTime = 0;
                     event.eventText = LocalString(@"烘焙开始");
                     NSLog(@"烘焙开始事件");
@@ -1029,7 +1029,7 @@ static NSString *curveUid;
                         event.eventBeanTemp = [self.BeanArr[self.BeanArr.count - 1] floatValue];
                     }
                     for (EventModel *event in self.eventArray) {
-                        if (event.eventId == 0) {
+                        if (event.eventId == StartBake) {
                             [self.eventArray removeObject:event];
                             break;
                         }
@@ -1087,7 +1087,7 @@ static NSString *curveUid;
                     
                     _isStartBake = YES;
                     EventModel *event = [[EventModel alloc] init];
-                    event.eventId = 0;
+                    event.eventId = StartBake;
                     event.eventTime = 0;
                     event.eventText = LocalString(@"烘焙开始");
                     NSLog(@"被写烘焙开始事件");
@@ -1097,7 +1097,7 @@ static NSString *curveUid;
                         event.eventBeanTemp = [self.BeanArr[self.BeanArr.count - 1] floatValue];
                     }
                     for (EventModel *event in _eventArray) {
-                        if (event.eventId == 0) {
+                        if (event.eventId == StartBake) {
                             [_eventArray removeObject:event];
                             break;
                         }
@@ -1126,13 +1126,13 @@ static NSString *curveUid;
                     
                     _isBakeOver = YES;
                     EventModel *event = [[EventModel alloc] init];
-                    event.eventId = 6;//类型为6
+                    event.eventId = EndBake;//类型为6
                     event.eventTime = self.timerValue;
                     event.eventText = LocalString(@"烘焙结束");
                     NSLog(@"被写烘焙结束事件");
                     event.eventBeanTemp = [self.BeanArr[self.BeanArr.count - 1] floatValue];
                     for (EventModel *event in self.eventArray) {
-                        if (event.eventId == 6) {
+                        if (event.eventId == EndBake) {
                             [self.eventArray removeObject:event];
                             break;
                         }
@@ -1752,7 +1752,7 @@ static int backTempPointCount = 0;
     if (isRorStartNegative && isRorStartPositive) {
         //NSLog(@"回温点3");
         EventModel *event = [[EventModel alloc] init];
-        event.eventId = 7;//类型为7
+        event.eventId = BakeBackTemp;//类型为8
         event.eventTime = self.timerValue;
         event.eventText = LocalString(@"回温点");
         if (self.BeanArr.count > 0) {
@@ -1761,7 +1761,7 @@ static int backTempPointCount = 0;
             event.eventBeanTemp = 0.0;
         }
         for (EventModel *event in self.eventArray) {
-            if (event.eventId == 7) {
+            if (event.eventId == BakeBackTemp) {
                 [self.eventArray removeObject:event];
                 break;
             }

@@ -18,4 +18,5 @@ typedef void(^SliderBlock)(float value);
 @property (nonatomic, strong) UISlider *lightSlider;
 @property (nonatomic) SliderBlock SliderBlock;
 
+- (void)setCircleViewColor:(CGFloat)light;
 @end

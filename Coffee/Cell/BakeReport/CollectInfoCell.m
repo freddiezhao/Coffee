@@ -79,7 +79,7 @@ NSString *const CollectHeaderIdentifier_curve = @"CollectHeaderID_curve";
         if (indexPath.row == 0) {
             cell.leftLabel.text = LocalString(@"事件类型");
             cell.centerLabel.text = LocalString(@"发生时间");
-            cell.rightLabel.text = LocalString(@"内容");
+            cell.rightLabel.text = LocalString(@"温度");
             cell.leftLabel.layer.borderWidth = 0.5;
             cell.leftLabel.layer.borderColor = [UIColor colorWithRed:0/255.0 green:0/255.0 blue:0/255.0 alpha:0.1].CGColor;
             cell.centerLabel.layer.borderWidth = 0.5;
@@ -88,13 +88,13 @@ NSString *const CollectHeaderIdentifier_curve = @"CollectHeaderID_curve";
             cell.rightLabel.layer.borderColor = [UIColor colorWithRed:0/255.0 green:0/255.0 blue:0/255.0 alpha:0.1].CGColor;
         }else{
             EventModel *event = _eventArray[indexPath.row - 1];
-            if (event.eventId == 7) {
+            if (event.eventId == Wind_Fire_Power) {
                 cell.leftLabel.text = LocalString(@"风力/火力");
             }else{
                 cell.leftLabel.text = event.eventText;
             }
             cell.centerLabel.text = [NSString stringWithFormat:@"%ld:%02ld",event.eventTime/60,event.eventTime%60];
-            cell.rightLabel.text = event.eventText;
+            cell.rightLabel.text = [NSString stringWithFormat:@"%.1f℃",event.eventBeanTemp];
 
         }
         return cell;
@@ -138,21 +138,16 @@ NSString *const CollectHeaderIdentifier_curve = @"CollectHeaderID_curve";
             {
                 cell.titleLabel.text = LocalString(@"开始/结束重量");
                 cell.valueLabel.text = [NSString stringWithFormat:@"%.1lf/%.1lf",_reportModel.rawBeanWeight,_reportModel.bakeBeanWeight];
-//                if (_reportModel.rawBeanWeight && _reportModel.bakeBeanWeight) {
-//                    cell.valueLabel.text = [NSString stringWithFormat:@"%ld/%lf",(long)_reportModel.rawBeanWeight,_reportModel.bakeBeanWeight];
-//                }else if(_reportModel.rawBeanWeight && !_reportModel.bakeBeanWeight){
-//                    cell.valueLabel.text = [NSString stringWithFormat:@"%ld/空",(long)_reportModel.rawBeanWeight];
-//                }else if (!_reportModel.rawBeanWeight && _reportModel.bakeBeanWeight){
-//                    cell.valueLabel.text = [NSString stringWithFormat:@"空/%ld",(long)_reportModel.bakeBeanWeight];
-//                }else{
-//                    cell.valueLabel.text = LocalString(@"空");
-//                }
             }
                 break;
             case 4:
             {
                 cell.titleLabel.text = LocalString(@"脱水率");
-                cell.valueLabel.text = [NSString stringWithFormat:@"%.1lf%%",(_reportModel.rawBeanWeight - _reportModel.bakeBeanWeight)/_reportModel.rawBeanWeight*100.f];
+                if (_reportModel.rawBeanWeight) {
+                    cell.valueLabel.text = [NSString stringWithFormat:@"%.1lf%%",(_reportModel.rawBeanWeight - _reportModel.bakeBeanWeight)/_reportModel.rawBeanWeight*100.f];
+                }else{
+                    cell.valueLabel.text = [NSString stringWithFormat:@"0%%"];
+                }
             }
                 break;
             case 5:
@@ -175,7 +170,7 @@ NSString *const CollectHeaderIdentifier_curve = @"CollectHeaderID_curve";
             {
                 cell.titleLabel.text = LocalString(@"一爆时间/温度");
                 for (EventModel *event in _eventArray) {
-                    if (event.eventId == 2) {
+                    if (event.eventId == First_Burst_Start) {
                         cell.valueLabel.text = [NSString stringWithFormat:@"%ld:%02ld/%.1f%@",event.eventTime/60,event.eventTime%60,[NSString diffTempUnitStringWithTemp:event.eventBeanTemp],[DataBase shareDataBase].setting.tempUnit];
                     }
                 }
@@ -206,8 +201,9 @@ NSString *const CollectHeaderIdentifier_curve = @"CollectHeaderID_curve";
                 cell.titleLabel.text = LocalString(@"开始温度");
                 cell.valueLabel.text = LocalString(@"空");
                 for (EventModel *event in _eventArray) {
-                    if (event.eventId == 0) {
+                    if (event.eventId == StartBake) {
                         cell.valueLabel.text = [NSString stringWithFormat:@"%.1f%@",[NSString diffTempUnitStringWithTemp:event.eventBeanTemp],[DataBase shareDataBase].setting.tempUnit];
+                        NSLog(@"%f",event.eventBeanTemp);
                     }
                 }
             }
@@ -217,7 +213,7 @@ NSString *const CollectHeaderIdentifier_curve = @"CollectHeaderID_curve";
                 cell.titleLabel.text = LocalString(@"结束温度");
                 cell.valueLabel.text = LocalString(@"空");
                 for (EventModel *event in _eventArray) {
-                    if (event.eventId == 6) {
+                    if (event.eventId == EndBake) {
                         cell.valueLabel.text = [NSString stringWithFormat:@"%.1f%@",[NSString diffTempUnitStringWithTemp:event.eventBeanTemp],[DataBase shareDataBase].setting.tempUnit];
                     }
                 }
@@ -234,9 +230,9 @@ NSString *const CollectHeaderIdentifier_curve = @"CollectHeaderID_curve";
         EventModel *event1;
         EventModel *event2;
         for (EventModel *event in _eventArray) {
-            if (event.eventId == 0) {
+            if (event.eventId == BakeBackTemp) {
                 event1 = event;
-            }else if (event.eventId == 1){
+            }else if (event.eventId == OutWater){
                 event2 = event;
             }
         }
@@ -272,9 +268,9 @@ NSString *const CollectHeaderIdentifier_curve = @"CollectHeaderID_curve";
         EventModel *event1;
         EventModel *event2;
         for (EventModel *event in _eventArray) {
-            if (event.eventId == 1) {
+            if (event.eventId == OutWater) {
                 event1 = event;
-            }else if (event.eventId == 2){
+            }else if (event.eventId == First_Burst_Start){
                 event2 = event;
             }
         }
@@ -310,9 +306,9 @@ NSString *const CollectHeaderIdentifier_curve = @"CollectHeaderID_curve";
         EventModel *event1;
         EventModel *event2;
         for (EventModel *event in _eventArray) {
-            if (event.eventId == 2) {
+            if (event.eventId == First_Burst_Start) {
                 event1 = event;
-            }else if (event.eventId == 3){
+            }else if (event.eventId == EndBake){
                 event2 = event;
             }
         }
@@ -418,7 +414,7 @@ NSString *const CollectHeaderIdentifier_curve = @"CollectHeaderID_curve";
     }else if (indexPath.section == 2){
         label.text = @"脱水结束至一爆开始";
     }else if (indexPath.section == 3){
-        label.text = @"一爆开始至一爆结束";
+        label.text = @"一爆开始至烘焙结束";
     }else if (indexPath.section == 4){
         label.text = @"事件列表";
     }

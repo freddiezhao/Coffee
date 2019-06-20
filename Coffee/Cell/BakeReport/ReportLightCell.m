@@ -63,4 +63,29 @@
     return self;
 }
 
+- (void)setCircleViewColor:(CGFloat)light{
+    CGFloat location = light / 100;
+    if (location < 0.1) {
+        _circleView.layer.backgroundColor = [UIColor colorWithRed:164/255.0 green:155/255.0 blue:127/255.0 alpha:1].CGColor;
+    }else if (location < 0.2){
+        _circleView.layer.backgroundColor = [UIColor colorWithRed:180/255.0 green:146/255.0 blue:121/255.0 alpha:1].CGColor;
+    }else if (location < 0.3){
+        _circleView.layer.backgroundColor = [UIColor colorWithRed:135/255.0 green:110/255.0 blue:88/255.0 alpha:1].CGColor;
+    }else if (location < 0.4){
+        _circleView.layer.backgroundColor = [UIColor colorWithRed:123/255.0 green:101/255.0 blue:80/255.0 alpha:1].CGColor;
+    }else if (location < 0.6){
+        _circleView.layer.backgroundColor = [UIColor colorWithRed:104/255.0 green:89/255.0 blue:74/255.0 alpha:1].CGColor;
+    }else if (location < 0.7){
+        _circleView.layer.backgroundColor = [UIColor colorWithRed:99/255.0 green:84/255.0 blue:71/255.0 alpha:1].CGColor;
+    }else if (location < 0.8){
+        _circleView.layer.backgroundColor = [UIColor colorWithRed:104/255.0 green:91/255.0 blue:76/255.0 alpha:1].CGColor;
+    }else if (location < 0.9){
+        _circleView.layer.backgroundColor = [UIColor colorWithRed:63/255.0 green:64/255.0 blue:56/255.0 alpha:1].CGColor;
+    }else if (location < 1.0){
+        _circleView.layer.backgroundColor = [UIColor colorWithRed:58/255.0 green:62/255.0 blue:53/255.0 alpha:1].CGColor;
+    }else{
+        _circleView.layer.backgroundColor = [UIColor colorWithRed:21/255.0 green:31/255.0 blue:27/255.0 alpha:1].CGColor;
+    }
+}
+
 @end

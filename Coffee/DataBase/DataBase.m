@@ -334,7 +334,6 @@ static DataBase *_dataBase = nil;
             eventModel.eventBeanTemp = [set doubleForColumn:@"eventBeanTemp"];
             eventModel.eventText = [set stringForColumn:@"eventText"];
             [eventArray addObject:eventModel];
-            NSLog(@"%@",eventModel.eventText);
         }
         [set close];
     }];

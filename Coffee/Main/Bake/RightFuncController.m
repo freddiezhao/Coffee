@@ -231,7 +231,7 @@
 - (void)clickDevyOver{
     NetWork *net = [NetWork shareNetWork];
     EventModel *event = [[EventModel alloc] init];
-    event.eventId = 1;//类型为1
+    event.eventId = OutWater;//类型为1
     event.eventTime = net.timerValue;
     event.eventText = LocalString(@"脱水结束");
     if (net.BeanArr.count > 0) {
@@ -240,7 +240,7 @@
         event.eventBeanTemp = 0.0;
     }
     for (EventModel *event in net.eventArray) {
-        if (event.eventId == 1) {
+        if (event.eventId == OutWater) {
             [net.eventArray removeObject:event];
             break;
         }
@@ -257,7 +257,7 @@
     NetWork *net = [NetWork shareNetWork];
     net.isDevelop = YES;
     EventModel *event = [[EventModel alloc] init];
-    event.eventId = 2;//类型为2
+    event.eventId = First_Burst_Start;//类型为2
     event.eventTime = net.timerValue;
     event.eventText = LocalString(@"一爆开始");
     if (net.BeanArr.count > 0) {
@@ -266,7 +266,7 @@
         event.eventBeanTemp = 0.0;
     }
     for (EventModel *event in net.eventArray) {
-        if (event.eventId == 2) {
+        if (event.eventId == First_Burst_Start) {
             [net.eventArray removeObject:event];
             break;
         }
@@ -282,7 +282,7 @@
 - (void)clickFirstBurstOver{
     NetWork *net = [NetWork shareNetWork];
     EventModel *event = [[EventModel alloc] init];
-    event.eventId = 3;//类型为3
+    event.eventId = First_Burst_End;//类型为3
     event.eventTime = net.timerValue;
     event.eventText = LocalString(@"一爆结束");
     if (net.BeanArr.count > 0) {
@@ -291,7 +291,7 @@
         event.eventBeanTemp = 0.0;
     }
     for (EventModel *event in net.eventArray) {
-        if (event.eventId == 3) {
+        if (event.eventId == First_Burst_End) {
             [net.eventArray removeObject:event];
             break;
         }
@@ -307,7 +307,7 @@
     NetWork *net = [NetWork shareNetWork];
     net.isDevelop = NO;
     EventModel *event = [[EventModel alloc] init];
-    event.eventId = 4;//类型为4
+    event.eventId = Second_Burst_Start;//类型为4
     event.eventTime = net.timerValue;
     event.eventText = LocalString(@"二爆开始");
     if (net.BeanArr.count > 0) {
@@ -316,7 +316,7 @@
         event.eventBeanTemp = 0.0;
     }
     for (EventModel *event in net.eventArray) {
-        if (event.eventId == 4) {
+        if (event.eventId == Second_Burst_Start) {
             [net.eventArray removeObject:event];
             break;
         }
@@ -334,7 +334,7 @@
     net.isDevelop = NO;
 
     EventModel *event = [[EventModel alloc] init];
-    event.eventId = 5;//类型为5
+    event.eventId = Second_Burst_End;//类型为5
     event.eventTime = net.timerValue;
     event.eventText = LocalString(@"二爆结束");
     if (net.BeanArr.count > 0) {
@@ -343,7 +343,7 @@
         event.eventBeanTemp = 0.0;
     }
     for (EventModel *event in net.eventArray) {
-        if (event.eventId == 5) {
+        if (event.eventId == Second_Burst_End) {
             [net.eventArray removeObject:event];
             break;
         }
@@ -363,7 +363,7 @@
     [net setTimerStatusOff];
 
     EventModel *event = [[EventModel alloc] init];
-    event.eventId = 6;//类型为6
+    event.eventId = EndBake;//类型为6
     event.eventTime = net.timerValue;
     event.eventText = LocalString(@"烘焙结束");
     if (net.BeanArr.count > 0) {
@@ -372,7 +372,7 @@
         event.eventBeanTemp = 0.0;
     }
     for (EventModel *event in net.eventArray) {
-        if (event.eventId == 6) {
+        if (event.eventId == EndBake) {
             [net.eventArray removeObject:event];
             break;
         }

@@ -17,4 +17,5 @@ typedef void(^editBlock)(void);
 @property (nonatomic, strong) ReportModel *reportModel;
 @property (nonatomic) editBlock editBlock;
 
+
 @end

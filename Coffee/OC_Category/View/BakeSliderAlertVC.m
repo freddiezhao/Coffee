@@ -115,7 +115,7 @@
     [self dismissViewControllerAnimated:NO completion:nil];
     NetWork *net = [NetWork shareNetWork];
     EventModel *event = [[EventModel alloc] init];
-    event.eventId = 7;//类型为7
+    event.eventId = Wind_Fire_Power;//类型为7
     event.eventTime = net.timerValue;
     if (net.BeanArr.count > 0) {
         event.eventBeanTemp = [net.BeanArr[net.BeanArr.count - 1] floatValue];

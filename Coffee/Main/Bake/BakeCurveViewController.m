@@ -836,7 +836,7 @@ static BOOL isRelaOn = NO;
         NSArray *Environment = [curveDic objectForKey:@"environment"];
         NSMutableArray *Diff = [[NSMutableArray alloc] init];
         for (int i = beanRorDiffCount; i < Bean.count; i = i + beanRorDiffCount) {
-            [Diff addObject:[NSNumber numberWithDouble:([Bean[i] doubleValue] - [Bean[i - beanRorDiffCount] doubleValue]) * 12.f]];
+            [Diff addObject:[NSNumber numberWithDouble:([Bean[i] doubleValue] - [Bean[i - beanRorDiffCount] doubleValue]) * （60.f /beanRorDiffCount)]];
         }
         
         NSLog(@"%lu",(unsigned long)Bean.count);

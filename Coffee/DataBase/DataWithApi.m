@@ -268,7 +268,7 @@
                     if (eventArr.count > 0) {
                         [eventArr enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
                             [[DataBase shareDataBase].queueDB inDatabase:^(FMDatabase * _Nonnull db) {
-                                BOOL result = [db executeUpdate:@"INSERT INTO curve_event (curveUid,eventId,eventText,eventTime,eventBeanTemp) VALUES (?,?,?,?,?)",report.curveUid,[NSNumber numberWithInteger:[[obj objectForKey:@"type"] integerValue]],[obj objectForKey:@"content"],[NSNumber numberWithInteger:[[obj objectForKey:@"time"] integerValue]],[NSNumber numberWithDouble:[[obj objectForKey:@"name"] doubleValue]]];
+                                BOOL result = [db executeUpdate:@"INSERT INTO curve_event (curveUid,eventId,eventText,eventTime,eventBeanTemp) VALUES (?,?,?,?,?)",report.curveUid,[NSNumber numberWithInteger:[[obj objectForKey:@"type"] integerValue]],[obj objectForKey:@"content"],[NSNumber numberWithInteger:[[obj objectForKey:@"time"] integerValue]],[NSNumber numberWithDouble:[[obj objectForKey:@"eventBeanTemp"] doubleValue]]];
                                 if (!result) {
                                     NSLog(@"插入事件%@失败",[obj objectForKey:@"content"]);
                                 }

@@ -346,30 +346,34 @@ NSString *const CellIdentifier_TempPer30Share = @"CellID_TempPer30Share";
             NSInteger row = indexPath.row - 1;
             if (row * 30 < _In.count || row * 30 < _Out.count || row * 30 < _Bean.count || row * 30 < _Environment.count ) {
                 cell.Label1.text = [NSString stringWithFormat:@"%ld:%ld",row/2,row%2*30];
-                if (row * 30 < _In.count) {
-                    cell.Label2.text = [NSString stringWithFormat:@"%.1f",[NSString diffTempUnitStringWithTemp:[_In[row * 30] doubleValue]]];
+                if (row * 30 < _Bean.count) {
+                    cell.Label2.text = [NSString stringWithFormat:@"%.1f",[NSString diffTempUnitStringWithTemp:[_Bean[row * 30] doubleValue]]];
                 }else{
                     cell.Label2.text = @"?";
                 }
-                if (row * 30 < _Out.count) {
-                    cell.Label3.text = [NSString stringWithFormat:@"%.1f",[NSString diffTempUnitStringWithTemp:[_Out[row * 30] doubleValue]]];
+                if (row * 30 < _In.count) {
+                    cell.Label3.text = [NSString stringWithFormat:@"%.1f",[NSString diffTempUnitStringWithTemp:[_In[row * 30] doubleValue]]];
                 }else{
                     cell.Label3.text = @"?";
                 }
-                if (row * 30 < _Bean.count) {
-                    cell.Label4.text = [NSString stringWithFormat:@"%.1f",[NSString diffTempUnitStringWithTemp:[_In[row * 30] doubleValue]]];
+                if (row * 30 < _Out.count) {
+                    cell.Label4.text = [NSString stringWithFormat:@"%.1f",[NSString diffTempUnitStringWithTemp:[_Out[row * 30] doubleValue]]];
                 }else{
                     cell.Label4.text = @"?";
                 }
                 if (row * 30 < _Environment.count) {
-                    cell.Label5.text = [NSString stringWithFormat:@"%.1f",[NSString diffTempUnitStringWithTemp:[_In[row * 30] doubleValue]]];
+                    cell.Label5.text = [NSString stringWithFormat:@"%.1f",[NSString diffTempUnitStringWithTemp:[_Environment[row * 30] doubleValue]]];
                 }else{
                     cell.Label5.text = @"?";
                 }
-                if (row * 30 / beanRorDiffCount< _Diff.count) {
-                    cell.Label6.text = [NSString stringWithFormat:@"%.1f",[NSString diffTempUnitStringWithTemp:[_Diff[row * 30 / beanRorDiffCount] doubleValue]]];
-                }else{
+                if (row == 0) {
                     cell.Label6.text = @"0.0";
+                }else{
+                    if (row * 30 / beanRorDiffCount< _Diff.count) {
+                        cell.Label6.text = [NSString stringWithFormat:@"%.1f",[NSString diffTempUnitStringWithTemp:[_Diff[row * 30 / beanRorDiffCount - 1] doubleValue]]];
+                    }else{
+                        cell.Label6.text = @"0.0";
+                    }
                 }
             }
             
@@ -463,8 +467,8 @@ NSString *const CellIdentifier_TempPer30Share = @"CellID_TempPer30Share";
             _Diff = [[NSMutableArray alloc] init];
         }
         [_Diff removeAllObjects];
-        for (int i = beanRorDiffCount; i < _Bean.count; i = i + beanRorDiffCount) {
-            [_Diff addObject:[NSNumber numberWithDouble:([_Bean[i] doubleValue] - [_Bean[i - beanRorDiffCount] doubleValue]) * 12.f]];
+        for (long i = beanRorDiffCount; i < _Bean.count; i = i + beanRorDiffCount) {
+            [_Diff addObject:[NSNumber numberWithDouble:([_Bean[i] doubleValue] - [_Bean[i - beanRorDiffCount] doubleValue]) * (60.f / beanRorDiffCount)]];
         }
         
         NSLog(@"%lu",(unsigned long)_Bean.count);
@@ -485,7 +489,6 @@ NSString *const CellIdentifier_TempPer30Share = @"CellID_TempPer30Share";
             [_yVals_Environment addObject:[[ChartDataEntry alloc] initWithX:i y:[_Environment[i] doubleValue]]];
         }
         _yVals_Diff = [[NetWork shareNetWork] getBeanTempRorWithArr:_Bean];
-        
     }
     
     [self queryEventInfo];
@@ -504,9 +507,9 @@ NSString *const CellIdentifier_TempPer30Share = @"CellID_TempPer30Share";
     //烘焙时长，发展时间，发展率，脱水率，开始温度，结束温度都由事件列表取得或计算得到，脱水率，开始温度，结束温度在cell的显示函数中直接计算，烘焙时长，发展时间，发展率在下面计算并保存在reportModel中
     //计算烘焙时长
     for (EventModel *event in _eventArray) {
-        if (event.eventId == 0) {
+        if (event.eventId == StartBake) {
             event1 = event;
-        }else if (event.eventId == 6){
+        }else if (event.eventId == EndBake){
             event2 = event;
         }
     }
@@ -514,9 +517,9 @@ NSString *const CellIdentifier_TempPer30Share = @"CellID_TempPer30Share";
     
     //计算发展时间
     for (EventModel *event in _eventArray) {
-        if (event.eventId == 2) {
+        if (event.eventId == First_Burst_Start) {
             event1 = event;
-        }else if (event.eventId == 4){
+        }else if (event.eventId == Second_Burst_Start){
             event2 = event;
         }
     }

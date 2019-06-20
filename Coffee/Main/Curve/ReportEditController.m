@@ -136,6 +136,7 @@ NSString *const CellIdentifier_EditBakeBean = @"CellID_EditBakeBean";
             cell.nameLabel.text = LocalString(@"烘焙度编辑");
             cell.lightValue.text = [NSString stringWithFormat:@"%d",(int)_reportModel.light];
             cell.lightSlider.value = _reportModel.light;
+            [cell setCircleViewColor:_reportModel.light];
             cell.SliderBlock = ^(float value) {
                 _reportModel.light = value;
             };
@@ -212,7 +213,9 @@ NSString *const CellIdentifier_EditBakeBean = @"CellID_EditBakeBean";
                 cell = [[EditBakeBeanCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_EditBakeBean];
             }
             cell.nameLabel.text = LocalString(@"熟豆重量");
-            cell.weightTF.text = [NSString stringWithFormat:@"%.1f",_reportModel.bakeBeanWeight];
+            if (_reportModel.bakeBeanWeight > 0) {
+                cell.weightTF.text = [NSString stringWithFormat:@"%.1f",_reportModel.bakeBeanWeight];
+            }
             cell.TFBlock = ^(NSString *text) {
                 DataBase *db = [DataBase shareDataBase];
                 float weight = [text doubleValue];
@@ -353,13 +356,17 @@ NSString *const CellIdentifier_EditBakeBean = @"CellID_EditBakeBean";
         [NSObject showHudTipStr:LocalString(@"生豆信息未添加")];
         return;
     }
+    
+    CGFloat rawBeanWeight = 0;
     NSMutableArray *beanArr = [[NSMutableArray alloc] init];
     for (BeanModel *bean in _beanArray) {
         NSDictionary *beanDic = @{@"beanUid":bean.beanUid,@"used":[NSNumber numberWithDouble:bean.weight]};
         [beanArr addObject:beanDic];
+        rawBeanWeight += bean.weight;
     }
     
-    NSDictionary *parameters = @{@"name":_reportModel.curveName,@"cooked":[NSNumber numberWithFloat:_reportModel.bakeBeanWeight],@"light":[NSNumber numberWithFloat:_reportModel.light],@"beans":beanArr};
+    NSLog(@"%f",rawBeanWeight);
+    NSDictionary *parameters = @{@"name":_reportModel.curveName,@"cooked":[NSNumber numberWithFloat:_reportModel.bakeBeanWeight],@"rawBean":@(rawBeanWeight),@"light":[NSNumber numberWithFloat:_reportModel.light],@"beans":beanArr};
     [SVProgressHUD show];
     [manager PUT:url parameters:parameters success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableContainers|NSJSONReadingMutableLeaves error:nil];
@@ -373,10 +380,16 @@ NSString *const CellIdentifier_EditBakeBean = @"CellID_EditBakeBean";
                 for (BeanModel *bean in _beanArray) {
                     [[DataBase shareDataBase].queueDB inDatabase:^(FMDatabase * _Nonnull db) {
                         BOOL result = [db executeUpdate:@"UPDATE bean_curve SET beanWeight = ? WHERE curveUid = ? AND beanUid = ?",[NSNumber numberWithFloat:bean.weight],bean.beanUid,self.reportModel.curveUid];
+                        if (result) {
+                            NSLog(@"更新曲线使用豆成功");
+                        }
                     }];
                 }
                 [[DataBase shareDataBase].queueDB inDatabase:^(FMDatabase * _Nonnull db) {
-                    BOOL result = [db executeUpdate:@"UPDATE curveInfo SET light = ? WHERE curveUid = ?",[NSNumber numberWithFloat:self.reportModel.light],self.reportModel.curveUid];
+                    BOOL result = [db executeUpdate:@"UPDATE curveInfo SET light = ?,rawBeanWeight = ? WHERE curveUid = ?",[NSNumber numberWithFloat:self.reportModel.light],@(rawBeanWeight),self.reportModel.curveUid];
+                    if (result) {
+                        NSLog(@"更新曲线烘焙值成功");
+                    }
                 }];
                 
                 if (self.editBlock) {
