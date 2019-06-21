@@ -13,6 +13,7 @@
 @property (nonatomic, strong) UIView *dateSelView;
 @property (nonatomic, strong) UIDatePicker *dateSelPicker;
 @property (nonatomic, strong) UIButton *dismissBtn;
+@property (nonatomic, strong) UIButton *confirmBtn;
 
 @end
 
@@ -25,6 +26,7 @@
     _dateSelView = [self dateSelView];
     _dismissBtn = [self dismissBtn];
     _dateSelPicker = [self dateSelPicker];
+    _confirmBtn = [self confirmBtn];
 }
 
 #pragma mark - Lazy Load
@@ -32,6 +34,7 @@
     if (!_dateSelView) {
         _dateSelView = [[UIView alloc] init];
         _dateSelView.layer.backgroundColor = [UIColor colorWithRed:255/255.0 green:255/255.0 blue:255/255.0 alpha:1].CGColor;
+        _dateSelView.layer.cornerRadius = 8.f;
         [self.view addSubview:_dateSelView];
         
         UILabel *textLabel = [[UILabel alloc] init];
@@ -44,7 +47,7 @@
         [_dateSelView mas_makeConstraints:^(MASConstraintMaker *make) {
             make.size.mas_equalTo(CGSizeMake(ScreenWidth, 257/HScale));
             make.centerX.equalTo(self.view.mas_centerX);
-            make.bottom.equalTo(self.view.mas_bottom);
+            make.bottom.equalTo(self.view.mas_bottom).offset(-49.f - getRectNavAndStatusHight);
         }];
         
         [textLabel mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -62,6 +65,7 @@
         [_dateSelPicker setLocale:[[NSLocale alloc] initWithLocaleIdentifier:@"zh_Hans_CN"]];
         [_dateSelPicker setCalendar:[NSCalendar currentCalendar]];
         [_dateSelPicker setDatePickerMode:UIDatePickerModeDate];
+        [_dateSelPicker setMaximumDate:[NSDate date]];
         [_dateSelPicker setValue:[UIColor colorWithHexString:@"222222"] forKey:@"textColor"];
         [self.dateSelView addSubview:_dateSelPicker];
         
@@ -72,6 +76,26 @@
         }];
     }
     return _dateSelPicker;
+}
+
+- (UIButton *)confirmBtn{
+    if (!_confirmBtn) {
+        _confirmBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        [_confirmBtn setTitle:LocalString(@"确认") forState:UIControlStateNormal];
+        [_confirmBtn.titleLabel setFont:[UIFont systemFontOfSize:15.f]];
+        [_confirmBtn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+        [_confirmBtn setBackgroundColor:[UIColor whiteColor]];
+        [_confirmBtn addTarget:self action:@selector(confirm) forControlEvents:UIControlEventTouchUpInside];
+        _confirmBtn.layer.cornerRadius = 8.f;
+        [self.view addSubview:_confirmBtn];
+        
+        [_confirmBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.size.mas_equalTo(CGSizeMake(ScreenWidth, 44.f));
+            make.centerX.equalTo(self.view.mas_centerX);
+            make.top.equalTo(self.dateSelView.mas_bottom).offset(5.f);
+        }];
+    }
+    return _confirmBtn;
 }
 
 - (UIButton *)dismissBtn{
@@ -88,10 +112,14 @@
 #pragma mark - Actions
 - (void)dismissVC{
     [self dismissViewControllerAnimated:YES completion:^{
+    }];
+}
+
+- (void)confirm{
+    [self dismissViewControllerAnimated:YES completion:^{
         if (self.dateBlock) {
             self.dateBlock(_dateSelPicker.date);
         }
     }];
 }
-
 @end

@@ -85,6 +85,8 @@ static float HEIGHT_HEADER = 36.f;
             tableView.estimatedSectionHeaderHeight = 0;
             tableView.estimatedSectionFooterHeight = 0;
             
+            tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, ScreenWidth, 30.f)];
+            
             //tableView.scrollEnabled = NO;
             //            if ([tableView respondsToSelector:@selector(setSeparatorInset:)]) {
             //                [tableView setSeparatorInset:UIEdgeInsetsZero];
@@ -498,7 +500,7 @@ static float HEIGHT_HEADER = 36.f;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section{
-    return 15.f/HScale;
+    return 0.f;
 }
 
 #pragma mark - Actions

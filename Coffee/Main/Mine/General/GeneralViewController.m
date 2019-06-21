@@ -79,7 +79,7 @@ NSString *const CellIdentifier_GeneralLogout = @"CellID_GeneralLogout";
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
     if (section == 0) {
-        return 1;
+        return 0;
     }else if (section == 1){
         return 3;
     }else if (section == 2){

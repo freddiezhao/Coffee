@@ -453,11 +453,11 @@ static DataBase *_dataBase = nil;
 
 - (BOOL)insertNewBean:(BeanModel *)bean{
     if (!bean.nation) {
-        bean.nation = @"";
+        bean.nation = @"未知";
     }
     
     if (!bean.area) {
-        bean.area = @"";
+        bean.area = @"未知";
     }
     
     if (!bean.stock) {
@@ -465,11 +465,11 @@ static DataBase *_dataBase = nil;
     }
     
     if (!bean.manor) {
-        bean.manor = @"";
+        bean.manor = @"未知";
     }
     
     if (!bean.supplier) {
-        bean.supplier = @"";
+        bean.supplier = @"未知";
     }
     
     if (!bean.water) {
@@ -485,13 +485,13 @@ static DataBase *_dataBase = nil;
     }
     
     if (!bean.beanSpecies) {
-        bean.beanSpecies = @"";
+        bean.beanSpecies = @"未知";
     }
     if (!bean.grade) {
-        bean.grade = @"";
+        bean.grade = @"未知";
     }
     if (!bean.process) {
-        bean.process = @"";
+        bean.process = @"未知";
     }
     if (!bean.time) {
         bean.time = [NSDate date];
