@@ -10,6 +10,30 @@
 
 @implementation CupModel
 
+- (instancetype)init
+{
+    self = [super init];
+    if (self) {
+        self.light = 0.f;
+        self.dryAndWet = 5.f;
+        self.flavor = 5.f;
+        self.aftermath = 5.f;
+        self.acid = 5.f;
+        self.taste = 5.f;
+        self.sweet = 5.f;
+        self.balance = 5.f;
+        self.overFeel = 5.f;
+        self.deveUnfull = 5.f;
+        self.overDeve = 5.f;
+        self.bakePaste = 5.f;
+        self.injure = 5.f;
+        self.germInjure = 5.f;
+        self.beanFaceInjure = 5.f;
+
+    }
+    return self;
+}
+
 - (void)caculateGrade{
     self.bakeGrade = self.dryAndWet/2 + self.flavor/2 + self.aftermath + self.acid*2 + self.taste*2 + self.sweet*2 + self.balance + self.overFeel;
     self.defectGrade = (self.deveUnfull + self.overDeve + self.bakePaste + self.injure + self.germInjure + self.beanFaceInjure) / 2;

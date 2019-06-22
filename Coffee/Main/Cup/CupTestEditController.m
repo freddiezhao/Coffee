@@ -372,6 +372,7 @@ static float HEIGHT_HEADER = 36.f;
                 cell.lightValue.text = @"0";
             }
             cell.lightSlider.value = _cup.light;
+            [cell setCircleViewColor:_cup.light];
             cell.SliderBlock = ^(float value) {
                 _cup.light = value;
             };

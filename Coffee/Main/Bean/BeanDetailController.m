@@ -125,13 +125,25 @@ static float HEIGHT_HEADER = 15.f;
         {
             if (indexPath.row == 0) {
                 cell.nameLabel.text = LocalString(@"国家");
-                cell.contentLabel.text = _myBean.nation;
+                if ([_myBean.manor isEqualToString:@""]) {
+                    cell.contentLabel.text = LocalString(@"未知");
+                }else{
+                    cell.contentLabel.text = _myBean.nation;
+                }
             }else if (indexPath.row == 1){
                 cell.nameLabel.text = LocalString(@"产区");
-                cell.contentLabel.text = _myBean.area;
+                if ([_myBean.area isEqualToString:@""]) {
+                    cell.contentLabel.text = LocalString(@"未知");
+                }else{
+                    cell.contentLabel.text = _myBean.area;
+                }
             }else if (indexPath.row == 2){
                 cell.nameLabel.text = LocalString(@"庄园");
-                cell.contentLabel.text = _myBean.manor;
+                if ([_myBean.manor isEqualToString:@""]) {
+                    cell.contentLabel.text = LocalString(@"未知");
+                }else{
+                    cell.contentLabel.text = _myBean.manor;
+                }
             }else if (indexPath.row == 3){
                 cell.nameLabel.text = LocalString(@"海拔");
                 cell.contentLabel.text = [NSString stringWithFormat:@"%.1fm",_myBean.altitude];
@@ -143,13 +155,25 @@ static float HEIGHT_HEADER = 15.f;
         {
             if (indexPath.row == 0) {
                 cell.nameLabel.text = LocalString(@"豆种");
-                cell.contentLabel.text = _myBean.beanSpecies;
+                if ([_myBean.beanSpecies isEqualToString:@""]) {
+                    cell.contentLabel.text = LocalString(@"未知");
+                }else{
+                    cell.contentLabel.text = _myBean.beanSpecies;
+                }
             }else if (indexPath.row == 1){
                 cell.nameLabel.text = LocalString(@"等级");
-                cell.contentLabel.text = _myBean.grade;
+                if ([_myBean.grade isEqualToString:@""]) {
+                    cell.contentLabel.text = LocalString(@"未知");
+                }else{
+                    cell.contentLabel.text = _myBean.grade;
+                }
             }else if (indexPath.row == 2){
                 cell.nameLabel.text = LocalString(@"处理方式");
-                cell.contentLabel.text = _myBean.process;
+                if ([_myBean.process isEqualToString:@""]) {
+                    cell.contentLabel.text = LocalString(@"未知");
+                }else{
+                    cell.contentLabel.text = _myBean.process;
+                }
             }else if (indexPath.row == 3){
                 cell.nameLabel.text = LocalString(@"含水量");
                 cell.contentLabel.text = [NSString stringWithFormat:@"%.1f%%",_myBean.water];
@@ -161,7 +185,11 @@ static float HEIGHT_HEADER = 15.f;
         {
             if (indexPath.row == 0) {
                 cell.nameLabel.text = LocalString(@"供应商");
-                cell.contentLabel.text = _myBean.supplier;
+                if ([_myBean.supplier isEqualToString:@""]) {
+                    cell.contentLabel.text = LocalString(@"未知");
+                }else{
+                    cell.contentLabel.text = _myBean.supplier;
+                }
             }else if (indexPath.row == 1){
                 cell.nameLabel.text = LocalString(@"价格");
                 cell.contentLabel.text = [NSString stringWithFormat:@"%.1f¥/kg",_myBean.price];

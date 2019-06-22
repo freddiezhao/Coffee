@@ -19,6 +19,7 @@
 #import "CupModel.h"
 #import "ScoreTitleCell.h"
 #import "DetailScoreCell.h"
+#import "CurveDetailClickCell.h"
 
 
 NSString *const CellIdentifier_cupDetailGrade = @"CellID_cupDetailGrade";
@@ -26,6 +27,7 @@ NSString *const CellIdentifier_cupDetailLight = @"CellID_cupDetailLight";
 NSString *const CellIdentifier_cupBeanHeader = @"CellID_cupDetailBeanHeader";
 NSString *const CellIdentifier_cupBeanInfo = @"CellID_cupDetailBeanInfo";
 NSString *const CellIdentifier_cupCurve = @"CellID_cupDetailCurve";
+NSString *const CellIdentifier_cupCurveDetail = @"CellID_cupCurveDetail";
 NSString *const CellIdentifier_cupScoreTitle = @"CellID_cupScoreTitle";
 NSString *const CellIdentifier_cupGoodScore = @"CellID_cupGoodScore";
 NSString *const CellIdentifier_cupBadScore = @"CellID_cupBadScore";
@@ -135,6 +137,7 @@ static float HEIGHT_HEADER = 15.f;
             [tableView registerClass:[ScoreTitleCell class] forCellReuseIdentifier:CellIdentifier_cupScoreTitle];
             [tableView registerClass:[DetailScoreCell class] forCellReuseIdentifier:CellIdentifier_cupGoodScore];
             [tableView registerClass:[DetailScoreCell class] forCellReuseIdentifier:CellIdentifier_cupBadScore];
+            [tableView registerClass:[CurveDetailClickCell class] forCellReuseIdentifier:CellIdentifier_cupCurveDetail];
             tableView;
         });
     }
@@ -230,7 +233,7 @@ static float HEIGHT_HEADER = 15.f;
                 break;
                 
             case 1:
-                return 1;
+                return 2;
                 break;
                 
             default:
@@ -281,7 +284,11 @@ static float HEIGHT_HEADER = 15.f;
                 break;
                 
             case 1:
-                return 202.f/HScale;
+                if (indexPath.row == 0) {
+                    return 202.f/HScale;
+                }else{
+                    return 40.f;
+                }
                 break;
                 
             default:
@@ -496,19 +503,27 @@ static float HEIGHT_HEADER = 15.f;
                 return cell;
             }
         }else{
-            ReportCurveCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_cupCurve];
-            if (cell == nil) {
-                cell = [[ReportCurveCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_cupCurve];
+            if (indexPath.row == 0) {
+                ReportCurveCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_cupCurve];
+                if (cell == nil) {
+                    cell = [[ReportCurveCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_cupCurve];
+                }
+                if (_yVals_In.count > 0 && _yVals_Out.count > 0 && _yVals_Bean.count > 0 && _yVals_Environment.count > 0) {
+                    cell.yVals_In = _yVals_In;
+                    cell.yVals_Out = _yVals_Out;
+                    cell.yVals_Bean = _yVals_Bean;
+                    cell.yVals_Environment = _yVals_Environment;
+                    cell.yVals_Diff = _yVals_Diff;
+                    [cell setDataValue];
+                }
+                return cell;
+            }else{
+                CurveDetailClickCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_cupCurveDetail];
+                if (cell == nil) {
+                    cell = [[CurveDetailClickCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_cupCurveDetail];
+                }
+                return cell;
             }
-            if (_yVals_In.count > 0 && _yVals_Out.count > 0 && _yVals_Bean.count > 0 && _yVals_Environment.count > 0) {
-                cell.yVals_In = _yVals_In;
-                cell.yVals_Out = _yVals_Out;
-                cell.yVals_Bean = _yVals_Bean;
-                cell.yVals_Environment = _yVals_Environment;
-                cell.yVals_Diff = _yVals_Diff;
-                [cell setDataValue];
-            }
-            return cell;
         }
     }
 

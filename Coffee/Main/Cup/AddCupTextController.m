@@ -378,6 +378,7 @@ NSString *const CellIdentifier_cupAddBadScore = @"CellID_cupAddBadScore";
                 cell.lightValue.text = @"0";
             }
             cell.lightSlider.value = _cup.light;
+            [cell setCircleViewColor:_cup.light];
             cell.SliderBlock = ^(float value) {
                 _cup.light = value;
             };
@@ -798,6 +799,7 @@ NSString *const CellIdentifier_cupAddBadScore = @"CellID_cupAddBadScore";
                   if ([responseDic objectForKey:@"data"]) {
                       NSDictionary *beansDic = [responseDic objectForKey:@"data"];
                       _cup.cupUid = [beansDic objectForKey:@"cupUid"];
+                      _cup.date = [NSDate date];
                       BOOL result = [[DataBase shareDataBase] insertNewCup:_cup];
                       if (result) {
                           [self.navigationController popViewControllerAnimated:YES];

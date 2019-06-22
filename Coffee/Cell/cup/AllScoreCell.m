@@ -135,7 +135,7 @@
     self.integerLabel.text = [NSString stringWithFormat:@"%d",(int)slider.value/10];
     self.decimalLabel.text = [NSString stringWithFormat:@"%d",(int)slider.value%10];
     if (self.SliderBlock) {
-        self.SliderBlock(slider.value);
+        self.SliderBlock((int)slider.value*10/10.f);
     }
 }
 

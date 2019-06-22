@@ -418,7 +418,7 @@ sectionForSectionIndexTitle:(NSString *)title
 }
 
 - (void)generalSort:(UIButton *)sender{
-    _cupArr = [[DataBase shareDataBase] queryAllCup];
+    //_cupArr = [[DataBase shareDataBase] queryAllCup];
     _sort_gradeBtn.tag = sortUnselect;
     [_sort_gradeBtn setImage:[UIImage imageNamed:@"ic_rank1"] forState:UIControlStateNormal];
     _sort_nameBtn.tag = sortUnselect;
@@ -437,7 +437,7 @@ sectionForSectionIndexTitle:(NSString *)title
 }
 
 - (void)nameSort:(UIButton *)sender{
-    _cupArr = [[DataBase shareDataBase] queryAllCup];
+    //_cupArr = [[DataBase shareDataBase] queryAllCup];
     _sort_gradeBtn.tag = sortUnselect;
     [_sort_gradeBtn setImage:[UIImage imageNamed:@"ic_rank1"] forState:UIControlStateNormal];
     _sort_generalBtn.tag = sortUnselect;
@@ -462,7 +462,7 @@ sectionForSectionIndexTitle:(NSString *)title
 }
 
 - (void)gradeSort:(UIButton *)sender{
-    _cupArr = [[DataBase shareDataBase] queryAllCup];
+    //_cupArr = [[DataBase shareDataBase] queryAllCup];
     _sort_generalBtn.tag = sortUnselect;
     
     //改变按钮文字颜色
