@@ -246,56 +246,44 @@ NSString *const CellIdentifier_TempPer30Share = @"CellID_TempPer30Share";
             }
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
             BeanModel *bean = _beanArray[indexPath.row - 1];
-            if (bean.name) {
+            if (bean.name && ![bean.name isEqualToString:@""]) {
                 cell.beanName.text = bean.name;
             }else{
                 cell.beanName.text = LocalString(@"未知");
             }
-            if (bean.nation) {
+            if (bean.nation && ![bean.nation isEqualToString:@""]) {
                 cell.nation.text = bean.nation;
             }else{
                 cell.nation.text = LocalString(@"未知");
             }
-            if (bean.area) {
+            if (bean.area && ![bean.area isEqualToString:@""]) {
                 cell.area.text = bean.area;
             }else{
                 cell.area.text = LocalString(@"未知");
             }
-            if (bean.altitude) {
-                cell.altitude.text = [NSString stringWithFormat:@"%.1f",bean.altitude];
-            }else{
-                cell.altitude.text = LocalString(@"未知");
-            }
-            if (bean.manor) {
+            if (bean.manor && ![bean.manor isEqualToString:@""]) {
                 cell.manor.text = bean.manor;
             }else{
                 cell.manor.text = LocalString(@"未知");
             }
-            if (bean.beanSpecies) {
+            if (bean.beanSpecies && ![bean.beanSpecies isEqualToString:@""]) {
                 cell.beanSpecies.text = bean.beanSpecies;
             }else{
                 cell.beanSpecies.text = LocalString(@"未知");
             }
-            if (bean.grade) {
+            if (bean.grade && ![bean.grade isEqualToString:@""]) {
                 cell.grade.text = bean.grade;
             }else{
                 cell.grade.text = LocalString(@"未知");
             }
-            if (bean.process) {
+            if (bean.process && ![bean.process isEqualToString:@""]) {
                 cell.process.text = bean.process;
             }else{
                 cell.process.text = LocalString(@"未知");
             }
-            if (bean.water) {
-                cell.water.text = [NSString stringWithFormat:@"%.1f",bean.water];
-            }else{
-                cell.water.text = LocalString(@"未知");
-            }
-            if (bean.weight) {
-                cell.weight.text = [NSString stringWithFormat:@"%.1f",bean.weight];
-            }else{
-                cell.weight.text = LocalString(@"未知");
-            }
+            cell.altitude.text = [NSString stringWithFormat:@"%.1f",bean.altitude];
+            cell.water.text = [NSString stringWithFormat:@"%.1f",bean.water];
+            cell.weight.text = [NSString stringWithFormat:@"%.1f",bean.weight];
             return cell;
         }
     }else if (indexPath.section == 2){

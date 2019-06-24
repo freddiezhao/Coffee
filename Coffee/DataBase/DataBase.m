@@ -232,6 +232,7 @@ static DataBase *_dataBase = nil;
             reportModel.developTime = [set intForColumn:@"developTime"];
             reportModel.developRate = [set doubleForColumn:@"developRate"];
             reportModel.bakerName = [set stringForColumn:@"bakerName"];
+            reportModel.isShare = [set intForColumn:@"isShare"];
         }
         [set close];
     }];

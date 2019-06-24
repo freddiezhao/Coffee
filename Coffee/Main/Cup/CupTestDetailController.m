@@ -20,6 +20,7 @@
 #import "ScoreTitleCell.h"
 #import "DetailScoreCell.h"
 #import "CurveDetailClickCell.h"
+#import "ReportCurveDetailController.h"
 
 
 NSString *const CellIdentifier_cupDetailGrade = @"CellID_cupDetailGrade";
@@ -160,7 +161,7 @@ static float HEIGHT_HEADER = 15.f;
             tableView.estimatedRowHeight = 0;
             tableView.estimatedSectionHeaderHeight = 0;
             tableView.estimatedSectionFooterHeight = 0;
-            
+            tableView.tableFooterView = [[UIView alloc] init];
             tableView;
         });
     }
@@ -490,16 +491,44 @@ static float HEIGHT_HEADER = 15.f;
                     cell = [[BeanInfoCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_cupBeanInfo];
                 }
                 BeanModel *bean = _beanArray[indexPath.row - 1];
-                cell.beanName.text = bean.name;
-                cell.nation.text = bean.nation;
-                cell.area.text = bean.area;
-                cell.altitude.text = [NSString stringWithFormat:@"%.1f",bean.altitude];
-                cell.manor.text = bean.manor;
-                cell.beanSpecies.text = bean.beanSpecies;
-                cell.grade.text = bean.grade;
-                cell.process.text = bean.process;
+                if (bean.name && ![bean.name isEqualToString:@""]) {
+                    cell.beanName.text = bean.name;
+                }else{
+                    cell.beanName.text = LocalString(@"未知");
+                }
+                if (bean.nation && ![bean.nation isEqualToString:@""]) {
+                    cell.nation.text = bean.nation;
+                }else{
+                    cell.nation.text = LocalString(@"未知");
+                }
+                if (bean.area && ![bean.area isEqualToString:@""]) {
+                    cell.area.text = bean.area;
+                }else{
+                    cell.area.text = LocalString(@"未知");
+                }
+                if (bean.manor && ![bean.manor isEqualToString:@""]) {
+                    cell.manor.text = bean.manor;
+                }else{
+                    cell.manor.text = LocalString(@"未知");
+                }
+                if (bean.beanSpecies && ![bean.beanSpecies isEqualToString:@""]) {
+                    cell.beanSpecies.text = bean.beanSpecies;
+                }else{
+                    cell.beanSpecies.text = LocalString(@"未知");
+                }
+                if (bean.grade && ![bean.grade isEqualToString:@""]) {
+                    cell.grade.text = bean.grade;
+                }else{
+                    cell.grade.text = LocalString(@"未知");
+                }
+                if (bean.process && ![bean.process isEqualToString:@""]) {
+                    cell.process.text = bean.process;
+                }else{
+                    cell.process.text = LocalString(@"未知");
+                }
                 cell.water.text = [NSString stringWithFormat:@"%.1f",bean.water];
                 cell.weight.text = [NSString stringWithFormat:@"%.1f",bean.weight];
+                cell.altitude.text = [NSString stringWithFormat:@"%.1f",bean.altitude];
                 return cell;
             }
         }else{
@@ -531,7 +560,15 @@ static float HEIGHT_HEADER = 15.f;
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    
+    if (tableView == self.bakeDetailTable && indexPath.section == 1 && indexPath.row == 1) {
+        ReportCurveDetailController *vc = [[ReportCurveDetailController alloc] init];
+        vc.yVals_In = _yVals_In;
+        vc.yVals_Out = _yVals_Out;
+        vc.yVals_Bean = _yVals_Bean;
+        vc.yVals_Environment = _yVals_Environment;
+        vc.yVals_Diff = _yVals_Diff;
+        [self presentViewController:vc animated:YES completion:nil];
+    }
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
@@ -620,25 +657,89 @@ static float HEIGHT_HEADER = 15.f;
 }
 
 - (void)queryBeanInfo{
-    DataBase *db = [DataBase shareDataBase];
-    NSMutableArray *beanMutaArray = [[db queryReportRelaBean:_cup.curveUid] mutableCopy];
-    for (int i = 0; i < [beanMutaArray count]; i++) {
-        BeanModel *beanModelOld = beanMutaArray[i];
-        BeanModel *beanModelNew = [db queryBean:beanModelOld.beanUid];
-        beanModelNew.weight = beanModelOld.weight;
-        beanModelNew.beanUid = beanModelOld.beanUid;
-        [beanMutaArray replaceObjectAtIndex:i withObject:beanModelNew];
+    if (_reportModel.isShare) {
+        [SVProgressHUD show];
+        
+        AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+        
+        [manager.requestSerializer willChangeValueForKey:@"timeoutInterval"];
+        manager.requestSerializer.timeoutInterval = 6.f;
+        [manager.requestSerializer didChangeValueForKey:@"timeoutInterval"];
+        
+        NSString *url = [NSString stringWithFormat:@"http://139.196.90.97:8080/coffee/roastCurve/bean/message?curveUid=%@&num=1",_cup.curveUid];
+        url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet characterSetWithCharactersInString:@"`#%^{}\"[]|\\<> "].invertedSet];
+        
+        [manager.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+        [manager.requestSerializer setValue:[DataBase shareDataBase].userId forHTTPHeaderField:@"userId"];
+        [manager.requestSerializer setValue:[NSString stringWithFormat:@"bearer %@",[DataBase shareDataBase].token] forHTTPHeaderField:@"Authorization"];
+        [manager GET:url parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+            NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableContainers|NSJSONReadingMutableLeaves error:nil];
+            NSData * data = [NSJSONSerialization dataWithJSONObject:responseDic options:(NSJSONWritingOptions)0 error:nil];
+            NSString * daetr = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
+            NSLog(@"success:%@",daetr);
+            if ([[responseDic objectForKey:@"errno"] intValue] == 0) {
+                if ([responseDic objectForKey:@"data"]) {
+                    //第一页信息获取
+                    NSDictionary *dic = [responseDic objectForKey:@"data"];
+                    if ([dic objectForKey:@"beans"]) {
+                        NSMutableArray *beanArr = [[NSMutableArray alloc] init];
+                        [[dic objectForKey:@"beans"] enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                            BeanModel *bean = [[BeanModel alloc] init];
+                            bean.name = [obj objectForKey:@"name"];
+                            bean.nation = [obj objectForKey:@"country"];
+                            bean.area = [obj objectForKey:@"origin"];
+                            bean.grade = [obj objectForKey:@"grade"];
+                            bean.process = [obj objectForKey:@"processingMethod"];
+                            bean.manor = [obj objectForKey:@"farm"];
+                            bean.altitude = [[obj objectForKey:@"altitude"] floatValue];
+                            bean.weight = [[obj objectForKey:@"used"] floatValue];
+                            [beanArr addObject:bean];
+                        }];
+                        _beanArray = [beanArr copy];
+                        [self.bakeDetailTable reloadData];
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            [SVProgressHUD dismiss];
+                        });
+                    }
+                }
+            }else{
+                [NSObject showHudTipStr:LocalString(@"从服务器获取烘焙报告失败")];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [SVProgressHUD dismiss];
+                });
+            }
+        } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+            NSLog(@"Error:%@",error);
+            if (error.code == -1001) {
+                [NSObject showHudTipStr:LocalString(@"当前网络状况不佳")];
+            }else{
+                [NSObject showHudTipStr:LocalString(@"从服务器获取烘焙报告失败")];
+            }
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [SVProgressHUD dismiss];
+            });
+        }];
+    }else{
+        DataBase *db = [DataBase shareDataBase];
+        NSMutableArray *beanMutaArray = [[db queryReportRelaBean:_cup.curveUid] mutableCopy];
+        for (int i = 0; i < [beanMutaArray count]; i++) {
+            BeanModel *beanModelOld = beanMutaArray[i];
+            BeanModel *beanModelNew = [db queryBean:beanModelOld.beanUid];
+            beanModelNew.weight = beanModelOld.weight;
+            beanModelNew.beanUid = beanModelOld.beanUid;
+            [beanMutaArray replaceObjectAtIndex:i withObject:beanModelNew];
+        }
+        //可能没有添加生豆数据
+        _beanArray = [beanMutaArray copy];
+        
+        if (_beanArray.count == 0) {
+            //没有生豆或者没有曲线的情况下
+            BeanModel *bean = [[[DataBase shareDataBase] queryAllBean] objectAtIndex:0];
+            _beanArray = @[bean];
+        }
+        [self.bakeDetailTable reloadData];
+
     }
-    //可能没有添加生豆数据
-    _beanArray = [beanMutaArray copy];
-    
-    if (_beanArray.count == 0) {
-        //没有生豆或者没有曲线的情况下
-        BeanModel *bean = [[[DataBase shareDataBase] queryAllBean] objectAtIndex:0];
-        _beanArray = @[bean];
-    }
-    
-    [self.bakeDetailTable reloadData];
 }
 
 #pragma mark - Actions

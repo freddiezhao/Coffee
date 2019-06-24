@@ -37,6 +37,10 @@
     
     self.navigationItem.title = LocalString(@"AP模式");
     
+    UIBarButtonItem *rightBar = [[UIBarButtonItem alloc] initWithTitle:LocalString(@"普通模式") style:UIBarButtonItemStylePlain target:self action:@selector(backView)];
+    self.navigationItem.rightBarButtonItem = rightBar;
+
+    
     _image = [self image];
     _nextButton = [self nextButton];
     _checkBtn = [self checkBtn];
@@ -149,6 +153,10 @@
         [_nextButton setBackgroundColor:[UIColor colorWithRed:71/255.0 green:120/255.0 blue:204/255.0 alpha:0.4]];
         _nextButton.enabled = NO;
     }
+}
+
+- (void)backView{
+    [self.navigationController popViewControllerAnimated:YES];
 }
 #pragma mark - lazy load
 - (UIButton *)nextButton{

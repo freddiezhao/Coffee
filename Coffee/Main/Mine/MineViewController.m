@@ -15,6 +15,7 @@
 #import "UIButton+WebCache.h"
 #import "DeviceViewController.h"
 #import "QRCodeScanController.h"
+#import "LoginViewController.h"
 
 NSString *const CellIdentifier_Mine = @"CellID_Mine";
 
@@ -34,6 +35,7 @@ static float HEIGHT_CELL = 51.f;
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.view.layer.backgroundColor = [UIColor colorWithRed:246/255.0 green:246/255.0 blue:246/255.0 alpha:1].CGColor;
+    self.navigationItem.title = LocalString(@"我的");
     
     _headerView = [self headerView];
     _mineTableView = [self mineTableView];
@@ -120,7 +122,7 @@ static float HEIGHT_CELL = 51.f;
 
 #pragma mark - UITableView Delegate
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView{
-    return 2;
+    return 3;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
@@ -129,7 +131,7 @@ static float HEIGHT_CELL = 51.f;
     }else if (section == 1){
         return 3;
     }else{
-        return 0;
+        return 1;
     }
 }
 
@@ -164,6 +166,7 @@ static float HEIGHT_CELL = 51.f;
             return cell;
         }
     }else{
+        cell.normalLabel.text = LocalString(@"退出登录");
         return cell;
     }
 }
@@ -186,6 +189,29 @@ static float HEIGHT_CELL = 51.f;
             FeedbackViewController *feedVC = [[FeedbackViewController alloc] init];
             [self.navigationController pushViewController:feedVC animated:YES];
         }
+    }else{
+        YAlertViewController *alert = [[YAlertViewController alloc] init];
+        alert.lBlock = ^{
+            
+        };
+        alert.rBlock = ^{
+            //清除单例
+            [NetWork destroyInstance];
+            
+            LoginViewController *loginVC = [[LoginViewController alloc] init];
+            UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:loginVC];
+            [UIApplication sharedApplication].keyWindow.rootViewController = nav;
+        };
+        alert.modalPresentationStyle = UIModalPresentationOverCurrentContext;
+        [self presentViewController:alert animated:NO completion:^{
+            alert.WScale_alert = WScale;
+            alert.HScale_alert = HScale;
+            [alert showView];
+            alert.titleLabel.text = LocalString(@"提示");
+            alert.messageLabel.text = LocalString(@"确定退出登录吗？");
+            [alert.leftBtn setTitle:LocalString(@"取消") forState:UIControlStateNormal];
+            [alert.rightBtn setTitle:LocalString(@"确认") forState:UIControlStateNormal];
+        }];
     }
 }
 

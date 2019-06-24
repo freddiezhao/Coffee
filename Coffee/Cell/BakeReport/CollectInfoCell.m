@@ -137,7 +137,7 @@ NSString *const CollectHeaderIdentifier_curve = @"CollectHeaderID_curve";
             case 3:
             {
                 cell.titleLabel.text = LocalString(@"开始/结束重量");
-                cell.valueLabel.text = [NSString stringWithFormat:@"%.1lf/%.1lf",_reportModel.rawBeanWeight,_reportModel.bakeBeanWeight];
+                cell.valueLabel.text = [NSString stringWithFormat:@"%.1lf%@/%.1lf%@",[NSString diffWeightUnitStringWithWeight:_reportModel.rawBeanWeight],[DataBase shareDataBase].setting.weightUnit,[NSString diffWeightUnitStringWithWeight:_reportModel.bakeBeanWeight],[DataBase shareDataBase].setting.weightUnit];
             }
                 break;
             case 4:
