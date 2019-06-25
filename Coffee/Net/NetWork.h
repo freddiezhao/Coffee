@@ -22,6 +22,7 @@ typedef enum{
     getTimerValue,
     sendSSID,
     sendPassword,
+    alertTemp,
     otherMsgType
 }MsgType68;
 
@@ -116,6 +117,8 @@ static NSInteger tempCountVer = 1000;
 @property (nonatomic) float fireP;
 @property (nonatomic) float windP;
 @property (nonatomic, assign) int eventCount;//用来判断是否新加了event，设置entry的tag
+///@brief 报警温度
+@property (nonatomic) CGFloat alertTemp;
 
 //设备控制
 ///@brief 电源状态
@@ -152,6 +155,9 @@ static NSInteger tempCountVer = 1000;
 - (void)setColdAndStir:(NSNumber *)isColdAndStir;
 - (void)setTimerStatusOn;
 - (void)setTimerStatusOff;
+
+- (void)inquireAlertTemp;
+- (void)setNewAlertTemp:(NSNumber *)alertTemp;
 
 ///@brief ap配网
 @property (nonatomic) BOOL isAp;

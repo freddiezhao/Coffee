@@ -42,6 +42,7 @@
     _forgetPWBtn = [self forgetPWBtn];
 
     [self textFieldTextChange:nil];//从本地获取帐号密码后使登录按钮enabled
+    [self userDefaultsSetting];
 }
 
 - (void)viewWillAppear:(BOOL)animated{
@@ -58,6 +59,119 @@
     [self.navigationController.navigationBar setBackgroundImage:nil forBarMetrics:UIBarMetricsDefault];
     //[self.navigationController.navigationBar setShadowImage:nil];
 }
+
+#pragma mark - Actions
+- (void)userDefaultsSetting{
+    NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+    NSString *mobile = [userDefaults objectForKey:@"mobile"];
+    if (mobile != NULL) {
+        _phoneTF.text = mobile;
+    }else{
+        return;
+    }
+
+    NSString *passWord = [userDefaults objectForKey:@"passWord"];
+    if (passWord != NULL) {
+        _passwordTF.text = passWord;
+    }else{
+        return;
+    }
+    
+    [self login];
+}
+
+- (void)login{
+    NSLog(@"%@",[[UIDevice currentDevice] identifierForVendor]);
+    [self.phoneTF resignFirstResponder];
+    [self.passwordTF resignFirstResponder];
+    
+    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+    
+    //设置超时时间
+    [manager.requestSerializer willChangeValueForKey:@"timeoutInterval"];
+    manager.requestSerializer.timeoutInterval = 6.f;
+    [manager.requestSerializer didChangeValueForKey:@"timeoutInterval"];
+    
+    [manager.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+    
+    NSDictionary *parameters = @{@"mobile":_phoneTF.text,@"password":_passwordTF.text,@"nowMobile":[[[UIDevice currentDevice] identifierForVendor] UUIDString]};
+    
+    [manager POST:@"http://139.196.90.97:8080/coffee/user/login" parameters:parameters progress:nil
+          success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+              //保存账号密码
+              NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+              BOOL isECSUpdate = [[userDefaults objectForKey:self.phoneTF.text] boolValue];
+              [userDefaults setObject:self.phoneTF.text forKey:@"mobile"];
+              [userDefaults setObject:self.passwordTF.text forKey:@"passWord"];
+              [userDefaults setObject:@1 forKey:self.phoneTF.text];
+              [userDefaults synchronize];
+              
+              NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableContainers|NSJSONReadingMutableLeaves error:nil];
+              NSData * data = [NSJSONSerialization dataWithJSONObject:responseDic options:(NSJSONWritingOptions)0 error:nil];
+              NSString * daetr = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
+              NSLog(@"success:%@",daetr);
+              if ([[responseDic objectForKey:@"errno"] intValue] == 0) {
+                  DataBase *db = [DataBase shareDataBase];
+                  NSDictionary *dic = [responseDic objectForKey:@"data"];
+                  db.userId = [[dic objectForKey:@"userId"] copy];
+                  db.userName = [dic objectForKey:@"userName"];
+                  NSLog(@"%@",db.userName);
+                  db.token = [[dic objectForKey:@"token"] copy];
+                  [db initDB];
+                  if (![[dic objectForKey:@"lastMobile"] isEqualToString:[[[UIDevice currentDevice] identifierForVendor] UUIDString]] || !isECSUpdate) {
+                      [db deleteAllTable];
+                      [db createTable];
+                      [[DataBase shareDataBase] getSettingByApi];
+                      DataWithApi *data = [[DataWithApi alloc] init];
+                      [data startGetInfoWithFailBlock:^{
+                          [userDefaults setObject:@0 forKey:self.phoneTF.text];
+                      }];
+                  }
+                  MainViewController *mainVC = [[MainViewController alloc] init];
+                  [self presentViewController:mainVC animated:NO completion:nil];
+              }else{
+                  [NSObject showHudTipStr:LocalString(@"登录失败，请检查您的密码")];
+              }
+          } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+              NSLog(@"Error:%@",error);
+              if (error.code == -1001) {
+                  [NSObject showHudTipStr:LocalString(@"当前网络状况不佳")];
+              }
+          }];
+    
+}
+
+- (void)textFieldTextChange:(UITextField *)textField{
+    if ([NSString validateMobile:_phoneTF.text] && _passwordTF.text.length >= 6){
+        [_loginBtn setBackgroundColor:[UIColor colorWithRed:71/255.0 green:120/255.0 blue:204/255.0 alpha:1]];
+        _loginBtn.enabled = YES;
+    }else{
+        [_loginBtn setBackgroundColor:[UIColor colorWithRed:71/255.0 green:120/255.0 blue:204/255.0 alpha:0.4]];
+        _loginBtn.enabled = NO;
+    }
+}
+
+- (void)verifyLogin{
+    VerifyCodeLoginController *verifyVC = [[VerifyCodeLoginController alloc] init];
+    if ([NSString validateMobile:_phoneTF.text]){
+        verifyVC.phone = self.phoneTF.text;
+    }else{
+        verifyVC.phone = @"";
+    }
+    [self.navigationController pushViewController:verifyVC animated:YES];
+}
+
+- (void)registeUser{
+    RegisterController *registVC = [[RegisterController alloc] init];
+    [self.navigationController pushViewController:registVC animated:YES];
+}
+
+- (void)forgetPW{
+    ForgetPasswordController *forgetVC = [[ForgetPasswordController alloc] init];
+    [self.navigationController pushViewController:forgetVC animated:YES];
+}
+
+
 #pragma mark - Lazyload
 - (UIImageView *)headerImage{
     if (!_headerImage) {
@@ -96,12 +210,6 @@
         _phoneTF.leftView = paddingView;
         _phoneTF.leftViewMode = UITextFieldViewModeAlways;
         
-        NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
-        NSString *mobile = [userDefaults objectForKey:@"mobile"];
-        if (mobile != NULL) {
-            _phoneTF.text = mobile;
-        }
-
     }
     return _phoneTF;
 }
@@ -130,13 +238,6 @@
         UIView *paddingView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 18/WScale, 0)];
         _passwordTF.leftView = paddingView;
         _passwordTF.leftViewMode = UITextFieldViewModeAlways;
-        
-        NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
-        NSString *passWord = [userDefaults objectForKey:@"passWord"];
-        if (passWord != NULL) {
-            _passwordTF.text = passWord;
-        }
-
     }
     return _passwordTF;
 }
@@ -227,95 +328,4 @@
     
 }
 
-#pragma mark - Actions
-- (void)login{
-    NSLog(@"%@",[[UIDevice currentDevice] identifierForVendor]);
-    [self.phoneTF resignFirstResponder];
-    [self.passwordTF resignFirstResponder];
-
-    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
-    
-    //设置超时时间
-    [manager.requestSerializer willChangeValueForKey:@"timeoutInterval"];
-    manager.requestSerializer.timeoutInterval = 6.f;
-    [manager.requestSerializer didChangeValueForKey:@"timeoutInterval"];
-    
-    [manager.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
-    
-    NSDictionary *parameters = @{@"mobile":_phoneTF.text,@"password":_passwordTF.text,@"nowMobile":[[[UIDevice currentDevice] identifierForVendor] UUIDString]};
-    
-    [manager POST:@"http://139.196.90.97:8080/coffee/user/login" parameters:parameters progress:nil
-          success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-              //保存账号密码
-              NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
-              BOOL isECSUpdate = [[userDefaults objectForKey:self.phoneTF.text] boolValue];
-              [userDefaults setObject:self.phoneTF.text forKey:@"mobile"];
-              [userDefaults setObject:self.passwordTF.text forKey:@"passWord"];
-              [userDefaults setObject:@1 forKey:self.phoneTF.text];
-              [userDefaults synchronize];
-              
-              NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableContainers|NSJSONReadingMutableLeaves error:nil];
-              NSData * data = [NSJSONSerialization dataWithJSONObject:responseDic options:(NSJSONWritingOptions)0 error:nil];
-              NSString * daetr = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
-              NSLog(@"success:%@",daetr);
-              if ([[responseDic objectForKey:@"errno"] intValue] == 0) {
-                  DataBase *db = [DataBase shareDataBase];
-                  NSDictionary *dic = [responseDic objectForKey:@"data"];
-                  db.userId = [[dic objectForKey:@"userId"] copy];
-                  db.userName = [dic objectForKey:@"userName"];
-                  NSLog(@"%@",db.userName);
-                  db.token = [[dic objectForKey:@"token"] copy];
-                  [db initDB];
-                  if (![[dic objectForKey:@"lastMobile"] isEqualToString:[[[UIDevice currentDevice] identifierForVendor] UUIDString]] || !isECSUpdate) {
-                      [db deleteAllTable];
-                      [db createTable];
-                      [[DataBase shareDataBase] getSettingByApi];
-                      DataWithApi *data = [[DataWithApi alloc] init];
-                      [data startGetInfoWithFailBlock:^{
-                          [userDefaults setObject:@0 forKey:self.phoneTF.text];
-                      }];
-                  }
-                  MainViewController *mainVC = [[MainViewController alloc] init];
-                  [self presentViewController:mainVC animated:NO completion:nil];
-              }else{
-                  [NSObject showHudTipStr:LocalString(@"登录失败，请检查您的密码")];
-              }
-          } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-              NSLog(@"Error:%@",error);
-              if (error.code == -1001) {
-                  [NSObject showHudTipStr:LocalString(@"当前网络状况不佳")];
-              }
-          }];
-    
-}
-
-- (void)textFieldTextChange:(UITextField *)textField{
-    if ([NSString validateMobile:_phoneTF.text] && _passwordTF.text.length >= 6){
-        [_loginBtn setBackgroundColor:[UIColor colorWithRed:71/255.0 green:120/255.0 blue:204/255.0 alpha:1]];
-        _loginBtn.enabled = YES;
-    }else{
-        [_loginBtn setBackgroundColor:[UIColor colorWithRed:71/255.0 green:120/255.0 blue:204/255.0 alpha:0.4]];
-        _loginBtn.enabled = NO;
-    }
-}
-
-- (void)verifyLogin{
-    VerifyCodeLoginController *verifyVC = [[VerifyCodeLoginController alloc] init];
-    if ([NSString validateMobile:_phoneTF.text]){
-        verifyVC.phone = self.phoneTF.text;
-    }else{
-        verifyVC.phone = @"";
-    }
-    [self.navigationController pushViewController:verifyVC animated:YES];
-}
-
-- (void)registeUser{
-    RegisterController *registVC = [[RegisterController alloc] init];
-    [self.navigationController pushViewController:registVC animated:YES];
-}
-
-- (void)forgetPW{
-    ForgetPasswordController *forgetVC = [[ForgetPasswordController alloc] init];
-    [self.navigationController pushViewController:forgetVC animated:YES];
-}
 @end

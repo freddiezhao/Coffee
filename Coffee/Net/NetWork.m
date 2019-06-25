@@ -17,7 +17,7 @@
 #import "ReportEditController.h"
 
 ///@brife 可判断的数据帧类型数量
-#define LEN 10
+#define LEN 11
 
 ///@brife 一次最大读取温度
 #define maxTempCount 20
@@ -179,6 +179,7 @@ static NSString *curveUid;
     if (!_isAp) {
         [self resetState];
         [self inquireTimer];
+        [self inquireAlertTemp];
     }else{
         //是ap模式下tcp连接，发送ssid
         [self tcpSendSSID];
@@ -528,6 +529,48 @@ static NSString *curveUid;
     });
 }
 
+- (void)inquireAlertTemp{
+    NSMutableArray *bakeFire = [[NSMutableArray alloc ] init];
+    [bakeFire addObject:[NSNumber numberWithUnsignedChar:0x68]];
+    [bakeFire addObject:[NSNumber numberWithUnsignedChar:0x00]];
+    [bakeFire addObject:[NSNumber numberWithUnsignedChar:_frameCount]];
+    [bakeFire addObject:[NSNumber numberWithUnsignedChar:0x00]];
+    [bakeFire addObject:[NSNumber numberWithUnsignedChar:0x01]];
+    [bakeFire addObject:[NSNumber numberWithUnsignedChar:0x03]];
+    [bakeFire addObject:[NSNumber numberWithUnsignedChar:[NSObject getCS:bakeFire]]];
+    [bakeFire addObject:[NSNumber numberWithUnsignedChar:0x16]];
+    [bakeFire addObject:[NSNumber numberWithUnsignedChar:0x0D]];
+    [bakeFire addObject:[NSNumber numberWithUnsignedChar:0x0A]];
+    dispatch_async(_queue, ^{
+        [self send:bakeFire withTag:100];
+    });
+}
+
+- (void)setNewAlertTemp:(NSNumber *)alertTemp{
+    int num = [alertTemp floatValue] * 10;
+    int tempHigh = num / 256;
+    int tempLow = num % 256;
+    NSMutableArray *setAlert = [[NSMutableArray alloc ] init];
+    [setAlert addObject:[NSNumber numberWithUnsignedChar:0x68]];
+    [setAlert addObject:[NSNumber numberWithUnsignedChar:0x01]];
+    [setAlert addObject:[NSNumber numberWithUnsignedChar:_frameCount]];
+    [setAlert addObject:[NSNumber numberWithUnsignedChar:0x00]];
+    [setAlert addObject:[NSNumber numberWithUnsignedChar:0x03]];
+    [setAlert addObject:[NSNumber numberWithUnsignedChar:0x03]];
+    [setAlert addObject:@(tempHigh)];
+    [setAlert addObject:@(tempLow)];
+    [setAlert addObject:[NSNumber numberWithUnsignedChar:[NSObject getCS:setAlert]]];
+    [setAlert addObject:[NSNumber numberWithUnsignedChar:0x16]];
+    [setAlert addObject:[NSNumber numberWithUnsignedChar:0x0D]];
+    [setAlert addObject:[NSNumber numberWithUnsignedChar:0x0A]];
+    dispatch_async(_queue, ^{
+        [self send:setAlert withTag:102];
+    });
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self performSelector:@selector(setNewAlertTemp:) withObject:alertTemp afterDelay:3.0f];
+    });
+}
+
 - (void)setFire:(NSNumber *)isFire{
     NSMutableArray *setFire = [[NSMutableArray alloc ] init];
     [setFire addObject:[NSNumber numberWithUnsignedChar:0x68]];
@@ -827,6 +870,9 @@ static NSString *curveUid;
                 [_myTimer setFireDate:[NSDate distantFuture]];
                 [_myTimer setFireDate:[NSDate date]];
                 
+            }else if (self.msg68Type == alertTemp){
+                self.alertTemp = ([data[6] intValue] * 256 + [data[7] intValue]) / 10.0;
+                [[NSNotificationCenter defaultCenter] postNotificationName:@"getAlertTemp" object:nil userInfo:nil];
             }else if (self.msg68Type == getTemp){
                 if (!_yVals_Out) {
                     _yVals_Out = [[NSMutableArray alloc] init];
@@ -1069,6 +1115,12 @@ static NSString *curveUid;
                 
                 [[NSNotificationCenter defaultCenter] postNotificationName:@"setButtonRecieved" object:nil userInfo:nil];
 
+            }else if (self.msg68Type == alertTemp){
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [NSObject cancelPreviousPerformRequestsWithTarget:self];
+                });
+                [[NSNotificationCenter defaultCenter] postNotificationName:@"setAlertTempSucc" object:nil userInfo:nil];
+
             }else if (self.msg68Type == sendSSID){
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [NSObject cancelPreviousPerformRequestsWithTarget:self];
@@ -1246,7 +1298,7 @@ static NSString *curveUid;
     unsigned char dataType;
     
     unsigned char type[LEN] = {
-      0x00,0x01,0x02,0x04,0x05,0x06,0x10,0x11,0x20,0x21
+      0x00,0x01,0x02,0x03,0x04,0x05,0x06,0x10,0x11,0x20,0x21
     };
     
     dataType = [data[5] unsignedIntegerValue];
@@ -1270,30 +1322,34 @@ static NSString *curveUid;
                     break;
                     
                 case 3:
-                    returnVal = getTempCount;
+                    returnVal = alertTemp;
                     break;
                     
                 case 4:
-                    returnVal = getCountTemp;
+                    returnVal = getTempCount;
                     break;
                     
                 case 5:
-                    returnVal = getPowerStatus;
+                    returnVal = getCountTemp;
                     break;
                     
                 case 6:
-                    returnVal = getTimerStatus;
+                    returnVal = getPowerStatus;
                     break;
                     
                 case 7:
-                    returnVal = getTimerValue;
+                    returnVal = getTimerStatus;
                     break;
                     
                 case 8:
-                    returnVal = sendSSID;
+                    returnVal = getTimerValue;
                     break;
                     
                 case 9:
+                    returnVal = sendSSID;
+                    break;
+                    
+                case 10:
                     returnVal = sendPassword;
                     break;
                     

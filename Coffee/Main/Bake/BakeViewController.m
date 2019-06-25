@@ -460,7 +460,7 @@
         dispatch_async(dispatch_get_main_queue(), ^{
             //当顺时针旋转120度时，指针转到129
             _pointerImage.transform = CGAffineTransformMakeRotation((tempBean / 129.f * 120.0) / 180 * M_PI);
-            if (tempBean > 235) {
+            if (tempBean > net.alertTemp && net.alertTemp > 0.f) {
                 _beanTempLabel.textColor = [UIColor colorWithHexString:@"FF4733"];
             }else{
                 _beanTempLabel.textColor = [UIColor colorWithHexString:@"4778CC"];

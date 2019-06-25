@@ -16,7 +16,7 @@
 #import "YPickerAlertController.h"
 #import <Charts/Charts-Swift.h>
 #import "LoginViewController.h"
-
+#import "YTFAlertController.h"
 
 NSString *const CellIdentifier_GeneralSub = @"CellID_GeneralSub";
 NSString *const CellIdentifier_GeneralLR = @"CellID_GeneralLR";
@@ -39,6 +39,7 @@ NSString *const CellIdentifier_GeneralLogout = @"CellID_GeneralLogout";
     _myData = [DataBase shareDataBase];
     _generalTable = [self generalTable];
     
+    
 //    if (_myData.setting.isInit) {
 //        [self getSettingByApi];
 //    }
@@ -47,6 +48,32 @@ NSString *const CellIdentifier_GeneralLogout = @"CellID_GeneralLogout";
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
     [self.rdv_tabBarController setTabBarHidden:YES animated:YES];
+    
+    [[NetWork shareNetWork] inquireAlertTemp];
+
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(getAlertTemp) name:@"getAlertTemp" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setAlertTempSucc) name:@"setAlertTempSucc" object:nil];
+
+}
+
+- (void)viewWillDisappear:(BOOL)animated{
+    [super viewWillDisappear:animated];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"getAlertTemp" object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"setAlertTempSucc" object:nil];
+}
+
+#pragma mark - notification
+- (void)getAlertTemp{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.generalTable reloadData];
+    });
+}
+
+- (void)setAlertTempSucc{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [NSObject showHudTipStr:LocalString(@"设置成功")];
+        [[NetWork shareNetWork] inquireAlertTemp];
+    });
 }
 
 #pragma mark - Lazyload
@@ -74,7 +101,7 @@ NSString *const CellIdentifier_GeneralLogout = @"CellID_GeneralLogout";
 
 #pragma mark - UITableView Delegate
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView{
-    return 6;
+    return 7;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
@@ -90,6 +117,8 @@ NSString *const CellIdentifier_GeneralLogout = @"CellID_GeneralLogout";
     }else if (section == 4){
         return 1;
     }else if (section == 5){
+        return 1;
+    }else if (section == 6){
         return 1;
     }else{
         return 0;
@@ -169,6 +198,16 @@ NSString *const CellIdentifier_GeneralLogout = @"CellID_GeneralLogout";
         cell.leftLabel.text = LocalString(@"语言");
         cell.rightLabel.text = _myData.setting.language;
         return cell;
+    }else if (indexPath.section == 5){
+        LlabelRlabelCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_GeneralLR];
+        cell.leftLabel.font = [UIFont systemFontOfSize:15.0];
+        cell.rightLabel.font = [UIFont systemFontOfSize:15.f];
+        if (cell == nil) {
+            cell = [[LlabelRlabelCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier_GeneralLR];
+        }
+        cell.leftLabel.text = LocalString(@"报警温度");
+        cell.rightLabel.text = [NSString stringWithFormat:@"%.1f℃",[NetWork shareNetWork].alertTemp];
+        return cell;
     }else{
         LogOutCell *cell1 = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_GeneralLogout];
         if (cell1 == nil) {
@@ -199,6 +238,26 @@ NSString *const CellIdentifier_GeneralLogout = @"CellID_GeneralLogout";
         [self showSheetWithTitle:LocalString(@"请选择语言") actions:@[@"中文",@"英文"] indexpath:indexPath];
     }
     if (indexPath.section == 5) {
+        if ([[NetWork shareNetWork].mySocket isDisconnected]) {
+            [self showNoConnectDevice];
+            return;
+        }
+        YTFAlertController *alert = [[YTFAlertController alloc] init];
+        alert.lBlock = ^{
+        };
+        alert.rBlock = ^(NSString * _Nullable text) {
+            [[NetWork shareNetWork] setNewAlertTemp:@([text floatValue])];
+        };
+        alert.modalPresentationStyle = UIModalPresentationOverCurrentContext;
+        [self presentViewController:alert animated:NO completion:^{
+            alert.textField.keyboardType = UIKeyboardTypeDecimalPad;
+            alert.titleLabel.text = LocalString(@"设置报警温度");
+            alert.textField.placeholder = LocalString(@"请输入报警温度");
+            [alert.leftBtn setTitle:LocalString(@"取消") forState:UIControlStateNormal];
+            [alert.rightBtn setTitle:LocalString(@"确认") forState:UIControlStateNormal];
+        }];
+    }
+    if (indexPath.section == 6) {
         YAlertViewController *alert = [[YAlertViewController alloc] init];
         alert.lBlock = ^{
             
@@ -400,6 +459,27 @@ NSString *const CellIdentifier_GeneralLogout = @"CellID_GeneralLogout";
         caltemp = temp*9/5 + 32;
     }
     return caltemp;
+}
+
+- (void)showNoConnectDevice{
+    YAlertViewController *alert = [[YAlertViewController alloc] init];
+    alert.modalPresentationStyle = UIModalPresentationOverCurrentContext;
+    alert.rBlock = ^{
+        [self.rdv_tabBarController setTabBarHidden:NO animated:YES];
+    };
+    alert.lBlock = ^{
+        [self.rdv_tabBarController setTabBarHidden:NO animated:YES];
+    };
+    [self presentViewController:alert animated:NO completion:^{
+        [self.rdv_tabBarController setTabBarHidden:YES animated:YES];
+        alert.WScale_alert = WScale;
+        alert.HScale_alert = HScale;
+        [alert showView];
+        alert.titleLabel.text = LocalString(@"提示");
+        alert.messageLabel.text = LocalString(@"请先连接咖啡机设备");
+        [alert.leftBtn setTitle:LocalString(@"取消") forState:UIControlStateNormal];
+        [alert.rightBtn setTitle:LocalString(@"确认") forState:UIControlStateNormal];
+    }];
 }
 
 #pragma mark - DataSource
