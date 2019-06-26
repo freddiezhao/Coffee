@@ -267,6 +267,9 @@ NSString *const CellIdentifier_GeneralLogout = @"CellID_GeneralLogout";
             [NetWork destroyInstance];
             
             LoginViewController *loginVC = [[LoginViewController alloc] init];
+            NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+            [userDefaults removeObjectForKey:@"passWord"];
+            [userDefaults synchronize];
             UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:loginVC];
             [UIApplication sharedApplication].keyWindow.rootViewController = nav;
         };

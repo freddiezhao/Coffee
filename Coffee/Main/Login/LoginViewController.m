@@ -23,6 +23,7 @@
 @property (nonatomic, strong) UIButton *loginBtn;
 @property (nonatomic, strong) UIButton *verifyLoginBtn;
 @property (nonatomic, strong) UIButton *registeBtn;
+@property (nonatomic, strong) UIButton *remeberPWBtn;
 @property (nonatomic, strong) UIButton *forgetPWBtn;
 
 @end
@@ -31,6 +32,8 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    [self userDefaultsSetting];
+
     self.view.layer.backgroundColor = [UIColor colorWithRed:250/255.0 green:250/255.0 blue:250/255.0 alpha:1].CGColor;
     
     _headerImage = [self headerImage];
@@ -40,13 +43,14 @@
     _verifyLoginBtn = [self verifyLoginBtn];
     _registeBtn = [self registeBtn];
     _forgetPWBtn = [self forgetPWBtn];
-
+    _remeberPWBtn = [self remeberPWBtn];
+    
     [self textFieldTextChange:nil];//从本地获取帐号密码后使登录按钮enabled
-    [self userDefaultsSetting];
 }
 
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
+    self.navigationItem.title = LocalString(@"账号密码登录");
     self.navigationController.navigationBar.translucent = YES;
     [self.navigationController.navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
     [self.navigationController.navigationBar setShadowImage:[UIImage new]];
@@ -76,11 +80,15 @@
     }else{
         return;
     }
-    
-    [self login];
+    NSLog(@"%@",mobile);
+    [self login:mobile password:passWord];
 }
 
-- (void)login{
+- (void)loginAction{
+    [self login:_phoneTF.text password:_passwordTF.text];
+}
+
+- (void)login:(NSString *)mobile password:(NSString *)pw{
     NSLog(@"%@",[[UIDevice currentDevice] identifierForVendor]);
     [self.phoneTF resignFirstResponder];
     [self.passwordTF resignFirstResponder];
@@ -94,7 +102,7 @@
     
     [manager.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
     
-    NSDictionary *parameters = @{@"mobile":_phoneTF.text,@"password":_passwordTF.text,@"nowMobile":[[[UIDevice currentDevice] identifierForVendor] UUIDString]};
+    NSDictionary *parameters = @{@"mobile":mobile,@"password":pw,@"nowMobile":[[[UIDevice currentDevice] identifierForVendor] UUIDString]};
     
     [manager POST:@"http://139.196.90.97:8080/coffee/user/login" parameters:parameters progress:nil
           success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
@@ -102,7 +110,11 @@
               NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
               BOOL isECSUpdate = [[userDefaults objectForKey:self.phoneTF.text] boolValue];
               [userDefaults setObject:self.phoneTF.text forKey:@"mobile"];
-              [userDefaults setObject:self.passwordTF.text forKey:@"passWord"];
+              if (self.remeberPWBtn.tag == select) {
+                  [userDefaults setObject:self.passwordTF.text forKey:@"passWord"];
+              }else{
+                  [userDefaults removeObjectForKey:@"passWord"];
+              }
               [userDefaults setObject:@1 forKey:self.phoneTF.text];
               [userDefaults synchronize];
               
@@ -171,6 +183,16 @@
     [self.navigationController pushViewController:forgetVC animated:YES];
 }
 
+- (void)remeberPW{
+    if (_remeberPWBtn.tag == select) {
+        _remeberPWBtn.tag = unselect;
+        [_remeberPWBtn setImage:[UIImage imageNamed:@"ic_select"] forState:UIControlStateNormal];
+    }else{
+        _remeberPWBtn.tag = select;
+        [_remeberPWBtn setImage:[UIImage imageNamed:@"ic_selected"] forState:UIControlStateNormal];
+    }
+}
+
 
 #pragma mark - Lazyload
 - (UIImageView *)headerImage{
@@ -180,8 +202,9 @@
         [_headerImage mas_makeConstraints:^(MASConstraintMaker *make) {
             make.size.mas_equalTo(CGSizeMake(140/WScale, 112/HScale));
             make.centerX.equalTo(self.view.mas_centerX);
-            make.top.equalTo(self.view.mas_top).offset(70/HScale);
+            make.top.equalTo(self.view.mas_top).offset(20/HScale + getRectNavAndStatusHight);
         }];
+        
     }
     return _headerImage;
 }
@@ -210,6 +233,12 @@
         _phoneTF.leftView = paddingView;
         _phoneTF.leftViewMode = UITextFieldViewModeAlways;
         
+        NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+        NSString *mobile = [userDefaults objectForKey:@"mobile"];
+        if (mobile != NULL) {
+            _phoneTF.text = mobile;
+        }
+
     }
     return _phoneTF;
 }
@@ -238,6 +267,13 @@
         UIView *paddingView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 18/WScale, 0)];
         _passwordTF.leftView = paddingView;
         _passwordTF.leftViewMode = UITextFieldViewModeAlways;
+        
+        NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+        NSString *passWord = [userDefaults objectForKey:@"passWord"];
+        if (passWord != NULL) {
+            _passwordTF.text = passWord;
+        }
+
     }
     return _passwordTF;
 }
@@ -249,7 +285,7 @@
         [_loginBtn.titleLabel setFont:[UIFont systemFontOfSize:16.f]];
         [_loginBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
         [_loginBtn setBackgroundColor:[UIColor colorWithRed:71/255.0 green:120/255.0 blue:204/255.0 alpha:0.4]];
-        [_loginBtn addTarget:self action:@selector(login) forControlEvents:UIControlEventTouchUpInside];
+        [_loginBtn addTarget:self action:@selector(loginAction) forControlEvents:UIControlEventTouchUpInside];
         _loginBtn.layer.borderWidth = 0.5;
         _loginBtn.layer.borderColor = [UIColor colorWithHexString:@"4778CC"].CGColor;
         _loginBtn.layer.cornerRadius = 25.f/HScale;
@@ -300,6 +336,28 @@
         }];
     }
     return _registeBtn;
+}
+
+- (UIButton *)remeberPWBtn{
+    if (!_remeberPWBtn) {
+        _remeberPWBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        [_remeberPWBtn setTitle:LocalString(@"记住密码") forState:UIControlStateNormal];
+        [_remeberPWBtn setImage:[UIImage imageNamed:@"ic_select"] forState:UIControlStateNormal];
+        _remeberPWBtn.tag = unselect;
+        [_remeberPWBtn.imageView sizeThatFits:CGSizeMake(30.f, 30.f)];
+        [_remeberPWBtn.titleLabel setFont:[UIFont systemFontOfSize:14.f]];
+        _remeberPWBtn.titleLabel.adjustsFontSizeToFitWidth = YES;
+        [_remeberPWBtn setBackgroundColor:[UIColor clearColor]];
+        [_remeberPWBtn setTitleColor:[UIColor colorWithHexString:@"999999"] forState:UIControlStateNormal];
+        [_remeberPWBtn addTarget:self action:@selector(remeberPW) forControlEvents:UIControlEventTouchUpInside];
+        [self.view addSubview:_remeberPWBtn];
+        [_remeberPWBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.size.mas_equalTo(CGSizeMake(90/WScale, 20/HScale));
+            make.left.equalTo(self.loginBtn.mas_left);
+            make.bottom.equalTo(self.loginBtn.mas_top).offset(-10/HScale);
+        }];
+    }
+    return _remeberPWBtn;
 }
 
 - (UIButton *)forgetPWBtn{

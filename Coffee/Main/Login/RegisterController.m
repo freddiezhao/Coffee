@@ -18,6 +18,7 @@ NSString *const CellIdentifier_RegisterTextField = @"CellID_RegisterTextField";
 
 @interface RegisterController () <UITableViewDataSource, UITableViewDelegate>
 
+@property (nonatomic, strong) UIImageView *headerImage;
 @property (nonatomic, strong) UITableView *registerTable;
 @property (nonatomic, strong) UIButton *registerBtn;
 @property (nonatomic, strong) NSString *phone;
@@ -34,6 +35,7 @@ NSString *const CellIdentifier_RegisterTextField = @"CellID_RegisterTextField";
     self.view.layer.backgroundColor = [UIColor colorWithRed:250/255.0 green:250/255.0 blue:250/255.0 alpha:1].CGColor;
     [self setNavItem];
     
+    _headerImage = [self headerImage];
     _registerTable = [self registerTable];
     _phone = @"";
     _code = @"";
@@ -48,10 +50,23 @@ static float HEIGHT_CELL = 50.f;
     self.navigationItem.title = LocalString(@"注册新用户");
 }
 
+- (UIImageView *)headerImage{
+    if (!_headerImage) {
+        _headerImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"img_logo"]];
+        [self.view addSubview:_headerImage];
+        [_headerImage mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.size.mas_equalTo(CGSizeMake(140/WScale, 112/HScale));
+            make.centerX.equalTo(self.view.mas_centerX);
+            make.top.equalTo(self.view.mas_top).offset(20/HScale);
+        }];
+    }
+    return _headerImage;
+}
+
 - (UITableView *)registerTable{
     if (!_registerTable) {
         _registerTable = ({
-            UITableView *tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, ScreenWidth, ScreenHeight - 64)];
+            UITableView *tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 150, ScreenWidth, ScreenHeight - 64)];
             tableView.backgroundColor = [UIColor clearColor];
             tableView.dataSource = self;
             tableView.delegate = self;

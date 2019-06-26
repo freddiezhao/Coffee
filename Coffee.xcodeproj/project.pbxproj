@@ -346,6 +346,9 @@
 		BB94EAA120DB8CE700370A95 /* RDVTabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB94EA9E20DB8CE700370A95 /* RDVTabBarController.m */; };
 		BB94EAA220DB8CE700370A95 /* RDVTabBarItem.m in Sources */ = {isa = PBXBuildFile; fileRef = BB94EA9F20DB8CE700370A95 /* RDVTabBarItem.m */; };
 		BB94EAA520DBA9C800370A95 /* MainViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB94EAA420DBA9C800370A95 /* MainViewController.m */; };
+		BB96315922C34BF300011B54 /* ic_nav_machine@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = BB96315622C34BF300011B54 /* ic_nav_machine@2x.png */; };
+		BB96315A22C34BF300011B54 /* ic_nav_machine@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = BB96315722C34BF300011B54 /* ic_nav_machine@3x.png */; };
+		BB96315B22C34BF300011B54 /* ic_nav_machine.png in Resources */ = {isa = PBXBuildFile; fileRef = BB96315822C34BF300011B54 /* ic_nav_machine.png */; };
 		BB9D003C2275A6FC009098C3 /* SearchSpicesController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB9D003B2275A6FC009098C3 /* SearchSpicesController.m */; };
 		BBA593C92249FF68009D5941 /* APProcessController.m in Sources */ = {isa = PBXBuildFile; fileRef = BBA593C72249FF68009D5941 /* APProcessController.m */; };
 		BBA7B95B212AA0A0004943DC /* CollectInfoCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BBA7B95A212AA0A0004943DC /* CollectInfoCell.m */; };
@@ -883,6 +886,9 @@
 		BB94EA9F20DB8CE700370A95 /* RDVTabBarItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RDVTabBarItem.m; sourceTree = "<group>"; };
 		BB94EAA320DBA9C800370A95 /* MainViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MainViewController.h; sourceTree = "<group>"; };
 		BB94EAA420DBA9C800370A95 /* MainViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MainViewController.m; sourceTree = "<group>"; };
+		BB96315622C34BF300011B54 /* ic_nav_machine@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ic_nav_machine@2x.png"; sourceTree = "<group>"; };
+		BB96315722C34BF300011B54 /* ic_nav_machine@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ic_nav_machine@3x.png"; sourceTree = "<group>"; };
+		BB96315822C34BF300011B54 /* ic_nav_machine.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ic_nav_machine.png; sourceTree = "<group>"; };
 		BB9D003A2275A6FC009098C3 /* SearchSpicesController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SearchSpicesController.h; sourceTree = "<group>"; };
 		BB9D003B2275A6FC009098C3 /* SearchSpicesController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SearchSpicesController.m; sourceTree = "<group>"; };
 		BBA593C72249FF68009D5941 /* APProcessController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = APProcessController.m; sourceTree = "<group>"; };
@@ -1142,6 +1148,9 @@
 		BB525D49212CFF46003484E9 /* ui_image */ = {
 			isa = PBXGroup;
 			children = (
+				BB96315822C34BF300011B54 /* ic_nav_machine.png */,
+				BB96315622C34BF300011B54 /* ic_nav_machine@2x.png */,
+				BB96315722C34BF300011B54 /* ic_nav_machine@3x.png */,
 				BB525D5E212CFF46003484E9 /* btn_add@2x.png */,
 				BB525D5D212CFF46003484E9 /* btn_add@3x.png */,
 				BB525D6D212CFF46003484E9 /* btn_baking_curve_disable@2x.png */,
@@ -2021,6 +2030,7 @@
 				BB525E69212CFF47003484E9 /* img_hb_m6g_small@2x.png in Resources */,
 				BB525E55212CFF47003484E9 /* ic_nav_more_share@3x.png in Resources */,
 				BB525E5F212CFF47003484E9 /* btn_stir_on@3x.png in Resources */,
+				BB96315B22C34BF300011B54 /* ic_nav_machine.png in Resources */,
 				BB525E5E212CFF47003484E9 /* img_fan1@2x.png in Resources */,
 				BB525E75212CFF47003484E9 /* ic_tabbar_mine_nor@2x.png in Resources */,
 				BB2AF240216CD7D700114A91 /* ios_180.png in Resources */,
@@ -2036,6 +2046,7 @@
 				BB525ED5212CFF47003484E9 /* img_mask2@2x.png in Resources */,
 				BB525E63212CFF47003484E9 /* ic_select@2x.png in Resources */,
 				BB525EE3212CFF47003484E9 /* img_signal_light_off@3x.png in Resources */,
+				BB96315922C34BF300011B54 /* ic_nav_machine@2x.png in Resources */,
 				BB65C25520FD8F0400BB684E /* tick@3x.png in Resources */,
 				BB525E70212CFF47003484E9 /* ic_tabbar_baking_sel@3x.png in Resources */,
 				BB525ED1212CFF47003484E9 /* ic_tabbar_bean_sel@3x.png in Resources */,
@@ -2092,6 +2103,7 @@
 				BB525EF4212CFF47003484E9 /* img_mine_bg@2x.png in Resources */,
 				BB525EE1212CFF47003484E9 /* ic_tabbar_curve_nor@3x.png in Resources */,
 				BB525E4C212CFF47003484E9 /* btn_cold_off@2x.png in Resources */,
+				BB96315A22C34BF300011B54 /* ic_nav_machine@3x.png in Resources */,
 				BB525E6E212CFF47003484E9 /* ic_nav_scan@3x.png in Resources */,
 				BB525E79212CFF47003484E9 /* btn_expand2@3x.png in Resources */,
 				BB525ED8212CFF47003484E9 /* img_thermometer@2x.png in Resources */,

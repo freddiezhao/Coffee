@@ -508,7 +508,6 @@ NSString *const CellIdentifier_TempPer30 = @"CellID_TempPer30";
             [_yVals_Environment addObject:[[ChartDataEntry alloc] initWithX:i y:[_Environment[i] doubleValue]]];
         }
         _yVals_Diff = [[NetWork shareNetWork] getBeanTempRorWithArr:_Bean];
-
     }
 
     [self queryEventInfo];

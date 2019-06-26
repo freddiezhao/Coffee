@@ -1779,12 +1779,12 @@ static NSString *curveUid;
 }
 
 #pragma mark - 生成回温点
-static bool isRorStartNegative = NO;
-static int rorNegativeCount = 0;
-static bool isRorStartPositive = NO;
-static int backTempPointCount = 0;
+static bool isRorStartNegative = NO;//y轴下方数据数量大于10个表示开始温度下降
+static int rorNegativeCount = 0;//在y轴下方的数据数量
+static bool isRorStartPositive = NO;//表示温度开始上升
+static bool backTempPointCacSucc = NO;//是否生成了回温点
 - (void)caculateBackTemperaturePoint{
-    if (_yVals_Diff.count < 1) {
+    if (_yVals_Diff.count < 1 || backTempPointCacSucc) {
         return;
     }
     //NSLog(@"%@",_yVals_Diff[_yVals_Diff.count-1]);
@@ -1793,7 +1793,6 @@ static int backTempPointCount = 0;
     if (entry.y < 0) {
         if (rorNegativeCount > 10) {
             isRorStartNegative = YES;
-            //NSLog(@"回温点1");
         }else{
             //NSLog(@"%@",@"adasfsf");
             rorNegativeCount++;
@@ -1803,10 +1802,10 @@ static int backTempPointCount = 0;
     }
     if (isRorStartNegative && entry.y > 0) {
         isRorStartPositive = YES;
-        //NSLog(@"回温点2");
     }
     if (isRorStartNegative && isRorStartPositive) {
-        //NSLog(@"回温点3");
+        //NSLog(@"回温点");
+        backTempPointCacSucc = YES;
         EventModel *event = [[EventModel alloc] init];
         event.eventId = BakeBackTemp;//类型为8
         event.eventTime = self.timerValue;

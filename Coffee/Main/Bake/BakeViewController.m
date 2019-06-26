@@ -79,7 +79,7 @@
     
     UIButton *rightButton = [UIButton buttonWithType:UIButtonTypeCustom];
     rightButton.frame = CGRectMake(0, 0, 30, 30);
-    [rightButton setImage:[UIImage imageNamed:@"ic_nav_more_black"] forState:UIControlStateNormal];
+    [rightButton setImage:[UIImage imageNamed:@"ic_nav_machine"] forState:UIControlStateNormal];
     [rightButton addTarget:self action:@selector(connectMachine) forControlEvents:UIControlEventTouchUpInside];
     UIBarButtonItem *rightBarButton = [[UIBarButtonItem alloc] initWithCustomView:rightButton];
     self.navigationItem.rightBarButtonItem = rightBarButton;
@@ -1106,6 +1106,8 @@
     }
     if (![string isEqualToString:@""]) {
         string = [string substringWithRange:NSMakeRange(0, string.length - 1)];
+    }else{
+        string = LocalString(@"点击下方“+”键，添加咖啡豆");
     }
     _beanNameLabel = [[UILabel alloc] init];
     _beanNameLabel.text = string;
