@@ -111,9 +111,8 @@
               BOOL isECSUpdate = [[userDefaults objectForKey:self.phoneTF.text] boolValue];
               [userDefaults setObject:self.phoneTF.text forKey:@"mobile"];
               if (self.remeberPWBtn.tag == select) {
+                  NSLog(@"%@",self.passwordTF.text);
                   [userDefaults setObject:self.passwordTF.text forKey:@"passWord"];
-              }else{
-                  [userDefaults removeObjectForKey:@"passWord"];
               }
               [userDefaults setObject:@1 forKey:self.phoneTF.text];
               [userDefaults synchronize];

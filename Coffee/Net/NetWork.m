@@ -1804,7 +1804,7 @@ static bool backTempPointCacSucc = NO;//是否生成了回温点
         isRorStartPositive = YES;
     }
     if (isRorStartNegative && isRorStartPositive) {
-        //NSLog(@"回温点");
+        NSLog(@"回温点出现%lu",self.BeanArr.count);
         backTempPointCacSucc = YES;
         EventModel *event = [[EventModel alloc] init];
         event.eventId = BakeBackTemp;//类型为8
