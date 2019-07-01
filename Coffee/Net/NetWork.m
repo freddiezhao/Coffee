@@ -146,6 +146,12 @@ static NSString *curveUid;
     _ssid = @"";
     _bssid = @"";
     _apPwd = @"";
+    
+    isRorStartNegative = NO;//y轴下方数据数量大于10个表示开始温度下降
+    rorNegativeCount = 0;//在y轴下方的数据数量
+    isRorStartPositive = NO;//表示温度开始上升
+    backTempPointCacSucc = NO;//是否生成了回温点
+
 }
 
 + (void)destroyInstance{
