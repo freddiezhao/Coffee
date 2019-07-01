@@ -10,12 +10,16 @@
 
 @interface YPickerAlertController () <UIPickerViewDelegate,UIPickerViewDataSource>
 
+@property (nonatomic, strong) UIView *backView;
 @property (nonatomic, strong) UIPickerView *myPicker;
 @property (nonatomic, strong) UIButton *dismissBtn;
+@property (nonatomic, strong) UIButton *confirmBtn;
 
 @end
 
-@implementation YPickerAlertController
+@implementation YPickerAlertController{
+    NSInteger selectValue;
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -23,6 +27,7 @@
 
     self.myPicker = [self myPicker];
     self.dismissBtn = [self dismissBtn];
+    self.confirmBtn = [self confirmBtn];
     [self.myPicker selectRow:_index inComponent:0 animated:YES];
 }
 
@@ -37,22 +42,22 @@
 #pragma mark - LazyLoad
 - (UIPickerView *)myPicker{
     if (!_myPicker) {
-        UIView *view = [[UIView alloc] init];
-        view.frame = CGRectMake(0, ScreenHeight - 260/HScale, ScreenWidth, 260/HScale);
-        view.layer.backgroundColor = [UIColor colorWithRed:255/255.0 green:255/255.0 blue:255/255.0 alpha:1].CGColor;
-        [self.view addSubview:view];
+        _backView = [[UIView alloc] init];
+        _backView.frame = CGRectMake(0, ScreenHeight - 260/HScale - 49.f - getRectNavAndStatusHight, ScreenWidth, 260/HScale);
+        _backView.layer.backgroundColor = [UIColor colorWithRed:255/255.0 green:255/255.0 blue:255/255.0 alpha:1].CGColor;
+        [self.view addSubview:_backView];
         
         _myPicker = [[UIPickerView alloc] initWithFrame:CGRectMake(0, 60/HScale, ScreenWidth, 200/HScale)];
         _myPicker.delegate = self;
         _myPicker.dataSource = self;
-        [view addSubview:_myPicker];
+        [_backView addSubview:_myPicker];
         
         _titleLabel = [[UILabel alloc] init];
         _titleLabel.frame = CGRectMake(0,0,ScreenWidth,60/HScale);
         _titleLabel.font = [UIFont systemFontOfSize:17.f];
         _titleLabel.textColor = [UIColor colorWithRed:34/255.0 green:34/255.0 blue:34/255.0 alpha:1];
         _titleLabel.textAlignment = NSTextAlignmentCenter;
-        [view addSubview:_titleLabel];
+        [_backView addSubview:_titleLabel];
         
         
     }
@@ -69,6 +74,27 @@
     }
     return _dismissBtn;
 }
+
+- (UIButton *)confirmBtn{
+    if (!_confirmBtn) {
+        _confirmBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        [_confirmBtn setTitle:LocalString(@"确认") forState:UIControlStateNormal];
+        [_confirmBtn.titleLabel setFont:[UIFont systemFontOfSize:15.f]];
+        [_confirmBtn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+        [_confirmBtn setBackgroundColor:[UIColor whiteColor]];
+        [_confirmBtn addTarget:self action:@selector(confirm) forControlEvents:UIControlEventTouchUpInside];
+        _confirmBtn.layer.cornerRadius = 8.f;
+        [self.view addSubview:_confirmBtn];
+        
+        [_confirmBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.size.mas_equalTo(CGSizeMake(ScreenWidth, 44.f));
+            make.centerX.equalTo(self.view.mas_centerX);
+            make.top.equalTo(self.backView.mas_bottom).offset(5.f);
+        }];
+    }
+    return _confirmBtn;
+}
+
 #pragma mark - UIPickerViewDataSource
 - (NSInteger)numberOfComponentsInPickerView:(UIPickerView *)pickerView{
     return 1;
@@ -108,14 +134,18 @@
 
 //被选择的行
 -(void)pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component{
-    if (self.pickerBlock) {
-        self.pickerBlock([_pickerArr[row] integerValue]);
-    }
-    [self dismissVC];
+    selectValue = [_pickerArr[row] integerValue];
 }
 
 - (void)dismissVC{
     [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)confirm{
+    if (self.pickerBlock) {
+        self.pickerBlock(selectValue);
+    }
+    [self dismissVC];
 }
 
 @end
