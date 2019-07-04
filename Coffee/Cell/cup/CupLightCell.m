@@ -82,6 +82,7 @@
 - (void)setCircleViewColor:(CGFloat)light{
     CGFloat location = light / 100;
     if (location < 0.1) {
+        _circleView.layer.backgroundColor = [UIColor colorWithRed:164/255.0 green:155/255.0 blue:127/255.0 alpha:1].CGColor;
     }else if (location < 0.2){
         _circleView.layer.backgroundColor = [UIColor colorWithRed:180/255.0 green:146/255.0 blue:121/255.0 alpha:1].CGColor;
     }else if (location < 0.3){
