@@ -542,6 +542,7 @@ NSString *const CellIdentifier_TempPer30Share = @"CellID_TempPer30Share";
                 //第一页信息获取
                 NSDictionary *dic = [responseDic objectForKey:@"data"];
                 if ([dic objectForKey:@"beans"]) {
+                    static CGFloat rawBeanWeight = 0;
                     [[dic objectForKey:@"beans"] enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
                         BeanModel *bean = [[BeanModel alloc] init];
                         bean.name = [obj objectForKey:@"name"];
@@ -552,8 +553,10 @@ NSString *const CellIdentifier_TempPer30Share = @"CellID_TempPer30Share";
                         bean.manor = [obj objectForKey:@"farm"];
                         bean.altitude = [[obj objectForKey:@"altitude"] floatValue];
                         bean.weight = [[obj objectForKey:@"used"] floatValue];
+                        rawBeanWeight += bean.weight;
                         [_beanArray addObject:bean];
                     }];
+                    _reportModel.rawBeanWeight = rawBeanWeight;
                     [self.reportTable reloadData];
                     dispatch_async(dispatch_get_main_queue(), ^{
                         [SVProgressHUD dismiss];

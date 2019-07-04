@@ -23,12 +23,12 @@
         self.sweet = 5.f;
         self.balance = 5.f;
         self.overFeel = 5.f;
-        self.deveUnfull = 5.f;
-        self.overDeve = 5.f;
-        self.bakePaste = 5.f;
-        self.injure = 5.f;
-        self.germInjure = 5.f;
-        self.beanFaceInjure = 5.f;
+        self.deveUnfull = 0.f;
+        self.overDeve = 0.f;
+        self.bakePaste = 0.f;
+        self.injure = 0.f;
+        self.germInjure = 0.f;
+        self.beanFaceInjure = 0.f;
 
     }
     return self;

@@ -388,7 +388,7 @@ NSString *const CellIdentifier_TempPer30 = @"CellID_TempPer30";
                     cell.Label6.text = @"0.0";
                 }else{
                     if (row * 30 / beanRorDiffCount< _Diff.count) {
-                        cell.Label6.text = [NSString stringWithFormat:@"%.1f",[NSString diffTempUnitStringWithTemp:[_Diff[row * 30 / beanRorDiffCount - 1] doubleValue]]];
+                        cell.Label6.text = [NSString stringWithFormat:@"%.1f",[_Diff[row * 30 / beanRorDiffCount - 1] doubleValue]];
                     }else{
                         cell.Label6.text = @"0.0";
                     }
@@ -561,11 +561,6 @@ NSString *const CellIdentifier_TempPer30 = @"CellID_TempPer30";
         [beanMutaArray replaceObjectAtIndex:i withObject:beanModelNew];
         rawBeanWeight += beanModelOld.weight;
     }
-    //可能没有添加生豆数据
-    _beanArray = [beanMutaArray copy];
-    _reportModel.rawBeanWeight = rawBeanWeight;
-    
-    [self.reportTable reloadData];
 }
 
 //用来排序事件列表(根据事件发生时间)
