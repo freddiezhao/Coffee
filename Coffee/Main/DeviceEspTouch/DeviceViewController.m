@@ -825,12 +825,12 @@ NSString *const CellIdentifier_device = @"CellID_device";
             
         case Coffee_HB_Another:
         {
-            return @"img_logo_gray";
+            return @"img_hb_m6g_small";
         }
             break;
             
         default:
-            return @"img_logo_gray";
+            return @"img_hb_m6g_small";
             break;
     }
 }

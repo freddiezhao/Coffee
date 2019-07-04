@@ -1034,7 +1034,7 @@
         [_mainView addSubview:_outTempLabel];
         
         UILabel *textLabel = [[UILabel alloc] init];
-        textLabel.text = LocalString(@"排风温");
+        textLabel.text = LocalString(@"排气温");
         textLabel.textColor = [UIColor colorWithHexString:@"4778CC"];
         textLabel.textAlignment = NSTextAlignmentLeft;
         textLabel.font = [UIFont systemFontOfSize:12.f];

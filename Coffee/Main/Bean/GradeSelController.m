@@ -48,7 +48,7 @@ static float HEIGHT_CELL = 50.f;
 
 - (NSMutableArray *)gradeArray{
     if (!_gradeArray) {
-        NSArray *array = @[@"AA",@"A",@"B",@"C",@"PB",@"Grade1",@"SHB",@"#其他"];
+        NSArray *array = @[@"AA",@"A",@"B",@"C",@"PB",@"Grade1",@"SHB",@"PB",@"AA Plus-plus",@"AA Plus",@"AA",@"AB",@"C",@"E",@"TT",@"Grade1",@"Grade2",@"Grade3",@"Grade4",@"Grade5",@"Grade6",@"Grade11",@"Grade12",@"Grade13",@"Grade14",@"Grade15",@"Grade16",@"Grade17",@"Grade18",@"Maragogype",@"Supremo",@"Excelso",@"UGQ",@"GW",@"PW",@"EPW",@"SH",@"HB",@"FHB",@"SHB",@"CS",@"HG",@"SHG",@"Coriente",@"Superior",@"Caracoil",@"#其他"];
         _gradeArray = [NSMutableArray array];
         for (int i = 0; i < array.count; i++) {
             SortModel *model = [[SortModel alloc] init];

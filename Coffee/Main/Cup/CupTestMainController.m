@@ -479,7 +479,7 @@ sectionForSectionIndexTitle:(NSString *)title
     }else if (sender.tag == sortUp){
         [self downSortByGrade:_cupArr];
         sender.tag = sortDown;
-        [sender setImage:[UIImage imageNamed:@"ic_rank3"] forState:UIControlStateNormal];
+        [sender setImage:[UIImage imageNamed:@"ic_rank4"] forState:UIControlStateNormal];
     }else{
         [self upSortByGrade:_cupArr];//正序排序
         sender.tag = sortUp;

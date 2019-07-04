@@ -139,7 +139,7 @@
         set1.highlightEnabled = NO;//选中拐点,是否开启高亮效果(显示十字线)
         //set1.mode = LineChartModeCubicBezier;
         
-        set2 = [[LineChartDataSet alloc] initWithValues:_yVals_Out label:LocalString(@"排风温")];
+        set2 = [[LineChartDataSet alloc] initWithValues:_yVals_Out label:LocalString(@"排气温")];
         set2.axisDependency = AxisDependencyLeft;
         [set2 setColor:[UIColor colorWithRed:80/255.0 green:227/255.0 blue:194/255.0 alpha:1]];
         [set2 setCircleColor:UIColor.whiteColor];

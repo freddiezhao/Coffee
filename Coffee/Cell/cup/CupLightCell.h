@@ -14,4 +14,5 @@
 @property (nonatomic, strong) UIView *circleView;
 @property (nonatomic, strong) UILabel *lightValue;
 
+- (void)setCircleViewColor:(CGFloat)light;
 @end

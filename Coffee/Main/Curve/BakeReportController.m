@@ -356,7 +356,7 @@ NSString *const CellIdentifier_TempPer30 = @"CellID_TempPer30";
             cell.Label1.text = LocalString(@"时间");
             cell.Label2.text = [NSString stringWithFormat:@"%@(%@)",LocalString(@"豆温"),[DataBase shareDataBase].setting.tempUnit];
             cell.Label3.text = [NSString stringWithFormat:@"%@(%@)",LocalString(@"热风温"),[DataBase shareDataBase].setting.tempUnit];
-            cell.Label4.text = [NSString stringWithFormat:@"%@(%@)",LocalString(@"排风温"),[DataBase shareDataBase].setting.tempUnit];
+            cell.Label4.text = [NSString stringWithFormat:@"%@(%@)",LocalString(@"排气温"),[DataBase shareDataBase].setting.tempUnit];
             cell.Label5.text = [NSString stringWithFormat:@"%@(%@)",LocalString(@"环境温"),[DataBase shareDataBase].setting.tempUnit];
             cell.Label6.text = [NSString stringWithFormat:@"%@\n(%@/min)",LocalString(@"升温率"),[DataBase shareDataBase].setting.tempUnit];
         }else{

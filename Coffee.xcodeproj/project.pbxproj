@@ -358,6 +358,8 @@
 		BBC4AB862103347100F49BDC /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = BBC4AB852103347100F49BDC /* libsqlite3.tbd */; };
 		BBCD3AB0224228B000439B71 /* CurveDetailClickCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BBCD3AAF224228B000439B71 /* CurveDetailClickCell.m */; };
 		BBCD3AB32242307600439B71 /* ReportCurveDetailController.m in Sources */ = {isa = PBXBuildFile; fileRef = BBCD3AB22242307600439B71 /* ReportCurveDetailController.m */; };
+		BBD244EE22CDE1900055C5B0 /* ic_rank4@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = BBD244EC22CDE18F0055C5B0 /* ic_rank4@3x.png */; };
+		BBD244EF22CDE1900055C5B0 /* ic_rank4@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = BBD244ED22CDE18F0055C5B0 /* ic_rank4@2x.png */; };
 		BBDE8F992238F4E700B8B8F5 /* LogOutCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BBDE8F972238F4E600B8B8F5 /* LogOutCell.m */; };
 		BBE91C8422784F1A00755E9F /* UIImage+Compression.m in Sources */ = {isa = PBXBuildFile; fileRef = BBE91C8322784F1A00755E9F /* UIImage+Compression.m */; };
 		BBFE861220E62FDF005C6CE5 /* DeviceSelectView.m in Sources */ = {isa = PBXBuildFile; fileRef = BBFE861120E62FDF005C6CE5 /* DeviceSelectView.m */; };
@@ -906,6 +908,8 @@
 		BBCD3AAF224228B000439B71 /* CurveDetailClickCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CurveDetailClickCell.m; sourceTree = "<group>"; };
 		BBCD3AB12242307600439B71 /* ReportCurveDetailController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ReportCurveDetailController.h; sourceTree = "<group>"; };
 		BBCD3AB22242307600439B71 /* ReportCurveDetailController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ReportCurveDetailController.m; sourceTree = "<group>"; };
+		BBD244EC22CDE18F0055C5B0 /* ic_rank4@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ic_rank4@3x.png"; sourceTree = "<group>"; };
+		BBD244ED22CDE18F0055C5B0 /* ic_rank4@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ic_rank4@2x.png"; sourceTree = "<group>"; };
 		BBDE8F972238F4E600B8B8F5 /* LogOutCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LogOutCell.m; sourceTree = "<group>"; };
 		BBDE8F982238F4E600B8B8F5 /* LogOutCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LogOutCell.h; sourceTree = "<group>"; };
 		BBE91C8222784F1A00755E9F /* UIImage+Compression.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UIImage+Compression.h"; sourceTree = "<group>"; };
@@ -1217,6 +1221,8 @@
 				BB525DE6212CFF46003484E9 /* ic_rank1@3x.png */,
 				BB525DE2212CFF46003484E9 /* ic_rank3@2x.png */,
 				BB525E08212CFF46003484E9 /* ic_rank3@3x.png */,
+				BBD244ED22CDE18F0055C5B0 /* ic_rank4@2x.png */,
+				BBD244EC22CDE18F0055C5B0 /* ic_rank4@3x.png */,
 				BB525D78212CFF46003484E9 /* ic_select@2x.png */,
 				BB525D8D212CFF46003484E9 /* ic_select@3x.png */,
 				BB525D66212CFF46003484E9 /* ic_selected@2x.png */,
@@ -2112,6 +2118,7 @@
 				BB525E43212CFF47003484E9 /* btn_stir_off@2x.png in Resources */,
 				BB525EDA212CFF47003484E9 /* img_signal_light_off@2x.png in Resources */,
 				BB525F03212CFF47003484E9 /* img_guide1@3x.png in Resources */,
+				BBD244EE22CDE1900055C5B0 /* ic_rank4@3x.png in Resources */,
 				BB525ED3212CFF47003484E9 /* ic_tabbar_test_sel@2x.png in Resources */,
 				BB2AF248216CD7D700114A91 /* ios_40.png in Resources */,
 				BB525E48212CFF47003484E9 /* btn_add@3x.png in Resources */,
@@ -2125,6 +2132,7 @@
 				BB525E6A212CFF47003484E9 /* ic_tabbar_baking_sel@2x.png in Resources */,
 				BB525E40212CFF47003484E9 /* ic_tabbar_test_nor@2x.png in Resources */,
 				BB525F18212CFF47003484E9 /* ic_tabbar_baking_nor@3x.png in Resources */,
+				BBD244EF22CDE1900055C5B0 /* ic_rank4@2x.png in Resources */,
 				BB525F0B212CFF47003484E9 /* ic_arrow@3x.png in Resources */,
 				BB65C25620FD8F0400BB684E /* untick@2x.png in Resources */,
 				BB525E42212CFF47003484E9 /* ic_nav_serch_gray@3x.png in Resources */,

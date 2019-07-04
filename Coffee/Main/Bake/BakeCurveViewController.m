@@ -436,7 +436,7 @@ static BOOL isRelaOn = NO;
     UILabel *outTempLabelL = [[UILabel alloc] init];
     outTempLabelL.textAlignment = NSTextAlignmentLeft;
     outTempLabelL.font = [UIFont fontWithName:@"PingFangSC-Light" size:12];
-    outTempLabelL.text = @"排风温";
+    outTempLabelL.text = @"排气温";
     outTempLabelL.textColor = [UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1];
     [self.view addSubview:outTempLabelL];
     
@@ -966,7 +966,7 @@ static BOOL isRelaOn = NO;
         //set1.mode = LineChartModeCubicBezier;
         
         
-        set2 = [[LineChartDataSet alloc] initWithValues:_myNet.yVals_Out label:LocalString(@"排风温")];
+        set2 = [[LineChartDataSet alloc] initWithValues:_myNet.yVals_Out label:LocalString(@"排气温")];
         set2.axisDependency = AxisDependencyLeft;
         [set2 setColor:[UIColor colorWithRed:80/255.0 green:227/255.0 blue:194/255.0 alpha:1]];
         [set2 setCircleColor:UIColor.whiteColor];
@@ -1036,7 +1036,7 @@ static BOOL isRelaOn = NO;
         rela1.lineDashLengths = @[@5.f,@5.f];
         rela1.visible = NO;
         
-        rela2 = [[LineChartDataSet alloc] initWithValues:_rela_Out label:LocalString(@"排风温(rela)")];
+        rela2 = [[LineChartDataSet alloc] initWithValues:_rela_Out label:LocalString(@"排气温(rela)")];
         rela2.axisDependency = AxisDependencyRight;
         [rela2 setColor:[UIColor colorWithRed:80/255.0 green:227/255.0 blue:194/255.0 alpha:1]];
         [rela2 setCircleColor:UIColor.whiteColor];

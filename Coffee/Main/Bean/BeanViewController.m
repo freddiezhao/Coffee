@@ -593,7 +593,7 @@ sectionForSectionIndexTitle:(NSString *)title
     }else if (sender.tag == sortUp){
         [self downSortByWeight:_beanArr];
         sender.tag = sortDown;
-        [sender setImage:[UIImage imageNamed:@"ic_rank3"] forState:UIControlStateNormal];
+        [sender setImage:[UIImage imageNamed:@"ic_rank4"] forState:UIControlStateNormal];
     }else{
         [self upSortByWeight:_beanArr];//正序排序
         sender.tag = sortUp;

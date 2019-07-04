@@ -326,6 +326,7 @@ static float HEIGHT_HEADER = 15.f;
             }else{
                 cell.lightValue.text = @"0";
             }
+            [cell setCircleViewColor:_cup.light];
             return cell;
         }else if (indexPath.section == 2){
             if (indexPath.row == 0) {

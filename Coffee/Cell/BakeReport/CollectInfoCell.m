@@ -94,7 +94,7 @@ NSString *const CollectHeaderIdentifier_curve = @"CollectHeaderID_curve";
                 cell.leftLabel.text = event.eventText;
             }
             cell.centerLabel.text = [NSString stringWithFormat:@"%ld:%02ld",event.eventTime/60,event.eventTime%60];
-            cell.rightLabel.text = [NSString stringWithFormat:@"%.1f℃",event.eventBeanTemp];
+            cell.rightLabel.text = [NSString stringWithFormat:@"%.1f%@",[NSString diffTempUnitStringWithTemp:event.eventBeanTemp],[DataBase shareDataBase].setting.tempUnit];
 
         }
         return cell;
