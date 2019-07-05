@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		258879339880B16366F53ED6 /* Pods_Coffee.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27C3888E1688495B0D5D73D6 /* Pods_Coffee.framework */; };
+		360BA8C822CF29E3000678C0 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 360BA8CA22CF29E3000678C0 /* Localizable.strings */; };
 		BB149F3121215B4C00E5C2BF /* DeviceSelectCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BB149F2F21215B4C00E5C2BF /* DeviceSelectCell.m */; };
 		BB18D5B521358597006CA5A7 /* CurveController_bakeRela.m in Sources */ = {isa = PBXBuildFile; fileRef = BB18D5B421358597006CA5A7 /* CurveController_bakeRela.m */; };
 		BB1C156620E1E8AD006D7053 /* UIButton+Common.m in Sources */ = {isa = PBXBuildFile; fileRef = BB1C156420E1E8AD006D7053 /* UIButton+Common.m */; };
@@ -386,6 +387,7 @@
 
 /* Begin PBXFileReference section */
 		27C3888E1688495B0D5D73D6 /* Pods_Coffee.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Coffee.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		360BA8C922CF29E3000678C0 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		720E238F8A2AE22A51FFC2D2 /* Pods-Coffee.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Coffee.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Coffee/Pods-Coffee.debug.xcconfig"; sourceTree = "<group>"; };
 		7BA3FAAB66A327260F196ABB /* Pods-Coffee.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Coffee.release.xcconfig"; path = "Pods/Target Support Files/Pods-Coffee/Pods-Coffee.release.xcconfig"; sourceTree = "<group>"; };
 		BB149F2E21215B4C00E5C2BF /* DeviceSelectCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DeviceSelectCell.h; sourceTree = "<group>"; };
@@ -1737,6 +1739,7 @@
 				BB8F7BD520DA513B00BE5CFC /* Main.storyboard */,
 				BB8F7BD820DA513B00BE5CFC /* Assets.xcassets */,
 				BB8F7BDA20DA513B00BE5CFC /* LaunchScreen.storyboard */,
+				360BA8CA22CF29E3000678C0 /* Localizable.strings */,
 				BB8F7BDD20DA513B00BE5CFC /* Info.plist */,
 				BB8F7BDE20DA513B00BE5CFC /* main.m */,
 				BB8AA49720DE42C600610316 /* Coffee-Prefix.pch */,
@@ -1949,6 +1952,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				360BA8C822CF29E3000678C0 /* Localizable.strings in Resources */,
 				BB525E60212CFF47003484E9 /* btn_expand2@2x.png in Resources */,
 				BB2AF23C216CD7D700114A91 /* ios_72.png in Resources */,
 				BB525E3C212CFF47003484E9 /* ic_nav_more_share@2x.png in Resources */,
@@ -2421,6 +2425,14 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
+		360BA8CA22CF29E3000678C0 /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				360BA8C922CF29E3000678C0 /* en */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
 		BB8F7BD520DA513B00BE5CFC /* Main.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -2444,6 +2456,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -2499,6 +2512,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
