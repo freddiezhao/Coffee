@@ -134,7 +134,7 @@
 
 //被选择的行
 -(void)pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component{
-    selectValue = [_pickerArr[row] integerValue];
+    selectValue = row;
 }
 
 - (void)dismissVC{

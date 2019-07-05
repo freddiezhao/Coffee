@@ -174,7 +174,7 @@ NSString *const CellIdentifier_GeneralLogout = @"CellID_GeneralLogout";
             return cell;
         }else{
             cell.leftLabel.text = LocalString(@"温度轴");
-            cell.rightLabel.text = [NSString stringWithFormat:@"%ld℃",_myData.setting.tempAxis];
+            cell.rightLabel.text = [NSString stringWithFormat:@"%d%@",(int)[NSString diffTempUnitStringWithTemp:_myData.setting.tempAxis],_myData.setting.tempUnit];
             return cell;
         }
     }else if (indexPath.section == 3){
@@ -206,7 +206,7 @@ NSString *const CellIdentifier_GeneralLogout = @"CellID_GeneralLogout";
             cell = [[LlabelRlabelCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier_GeneralLR];
         }
         cell.leftLabel.text = LocalString(@"报警温度");
-        cell.rightLabel.text = [NSString stringWithFormat:@"%.1f℃",[NetWork shareNetWork].alertTemp];
+        cell.rightLabel.text = [NSString stringWithFormat:@"%.1f%@",[NetWork shareNetWork].alertTemp,_myData.setting.tempUnit];
         return cell;
     }else{
         LogOutCell *cell1 = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_GeneralLogout];
@@ -306,20 +306,20 @@ NSString *const CellIdentifier_GeneralLogout = @"CellID_GeneralLogout";
         }else{
             NSMutableArray *array = [[NSMutableArray alloc] init];
             for (int i = 0; i < 20; i++) {
-                [array addObject:[NSNumber numberWithInt:i*50]];
+                [array addObject:[NSNumber numberWithInt:[NSString diffTempUnitStringWithTemp:i*50]]];
             }
             YPickerAlertController *VC = [[YPickerAlertController alloc] init];
             VC.pickerArr = [array mutableCopy];
             VC.index = _myData.setting.tempAxis/50;
             VC.pickerBlock = ^(NSInteger picker) {
-                _myData.setting.tempAxis = picker;
+                _myData.setting.tempAxis = picker*50;
                 [_generalTable reloadData];
                 [self updateSetting];
             };
             VC.modalPresentationStyle = UIModalPresentationOverCurrentContext;
             VC.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
             [self presentViewController:VC animated:YES completion:nil];
-            VC.titleLabel.text = LocalString(@"选择温度轴(°C)");
+            VC.titleLabel.text = [NSString stringWithFormat:@"%@(%@)",LocalString(@"选择温度轴"),_myData.setting.tempUnit];
         }
     }
     if (indexPath.section == 3) {
