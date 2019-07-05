@@ -8,10 +8,28 @@
 
 #import "ReportCurveDetailController.h"
 #import <Charts/Charts-Swift.h>
+#import "ReportModel.h"
 
 @interface ReportCurveDetailController () <ChartViewDelegate,IChartAxisValueFormatter>
 
 @property (nonatomic, strong) LineChartView *chartView;
+///@brief UI Component
+@property (nonatomic, strong) UILabel *bakeTime;
+@property (nonatomic, strong) UILabel *developRate;
+@property (nonatomic, strong) UILabel *developTime;
+@property (nonatomic, strong) UILabel *beanTempLabel;
+@property (nonatomic, strong) UILabel *inTempLabel;
+@property (nonatomic, strong) UILabel *outTempLabel;
+@property (nonatomic, strong) UILabel *environTempLabel;
+@property (nonatomic, strong) UILabel *beanTempRateLabel;
+
+//温度颜色圆圈
+@property (nonatomic, strong) UIView *view1;
+@property (nonatomic, strong) UIView *view2;
+@property (nonatomic, strong) UIView *view3;
+@property (nonatomic, strong) UIView *view4;
+@property (nonatomic, strong) UIView *view5;
+
 @property (nonatomic, strong) UIButton *backBtn;
 
 @end
@@ -22,7 +40,112 @@
     [super viewDidLoad];
     
     _chartView = [self chartView];
+    _bakeTime = [self bakeTime];
+    _developRate = [self developRate];
+    _developTime = [self developTime];
+    _beanTempLabel = [self beanTempLabel];
+    _inTempLabel = [self inTempLabel];
+    _outTempLabel = [self outTempLabel];
+    _environTempLabel = [self environTempLabel];
+    _beanTempRateLabel = [self beanTempRateLabel];
     _backBtn = [self backBtn];
+    [self uiMasonry];
+    [self setDataValue];
+}
+
+#pragma mark - private methods
+- (void)beanCurveAction:(UIButton *)sender{
+    if (_chartView.data.dataSets.count < 3) {
+        return;
+    }
+    LineChartDataSet *set3 = (LineChartDataSet *)_chartView.data.dataSets[2];
+    if (sender.tag == unselect) {
+        set3.visible = NO;
+        sender.tag = select;
+        _view1.hidden = YES;
+        _beanTempLabel.textColor = [UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1];
+    }else if(sender.tag == select){
+        set3.visible = YES;
+        sender.tag = unselect;
+        _view1.hidden = NO;
+        _beanTempLabel.textColor = [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1];
+    }
+    [self setDataValue];
+}
+
+- (void)inCurveAction:(UIButton *)sender{
+    if (_chartView.data.dataSets.count < 1) {
+        return;
+    }
+    LineChartDataSet *set2 = (LineChartDataSet *)_chartView.data.dataSets[0];
+    if (sender.tag == unselect) {
+        set2.visible = NO;
+        sender.tag = select;
+        _view2.hidden = YES;
+        _inTempLabel.textColor = [UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1];
+    }else{
+        set2.visible = YES;
+        sender.tag = unselect;
+        _view2.hidden = NO;
+        _inTempLabel.textColor = [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1];
+    }
+    [self setDataValue];
+}
+
+- (void)outCurveAction:(UIButton *)sender{
+    if (_chartView.data.dataSets.count < 2) {
+        return;
+    }
+    LineChartDataSet *set1 = (LineChartDataSet *)_chartView.data.dataSets[1];
+    if (sender.tag == unselect) {
+        set1.visible = NO;
+        sender.tag = select;
+        _view3.hidden = YES;
+        _outTempLabel.textColor = [UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1];
+    }else{
+        set1.visible = YES;
+        sender.tag = unselect;
+        _view3.hidden = NO;
+        _outTempLabel.textColor = [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1];
+    }
+    [self setDataValue];
+}
+
+- (void)environCurveAction:(UIButton *)sender{
+    if (_chartView.data.dataSets.count < 4) {
+        return;
+    }
+    LineChartDataSet *set4 = (LineChartDataSet *)_chartView.data.dataSets[3];
+    if (sender.tag == unselect) {
+        set4.visible = NO;
+        sender.tag = select;
+        _view4.hidden = YES;
+        _environTempLabel.textColor = [UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1];
+    }else{
+        set4.visible = YES;
+        sender.tag = unselect;
+        _view4.hidden = NO;
+        _environTempLabel.textColor = [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1];
+    }
+    [self setDataValue];
+}
+
+- (void)upTempCurveAction:(UIButton *)sender{
+    if (_chartView.data.dataSets.count < 5) {
+        return;
+    }
+    LineChartDataSet *set5 = (LineChartDataSet *)_chartView.data.dataSets[4];
+    if (sender.tag == unselect) {
+        set5.visible = NO;
+        sender.tag = select;
+        _view5.hidden = YES;
+        _beanTempRateLabel.textColor = [UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1];
+    }else{
+        set5.visible = YES;
+        sender.tag = unselect;
+        _view5.hidden = NO;
+        _beanTempRateLabel.textColor = [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1];
+    }
     [self setDataValue];
 }
 
@@ -31,9 +154,9 @@
     if (!_chartView) {
         _chartView = [[LineChartView alloc] init];
         if (kDevice_Is_iPhoneX) {
-            _chartView.frame = CGRectMake((45+44)/HScale, 30/WScale, ScreenHeight - 87/HScale  - 44/WScale, ScreenWidth - 50/WScale);
+            _chartView.frame = CGRectMake((45+44)/HScale, 87/WScale, ScreenHeight - 87/HScale  - 44/WScale, ScreenWidth - 100/WScale);
         }else{
-            _chartView.frame = CGRectMake(45/HScale, 30/WScale, ScreenHeight - 87/HScale, ScreenWidth - 50/WScale);
+            _chartView.frame = CGRectMake(45/HScale, 87/WScale, ScreenHeight - 87/HScale, ScreenWidth - 100/WScale);
         }
         [self.view addSubview:_chartView];
         
@@ -135,7 +258,7 @@
         ChartYAxis *rightAxis = _chartView.rightAxis;
         rightAxis.labelFont = [UIFont fontWithName:@"Avenir-Light" size:12];
         rightAxis.labelTextColor = [UIColor colorWithRed:184/255.0 green:190/255.0 blue:204/255.0 alpha:1];
-        rightAxis.axisMaximum = 20.0;
+        rightAxis.axisMaximum = 30.0;
         rightAxis.axisMinimum = 0;
         rightAxis.drawGridLinesEnabled = NO;
         rightAxis.granularityEnabled = NO;
@@ -145,6 +268,111 @@
     
     return _chartView;
 }
+
+- (UILabel *)bakeTime{
+    if (!_bakeTime) {
+        _bakeTime = [[UILabel alloc] init];
+        _bakeTime.textAlignment = NSTextAlignmentLeft;
+        _bakeTime.font = [UIFont fontWithName:@"Helvetica" size:15];
+        _bakeTime.text = [NSString stringWithFormat:@"%02ld:%02ld",_report.bakeTime/60,_report.bakeTime%60];
+        _bakeTime.textColor = [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1];
+        _bakeTime.adjustsFontSizeToFitWidth = YES;
+        [self.view addSubview:_bakeTime];
+    }
+    return _bakeTime;
+}
+
+- (UILabel *)developRate{
+    if (!_developRate) {
+        _developRate = [[UILabel alloc] init];
+        _developRate.textAlignment = NSTextAlignmentLeft;
+        _developRate.font = [UIFont fontWithName:@"Helvetica" size:15];
+        _developRate.text = [NSString stringWithFormat:@"%.1lf%%",_report.developRate];
+        _developRate.textColor = [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1];
+        _developRate.adjustsFontSizeToFitWidth = YES;
+        [self.view addSubview:_developRate];
+    }
+    return _developRate;
+}
+
+- (UILabel *)developTime{
+    if (!_developTime) {
+        _developTime = [[UILabel alloc] init];
+        _developTime.textAlignment = NSTextAlignmentLeft;
+        _developTime.font = [UIFont fontWithName:@"Helvetica" size:15];
+        _developTime.text = [NSString stringWithFormat:@"%02ld:%02ld",_report.developTime/60,_report.developTime%60];
+        _developTime.textColor = [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1];
+        _developTime.adjustsFontSizeToFitWidth = YES;
+        [self.view addSubview:_developTime];
+    }
+    return _developTime;
+}
+
+- (UILabel *)beanTempLabel{
+    if (!_beanTempLabel) {
+        _beanTempLabel = [[UILabel alloc] init];
+        _beanTempLabel.textAlignment = NSTextAlignmentLeft;
+        _beanTempLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:15];
+        _beanTempLabel.text = @"";
+        _beanTempLabel.textColor = [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1];
+        _beanTempLabel.adjustsFontSizeToFitWidth = YES;
+        [self.view addSubview:_beanTempLabel];
+    }
+    return _beanTempLabel;
+}
+
+- (UILabel *)inTempLabel{
+    if (!_inTempLabel) {
+        _inTempLabel = [[UILabel alloc] init];
+        _inTempLabel.textAlignment = NSTextAlignmentLeft;
+        _inTempLabel.font = [UIFont fontWithName:@"Helvetica" size:15];
+        _inTempLabel.text = @"";
+        _inTempLabel.textColor = [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1];
+        _inTempLabel.adjustsFontSizeToFitWidth = YES;
+        [self.view addSubview:_inTempLabel];
+    }
+    return _inTempLabel;
+}
+
+- (UILabel *)outTempLabel{
+    if (!_outTempLabel) {
+        _outTempLabel = [[UILabel alloc] init];
+        _outTempLabel.textAlignment = NSTextAlignmentLeft;
+        _outTempLabel.font = [UIFont fontWithName:@"Helvetica" size:15];
+        _outTempLabel.text = @"";
+        _outTempLabel.textColor = [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1];
+        _outTempLabel.adjustsFontSizeToFitWidth = YES;
+        [self.view addSubview:_outTempLabel];
+    }
+    return _outTempLabel;
+}
+
+- (UILabel *)environTempLabel{
+    if (!_environTempLabel) {
+        _environTempLabel = [[UILabel alloc] init];
+        _environTempLabel.textAlignment = NSTextAlignmentLeft;
+        _environTempLabel.font = [UIFont fontWithName:@"Helvetica" size:15];
+        _environTempLabel.text = @"";
+        _environTempLabel.textColor = [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1];
+        _environTempLabel.adjustsFontSizeToFitWidth = YES;
+        [self.view addSubview:_environTempLabel];
+    }
+    return _environTempLabel;
+}
+
+- (UILabel *)beanTempRateLabel{
+    if (!_beanTempRateLabel) {
+        _beanTempRateLabel = [[UILabel alloc] init];
+        _beanTempRateLabel.textAlignment = NSTextAlignmentLeft;
+        _beanTempRateLabel.font = [UIFont fontWithName:@"Helvetica" size:15];
+        _beanTempRateLabel.text = @"";
+        _beanTempRateLabel.textColor = [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1];
+        _beanTempRateLabel.adjustsFontSizeToFitWidth = YES;
+        [self.view addSubview:_beanTempRateLabel];
+    }
+    return _beanTempRateLabel;
+}
+
 
 - (UIButton *)backBtn{
     if (!_backBtn) {
@@ -156,6 +384,277 @@
         
     }
     return _backBtn;
+}
+
+- (void)uiMasonry{
+    UILabel *bakeTimeL = [[UILabel alloc] init];
+    bakeTimeL.textAlignment = NSTextAlignmentLeft;
+    bakeTimeL.font = [UIFont fontWithName:@"PingFangSC-Light" size:12];
+    bakeTimeL.text = @"烘焙时间";
+    bakeTimeL.textColor = [UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1];
+    [self.view addSubview:bakeTimeL];
+    
+    UILabel *developRateL = [[UILabel alloc] init];
+    developRateL.textAlignment = NSTextAlignmentLeft;
+    developRateL.font = [UIFont fontWithName:@"PingFangSC-Light" size:12];
+    developRateL.text = @"发展率";
+    developRateL.textColor = [UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1];
+    [self.view addSubview:developRateL];
+    
+    UILabel *developTimeL = [[UILabel alloc] init];
+    developTimeL.textAlignment = NSTextAlignmentLeft;
+    developTimeL.font = [UIFont fontWithName:@"PingFangSC-Light" size:12];
+    developTimeL.text = @"发展时间";
+    developTimeL.textColor = [UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1];
+    [self.view addSubview:developTimeL];
+    
+    UILabel *beanTempLabelL = [[UILabel alloc] init];
+    beanTempLabelL.textAlignment = NSTextAlignmentLeft;
+    beanTempLabelL.font = [UIFont fontWithName:@"PingFangSC-Light" size:12];
+    beanTempLabelL.text = @"豆温";
+    beanTempLabelL.textColor = [UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1];
+    [self.view addSubview:beanTempLabelL];
+    
+    _view1 = [[UIView alloc] init];
+    if (kDevice_Is_iPhoneX) {
+        _view1.frame = CGRectMake((282+44)/HScale,17/WScale,5/HScale,5/WScale);
+    }else{
+        _view1.frame = CGRectMake(282/HScale,17/WScale,5/HScale,5/WScale);
+    }
+    _view1.backgroundColor = [UIColor colorWithRed:71/255.0 green:120/255.0 blue:204/255.0 alpha:1];
+    _view1.layer.cornerRadius = 2.5f/WScale;
+    [self.view addSubview:_view1];
+    
+    UILabel *inTempLabelL = [[UILabel alloc] init];
+    inTempLabelL.textAlignment = NSTextAlignmentLeft;
+    inTempLabelL.font = [UIFont fontWithName:@"PingFangSC-Light" size:12];
+    inTempLabelL.text = @"热风温";
+    inTempLabelL.textColor = [UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1];
+    [self.view addSubview:inTempLabelL];
+    
+    _view2 = [[UIView alloc] init];
+    if (kDevice_Is_iPhoneX) {
+        _view2.frame = CGRectMake((357+44)/HScale,17/WScale,5/HScale,5/WScale);
+    }else{
+        _view2.frame = CGRectMake(357/HScale,17/WScale,5/HScale,5/WScale);
+    }
+    _view2.backgroundColor = [UIColor colorWithRed:123/255.0 green:179/255.0 blue:64/255.0 alpha:1];
+    _view2.layer.cornerRadius = 2.5f/WScale;
+    [self.view addSubview:_view2];
+    
+    UILabel *outTempLabelL = [[UILabel alloc] init];
+    outTempLabelL.textAlignment = NSTextAlignmentLeft;
+    outTempLabelL.font = [UIFont fontWithName:@"PingFangSC-Light" size:12];
+    outTempLabelL.text = @"排气温";
+    outTempLabelL.textColor = [UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1];
+    [self.view addSubview:outTempLabelL];
+    
+    _view3 = [[UIView alloc] init];
+    if (kDevice_Is_iPhoneX) {
+        _view3.frame = CGRectMake((432+44)/HScale,17/WScale,5/HScale,5/WScale);
+    }else{
+        _view3.frame = CGRectMake(432/HScale,17/WScale,5/HScale,5/WScale);
+    }
+    _view3.backgroundColor = [UIColor colorWithRed:80/255.0 green:227/255.0 blue:194/255.0 alpha:1];
+    _view3.layer.cornerRadius = 2.5f/WScale;
+    [self.view addSubview:_view3];
+    
+    UILabel *environTempLabelL = [[UILabel alloc] init];
+    environTempLabelL.textAlignment = NSTextAlignmentLeft;
+    environTempLabelL.font = [UIFont fontWithName:@"PingFangSC-Light" size:12];
+    environTempLabelL.text = @"环境温";
+    environTempLabelL.textColor = [UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1];
+    [self.view addSubview:environTempLabelL];
+    
+    _view4 = [[UIView alloc] init];
+    if (kDevice_Is_iPhoneX) {
+        _view4.frame = CGRectMake((507+44)/HScale,17/WScale,5/HScale,5/WScale);
+    }else{
+        _view4.frame = CGRectMake(507/HScale,17/WScale,5/HScale,5/WScale);
+    }
+    _view4.backgroundColor = [UIColor colorWithRed:245/255.0 green:166/255.0 blue:35/255.0 alpha:1];
+    _view4.layer.cornerRadius = 2.5f/WScale;
+    [self.view addSubview:_view4];
+    
+    UILabel *beanTempRateLabelL = [[UILabel alloc] init];
+    beanTempRateLabelL.textAlignment = NSTextAlignmentLeft;
+    beanTempRateLabelL.font = [UIFont fontWithName:@"PingFangSC-Light" size:12];
+    beanTempRateLabelL.text = @"升温率";
+    beanTempRateLabelL.textColor = [UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1];
+    [self.view addSubview:beanTempRateLabelL];
+    
+    _view5 = [[UIView alloc] init];
+    if (kDevice_Is_iPhoneX) {
+        _view5.frame = CGRectMake((582+44)/HScale,17/WScale,5/HScale,5/WScale);
+    }else{
+        _view5.frame = CGRectMake(582/HScale,17/WScale,5/HScale,5/WScale);
+    }
+    _view5.backgroundColor = [UIColor colorWithRed:255/255.0 green:71/255.0 blue:51/255.0 alpha:1];
+    _view5.layer.cornerRadius = 2.5f/WScale;
+    [self.view addSubview:_view5];
+    
+    
+    [bakeTimeL mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.size.mas_equalTo(CGSizeMake(48/HScale, 13/WScale));
+        make.top.mas_equalTo(self.view.mas_top).offset(13/WScale);
+        if (kDevice_Is_iPhoneX) {
+            make.left.mas_equalTo(self.view.mas_left).offset((47+44)/HScale);
+        }else{
+            make.left.mas_equalTo(self.view.mas_left).offset(47/HScale);
+        }
+    }];
+    [_bakeTime mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.size.mas_equalTo(CGSizeMake(36/HScale, 13/WScale));
+        make.top.mas_equalTo(bakeTimeL.mas_bottom).offset(8/WScale);
+        if (kDevice_Is_iPhoneX) {
+            make.left.mas_equalTo(self.view.mas_left).offset((47+44)/HScale);
+        }else{
+            make.left.mas_equalTo(self.view.mas_left).offset(47/HScale);
+        }
+    }];
+    
+    [developTimeL mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.size.mas_equalTo(CGSizeMake(48/HScale, 13/WScale));
+        make.top.mas_equalTo(self.view.mas_top).offset(13/WScale);
+        make.left.mas_equalTo(bakeTimeL.mas_right).offset(27/HScale);
+    }];
+    [_developTime mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.size.mas_equalTo(CGSizeMake(37/HScale, 13/WScale));
+        make.top.mas_equalTo(developTimeL.mas_bottom).offset(8/WScale);
+        make.left.mas_equalTo(_bakeTime.mas_right).offset(39/HScale);
+    }];
+    
+    [developRateL mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.size.mas_equalTo(CGSizeMake(36/HScale, 13/WScale));
+        make.top.mas_equalTo(self.view.mas_top).offset(13/WScale);
+        make.left.mas_equalTo(developTimeL.mas_right).offset(27/HScale);
+    }];
+    [_developRate mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.size.mas_equalTo(CGSizeMake(39/HScale, 13/WScale));
+        make.top.mas_equalTo(developRateL.mas_bottom).offset(8/WScale);
+        make.left.mas_equalTo(_developTime.mas_right).offset(37/HScale);
+    }];
+    
+    UIView *separatorView = [[UIView alloc] init];
+    separatorView.backgroundColor = [UIColor colorWithRed:0/255.0 green:0/255.0 blue:0/255.0 alpha:0.1];
+    [self.view addSubview:separatorView];
+    
+    [separatorView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.size.mas_equalTo(CGSizeMake(0.5/HScale, 34/WScale));
+        make.top.mas_equalTo(self.view.mas_top).offset(13/WScale);
+        make.left.mas_equalTo(developRateL.mas_right).offset(24/HScale);
+    }];
+    
+    [beanTempLabelL mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.size.mas_equalTo(CGSizeMake(24/HScale, 13/WScale));
+        make.top.mas_equalTo(self.view.mas_top).offset(13/WScale);
+        make.left.mas_equalTo(developRateL.mas_right).offset(56/HScale);
+    }];
+    [_beanTempLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.size.mas_equalTo(CGSizeMake(52/HScale, 13/WScale));
+        make.top.mas_equalTo(beanTempLabelL.mas_bottom).offset(8/WScale);
+        make.left.mas_equalTo(_developRate.mas_right).offset(47/HScale);
+    }];
+    
+    [inTempLabelL mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.size.mas_equalTo(CGSizeMake(36/HScale, 13/WScale));
+        make.top.mas_equalTo(self.view.mas_top).offset(13/WScale);
+        make.left.mas_equalTo(beanTempLabelL.mas_right).offset(51/HScale);
+    }];
+    [_inTempLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.size.mas_equalTo(CGSizeMake(43/HScale, 13/WScale));
+        make.top.mas_equalTo(inTempLabelL.mas_bottom).offset(8/WScale);
+        make.left.mas_equalTo(_beanTempLabel.mas_right).offset(24/HScale);
+    }];
+    
+    [outTempLabelL mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.size.mas_equalTo(CGSizeMake(36/HScale, 13/WScale));
+        make.top.mas_equalTo(self.view.mas_top).offset(13/WScale);
+        make.left.mas_equalTo(inTempLabelL.mas_right).offset(39/HScale);
+    }];
+    [_outTempLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.size.mas_equalTo(CGSizeMake(49/HScale, 13/WScale));
+        make.top.mas_equalTo(outTempLabelL.mas_bottom).offset(8/WScale);
+        make.left.mas_equalTo(_inTempLabel.mas_right).offset(32/HScale);
+    }];
+    
+    [environTempLabelL mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.size.mas_equalTo(CGSizeMake(36/HScale, 13/WScale));
+        make.top.mas_equalTo(self.view.mas_top).offset(13/WScale);
+        make.left.mas_equalTo(outTempLabelL.mas_right).offset(39/HScale);
+    }];
+    [_environTempLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.size.mas_equalTo(CGSizeMake(49/HScale, 13/WScale));
+        make.top.mas_equalTo(environTempLabelL.mas_bottom).offset(8/WScale);
+        make.left.mas_equalTo(_outTempLabel.mas_right).offset(26/HScale);
+    }];
+    
+    [beanTempRateLabelL mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.size.mas_equalTo(CGSizeMake(36/HScale, 13/WScale));
+        make.top.mas_equalTo(self.view.mas_top).offset(13/WScale);
+        make.left.mas_equalTo(environTempLabelL.mas_right).offset(39/HScale);
+    }];
+    [_beanTempRateLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.size.mas_equalTo(CGSizeMake(69/HScale, 13/WScale));
+        make.top.mas_equalTo(beanTempRateLabelL.mas_bottom).offset(8/WScale);
+        make.left.mas_equalTo(_environTempLabel.mas_right).offset(26/HScale);
+    }];
+        
+    //用来点击隐藏曲线，覆盖在温度文字上面
+    UIButton *beanBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    if (kDevice_Is_iPhoneX) {
+        beanBtn.frame = CGRectMake((272+44)/HScale,0,75/HScale,60/WScale);
+    }else{
+        beanBtn.frame = CGRectMake(272/HScale,0,75/HScale,60/WScale);
+    }
+    [beanBtn setBackgroundColor:[UIColor clearColor]];
+    [beanBtn addTarget:self action:@selector(beanCurveAction:) forControlEvents:UIControlEventTouchUpInside];
+    beanBtn.tag = unselect;
+    [self.view addSubview:beanBtn];
+    
+    UIButton *inBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    if (kDevice_Is_iPhoneX) {
+        inBtn.frame = CGRectMake((347+44)/HScale,0,75/HScale,60/WScale);
+    }else{
+        inBtn.frame = CGRectMake(347/HScale,0,75/HScale,60/WScale);
+    }
+    [inBtn setBackgroundColor:[UIColor clearColor]];
+    [inBtn addTarget:self action:@selector(inCurveAction:) forControlEvents:UIControlEventTouchUpInside];
+    inBtn.tag = unselect;
+    [self.view addSubview:inBtn];
+    
+    UIButton *outBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    if (kDevice_Is_iPhoneX) {
+        outBtn.frame = CGRectMake((422+44)/HScale,0,75/HScale,60/WScale);
+    }else{
+        outBtn.frame = CGRectMake(422/HScale,0,75/HScale,60/WScale);
+    }
+    [outBtn setBackgroundColor:[UIColor clearColor]];
+    [outBtn addTarget:self action:@selector(outCurveAction:) forControlEvents:UIControlEventTouchUpInside];
+    outBtn.tag = unselect;
+    [self.view addSubview:outBtn];
+    
+    UIButton *environBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    if (kDevice_Is_iPhoneX) {
+        environBtn.frame = CGRectMake((497+44)/HScale,0,75/HScale,60/WScale);
+    }else{
+        environBtn.frame = CGRectMake(497/HScale,0,75/HScale,60/WScale);
+    }
+    [environBtn setBackgroundColor:[UIColor clearColor]];
+    [environBtn addTarget:self action:@selector(environCurveAction:) forControlEvents:UIControlEventTouchUpInside];
+    environBtn.tag = unselect;
+    [self.view addSubview:environBtn];
+    
+    UIButton *upTempBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    if (kDevice_Is_iPhoneX) {
+        upTempBtn.frame = CGRectMake((572+44)/HScale,0,75/HScale,60/WScale);
+    }else{
+        upTempBtn.frame = CGRectMake(572/HScale,0,75/HScale,60/WScale);
+    }
+    [upTempBtn setBackgroundColor:[UIColor clearColor]];
+    [upTempBtn addTarget:self action:@selector(upTempCurveAction:) forControlEvents:UIControlEventTouchUpInside];
+    upTempBtn.tag = unselect;
+    [self.view addSubview:upTempBtn];
 }
 
 #pragma mark - ChartViewDelegate
@@ -286,10 +785,10 @@
         [data setValueTextColor:UIColor.whiteColor];
         [data setValueFont:[UIFont systemFontOfSize:9.f]];
         
-        _chartView.xAxis.axisRange = 15;
-        [_chartView setVisibleXRangeWithMinXRange:0.5 maxXRange:UI_IS_IPHONE5?4:5];
-        
-        _chartView.xAxis.labelCount = 5;
+//        _chartView.xAxis.axisRange = 15;
+//        [_chartView setVisibleXRangeWithMinXRange:0.5 maxXRange:UI_IS_IPHONE5?4:5];
+//        
+//        _chartView.xAxis.labelCount = 5;
         _chartView.data = data;
     }
 }

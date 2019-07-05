@@ -200,11 +200,8 @@ NSString *const CellIdentifier_TempPer30Share = @"CellID_TempPer30Share";
         if (cell == nil) {
             cell = [[ReportLightCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_reportLightShare];
         }
-        if (_reportModel.light) {
-            cell.lightValue.text = [NSString stringWithFormat:@"%d",(int)_reportModel.light];
-        }else{
-            cell.lightValue.text = LocalString(@"?");
-        }
+        cell.lightValue.text = [NSString stringWithFormat:@"%d",(int)_reportModel.light];
+        [cell setCircleViewColor:_reportModel.light];
         if (_reportModel.date) {
             cell.bakeDate.text = [NSString stringWithFormat:@"%@%@",LocalString(@"烘焙日期:"),[NSDate YMDStringFromDate:_reportModel.date]];
         }else{
@@ -315,7 +312,7 @@ NSString *const CellIdentifier_TempPer30Share = @"CellID_TempPer30Share";
         }
         cell.reportModel = _reportModel;
         cell.eventArray = [self upSortByTime:[_eventArray mutableCopy]];
-        //[cell.curveCollectView reloadData];
+        [cell.curveCollectView reloadSections:[NSIndexSet indexSetWithIndex:0]];
         return cell;
     }else if (indexPath.section == 4){
         TempPer30sCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_TempPer30Share];
@@ -333,7 +330,7 @@ NSString *const CellIdentifier_TempPer30Share = @"CellID_TempPer30Share";
             //|| indexPath.row * 30 < _yVals_Diff.count
             NSInteger row = indexPath.row - 1;
             if (row * 30 < _In.count || row * 30 < _Out.count || row * 30 < _Bean.count || row * 30 < _Environment.count ) {
-                cell.Label1.text = [NSString stringWithFormat:@"%ld:%ld",row/2,row%2*30];
+                cell.Label1.text = [NSString stringWithFormat:@"%ld:%02ld",row/2,row%2*30];
                 if (row * 30 < _Bean.count) {
                     cell.Label2.text = [NSString stringWithFormat:@"%.1f",[NSString diffTempUnitStringWithTemp:[_Bean[row * 30] doubleValue]]];
                 }else{
@@ -358,7 +355,7 @@ NSString *const CellIdentifier_TempPer30Share = @"CellID_TempPer30Share";
                     cell.Label6.text = @"0.0";
                 }else{
                     if (row * 30 / beanRorDiffCount< _Diff.count) {
-                        cell.Label6.text = [NSString stringWithFormat:@"%.1f",[NSString diffTempUnitStringWithTemp:[_Diff[row * 30 / beanRorDiffCount - 1] doubleValue]]];
+                        cell.Label6.text = [NSString stringWithFormat:@"%.1f",[_Diff[row * 30 / beanRorDiffCount - 1] doubleValue]];
                     }else{
                         cell.Label6.text = @"0.0";
                     }
@@ -382,6 +379,7 @@ NSString *const CellIdentifier_TempPer30Share = @"CellID_TempPer30Share";
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     if (indexPath.section == 2 && indexPath.row == 1) {
         ReportCurveDetailController *vc = [[ReportCurveDetailController alloc] init];
+        vc.report = self.reportModel;
         vc.yVals_In = _yVals_In;
         vc.yVals_Out = _yVals_Out;
         vc.yVals_Bean = _yVals_Bean;
@@ -465,16 +463,16 @@ NSString *const CellIdentifier_TempPer30Share = @"CellID_TempPer30Share";
         NSLog(@"%lu",_Environment.count);
         
         for (int i = 0; i<_Bean.count; i++) {
-            [_yVals_Bean addObject:[[ChartDataEntry alloc] initWithX:i y:[_Bean[i] doubleValue]]];
+            [_yVals_Bean addObject:[[ChartDataEntry alloc] initWithX:i y:[NSString diffTempUnitStringWithTemp:[_Bean[i] doubleValue]]]];
         }
         for (int i = 0; i<_Out.count; i++) {
-            [_yVals_Out addObject:[[ChartDataEntry alloc] initWithX:i y:[_Out[i] doubleValue]]];
+            [_yVals_Out addObject:[[ChartDataEntry alloc] initWithX:i y:[NSString diffTempUnitStringWithTemp:[_Out[i] doubleValue]]]];
         }
         for (int i = 0; i<_In.count; i++) {
-            [_yVals_In addObject:[[ChartDataEntry alloc] initWithX:i y:[_In[i] doubleValue]]];
+            [_yVals_In addObject:[[ChartDataEntry alloc] initWithX:i y:[NSString diffTempUnitStringWithTemp:[_In[i] doubleValue]]]];
         }
         for (int i = 0; i<_Environment.count; i++) {
-            [_yVals_Environment addObject:[[ChartDataEntry alloc] initWithX:i y:[_Environment[i] doubleValue]]];
+            [_yVals_Environment addObject:[[ChartDataEntry alloc] initWithX:i y:[NSString diffTempUnitStringWithTemp:[_Environment[i] doubleValue]]]];
         }
         _yVals_Diff = [[NetWork shareNetWork] getBeanTempRorWithArr:_Bean];
     }
@@ -542,7 +540,7 @@ NSString *const CellIdentifier_TempPer30Share = @"CellID_TempPer30Share";
                 //第一页信息获取
                 NSDictionary *dic = [responseDic objectForKey:@"data"];
                 if ([dic objectForKey:@"beans"]) {
-                    static CGFloat rawBeanWeight = 0;
+                    __block CGFloat rawBeanWeight = 0;
                     [[dic objectForKey:@"beans"] enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
                         BeanModel *bean = [[BeanModel alloc] init];
                         bean.name = [obj objectForKey:@"name"];

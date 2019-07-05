@@ -10,6 +10,7 @@
 #import "MainViewController.h"
 #import "ESP_NetUtil.h"
 #import "LoginViewController.h"
+#import <Bugly/Bugly.h>
 
 @interface AppDelegate ()
 
@@ -21,6 +22,7 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     [NSThread sleepForTimeInterval:1.0];
     [self customizeInterface];
+    [self BuglyInit];
     
     self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
     self.window.backgroundColor = [UIColor whiteColor];
@@ -111,6 +113,11 @@ void getException(NSException *exception)
     NSLog(@"用户信息：%@",exception.userInfo);
     NSLog(@"栈内存地址：%@",exception.callStackReturnAddresses);
     NSLog(@"栈描述：%@",exception.callStackSymbols);
+}
+
+- (void)BuglyInit{
+    //错误日志上报
+    [Bugly startWithAppId:@"bf3552f7fe"];
 }
 
 @end

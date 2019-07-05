@@ -412,6 +412,7 @@ NSString *const CellIdentifier_TempPer30 = @"CellID_TempPer30";
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     if (indexPath.section == 2 && indexPath.row == 1) {
         ReportCurveDetailController *vc = [[ReportCurveDetailController alloc] init];
+        vc.report = self.reportModel;
         vc.yVals_In = _yVals_In;
         vc.yVals_Out = _yVals_Out;
         vc.yVals_Bean = _yVals_Bean;
@@ -496,16 +497,16 @@ NSString *const CellIdentifier_TempPer30 = @"CellID_TempPer30";
 //        NSLog(@"%lu",_Environment.count);
         
         for (int i = 0; i<_Bean.count; i++) {
-            [_yVals_Bean addObject:[[ChartDataEntry alloc] initWithX:i y:[_Bean[i] doubleValue]]];
+            [_yVals_Bean addObject:[[ChartDataEntry alloc] initWithX:i y:[NSString diffTempUnitStringWithTemp:[_Bean[i] doubleValue]]]];
         }
         for (int i = 0; i<_Out.count; i++) {
-            [_yVals_Out addObject:[[ChartDataEntry alloc] initWithX:i y:[_Out[i] doubleValue]]];
+            [_yVals_Out addObject:[[ChartDataEntry alloc] initWithX:i y:[NSString diffTempUnitStringWithTemp:[_Out[i] doubleValue]]]];
         }
         for (int i = 0; i<_In.count; i++) {
-            [_yVals_In addObject:[[ChartDataEntry alloc] initWithX:i y:[_In[i] doubleValue]]];
+            [_yVals_In addObject:[[ChartDataEntry alloc] initWithX:i y:[NSString diffTempUnitStringWithTemp:[_In[i] doubleValue]]]];
         }
         for (int i = 0; i<_Environment.count; i++) {
-            [_yVals_Environment addObject:[[ChartDataEntry alloc] initWithX:i y:[_Environment[i] doubleValue]]];
+            [_yVals_Environment addObject:[[ChartDataEntry alloc] initWithX:i y:[NSString diffTempUnitStringWithTemp:[_Environment[i] doubleValue]]]];
         }
         _yVals_Diff = [[NetWork shareNetWork] getBeanTempRorWithArr:_Bean];
     }
@@ -561,6 +562,7 @@ NSString *const CellIdentifier_TempPer30 = @"CellID_TempPer30";
         [beanMutaArray replaceObjectAtIndex:i withObject:beanModelNew];
         rawBeanWeight += beanModelOld.weight;
     }
+    _reportModel.rawBeanWeight = rawBeanWeight;
 }
 
 //用来排序事件列表(根据事件发生时间)

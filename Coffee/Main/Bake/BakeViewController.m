@@ -430,13 +430,33 @@
 }
 
 //豆名滚动UI点击动作
--(void)handleTapGesture:( UITapGestureRecognizer *)tapRecognizer
+- (void)handleTapGesture:(UITapGestureRecognizer *)tapRecognizer
 {
     // 先取消任何操作???????这句话存在的意义？？？
     [NSObject cancelPreviousPerformRequestsWithTarget:self];
     AddBeanTableController *addBeanVC = [[AddBeanTableController alloc] init];
     UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:addBeanVC];
     [self presentViewController:nav animated:YES completion:nil];
+}
+
+- (void)deviceImageHandleTapGesture:(UITapGestureRecognizer *)tapRecognizer{
+    // 先取消任何操作???????这句话存在的意义？？？
+    [NSObject cancelPreviousPerformRequestsWithTarget:self];
+    if (_showControlViewBtn.tag == unselect) {
+        _showControlViewBtn.tag = select;
+        [UIView animateWithDuration:0.2 animations:^{
+            CGSize size = _mainView.frame.size;
+            _mainView.frame = CGRectMake(0, (ScreenHeight - 64 - (tabbarHeight + kSafeArea_Bottom) - 400/HScale - 90/HScale), size.width, size.height);//154是控制按钮view高度，刚好把控制按钮隐藏，90是bottonview高度
+            [_showControlViewBtn setImage:[UIImage imageNamed:@"btn_collapse"] forState:UIControlStateNormal];
+        }];
+    }else{
+        _showControlViewBtn.tag = unselect;
+        [UIView animateWithDuration:0.2 animations:^{
+            CGSize size = _mainView.frame.size;
+            _mainView.frame = CGRectMake(0, (ScreenHeight - 64 - (tabbarHeight + kSafeArea_Bottom) - 400/HScale + 154/HScale - 90/HScale), size.width, size.height);//154是控制按钮view高度，刚好把控制按钮隐藏，90是bottonview高度
+            [_showControlViewBtn setImage:[UIImage imageNamed:@"btn_expand"] forState:UIControlStateNormal];
+        }];
+    }
 }
 
 - (void)mysocketDidDisconnect{
@@ -645,6 +665,11 @@
         _deviceImage.image = [UIImage imageNamed:@"img_logo_gray"];
         [self.view addSubview:_deviceImage];
         
+        //对srcollView添加点击响应
+        UITapGestureRecognizer *singleTapRecognizer = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(deviceImageHandleTapGesture:)];
+        singleTapRecognizer.numberOfTapsRequired = 1;
+        [_deviceImage addGestureRecognizer:singleTapRecognizer];
+        _deviceImage.userInteractionEnabled = YES;
     }
     return _deviceImage;
 }

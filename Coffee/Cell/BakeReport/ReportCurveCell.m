@@ -57,11 +57,6 @@
             xAxis.valueFormatter = self;
             xAxis.axisRange = self.yVals_Bean.count;
             xAxis.granularity = 60;
-            if (self.yVals_Bean.count > (60 * 3)) {
-                xAxis.axisMaximum = self.yVals_Bean.count;
-            }else{
-                xAxis.axisMaximum = 60 * 3;
-            }
             
             ChartYAxis *leftAxis = _chartView.leftAxis;
             leftAxis.labelTextColor = [UIColor colorWithRed:184/255.0 green:190/255.0 blue:204/255.0 alpha:1];
@@ -95,6 +90,13 @@
 
 - (void)setDataValue
 {
+    if (self.yVals_Bean.count > (60 * 3)) {
+        self.chartView.xAxis.axisMaximum = self.yVals_Bean.count + 60;
+    }else{
+        self.chartView.xAxis.axisMaximum = 60 * 3;
+    }
+
+    
     LineChartDataSet *set1 = nil, *set2 = nil, *set3 = nil, *set4 = nil, *set5 = nil;
     
     if (_chartView.data.dataSetCount > 0)
@@ -114,10 +116,10 @@
         set5 = (LineChartDataSet *)_chartView.data.dataSets[4];
         set5.values = _yVals_Diff;
         
-        if (_yVals_Out.count > 150) {
-            _chartView.xAxis.axisRange = 15;
-            [_chartView setVisibleXRangeWithMinXRange:0.5 maxXRange:UI_IS_IPHONE5?4:5];
-        }
+//        if (_yVals_Out.count > 150) {
+//            _chartView.xAxis.axisRange = 15;
+//            [_chartView setVisibleXRangeWithMinXRange:0.5 maxXRange:UI_IS_IPHONE5?4:5];
+//        }
         
         [_chartView.data notifyDataChanged];
         [_chartView notifyDataSetChanged];
@@ -201,10 +203,10 @@
         [data setValueTextColor:UIColor.whiteColor];
         [data setValueFont:[UIFont systemFontOfSize:9.f]];
         
-        _chartView.xAxis.axisRange = 15;
-        [_chartView setVisibleXRangeWithMinXRange:0.5 maxXRange:UI_IS_IPHONE5?4:5];
+//        _chartView.xAxis.axisRange = 15;
+//        [_chartView setVisibleXRangeWithMinXRange:0.5 maxXRange:UI_IS_IPHONE5?4:5];
         
-        _chartView.xAxis.labelCount = 5;
+        //_chartView.xAxis.labelCount = 5;
         _chartView.data = data;
     }
 }

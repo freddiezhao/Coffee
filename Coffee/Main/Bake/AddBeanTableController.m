@@ -147,10 +147,12 @@ NSString *const CellIdentifier_curveInfo = @"CellID_curveInfo_add";
                     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
                     return cell;
                 }else{
-                    AddBeanTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_bakeBean_add forIndexPath:indexPath];
-                    if (cell == nil) {
-                        cell = [[AddBeanTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_bakeBean_add];
-                    }
+//                    AddBeanTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_bakeBean_add forIndexPath:indexPath];
+//                    if (cell == nil) {
+//                        cell = [[AddBeanTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_bakeBean_add];
+//                    }
+                    AddBeanTableViewCell *cell = [[AddBeanTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_bakeBean_add];
+
                     BeanModel *bean;
                     if (indexPath.row >= self.beanArray.count) {
                         bean = _myNet.beanArray[indexPath.row-self.beanArray.count];
@@ -254,12 +256,14 @@ NSString *const CellIdentifier_curveInfo = @"CellID_curveInfo_add";
     switch (indexPath.section) {
         case 0:
         {
-            BeanViewController_bakeAdd *bakeAdd = [[BeanViewController_bakeAdd alloc] init];
-            bakeAdd.popBlock = ^(BeanModel *bean) {
-                [self.beanArray insertObject:bean atIndex:0];
-            };
-            bakeAdd.beanArray = self.beanArray;
-            [self.navigationController pushViewController:bakeAdd animated:YES];
+            if (indexPath.row == (_myNet.beanArray.count + self.beanArray.count)) {
+                BeanViewController_bakeAdd *bakeAdd = [[BeanViewController_bakeAdd alloc] init];
+                bakeAdd.popBlock = ^(BeanModel *bean) {
+                    [self.beanArray insertObject:bean atIndex:0];
+                };
+                bakeAdd.beanArray = self.beanArray;
+                [self.navigationController pushViewController:bakeAdd animated:YES];
+            }
         }
             break;
             
@@ -310,6 +314,11 @@ NSString *const CellIdentifier_curveInfo = @"CellID_curveInfo_add";
 
 // Override to support conditional editing of the table view.
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (indexPath.section == 0 && indexPath.row != (_myNet.beanArray.count + self.beanArray.count)) {
+        return YES;
+    }else{
+        return NO;
+    }
     return YES;
 }
 
@@ -320,9 +329,16 @@ NSString *const CellIdentifier_curveInfo = @"CellID_curveInfo_add";
 // Override to support editing the table view.
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
     if (editingStyle == UITableViewCellEditingStyleDelete) {
-        BeanModel *bean = _myNet.beanArray[indexPath.row];
-        [_myNet.beanArray removeObject:bean];
-        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
+        if (indexPath.row >= self.beanArray.count) {
+            BeanModel *bean = _myNet.beanArray[indexPath.row-self.beanArray.count];
+            [_myNet.beanArray removeObject:bean];
+            [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
+
+        }else{
+            BeanModel *bean = self.beanArray[indexPath.row];
+            [self.beanArray removeObject:bean];
+            [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
+        }
     }
 }
 

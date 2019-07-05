@@ -18,6 +18,11 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 
+## Bugly
+
+Copyright (C) 2017 Tencent Bugly, Inc. All rights reserved.
+
+
 ## Charts
 
 Apache License

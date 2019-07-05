@@ -13,16 +13,16 @@
 #import "FMDB.h"
 
 @implementation DataWithApi
-- (void)startGetInfoWithFailBlock:(void(^)(void))failure{
-    [self getAllBeanByApiWithFailBlock:failure];
+- (void)startGetInfoSuccess:(void(^)(void))success failure:(void(^)(void))failure{
+    [self getAllBeanByApiSuccess:success failure:failure];
     //[self getAllCupByApi];
     //[self getAllReportByApi]
 }
 
 #pragma mark - 生豆列表页面
-- (void)getAllBeanByApiWithFailBlock:(void(^)(void))failure{
-    [SVProgressHUD showWithStatus:LocalString(@"从服务器同步用户存储内容中...")];
-    [SVProgressHUD setDefaultMaskType:SVProgressHUDMaskTypeBlack];
+- (void)getAllBeanByApiSuccess:(void(^)(void))success failure:(void(^)(void))failure{
+    //[SVProgressHUD showWithStatus:LocalString(@"从服务器同步用户存储内容中...")];
+    //[SVProgressHUD setDefaultMaskType:SVProgressHUDMaskTypeBlack];
     AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
 
     [manager.requestSerializer willChangeValueForKey:@"timeoutInterval"];
@@ -49,21 +49,21 @@
                     [beanArr addObject:beanUid];
                 }];
             }
-            [self getBeanInfoByAPIWithBeanUidArr:beanArr failBlock:failure];
+            [self getBeanInfoByAPIWithBeanUidArr:beanArr success:success failure:failure];
         }else{
             if (failure) {
                 failure();
             }
             [NSObject showHudTipStr:LocalString(@"从服务器获取生豆信息失败")];
             dispatch_async(dispatch_get_main_queue(), ^{
-                [SVProgressHUD dismiss];
+                //[SVProgressHUD dismiss];
             });
         }
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         NSLog(@"Error:%@",error);
         [NSObject showHudTipStr:LocalString(@"从服务器获取生豆信息失败")];
         dispatch_async(dispatch_get_main_queue(), ^{
-            [SVProgressHUD dismiss];
+            //[SVProgressHUD dismiss];
         });
         if (failure) {
             failure();
@@ -72,9 +72,9 @@
 }
 
 #pragma mark - 生豆详情API data
-- (void)getBeanInfoByAPIWithBeanUidArr:(NSMutableArray *)beanArr failBlock:(void(^)(void))failure{
+- (void)getBeanInfoByAPIWithBeanUidArr:(NSMutableArray *)beanArr success:(void(^)(void))success failure:(void(^)(void))failure{
     if (beanArr.count == 0) {
-        [self getAllReportByApiWithFailBlock:failure];
+        [self getAllReportByApiSuccess:success failure:failure];
         return;
     }
     for (int i = 0; i < beanArr.count; i++) {
@@ -122,12 +122,12 @@
                 NSLog(@"%d",i);
                 NSLog(@"%ld",beanArr.count - 1);
                 if (i == (beanArr.count - 1)) {
-                    [self getAllReportByApiWithFailBlock:failure];
+                    [self getAllReportByApiSuccess:success failure:failure];
                 }
             }else{
                 [NSObject showHudTipStr:LocalString(@"从服务器获取生豆信息失败")];
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    [SVProgressHUD dismiss];
+                    //[SVProgressHUD dismiss];
                 });
                 if (failure) {
                     failure();
@@ -137,7 +137,7 @@
             NSLog(@"Error:%@",error);
             [NSObject showHudTipStr:LocalString(@"从服务器获取生豆信息失败")];
             dispatch_async(dispatch_get_main_queue(), ^{
-                [SVProgressHUD dismiss];
+                //[SVProgressHUD dismiss];
             });
             if (failure) {
                 failure();
@@ -147,7 +147,7 @@
 }
 
 #pragma mark - 烘焙报告列表页面
-- (void)getAllReportByApiWithFailBlock:(void(^)(void))failure{
+- (void)getAllReportByApiSuccess:(void(^)(void))success failure:(void(^)(void))failure{
     AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
 
     [manager.requestSerializer willChangeValueForKey:@"timeoutInterval"];
@@ -184,11 +184,11 @@
                     [reportArr addObject:report];
                 }];
             }
-            [self getFullCurveInfoByApiWithReportArr:reportArr failBlock:failure];
+            [self getFullCurveInfoByApiWithReportArr:reportArr success:success failure:failure];
         }else{
             [NSObject showHudTipStr:LocalString(@"从服务器获取烘焙报告失败")];
             dispatch_async(dispatch_get_main_queue(), ^{
-                [SVProgressHUD dismiss];
+                //[SVProgressHUD dismiss];
             });
             if (failure) {
                 failure();
@@ -198,7 +198,7 @@
         NSLog(@"Error:%@",error);
         [NSObject showHudTipStr:LocalString(@"从服务器获取烘焙报告失败")];
         dispatch_async(dispatch_get_main_queue(), ^{
-            [SVProgressHUD dismiss];
+            //[SVProgressHUD dismiss];
         });
         if (failure) {
             failure();
@@ -207,9 +207,9 @@
 }
 
 #pragma mark - 烘焙报告详情页面数据获取
-- (void)getFullCurveInfoByApiWithReportArr:(NSMutableArray *)reportArr failBlock:(void(^)(void))failure{
+- (void)getFullCurveInfoByApiWithReportArr:(NSMutableArray *)reportArr success:(void(^)(void))success failure:(void(^)(void))failure{
     if (reportArr.count == 0) {
-        [self getAllCupByApiWithFailBlock:failure];
+        [self getAllCupByApiSuccess:success failure:failure];
     }
     for (int i = 0; i < reportArr.count; i++) {
         ReportModel *report = reportArr[i];
@@ -303,12 +303,12 @@
                 NSLog(@"%d",i);
                 NSLog(@"%ld",reportArr.count - 1);
                 if (i == (reportArr.count - 1)) {
-                    [self getAllCupByApiWithFailBlock:failure];
+                    [self getAllCupByApiSuccess:success failure:failure];
                 }
             }else{
                 [NSObject showHudTipStr:LocalString(@"从服务器获取烘焙报告失败")];
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    [SVProgressHUD dismiss];
+                    //[SVProgressHUD dismiss];
                 });
                 if (failure) {
                     failure();
@@ -318,7 +318,7 @@
             NSLog(@"Error:%@",error);
             [NSObject showHudTipStr:LocalString(@"从服务器获取烘焙报告失败")];
             dispatch_async(dispatch_get_main_queue(), ^{
-                [SVProgressHUD dismiss];
+                //[SVProgressHUD dismiss];
             });
             if (failure) {
                 failure();
@@ -329,7 +329,7 @@
 }
 
 #pragma mark - 杯测列表页面
-- (void)getAllCupByApiWithFailBlock:(void(^)(void))failure{
+- (void)getAllCupByApiSuccess:(void(^)(void))success failure:(void(^)(void))failure{
     AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
     
     [manager.requestSerializer willChangeValueForKey:@"timeoutInterval"];
@@ -355,11 +355,11 @@
                     [cupArr addObject:cupUid];
                 }];
             }
-            [self getCupInfoByAPIWithCupArr:cupArr failBlock:failure];
+            [self getCupInfoByAPIWithCupArr:cupArr success:success failure:failure];
         }else{
             [NSObject showHudTipStr:LocalString(@"从服务器获取杯测信息失败")];
             dispatch_async(dispatch_get_main_queue(), ^{
-                [SVProgressHUD dismiss];
+                //[SVProgressHUD dismiss];
             });
             if (failure) {
                 failure();
@@ -369,7 +369,7 @@
         NSLog(@"Error:%@",error);
         [NSObject showHudTipStr:LocalString(@"从服务器获取杯测信息失败")];
         dispatch_async(dispatch_get_main_queue(), ^{
-            [SVProgressHUD dismiss];
+            //[SVProgressHUD dismiss];
         });
         if (failure) {
             failure();
@@ -378,10 +378,10 @@
 }
 
 #pragma mark - 杯测详情API data
-- (void)getCupInfoByAPIWithCupArr:(NSMutableArray *)cupArr failBlock:(void(^)(void))failure{
+- (void)getCupInfoByAPIWithCupArr:(NSMutableArray *)cupArr success:(void(^)(void))success failure:(void(^)(void))failure{
     if (cupArr.count == 0) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            [SVProgressHUD dismiss];
+            //[SVProgressHUD dismiss];
             [NSObject showHudTipStr:LocalString(@"数据同步完成")];
         });
     }
@@ -435,7 +435,10 @@
                 }
                 if (i == (cupArr.count - 1)) {
                     dispatch_async(dispatch_get_main_queue(), ^{
-                        [SVProgressHUD dismiss];
+                        //[SVProgressHUD dismiss];
+                        if (success) {
+                            success();
+                        }
                         [NSObject showHudTipStr:LocalString(@"数据同步完成")];
                     });
                 }
@@ -443,7 +446,7 @@
                 [NSObject showHudTipStr:LocalString(@"从服务器获取杯测信息失败")];
                 NSLog(@"从服务器获取杯测信息失败");
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    [SVProgressHUD dismiss];
+                    //[SVProgressHUD dismiss];
                 });
                 if (failure) {
                     failure();
@@ -453,7 +456,7 @@
             NSLog(@"Error:%@",error);
             [NSObject showHudTipStr:LocalString(@"从服务器获取杯测信息失败")];
             dispatch_async(dispatch_get_main_queue(), ^{
-                [SVProgressHUD dismiss];
+                //[SVProgressHUD dismiss];
             });
             if (failure) {
                 failure();

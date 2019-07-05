@@ -7,10 +7,13 @@
 //
 
 #import <UIKit/UIKit.h>
+@class ReportModel;
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface ReportCurveDetailController : BaseViewController
+
+@property (nonatomic, strong) ReportModel *report;
 
 @property (nonatomic, strong) NSMutableArray *yVals_Out;
 @property (nonatomic, strong) NSMutableArray *yVals_In;

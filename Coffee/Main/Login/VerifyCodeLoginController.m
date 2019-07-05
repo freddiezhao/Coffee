@@ -271,8 +271,17 @@ static float HEIGHT_CELL = 50.f;
                       [db createTable];
                       [[DataBase shareDataBase] getSettingByApi];
                       DataWithApi *data = [[DataWithApi alloc] init];
-                      [data startGetInfoWithFailBlock:^{
+                      [SVProgressHUD showWithStatus:LocalString(@"从服务器同步用户存储内容中...")];
+                      [SVProgressHUD setDefaultMaskType:SVProgressHUDMaskTypeBlack];
+                      [data startGetInfoSuccess:^{
+                          [SVProgressHUD dismiss];
+                          dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                              MainViewController *mainVC = [[MainViewController alloc] init];
+                              [self presentViewController:mainVC animated:NO completion:nil];
+                          });
+                      } failure:^{
                           [userDefaults setObject:@0 forKey:_phone];
+                          [SVProgressHUD dismiss];
                       }];
                   }
                   MainViewController *mainVC = [[MainViewController alloc] init];
