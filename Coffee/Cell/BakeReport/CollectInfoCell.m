@@ -163,7 +163,11 @@ NSString *const CollectHeaderIdentifier_curve = @"CollectHeaderID_curve";
             case 6:
             {
                 cell.titleLabel.text = LocalString(@"回温点时间/温度");
-                
+                for (EventModel *event in _eventArray) {
+                    if (event.eventId == BakeBackTemp) {
+                        cell.valueLabel.text = [NSString stringWithFormat:@"%ld:%02ld/%.1f%@",event.eventTime/60,event.eventTime%60,[NSString diffTempUnitStringWithTemp:event.eventBeanTemp],[DataBase shareDataBase].setting.tempUnit];
+                    }
+                }
             }
                 break;
             case 7:

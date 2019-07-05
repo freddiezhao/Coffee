@@ -511,8 +511,59 @@ NSString *const CellIdentifier_TempPer30Share = @"CellID_TempPer30Share";
     }
     _reportModel.developTime = event2.eventTime - event1.eventTime;
     _reportModel.developRate = (float)_reportModel.developTime/_reportModel.bakeTime*100.f;
-    
+    [self completionBackTempture];
     [self queryBeanInfo];
+}
+
+- (void)completionBackTempture{
+    for (EventModel *event in self.eventArray) {
+        if (event.eventId == BakeBackTemp) {
+            return;
+        }
+    }
+    bool isRorStartNegative = NO;//y轴下方数据数量大于10个表示开始温度下降
+    int rorNegativeCount = 0;//在y轴下方的数据数量
+    bool isRorStartPositive = NO;//表示温度开始上升
+    bool backTempPointCacSucc = NO;//是否生成了回温点
+
+    for (ChartDataEntry *entry in _yVals_Diff) {
+        if (backTempPointCacSucc) {
+            break;
+        }
+        if (entry.y < 0) {
+            if (rorNegativeCount > 30/beanRorDiffCount) {
+                isRorStartNegative = YES;
+            }else{
+                //NSLog(@"%@",@"adasfsf");
+                rorNegativeCount++;
+            }
+        }else{
+            rorNegativeCount = 0;
+        }
+        if (isRorStartNegative && entry.y > 0) {
+            isRorStartPositive = YES;
+        }
+        if (isRorStartNegative && isRorStartPositive) {
+            NSLog(@"回温点出现%f",entry.x);
+            backTempPointCacSucc = YES;
+            EventModel *event = [[EventModel alloc] init];
+            event.eventId = BakeBackTemp;//类型为8
+            event.eventTime = (int)entry.x;
+            event.eventText = LocalString(@"回温点");
+            if (self.Bean.count > 0) {
+                event.eventBeanTemp = [self.Bean[(int)entry.x] floatValue];
+            }else{
+                event.eventBeanTemp = 0.0;
+            }
+            for (EventModel *event in self.eventArray) {
+                if (event.eventId == BakeBackTemp) {
+                    [self.eventArray removeObject:event];
+                    break;
+                }
+            }
+            [self.eventArray addObject:event];
+        }
+    }
 }
 
 - (void)queryBeanInfo{
@@ -578,7 +629,6 @@ NSString *const CellIdentifier_TempPer30Share = @"CellID_TempPer30Share";
             [SVProgressHUD dismiss];
         });
     }];
-    
 }
 
 //用来排序事件列表(根据事件发生时间)

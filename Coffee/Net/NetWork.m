@@ -1797,7 +1797,7 @@ static bool backTempPointCacSucc = NO;//是否生成了回温点
     //NSLog(@"%d",rorNegativeCount);
     ChartDataEntry *entry = _yVals_Diff[_yVals_Diff.count-1];
     if (entry.y < 0) {
-        if (rorNegativeCount > 10) {
+        if (rorNegativeCount > 30/beanRorDiffCount) {
             isRorStartNegative = YES;
         }else{
             //NSLog(@"%@",@"adasfsf");
