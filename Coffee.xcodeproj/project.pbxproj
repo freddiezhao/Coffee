@@ -388,6 +388,12 @@
 /* Begin PBXFileReference section */
 		27C3888E1688495B0D5D73D6 /* Pods_Coffee.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Coffee.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		360BA8C922CF29E3000678C0 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		360BA8CC22CF6249000678C0 /* en-GB */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "en-GB"; path = "en-GB.lproj/Main.strings"; sourceTree = "<group>"; };
+		360BA8CD22CF6249000678C0 /* en-GB */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "en-GB"; path = "en-GB.lproj/LaunchScreen.strings"; sourceTree = "<group>"; };
+		360BA8CE22CF624A000678C0 /* en-GB */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "en-GB"; path = "en-GB.lproj/Localizable.strings"; sourceTree = "<group>"; };
+		360BA8CF22CF6C6B000678C0 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Main.strings"; sourceTree = "<group>"; };
+		360BA8D022CF6C6B000678C0 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/LaunchScreen.strings"; sourceTree = "<group>"; };
+		360BA8D122CF6C6B000678C0 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		720E238F8A2AE22A51FFC2D2 /* Pods-Coffee.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Coffee.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Coffee/Pods-Coffee.debug.xcconfig"; sourceTree = "<group>"; };
 		7BA3FAAB66A327260F196ABB /* Pods-Coffee.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Coffee.release.xcconfig"; path = "Pods/Target Support Files/Pods-Coffee/Pods-Coffee.release.xcconfig"; sourceTree = "<group>"; };
 		BB149F2E21215B4C00E5C2BF /* DeviceSelectCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DeviceSelectCell.h; sourceTree = "<group>"; };
@@ -1934,6 +1940,8 @@
 			knownRegions = (
 				en,
 				Base,
+				"en-GB",
+				"zh-Hans",
 			);
 			mainGroup = BB8F7BC320DA513B00BE5CFC;
 			productRefGroup = BB8F7BCD20DA513B00BE5CFC /* Products */;
@@ -2429,6 +2437,8 @@
 			isa = PBXVariantGroup;
 			children = (
 				360BA8C922CF29E3000678C0 /* en */,
+				360BA8CE22CF624A000678C0 /* en-GB */,
+				360BA8D122CF6C6B000678C0 /* zh-Hans */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
@@ -2437,6 +2447,8 @@
 			isa = PBXVariantGroup;
 			children = (
 				BB8F7BD620DA513B00BE5CFC /* Base */,
+				360BA8CC22CF6249000678C0 /* en-GB */,
+				360BA8CF22CF6C6B000678C0 /* zh-Hans */,
 			);
 			name = Main.storyboard;
 			sourceTree = "<group>";
@@ -2445,6 +2457,8 @@
 			isa = PBXVariantGroup;
 			children = (
 				BB8F7BDB20DA513B00BE5CFC /* Base */,
+				360BA8CD22CF6249000678C0 /* en-GB */,
+				360BA8D022CF6C6B000678C0 /* zh-Hans */,
 			);
 			name = LaunchScreen.storyboard;
 			sourceTree = "<group>";

@@ -49,7 +49,7 @@ static float HEIGHT_CELL = 50.f;
 
 - (NSMutableArray *)processArray{
     if (!_processArray) {
-        NSArray *array = @[@"日晒",@"水洗",@"半水洗",@"蜜处理",@"动物体内发酵",@"#其他"];
+        NSArray *array = @[LocalString(@"日晒"),LocalString(@"水洗"),LocalString(@"半水洗"),LocalString(@"蜜处理"),LocalString(@"动物体内发酵"),LocalString(@"#其他")];
         _processArray = [NSMutableArray array];
         for (int i = 0; i < array.count; i++) {
             SortModel *model = [[SortModel alloc] init];

@@ -102,7 +102,7 @@ static float HEIGHT_HEADER = 15.f;
             make.centerX.equalTo(self.view.mas_centerX);
         }];
         
-        NSArray *titleData = @[@"杯测信息",@"烘焙详情"];
+        NSArray *titleData = @[LocalString(@"杯测信息"),LocalString(@"烘焙详情")];
         _mySegment = [[UISegmentedControl alloc] initWithItems:titleData];
         // 设置默认选择项索引
         _mySegment.selectedSegmentIndex = 0;

@@ -203,14 +203,14 @@ static float HEIGHT_HEADER = 36.f;
         _totolCount.backgroundColor = [UIColor clearColor];
         _totolCount.textColor = [UIColor colorWithHexString:@"999999"];
         _totolCount.textAlignment = NSTextAlignmentCenter;
-        _totolCount.text = [NSString stringWithFormat:@"总数:%d",0];
+        _totolCount.text = [NSString stringWithFormat:@"%@:%d",LocalString(@"总数"),0];
         [_headerView addSubview:_totolCount];
         _totolWeight = [[UILabel alloc] initWithFrame:CGRectMake(90/WScale, 0, 200/WScale, HEIGHT_HEADER/HScale)];
         _totolWeight.font = [UIFont systemFontOfSize:14.f];
         _totolWeight.backgroundColor = [UIColor clearColor];
         _totolWeight.textColor = [UIColor colorWithHexString:@"999999"];
         _totolWeight.textAlignment = NSTextAlignmentLeft;
-        _totolWeight.text = [NSString stringWithFormat:@"总重量：%f %@",0.f,[DataBase shareDataBase].setting.weightUnit];
+        _totolWeight.text = [NSString stringWithFormat:@"%@：%f %@",LocalString(@"总重量"),0.f,[DataBase shareDataBase].setting.weightUnit];
         [_headerView addSubview:_totolWeight];
         [self.view addSubview:_headerView];
         
@@ -567,12 +567,12 @@ sectionForSectionIndexTitle:(NSString *)title
 #pragma mark - Data Source
 - (void)getAllBean{
     _beanArr = [[DataBase shareDataBase] queryAllBean];
-    _totolCount.text = [NSString stringWithFormat:@"总数:%ld",_beanArr.count];
+    _totolCount.text = [NSString stringWithFormat:@"%@:%ld",LocalString(@"总数"),_beanArr.count];
     float totolWeight = 0.f;
     for (BeanModel *bean in _beanArr) {
         totolWeight += bean.stock;
     }
-    _totolWeight.text = [NSString stringWithFormat:@"总重量：%.3f %@",[NSString diffWeightUnitStringWithWeight:totolWeight],[DataBase shareDataBase].setting.weightUnit];
+    _totolWeight.text = [NSString stringWithFormat:@"%@：%.3f %@",LocalString(@"总重量"),[NSString diffWeightUnitStringWithWeight:totolWeight],[DataBase shareDataBase].setting.weightUnit];
     if (_sort_nameBtn.tag == sortUp) {
         [self setObjects:_beanArr];
     }else if(_sort_weightBtn.tag == sortUp){
