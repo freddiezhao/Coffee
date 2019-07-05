@@ -48,7 +48,7 @@
     int fieldInt = (int)(fieldFloat * pow(10, decimal));
     if (fieldInt > 65535) {
         fieldInt = 65535;
-        [NSObject showHudTipStr:LocalString(@"Input number more than limit")];
+        [NSObject showHudTipStr:LocalString(@"输入超出范围")];
     }
     NSString *fieldHex = [NSString stringWithFormat:@"%04x",fieldInt];
     return fieldHex;

@@ -97,7 +97,7 @@ static float HEIGHT_HEADER = 36.f;
 
 - (NSArray *)titleData {
     if (!_titleData) {
-        _titleData = @[@"当前设备",@"所有设备",@"来自分享"];
+        _titleData = @[LocalString(@"当前设备"),LocalString(@"所有设备"),LocalString(@"来自分享")];
     }
     return _titleData;
 }
