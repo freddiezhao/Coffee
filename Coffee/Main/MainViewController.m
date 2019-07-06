@@ -55,7 +55,7 @@
 }
 
 - (void)customizeTabBarForController{
-    NSArray *tabBarItemTitle = @[@"烘焙", @"曲线",@"生豆",@"杯测",@"我的"];
+    NSArray *tabBarItemTitle = @[LocalString(@"烘焙"), LocalString(@"曲线"),LocalString(@"生豆"),LocalString(@"杯测"),LocalString(@"我的")];
     NSArray *tabBarItemImages = @[@"ic_tabbar_baking_nor",@"ic_tabbar_curve_nor",@"ic_tabbar_bean_nor",@"ic_tabbar_test_nor",@"ic_tabbar_mine_nor"];
     NSArray *tabBarItemSelectImages = @[@"ic_tabbar_baking_sel",@"ic_tabbar_curve_sel",@"ic_tabbar_bean_sel",@"ic_tabbar_test_sel",@"ic_tabbar_mine_sel"];
     NSDictionary *tabBarTitleUnselectedDic = @{NSForegroundColorAttributeName:[UIColor colorWithHexString:@"999999"],NSFontAttributeName:[UIFont systemFontOfSize:11]};
