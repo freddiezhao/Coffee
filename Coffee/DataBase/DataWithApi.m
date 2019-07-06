@@ -13,14 +13,14 @@
 #import "FMDB.h"
 
 @implementation DataWithApi
-- (void)startGetInfoSuccess:(void(^)(void))success failure:(void(^)(void))failure{
+
+- (void)startGetInfoSuccess:(SuccessBlock)success failure:(FailureBlock)failure{
     [self getAllBeanByApiSuccess:success failure:failure];
-    //[self getAllCupByApi];
-    //[self getAllReportByApi]
 }
 
+
 #pragma mark - 生豆列表页面
-- (void)getAllBeanByApiSuccess:(void(^)(void))success failure:(void(^)(void))failure{
+- (void)getAllBeanByApiSuccess:(SuccessBlock)success failure:(FailureBlock)failure{
     //[SVProgressHUD showWithStatus:LocalString(@"从服务器同步用户存储内容中...")];
     //[SVProgressHUD setDefaultMaskType:SVProgressHUDMaskTypeBlack];
     AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
@@ -72,7 +72,7 @@
 }
 
 #pragma mark - 生豆详情API data
-- (void)getBeanInfoByAPIWithBeanUidArr:(NSMutableArray *)beanArr success:(void(^)(void))success failure:(void(^)(void))failure{
+- (void)getBeanInfoByAPIWithBeanUidArr:(NSMutableArray *)beanArr success:(SuccessBlock)success failure:(FailureBlock)failure{
     if (beanArr.count == 0) {
         [self getAllReportByApiSuccess:success failure:failure];
         return;
@@ -147,7 +147,7 @@
 }
 
 #pragma mark - 烘焙报告列表页面
-- (void)getAllReportByApiSuccess:(void(^)(void))success failure:(void(^)(void))failure{
+- (void)getAllReportByApiSuccess:(SuccessBlock)success failure:(FailureBlock)failure{
     AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
 
     [manager.requestSerializer willChangeValueForKey:@"timeoutInterval"];
@@ -207,7 +207,7 @@
 }
 
 #pragma mark - 烘焙报告详情页面数据获取
-- (void)getFullCurveInfoByApiWithReportArr:(NSMutableArray *)reportArr success:(void(^)(void))success failure:(void(^)(void))failure{
+- (void)getFullCurveInfoByApiWithReportArr:(NSMutableArray *)reportArr success:(SuccessBlock)success failure:(FailureBlock)failure{
     if (reportArr.count == 0) {
         [self getAllCupByApiSuccess:success failure:failure];
     }
@@ -329,7 +329,7 @@
 }
 
 #pragma mark - 杯测列表页面
-- (void)getAllCupByApiSuccess:(void(^)(void))success failure:(void(^)(void))failure{
+- (void)getAllCupByApiSuccess:(SuccessBlock)success failure:(FailureBlock)failure{
     AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
     
     [manager.requestSerializer willChangeValueForKey:@"timeoutInterval"];
@@ -378,7 +378,7 @@
 }
 
 #pragma mark - 杯测详情API data
-- (void)getCupInfoByAPIWithCupArr:(NSMutableArray *)cupArr success:(void(^)(void))success failure:(void(^)(void))failure{
+- (void)getCupInfoByAPIWithCupArr:(NSMutableArray *)cupArr success:(SuccessBlock)success failure:(FailureBlock)failure{
     if (cupArr.count == 0) {
         dispatch_async(dispatch_get_main_queue(), ^{
             //[SVProgressHUD dismiss];

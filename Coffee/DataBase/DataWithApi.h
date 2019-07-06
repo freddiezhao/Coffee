@@ -12,7 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface DataWithApi : NSObject
 
-- (void)startGetInfoSuccess:(void(^)(void))success failure:(void(^)(void))failure;
+- (void)startGetInfoSuccess:(SuccessBlock)success failure:(FailureBlock)failure;
 
 @end
 

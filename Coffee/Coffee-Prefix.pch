@@ -78,6 +78,9 @@ typedef enum : NSUInteger {
     sortDown,
 } nameStatus;
 
+typedef void(^SuccessBlock)(void);
+typedef void(^FailureBlock)(void);
+
 #endif /* Coffee_Prefix_pch */
 
 
