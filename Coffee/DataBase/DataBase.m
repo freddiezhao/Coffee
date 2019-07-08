@@ -291,6 +291,13 @@ static DataBase *_dataBase = nil;
             beanModel.price = [set doubleForColumn:@"price"];
             beanModel.stock = [set doubleForColumn:@"stock"];
             beanModel.time = [NSDate YMDDateFromLocalString:[set stringForColumn:@"time"]];
+            if ([beanModel.grade isEqualToString:@""]) {
+                beanModel.grade = LocalString(@"未知");
+            }
+            if ([beanModel.process isEqualToString:@""]) {
+                beanModel.process = LocalString(@"未知");
+            }
+
             [beanArray addObject:beanModel];
         }
         [set close];

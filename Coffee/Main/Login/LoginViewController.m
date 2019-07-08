@@ -317,7 +317,7 @@
         [_verifyLoginBtn addTarget:self action:@selector(verifyLogin) forControlEvents:UIControlEventTouchUpInside];
         [self.view addSubview:_verifyLoginBtn];
         [_verifyLoginBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.size.mas_equalTo(CGSizeMake(80/WScale, 20/HScale));
+            make.size.mas_equalTo(CGSizeMake(150/WScale, 20/HScale));
             make.left.equalTo(self.loginBtn.mas_left);
             make.top.equalTo(self.loginBtn.mas_bottom).offset(10/HScale);
         }];
@@ -336,7 +336,7 @@
         [_registeBtn addTarget:self action:@selector(registeUser) forControlEvents:UIControlEventTouchUpInside];
         [self.view addSubview:_registeBtn];
         [_registeBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.size.mas_equalTo(CGSizeMake(80/WScale, 20/HScale));
+            make.size.mas_equalTo(CGSizeMake(100/WScale, 20/HScale));
             make.right.equalTo(self.loginBtn.mas_right);
             make.top.equalTo(self.loginBtn.mas_bottom).offset(10/HScale);
         }];
@@ -358,10 +358,13 @@
         [_remeberPWBtn addTarget:self action:@selector(remeberPW) forControlEvents:UIControlEventTouchUpInside];
         [self.view addSubview:_remeberPWBtn];
         [_remeberPWBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.size.mas_equalTo(CGSizeMake(90/WScale, 20/HScale));
+            make.size.mas_equalTo(CGSizeMake(150/WScale, 20/HScale));
             make.left.equalTo(self.loginBtn.mas_left);
             make.bottom.equalTo(self.loginBtn.mas_top).offset(-10/HScale);
         }];
+        //文字相对于图片的偏移量
+        [_remeberPWBtn setImageEdgeInsets:UIEdgeInsetsMake(0, -5, 0, 0)];
+        [_remeberPWBtn setContentHorizontalAlignment:UIControlContentHorizontalAlignmentLeft];
     }
     return _remeberPWBtn;
 }
@@ -377,7 +380,7 @@
         [_forgetPWBtn addTarget:self action:@selector(forgetPW) forControlEvents:UIControlEventTouchUpInside];
         [self.view addSubview:_forgetPWBtn];
         [_forgetPWBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.size.mas_equalTo(CGSizeMake(60/WScale, 20/HScale));
+            make.size.mas_equalTo(CGSizeMake(100/WScale, 20/HScale));
             make.right.equalTo(self.loginBtn.mas_right);
             make.bottom.equalTo(self.loginBtn.mas_top).offset(-10/HScale);
         }];

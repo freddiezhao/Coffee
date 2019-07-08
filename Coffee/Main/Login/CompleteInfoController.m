@@ -161,21 +161,21 @@
 
 - (void)showSheet:(UIButton *)sender {
     //显示弹出框列表选择
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"请选择您的照片"
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:LocalString(@"请选择您的照片")
                                                                    message:nil
                                                             preferredStyle:UIAlertControllerStyleActionSheet];
     
-    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel
+    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:LocalString(@"取消") style:UIAlertActionStyleCancel
                                                          handler:^(UIAlertAction * action) {
                                                              //响应事件
                                                              NSLog(@"action = %@", action);
                                                          }];
-    UIAlertAction *cameraAction = [UIAlertAction actionWithTitle:@"拍照" style:UIAlertActionStyleDefault
+    UIAlertAction *cameraAction = [UIAlertAction actionWithTitle:LocalString(@"拍照") style:UIAlertActionStyleDefault
                                                          handler:^(UIAlertAction * action) {
                                                              //响应事件
                                                              NSLog(@"action = %@", action);
                                                          }];
-    UIAlertAction *albumAction = [UIAlertAction actionWithTitle:@"从相册选择" style:UIAlertActionStyleDefault
+    UIAlertAction *albumAction = [UIAlertAction actionWithTitle:LocalString(@"从相册选择") style:UIAlertActionStyleDefault
                                                         handler:^(UIAlertAction * action) {
                                                             //响应事件
                                                             NSLog(@"action = %@", action);

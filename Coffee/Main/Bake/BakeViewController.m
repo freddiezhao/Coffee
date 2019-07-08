@@ -640,8 +640,9 @@
 
 - (UILabel *)status{
     if (!_status) {
-        _status = [[UILabel alloc] initWithFrame:CGRectMake(159/WScale, 0, 80/WScale, 19/HScale)];
-        _status.text = @"设备未连接";
+        _status = [[UILabel alloc] initWithFrame:CGRectMake(159/WScale, 0, 80/WScale, 32/HScale)];
+        _status.text = LocalString(@"设备未连接");
+        _status.numberOfLines = 2;
         _status.textAlignment = NSTextAlignmentLeft;
         _status.textColor = [UIColor colorWithHexString:@"333333"];
         _status.font = [UIFont systemFontOfSize:13.f];
@@ -708,7 +709,7 @@
 - (UILabel *)status1{
     if (!_status1) {
         _status1 = [[UILabel alloc] initWithFrame:CGRectMake(87/WScale, 175/HScale, 50/WScale, 17/HScale)];
-        _status1.text = @"热机中";
+        _status1.text = LocalString(@"热机中");
         _status1.textAlignment = NSTextAlignmentLeft;
         _status1.textColor = [UIColor colorWithHexString:@"999999"];
         _status1.font = [UIFont systemFontOfSize:12.f];
@@ -726,7 +727,7 @@
 - (UILabel *)status2{
     if (!_status2) {
         _status2 = [[UILabel alloc] initWithFrame:CGRectMake(177/WScale, 175/HScale, 50/WScale, 17/HScale)];
-        _status2.text = @"烘焙中";
+        _status2.text = LocalString(@"烘焙中");
         _status2.textAlignment = NSTextAlignmentLeft;
         _status2.textColor = [UIColor colorWithHexString:@"999999"];
         _status2.font = [UIFont systemFontOfSize:12.f];
@@ -744,7 +745,7 @@
 - (UILabel *)status3{
     if (!_status3) {
         _status3 = [[UILabel alloc] initWithFrame:CGRectMake(266/WScale, 175/HScale, 50/WScale, 17/HScale)];
-        _status3.text = @"冷却中";
+        _status3.text = LocalString(@"冷却中");
         _status3.textAlignment = NSTextAlignmentLeft;
         _status3.textColor = [UIColor colorWithHexString:@"999999"];
         _status3.font = [UIFont systemFontOfSize:12.f];
@@ -912,32 +913,32 @@
         [_mainView addSubview:windpLabel];
         
         [powerLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.size.mas_equalTo(CGSizeMake(50/WScale, 19/HScale));
+            make.size.mas_equalTo(CGSizeMake(80/WScale, 19/HScale));
             make.centerX.equalTo(_powerBtn.mas_centerX);
             make.top.equalTo(_powerBtn.mas_bottom).offset(2/HScale);
         }];
         [fireLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.size.mas_equalTo(CGSizeMake(50/WScale, 19/HScale));
+            make.size.mas_equalTo(CGSizeMake(80/WScale, 19/HScale));
             make.centerX.equalTo(_fireBtn.mas_centerX);
             make.top.equalTo(_fireBtn.mas_bottom).offset(2/HScale);
         }];
         [stirLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.size.mas_equalTo(CGSizeMake(50/WScale, 19/HScale));
+            make.size.mas_equalTo(CGSizeMake(80/WScale, 19/HScale));
             make.centerX.equalTo(_stirBtn.mas_centerX);
             make.top.equalTo(_stirBtn.mas_bottom).offset(2/HScale);
         }];
         [coldLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.size.mas_equalTo(CGSizeMake(50/WScale, 19/HScale));
+            make.size.mas_equalTo(CGSizeMake(80/WScale, 19/HScale));
             make.centerX.equalTo(_coldBtn.mas_centerX);
             make.top.equalTo(_coldBtn.mas_bottom).offset(2/HScale);
         }];
         [firepLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.size.mas_equalTo(CGSizeMake(50/WScale, 19/HScale));
+            make.size.mas_equalTo(CGSizeMake(80/WScale, 19/HScale));
             make.centerX.equalTo(_firePBtn.mas_centerX);
             make.top.equalTo(_firePBtn.mas_bottom).offset(2/HScale);
         }];
         [windpLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.size.mas_equalTo(CGSizeMake(50/WScale, 19/HScale));
+            make.size.mas_equalTo(CGSizeMake(80/WScale, 19/HScale));
             make.centerX.equalTo(_windPBtn.mas_centerX);
             make.top.equalTo(_windPBtn.mas_bottom).offset(2/HScale);
         }];
@@ -1099,7 +1100,7 @@
         textLabel.font = [UIFont systemFontOfSize:12.f];
         [_mainView addSubview:textLabel];
         [textLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.size.mas_equalTo(CGSizeMake(50/WScale, 17/HScale));
+            make.size.mas_equalTo(CGSizeMake(80/WScale, 17/HScale));
             make.left.equalTo(_environTempLabel.mas_left);
             make.top.equalTo(_environTempLabel.mas_bottom);
         }];

@@ -89,6 +89,7 @@ static float HEIGHT_HEADER = 15.f;
         [_relaCurveBtn setTitle:LocalString(@"烘焙曲线") forState:UIControlStateNormal];
         [_relaCurveBtn.titleLabel setFont:[UIFont systemFontOfSize:16.f]];
         [_relaCurveBtn setTitleColor:[UIColor colorWithHexString:@"FFFFFF"] forState:UIControlStateNormal];
+        _relaCurveBtn.titleLabel.adjustsFontSizeToFitWidth = YES;
         [_relaCurveBtn setBackgroundColor:[UIColor colorWithRed:71/255.0 green:120/255.0 blue:204/255.0 alpha:1]];
         [_relaCurveBtn addTarget:self action:@selector(goRelaCurveViewController) forControlEvents:UIControlEventTouchUpInside];
         [self.view addSubview:_relaCurveBtn];

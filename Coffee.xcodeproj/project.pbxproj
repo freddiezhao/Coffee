@@ -331,7 +331,6 @@
 		BB8AA4D220DFB9CA00610316 /* ESPDatumCode.m in Sources */ = {isa = PBXBuildFile; fileRef = BB8AA4C420DFB9C900610316 /* ESPDatumCode.m */; };
 		BB8AA4D720DFBFA400610316 /* TouchTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = BB8AA4D620DFBFA400610316 /* TouchTableView.m */; };
 		BB8AA4DF20DFC96A00610316 /* SSIDTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BB8AA4DD20DFC96A00610316 /* SSIDTableViewCell.m */; };
-		BB8AA4E020DFC96A00610316 /* SSIDTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = BB8AA4DE20DFC96A00610316 /* SSIDTableViewCell.xib */; };
 		BB8AA4E420DFCA1C00610316 /* PasswordTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BB8AA4E220DFCA1C00610316 /* PasswordTableViewCell.m */; };
 		BB8AA4E820DFD18D00610316 /* UIColor+ColorChange.m in Sources */ = {isa = PBXBuildFile; fileRef = BB8AA4E720DFD18D00610316 /* UIColor+ColorChange.m */; };
 		BB8F7BD120DA513B00BE5CFC /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = BB8F7BD020DA513B00BE5CFC /* AppDelegate.m */; };
@@ -356,6 +355,7 @@
 		BBA7B95F212AA586004943DC /* CollectInfoCellCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BBA7B95E212AA586004943DC /* CollectInfoCellCell.m */; };
 		BBA7B965212AC531004943DC /* CollectEventCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BBA7B964212AC531004943DC /* CollectEventCell.m */; };
 		BBA7B968212ACAB2004943DC /* TempPer30sCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BBA7B967212ACAB2004943DC /* TempPer30sCell.m */; };
+		BBB3999722D32CA600F09849 /* SSIDTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = BBB3999922D32CA600F09849 /* SSIDTableViewCell.xib */; };
 		BBC4AB862103347100F49BDC /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = BBC4AB852103347100F49BDC /* libsqlite3.tbd */; };
 		BBCD3AB0224228B000439B71 /* CurveDetailClickCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BBCD3AAF224228B000439B71 /* CurveDetailClickCell.m */; };
 		BBCD3AB32242307600439B71 /* ReportCurveDetailController.m in Sources */ = {isa = PBXBuildFile; fileRef = BBCD3AB22242307600439B71 /* ReportCurveDetailController.m */; };
@@ -865,7 +865,6 @@
 		BB8AA4D620DFBFA400610316 /* TouchTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TouchTableView.m; sourceTree = "<group>"; };
 		BB8AA4DC20DFC96A00610316 /* SSIDTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SSIDTableViewCell.h; sourceTree = "<group>"; };
 		BB8AA4DD20DFC96A00610316 /* SSIDTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SSIDTableViewCell.m; sourceTree = "<group>"; };
-		BB8AA4DE20DFC96A00610316 /* SSIDTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SSIDTableViewCell.xib; sourceTree = "<group>"; };
 		BB8AA4E120DFCA1C00610316 /* PasswordTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PasswordTableViewCell.h; sourceTree = "<group>"; };
 		BB8AA4E220DFCA1C00610316 /* PasswordTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PasswordTableViewCell.m; sourceTree = "<group>"; };
 		BB8AA4E620DFD18D00610316 /* UIColor+ColorChange.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIColor+ColorChange.h"; sourceTree = "<group>"; };
@@ -911,6 +910,9 @@
 		BBA7B964212AC531004943DC /* CollectEventCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CollectEventCell.m; sourceTree = "<group>"; };
 		BBA7B966212ACAB2004943DC /* TempPer30sCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TempPer30sCell.h; sourceTree = "<group>"; };
 		BBA7B967212ACAB2004943DC /* TempPer30sCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TempPer30sCell.m; sourceTree = "<group>"; };
+		BBB3999A22D32CAA00F09849 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/SSIDTableViewCell.xib; sourceTree = "<group>"; };
+		BBB3999C22D32CB500F09849 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/SSIDTableViewCell.strings"; sourceTree = "<group>"; };
+		BBB3999E22D32CCB00F09849 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/SSIDTableViewCell.strings; sourceTree = "<group>"; };
 		BBC4AB852103347100F49BDC /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
 		BBCD3AAE224228B000439B71 /* CurveDetailClickCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CurveDetailClickCell.h; sourceTree = "<group>"; };
 		BBCD3AAF224228B000439B71 /* CurveDetailClickCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CurveDetailClickCell.m; sourceTree = "<group>"; };
@@ -1330,7 +1332,7 @@
 			children = (
 				BB8AA4DC20DFC96A00610316 /* SSIDTableViewCell.h */,
 				BB8AA4DD20DFC96A00610316 /* SSIDTableViewCell.m */,
-				BB8AA4DE20DFC96A00610316 /* SSIDTableViewCell.xib */,
+				BBB3999922D32CA600F09849 /* SSIDTableViewCell.xib */,
 				BB8AA4E120DFCA1C00610316 /* PasswordTableViewCell.h */,
 				BB8AA4E220DFCA1C00610316 /* PasswordTableViewCell.m */,
 				BB6A784320E32A4D00EE3E2E /* DeviceTableViewCell.h */,
@@ -2097,7 +2099,7 @@
 				BB525EDF212CFF47003484E9 /* img_signal_light_reji2@3x.png in Resources */,
 				BB525E5A212CFF47003484E9 /* img_signal_light_hongbei2@3x.png in Resources */,
 				BB525EEB212CFF47003484E9 /* img_coffee_beans@3x.png in Resources */,
-				BB8AA4E020DFC96A00610316 /* SSIDTableViewCell.xib in Resources */,
+				BBB3999722D32CA600F09849 /* SSIDTableViewCell.xib in Resources */,
 				BB525F06212CFF47003484E9 /* ic_nav_serch_black@2x.png in Resources */,
 				BB525E53212CFF47003484E9 /* img_peak_edmund@3x.png in Resources */,
 				BB525EE7212CFF47003484E9 /* img_mask2@3x.png in Resources */,
@@ -2461,6 +2463,16 @@
 				360BA8D022CF6C6B000678C0 /* zh-Hans */,
 			);
 			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+		BBB3999922D32CA600F09849 /* SSIDTableViewCell.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				BBB3999A22D32CAA00F09849 /* Base */,
+				BBB3999C22D32CB500F09849 /* zh-Hans */,
+				BBB3999E22D32CCB00F09849 /* en */,
+			);
+			name = SSIDTableViewCell.xib;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */

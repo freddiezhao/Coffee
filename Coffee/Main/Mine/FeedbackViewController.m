@@ -36,7 +36,7 @@ NSString *const CellIdentifier_FeedTextField = @"CellID_FeedTextField";
     self.view.layer.backgroundColor = [UIColor colorWithRed:246/255.0 green:246/255.0 blue:246/255.0 alpha:1].CGColor;
     [self setNavItem];
     
-    self.messageArray = @[LocalString(@"连不上路由器"),LocalString(@"升温不够快"),LocalString(@"豆子烤焦了"),LocalString(@"机器抖的厉害")];
+    self.messageArray = @[LocalString(@"连不上路由器"),LocalString(@"升温不够快"),LocalString(@"豆子烤焦了")];
     _feedTable = [self feedTable];
     
 }
@@ -119,7 +119,7 @@ NSString *const CellIdentifier_FeedTextField = @"CellID_FeedTextField";
     self.navigationItem.title = LocalString(@"我要反馈");
     
     UIButton *rightButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    rightButton.frame = CGRectMake(0, 0, 32, 23);
+    rightButton.frame = CGRectMake(0, 0, 60, 23);
     [rightButton setTitle:LocalString(@"提交") forState:UIControlStateNormal];
     [rightButton setTitleColor:[UIColor colorWithHexString:@"4778CC"] forState:UIControlStateNormal];
     rightButton.titleLabel.adjustsFontSizeToFitWidth = YES;
@@ -162,7 +162,7 @@ NSString *const CellIdentifier_FeedTextField = @"CellID_FeedTextField";
     if (section == 0){
         return 1;
     }else if (section == 1){
-        return 4;
+        return 3;
     }else{
         return 2;
     }

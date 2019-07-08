@@ -235,7 +235,7 @@ NSString *const CellIdentifier_GeneralLogout = @"CellID_GeneralLogout";
         }
     }
     if (indexPath.section == 4) {
-        [self showSheetWithTitle:LocalString(@"请选择语言") actions:@[@"中文",@"英文"] indexpath:indexPath];
+        [self showSheetWithTitle:LocalString(@"请选择语言") actions:@[LocalString(@"中文"),LocalString(@"英文")] indexpath:indexPath];
     }
     if (indexPath.section == 5) {
         if ([[NetWork shareNetWork].mySocket isDisconnected]) {
@@ -419,7 +419,7 @@ NSString *const CellIdentifier_GeneralLogout = @"CellID_GeneralLogout";
         }
         [alert addAction:alertAction];
     }
-    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:^(UIAlertAction * action) {
+    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:LocalString(@"取消") style:UIAlertActionStyleCancel handler:^(UIAlertAction * action) {
         //响应事件
         NSLog(@"action = %@", action);
 
@@ -468,10 +468,8 @@ NSString *const CellIdentifier_GeneralLogout = @"CellID_GeneralLogout";
     YAlertViewController *alert = [[YAlertViewController alloc] init];
     alert.modalPresentationStyle = UIModalPresentationOverCurrentContext;
     alert.rBlock = ^{
-        [self.rdv_tabBarController setTabBarHidden:NO animated:YES];
     };
     alert.lBlock = ^{
-        [self.rdv_tabBarController setTabBarHidden:NO animated:YES];
     };
     [self presentViewController:alert animated:NO completion:^{
         [self.rdv_tabBarController setTabBarHidden:YES animated:YES];

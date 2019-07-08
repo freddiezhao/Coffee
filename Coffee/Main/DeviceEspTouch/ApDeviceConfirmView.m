@@ -26,7 +26,7 @@
 {
     self = [super init];
     if (self) {
-        deviceTypeNameArray = @[@"HB-M6G咖啡烘焙机",@"HB-M6E咖啡烘焙机",@"HB-L2咖啡烘焙机",@"PEAK-Edmund咖啡烘焙机",@"其他机型"];
+        deviceTypeNameArray = @[LocalString(@"HB-M6G咖啡烘焙机"),LocalString(@"HB-M6E咖啡烘焙机"),LocalString(@"HB-L2咖啡烘焙机"),LocalString(@"PEAK-Edmund咖啡烘焙机"),LocalString(@"其他机型")];
     }
     return self;
 }

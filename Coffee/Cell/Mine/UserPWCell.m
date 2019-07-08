@@ -18,6 +18,7 @@
             _nameLabel = [[UILabel alloc] init];
             _nameLabel.font = [UIFont systemFontOfSize:15.f];
             _nameLabel.backgroundColor = [UIColor clearColor];
+            _nameLabel.adjustsFontSizeToFitWidth = YES;
             _nameLabel.textColor = [UIColor colorWithHexString:@"222222"];
             _nameLabel.textAlignment = NSTextAlignmentLeft;
             [self.contentView addSubview:_nameLabel];

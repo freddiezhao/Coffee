@@ -348,21 +348,21 @@ static float HEIGHT_HEADER = 36.f;
         BeanModel *bean = _beanArr[indexPath.row];
         cell.beanImage.image = [UIImage imageNamed:@"img_coffee_beans"];
         cell.beanLabel.text = bean.name;
-        cell.infoLabel.text = [NSString stringWithFormat:@"%@等级 · 处理方式%@",bean.grade,bean.process];
+        cell.infoLabel.text = [NSString stringWithFormat:@"%@ %@ · %@%@",bean.grade,LocalString(@"等级"),LocalString(@"处理方式"),bean.process];
         cell.weightLabel.text = [NSString stringWithFormat:@"%.1f%@",[NSString diffWeightUnitStringWithWeight:bean.stock],[DataBase shareDataBase].setting.weightUnit];
         return cell;
     }else if (_sort_weightBtn.tag != sortUnselect){//重量排序(包括正序和倒叙)
         BeanModel *bean = _weightArr[indexPath.row];
         cell.beanImage.image = [UIImage imageNamed:@"img_coffee_beans"];
         cell.beanLabel.text = bean.name;
-        cell.infoLabel.text = [NSString stringWithFormat:@"%@等级 · 处理方式%@",bean.grade,bean.process];
+        cell.infoLabel.text = [NSString stringWithFormat:@"%@ %@ · %@%@",bean.grade,LocalString(@"等级"),LocalString(@"处理方式"),bean.process];
         cell.weightLabel.text = [NSString stringWithFormat:@"%.1f%@",[NSString diffWeightUnitStringWithWeight:bean.stock],[DataBase shareDataBase].setting.weightUnit];
         return cell;
     }else if (_sort_nameBtn.tag != sortUnselect){//名字排序
         BeanModel *bean = [_mutableSections[indexPath.section] objectAtIndex:indexPath.row];
         cell.beanImage.image = [UIImage imageNamed:@"img_coffee_beans"];
         cell.beanLabel.text = bean.name;
-        cell.infoLabel.text = [NSString stringWithFormat:@"%@等级 · 处理方式%@",bean.grade,bean.process];
+        cell.infoLabel.text = [NSString stringWithFormat:@"%@ %@ · %@%@",bean.grade,LocalString(@"等级"),LocalString(@"处理方式"),bean.process];
         cell.weightLabel.text = [NSString stringWithFormat:@"%.1f%@",[NSString diffWeightUnitStringWithWeight:bean.stock],[DataBase shareDataBase].setting.weightUnit];
         return cell;
     }else{
