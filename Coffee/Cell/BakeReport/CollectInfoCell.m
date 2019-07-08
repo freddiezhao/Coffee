@@ -412,15 +412,15 @@ NSString *const CollectHeaderIdentifier_curve = @"CollectHeaderID_curve";
     
     UILabel *label = [[UILabel alloc] initWithFrame:titleView.bounds];
     if (indexPath.section == 0) {
-        label.text = @"图表简述";
+        label.text = LocalString(@"图表简述");
     }else if (indexPath.section == 1){
-        label.text = @"回温点至脱水结束";
+        label.text = LocalString(@"回温点至脱水结束");
     }else if (indexPath.section == 2){
-        label.text = @"脱水结束至一爆开始";
+        label.text = LocalString(@"脱水结束至一爆开始");
     }else if (indexPath.section == 3){
-        label.text = @"一爆开始至烘焙结束";
+        label.text = LocalString(@"一爆开始至烘焙结束");
     }else if (indexPath.section == 4){
-        label.text = @"事件列表";
+        label.text = LocalString(@"事件列表");
     }
     label.textColor = [UIColor colorWithHexString:@"999999"];
     label.font = [UIFont systemFontOfSize:15.0];
