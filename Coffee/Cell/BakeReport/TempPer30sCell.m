@@ -18,6 +18,7 @@
             _Label1.textColor = [UIColor colorWithHexString:@"999999"];
             _Label1.font = [UIFont systemFontOfSize:10.0];
             _Label1.textAlignment = NSTextAlignmentCenter;
+            _Label1.numberOfLines = 0;
             [self.contentView addSubview:_Label1];
         }
         if (!_Label2) {
@@ -25,6 +26,7 @@
             _Label2.textColor = [UIColor colorWithHexString:@"999999"];
             _Label2.font = [UIFont systemFontOfSize:10.0];
             _Label2.textAlignment = NSTextAlignmentCenter;
+            _Label2.numberOfLines = 0;
             [self.contentView addSubview:_Label2];
         }
         if (!_Label3) {
@@ -32,6 +34,7 @@
             _Label3.textColor = [UIColor colorWithHexString:@"999999"];
             _Label3.font = [UIFont systemFontOfSize:10.0];
             _Label3.textAlignment = NSTextAlignmentCenter;
+            _Label3.numberOfLines = 0;
             [self.contentView addSubview:_Label3];
         }
         if (!_Label4) {
@@ -39,6 +42,7 @@
             _Label4.textColor = [UIColor colorWithHexString:@"999999"];
             _Label4.font = [UIFont systemFontOfSize:10.0];
             _Label4.textAlignment = NSTextAlignmentCenter;
+            _Label4.numberOfLines = 0;
             [self.contentView addSubview:_Label4];
         }
         if (!_Label5) {
@@ -46,6 +50,7 @@
             _Label5.textColor = [UIColor colorWithHexString:@"999999"];
             _Label5.font = [UIFont systemFontOfSize:10.0];
             _Label5.textAlignment = NSTextAlignmentCenter;
+            _Label5.numberOfLines = 0;
             [self.contentView addSubview:_Label5];
         }
         if (!_Label6) {

@@ -20,6 +20,7 @@
             _nameLabel.backgroundColor = [UIColor clearColor];
             _nameLabel.textColor = [UIColor colorWithHexString:@"222222"];
             _nameLabel.textAlignment = NSTextAlignmentLeft;
+            _nameLabel.adjustsFontSizeToFitWidth = YES;
             [self.contentView addSubview:_nameLabel];
             
             [_nameLabel mas_makeConstraints:^(MASConstraintMaker *make) {

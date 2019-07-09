@@ -390,28 +390,32 @@
     UILabel *bakeTimeL = [[UILabel alloc] init];
     bakeTimeL.textAlignment = NSTextAlignmentLeft;
     bakeTimeL.font = [UIFont fontWithName:@"PingFangSC-Light" size:12];
-    bakeTimeL.text = @"烘焙时间";
+    bakeTimeL.text = LocalString(@"烘焙时间");
+    bakeTimeL.adjustsFontSizeToFitWidth = YES;
     bakeTimeL.textColor = [UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1];
     [self.view addSubview:bakeTimeL];
     
     UILabel *developRateL = [[UILabel alloc] init];
     developRateL.textAlignment = NSTextAlignmentLeft;
     developRateL.font = [UIFont fontWithName:@"PingFangSC-Light" size:12];
-    developRateL.text = @"发展率";
+    developRateL.text = LocalString(@"发展率");
+    developRateL.adjustsFontSizeToFitWidth = YES;
     developRateL.textColor = [UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1];
     [self.view addSubview:developRateL];
     
     UILabel *developTimeL = [[UILabel alloc] init];
     developTimeL.textAlignment = NSTextAlignmentLeft;
     developTimeL.font = [UIFont fontWithName:@"PingFangSC-Light" size:12];
-    developTimeL.text = @"发展时间";
+    developTimeL.text = LocalString(@"发展时间");
+    developTimeL.adjustsFontSizeToFitWidth = YES;
     developTimeL.textColor = [UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1];
     [self.view addSubview:developTimeL];
     
     UILabel *beanTempLabelL = [[UILabel alloc] init];
     beanTempLabelL.textAlignment = NSTextAlignmentLeft;
     beanTempLabelL.font = [UIFont fontWithName:@"PingFangSC-Light" size:12];
-    beanTempLabelL.text = @"豆温";
+    beanTempLabelL.text = LocalString(@"豆温");
+    beanTempLabelL.adjustsFontSizeToFitWidth = YES;
     beanTempLabelL.textColor = [UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1];
     [self.view addSubview:beanTempLabelL];
     
@@ -428,7 +432,8 @@
     UILabel *inTempLabelL = [[UILabel alloc] init];
     inTempLabelL.textAlignment = NSTextAlignmentLeft;
     inTempLabelL.font = [UIFont fontWithName:@"PingFangSC-Light" size:12];
-    inTempLabelL.text = @"热风温";
+    inTempLabelL.text = LocalString(@"热风温");
+    inTempLabelL.adjustsFontSizeToFitWidth = YES;
     inTempLabelL.textColor = [UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1];
     [self.view addSubview:inTempLabelL];
     
@@ -445,7 +450,8 @@
     UILabel *outTempLabelL = [[UILabel alloc] init];
     outTempLabelL.textAlignment = NSTextAlignmentLeft;
     outTempLabelL.font = [UIFont fontWithName:@"PingFangSC-Light" size:12];
-    outTempLabelL.text = @"排气温";
+    outTempLabelL.text = LocalString(@"排气温");
+    outTempLabelL.adjustsFontSizeToFitWidth = YES;
     outTempLabelL.textColor = [UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1];
     [self.view addSubview:outTempLabelL];
     
@@ -462,7 +468,8 @@
     UILabel *environTempLabelL = [[UILabel alloc] init];
     environTempLabelL.textAlignment = NSTextAlignmentLeft;
     environTempLabelL.font = [UIFont fontWithName:@"PingFangSC-Light" size:12];
-    environTempLabelL.text = @"环境温";
+    environTempLabelL.text = LocalString(@"环境温");
+    environTempLabelL.adjustsFontSizeToFitWidth = YES;
     environTempLabelL.textColor = [UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1];
     [self.view addSubview:environTempLabelL];
     
@@ -479,7 +486,8 @@
     UILabel *beanTempRateLabelL = [[UILabel alloc] init];
     beanTempRateLabelL.textAlignment = NSTextAlignmentLeft;
     beanTempRateLabelL.font = [UIFont fontWithName:@"PingFangSC-Light" size:12];
-    beanTempRateLabelL.text = @"升温率";
+    beanTempRateLabelL.text = LocalString(@"升温率");
+    beanTempRateLabelL.adjustsFontSizeToFitWidth = YES;
     beanTempRateLabelL.textColor = [UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1];
     [self.view addSubview:beanTempRateLabelL];
     
@@ -495,7 +503,7 @@
     
     
     [bakeTimeL mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.size.mas_equalTo(CGSizeMake(48/HScale, 13/WScale));
+        make.size.mas_equalTo(CGSizeMake(60/HScale, 13/WScale));
         make.top.mas_equalTo(self.view.mas_top).offset(13/WScale);
         if (kDevice_Is_iPhoneX) {
             make.left.mas_equalTo(self.view.mas_left).offset((47+44)/HScale);
@@ -514,9 +522,9 @@
     }];
     
     [developTimeL mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.size.mas_equalTo(CGSizeMake(48/HScale, 13/WScale));
+        make.size.mas_equalTo(CGSizeMake(60/HScale, 13/WScale));
         make.top.mas_equalTo(self.view.mas_top).offset(13/WScale);
-        make.left.mas_equalTo(bakeTimeL.mas_right).offset(27/HScale);
+        make.left.mas_equalTo(bakeTimeL.mas_right).offset(15/HScale);
     }];
     [_developTime mas_makeConstraints:^(MASConstraintMaker *make) {
         make.size.mas_equalTo(CGSizeMake(37/HScale, 13/WScale));
@@ -525,9 +533,9 @@
     }];
     
     [developRateL mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.size.mas_equalTo(CGSizeMake(36/HScale, 13/WScale));
+        make.size.mas_equalTo(CGSizeMake(60/HScale, 13/WScale));
         make.top.mas_equalTo(self.view.mas_top).offset(13/WScale);
-        make.left.mas_equalTo(developTimeL.mas_right).offset(27/HScale);
+        make.left.mas_equalTo(developTimeL.mas_right).offset(15/HScale);
     }];
     [_developRate mas_makeConstraints:^(MASConstraintMaker *make) {
         make.size.mas_equalTo(CGSizeMake(39/HScale, 13/WScale));
@@ -546,9 +554,9 @@
     }];
     
     [beanTempLabelL mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.size.mas_equalTo(CGSizeMake(24/HScale, 13/WScale));
+        make.size.mas_equalTo(CGSizeMake(50/HScale, 13/WScale));
         make.top.mas_equalTo(self.view.mas_top).offset(13/WScale);
-        make.left.mas_equalTo(developRateL.mas_right).offset(56/HScale);
+        make.left.mas_equalTo(developRateL.mas_right).offset(32/HScale);
     }];
     [_beanTempLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.size.mas_equalTo(CGSizeMake(52/HScale, 13/WScale));
@@ -557,9 +565,9 @@
     }];
     
     [inTempLabelL mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.size.mas_equalTo(CGSizeMake(36/HScale, 13/WScale));
+        make.size.mas_equalTo(CGSizeMake(60/HScale, 13/WScale));
         make.top.mas_equalTo(self.view.mas_top).offset(13/WScale);
-        make.left.mas_equalTo(beanTempLabelL.mas_right).offset(51/HScale);
+        make.left.mas_equalTo(beanTempLabelL.mas_right).offset(25/HScale);
     }];
     [_inTempLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.size.mas_equalTo(CGSizeMake(43/HScale, 13/WScale));
@@ -568,9 +576,9 @@
     }];
     
     [outTempLabelL mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.size.mas_equalTo(CGSizeMake(36/HScale, 13/WScale));
+        make.size.mas_equalTo(CGSizeMake(60/HScale, 13/WScale));
         make.top.mas_equalTo(self.view.mas_top).offset(13/WScale);
-        make.left.mas_equalTo(inTempLabelL.mas_right).offset(39/HScale);
+        make.left.mas_equalTo(inTempLabelL.mas_right).offset(15/HScale);
     }];
     [_outTempLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.size.mas_equalTo(CGSizeMake(49/HScale, 13/WScale));
@@ -579,9 +587,9 @@
     }];
     
     [environTempLabelL mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.size.mas_equalTo(CGSizeMake(36/HScale, 13/WScale));
+        make.size.mas_equalTo(CGSizeMake(60/HScale, 13/WScale));
         make.top.mas_equalTo(self.view.mas_top).offset(13/WScale);
-        make.left.mas_equalTo(outTempLabelL.mas_right).offset(39/HScale);
+        make.left.mas_equalTo(outTempLabelL.mas_right).offset(15/HScale);
     }];
     [_environTempLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.size.mas_equalTo(CGSizeMake(49/HScale, 13/WScale));
@@ -590,9 +598,9 @@
     }];
     
     [beanTempRateLabelL mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.size.mas_equalTo(CGSizeMake(36/HScale, 13/WScale));
+        make.size.mas_equalTo(CGSizeMake(60/HScale, 13/WScale));
         make.top.mas_equalTo(self.view.mas_top).offset(13/WScale);
-        make.left.mas_equalTo(environTempLabelL.mas_right).offset(39/HScale);
+        make.left.mas_equalTo(environTempLabelL.mas_right).offset(15/HScale);
     }];
     [_beanTempRateLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.size.mas_equalTo(CGSizeMake(69/HScale, 13/WScale));

@@ -1,20 +1,20 @@
 //
-//  SearchBeanController.m
+//  BeanViewController_Search.m
 //  Coffee
 //
-//  Created by 杭州轨物科技有限公司 on 2018/10/11.
-//  Copyright © 2018年 杭州轨物科技有限公司. All rights reserved.
+//  Created by 杭州轨物科技有限公司 on 2019/7/9.
+//  Copyright © 2019年 杭州轨物科技有限公司. All rights reserved.
 //
 
-#import "SearchBeanController.h"
+#import "BeanViewController_Search.h"
 #import "TouchTableView.h"
 #import "beanCell.h"
 #import "BeanModel.h"
 #import "BeanDetailController.h"
 
-NSString *const CellIdentifier_searchBean = @"CellID_searchBean";
+NSString *const CellIdentifier_bean_search = @"CellID_bean_search";
 
-@interface SearchBeanController () <UITableViewDelegate, UITableViewDataSource, UISearchResultsUpdating, UISearchBarDelegate, UISearchControllerDelegate>
+@interface BeanViewController_Search () <UITableViewDelegate, UITableViewDataSource, UISearchResultsUpdating, UISearchBarDelegate, UISearchControllerDelegate>
 
 @property (nonatomic, strong) UITableView *myTableView;
 @property (nonatomic, strong) UISearchController *searchController;
@@ -23,7 +23,8 @@ NSString *const CellIdentifier_searchBean = @"CellID_searchBean";
 
 @end
 
-@implementation SearchBeanController
+@implementation BeanViewController_Search
+
 static float HEIGHT_CELL = 70.f;
 
 - (void)viewDidLoad {
@@ -42,7 +43,7 @@ static float HEIGHT_CELL = 70.f;
 
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
-
+    
     if (@available(iOS 11.0, *)) {
         
     }else{
@@ -67,7 +68,7 @@ static float HEIGHT_CELL = 70.f;
             tableView.separatorColor = [UIColor colorWithRed:0/255.0 green:0/255.0 blue:0/255.0 alpha:0.08];
             tableView.dataSource = self;
             tableView.delegate = self;
-            [tableView registerClass:[beanCell class] forCellReuseIdentifier:CellIdentifier_searchBean];
+            [tableView registerClass:[beanCell class] forCellReuseIdentifier:CellIdentifier_bean_search];
             [self.view addSubview:tableView];
             tableView.scrollEnabled = NO;
             tableView.estimatedRowHeight = 0;
@@ -91,7 +92,7 @@ static float HEIGHT_CELL = 70.f;
             //[[self.searchController.searchBar.heightAnchor constraintEqualToConstant:44.0] setActive:YES];
             self.navigationItem.hidesSearchBarWhenScrolling = NO;
             _searchController.hidesNavigationBarDuringPresentation = YES;
-
+            
         } else {
             self.myTableView.tableHeaderView = self.searchController.searchBar;
         }
@@ -138,9 +139,9 @@ static float HEIGHT_CELL = 70.f;
 
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    beanCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_searchBean];
+    beanCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_bean_search];
     if (cell == nil) {
-        cell = [[beanCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_searchBean];
+        cell = [[beanCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_bean_search];
     }
     BeanModel *bean = _resultArr[indexPath.row];
     cell.beanImage.image = [UIImage imageNamed:@"img_coffee_beans"];
@@ -155,14 +156,16 @@ static float HEIGHT_CELL = 70.f;
 }
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
-    BeanDetailController *detailVC = [[BeanDetailController alloc] init];
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     BeanModel *bean = _resultArr[indexPath.row];
-    detailVC.myBean = [[DataBase shareDataBase] queryBean:bean.beanUid];
     if (_searchController.active) {
         [_searchController dismissViewControllerAnimated:YES completion:nil];
     }
-    [self.navigationController pushViewController:detailVC animated:YES];
+    [self dismissViewControllerAnimated:YES completion:^{
+        if (self.dismissBlock) {
+            self.dismissBlock(bean);
+        }
+    }];
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -187,7 +190,7 @@ static float HEIGHT_CELL = 70.f;
         if (result.length > 0)
         {
             bean.searchRange = result;
-
+            
             [self.resultArr addObject:bean];
         }
     }
@@ -232,8 +235,6 @@ static float HEIGHT_CELL = 70.f;
         [self.searchController dismissViewControllerAnimated:YES completion:nil];
     }
     [self dismissViewControllerAnimated:YES completion:nil];
-    if (self.dismissBlock) {
-        self.dismissBlock();
-    }
 }
+
 @end

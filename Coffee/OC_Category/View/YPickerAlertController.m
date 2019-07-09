@@ -127,7 +127,7 @@
 
     NSMutableAttributedString *AttributedString = [[NSMutableAttributedString alloc]initWithString:str];
     
-    [AttributedString addAttributes:@{NSFontAttributeName:[UIFont boldSystemFontOfSize:16], NSForegroundColorAttributeName:[UIColor colorWithHexString:@"222222"]} range:NSMakeRange(0, [AttributedString  length])];
+    [AttributedString addAttributes:@{NSFontAttributeName:[UIFont boldSystemFontOfSize:16], NSForegroundColorAttributeName:[UIColor colorWithHexString:@"222222"]} range:NSMakeRange(0, [AttributedString length])];
     return AttributedString;
     
 }//NS_AVAILABLE_IOS(6_0);

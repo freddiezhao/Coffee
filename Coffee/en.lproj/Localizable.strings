@@ -30,6 +30,7 @@
 "烘焙已结束，是否保存该烘焙曲线" = "Roasting is completed, is a Roasting Profile generated?";
 "取消" = "NO";
 "确认" = "YES";
+"确定" = "YES";
 "完成" = "YES";
 "服务器添加烘焙信息成功" = "Success";
 "服务器添加烘焙信息失败" = "Fail";
@@ -54,7 +55,7 @@
 "庄园" = "Manor";
 "豆种" = "Bean species";
 "等级" = "Class";
-"处理方式" = "Processing Methods";
+"处理方式" = "Processing";
 "含水量" = "Moisture Content";
 "日晒" = "Natural";
 "水洗" = "Washed";
@@ -68,7 +69,7 @@
 "排气温" = "Exhaust";
 "豆温" = "Bean";
 "环境温" = "Inside-Drum";
-"升温率" = "升温率";
+"升温率" = "RoR";
 "查看详情" = "More";
 "事件类型" = "Event type";
 "发生时间" = "Occurred Time";
@@ -83,8 +84,8 @@
 "烘焙时长" = "Roasting Time";
 "回温点时间/温度" = "Turning Point Time/Temp";
 "一爆时间/温度" = "First Crack Time/Temp";
-"发展时间" = "Development Time";
-"发展率" = "Development Rate";
+"发展时间" = "Dev.";
+"发展率" = "Dev. Rate";
 "开始温度" = "Dropping Temp";
 "结束温度" = "Ending Temp";
 "平均温升" = "Average RoR";
@@ -361,4 +362,8 @@
 "拍照" = "Camera";
 "从相册选择" = "Choose from Album";
 "等级" = "Grade";
-"处理方式" = "";
+"烘焙评分" = "Roasting Grading";
+"烘焙瑕疵" = "Roasting Defects";
+"最终结果" = "Result";
+"烘焙时间" = "Roasting";
+"分钟" = "min";

@@ -99,40 +99,40 @@
         [self.contentView addSubview:equalLabel];
         
         UILabel *gradeText = [[UILabel alloc] init];
-        gradeText.text = @"烘焙评分";
+        gradeText.text = LocalString(@"烘焙评分");
         gradeText.font = [UIFont fontWithName:@"Avenir" size:13];
         gradeText.textColor = [UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1];
         gradeText.textAlignment = NSTextAlignmentCenter;
         gradeText.adjustsFontSizeToFitWidth = YES;
         [self.contentView addSubview:gradeText];
         [gradeText mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.size.mas_equalTo(CGSizeMake(80/WScale, 19/HScale));
+            make.size.mas_equalTo(CGSizeMake(100/WScale, 19/HScale));
             make.centerX.equalTo(self.bakeGradeView.mas_centerX);
             make.top.equalTo(self.bakeGradeView.mas_bottom).offset(10/HScale);
         }];
         
         UILabel *defectText = [[UILabel alloc] init];
-        defectText.text = @"烘焙瑕疵";
+        defectText.text = LocalString(@"烘焙瑕疵");
         defectText.font = [UIFont fontWithName:@"Avenir" size:13];
         defectText.textColor = [UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1];
         defectText.textAlignment = NSTextAlignmentCenter;
         defectText.adjustsFontSizeToFitWidth = YES;
         [self.contentView addSubview:defectText];
         [defectText mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.size.mas_equalTo(CGSizeMake(80/WScale, 19/HScale));
+            make.size.mas_equalTo(CGSizeMake(100/WScale, 19/HScale));
             make.centerX.equalTo(self.bakeDefectView.mas_centerX);
             make.top.equalTo(self.bakeDefectView.mas_bottom).offset(10/HScale);
         }];
         
         UILabel *resultText = [[UILabel alloc] init];
-        resultText.text = @"最终结果";
+        resultText.text = LocalString(@"最终结果");
         resultText.font = [UIFont fontWithName:@"Avenir" size:13];
         resultText.textColor = [UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1];
         resultText.textAlignment = NSTextAlignmentCenter;
         resultText.adjustsFontSizeToFitWidth = YES;
         [self.contentView addSubview:resultText];
         [resultText mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.size.mas_equalTo(CGSizeMake(80/WScale, 19/HScale));
+            make.size.mas_equalTo(CGSizeMake(100/WScale, 19/HScale));
             make.centerX.equalTo(self.resultView.mas_centerX);
             make.top.equalTo(self.resultView.mas_bottom).offset(10/HScale);
         }];

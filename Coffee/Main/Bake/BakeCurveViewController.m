@@ -381,28 +381,32 @@ static BOOL isRelaOn = NO;
     UILabel *bakeTimeL = [[UILabel alloc] init];
     bakeTimeL.textAlignment = NSTextAlignmentLeft;
     bakeTimeL.font = [UIFont fontWithName:@"PingFangSC-Light" size:12];
-    bakeTimeL.text = @"烘焙时间";
+    bakeTimeL.text = LocalString(@"烘焙时间");
+    bakeTimeL.adjustsFontSizeToFitWidth = YES;
     bakeTimeL.textColor = [UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1];
     [self.view addSubview:bakeTimeL];
     
     UILabel *developRateL = [[UILabel alloc] init];
     developRateL.textAlignment = NSTextAlignmentLeft;
     developRateL.font = [UIFont fontWithName:@"PingFangSC-Light" size:12];
-    developRateL.text = @"发展率";
+    developRateL.text = LocalString(@"发展率");
+    developRateL.adjustsFontSizeToFitWidth = YES;
     developRateL.textColor = [UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1];
     [self.view addSubview:developRateL];
     
     UILabel *developTimeL = [[UILabel alloc] init];
     developTimeL.textAlignment = NSTextAlignmentLeft;
     developTimeL.font = [UIFont fontWithName:@"PingFangSC-Light" size:12];
-    developTimeL.text = @"发展时间";
+    developTimeL.text = LocalString(@"发展时间");
+    developTimeL.adjustsFontSizeToFitWidth = YES;
     developTimeL.textColor = [UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1];
     [self.view addSubview:developTimeL];
     
     UILabel *beanTempLabelL = [[UILabel alloc] init];
     beanTempLabelL.textAlignment = NSTextAlignmentLeft;
     beanTempLabelL.font = [UIFont fontWithName:@"PingFangSC-Light" size:12];
-    beanTempLabelL.text = @"豆温";
+    beanTempLabelL.text = LocalString(@"豆温");
+    beanTempLabelL.adjustsFontSizeToFitWidth = YES;
     beanTempLabelL.textColor = [UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1];
     [self.view addSubview:beanTempLabelL];
     
@@ -419,7 +423,8 @@ static BOOL isRelaOn = NO;
     UILabel *inTempLabelL = [[UILabel alloc] init];
     inTempLabelL.textAlignment = NSTextAlignmentLeft;
     inTempLabelL.font = [UIFont fontWithName:@"PingFangSC-Light" size:12];
-    inTempLabelL.text = @"热风温";
+    inTempLabelL.text = LocalString(@"热风温");
+    inTempLabelL.adjustsFontSizeToFitWidth = YES;
     inTempLabelL.textColor = [UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1];
     [self.view addSubview:inTempLabelL];
     
@@ -436,7 +441,8 @@ static BOOL isRelaOn = NO;
     UILabel *outTempLabelL = [[UILabel alloc] init];
     outTempLabelL.textAlignment = NSTextAlignmentLeft;
     outTempLabelL.font = [UIFont fontWithName:@"PingFangSC-Light" size:12];
-    outTempLabelL.text = @"排气温";
+    outTempLabelL.text = LocalString(@"排气温");
+    outTempLabelL.adjustsFontSizeToFitWidth = YES;
     outTempLabelL.textColor = [UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1];
     [self.view addSubview:outTempLabelL];
     
@@ -453,7 +459,8 @@ static BOOL isRelaOn = NO;
     UILabel *environTempLabelL = [[UILabel alloc] init];
     environTempLabelL.textAlignment = NSTextAlignmentLeft;
     environTempLabelL.font = [UIFont fontWithName:@"PingFangSC-Light" size:12];
-    environTempLabelL.text = @"环境温";
+    environTempLabelL.text = LocalString(@"环境温");
+    environTempLabelL.adjustsFontSizeToFitWidth = YES;
     environTempLabelL.textColor = [UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1];
     [self.view addSubview:environTempLabelL];
     
@@ -470,7 +477,8 @@ static BOOL isRelaOn = NO;
     UILabel *beanTempRateLabelL = [[UILabel alloc] init];
     beanTempRateLabelL.textAlignment = NSTextAlignmentLeft;
     beanTempRateLabelL.font = [UIFont fontWithName:@"PingFangSC-Light" size:12];
-    beanTempRateLabelL.text = @"升温率";
+    beanTempRateLabelL.text = LocalString(@"升温率");
+    beanTempRateLabelL.adjustsFontSizeToFitWidth = YES;
     beanTempRateLabelL.textColor = [UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1];
     [self.view addSubview:beanTempRateLabelL];
     
@@ -486,7 +494,7 @@ static BOOL isRelaOn = NO;
     
     
     [bakeTimeL mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.size.mas_equalTo(CGSizeMake(48/HScale, 13/WScale));
+        make.size.mas_equalTo(CGSizeMake(60/HScale, 13/WScale));
         make.top.mas_equalTo(self.view.mas_top).offset(13/WScale);
         if (kDevice_Is_iPhoneX) {
             make.left.mas_equalTo(self.view.mas_left).offset((47+44)/HScale);
@@ -505,9 +513,9 @@ static BOOL isRelaOn = NO;
     }];
     
     [developTimeL mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.size.mas_equalTo(CGSizeMake(48/HScale, 13/WScale));
+        make.size.mas_equalTo(CGSizeMake(60/HScale, 13/WScale));
         make.top.mas_equalTo(self.view.mas_top).offset(13/WScale);
-        make.left.mas_equalTo(bakeTimeL.mas_right).offset(27/HScale);
+        make.left.mas_equalTo(bakeTimeL.mas_right).offset(15/HScale);
     }];
     [_developTime mas_makeConstraints:^(MASConstraintMaker *make) {
         make.size.mas_equalTo(CGSizeMake(37/HScale, 13/WScale));
@@ -516,9 +524,9 @@ static BOOL isRelaOn = NO;
     }];
     
     [developRateL mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.size.mas_equalTo(CGSizeMake(36/HScale, 13/WScale));
+        make.size.mas_equalTo(CGSizeMake(60/HScale, 13/WScale));
         make.top.mas_equalTo(self.view.mas_top).offset(13/WScale);
-        make.left.mas_equalTo(developTimeL.mas_right).offset(27/HScale);
+        make.left.mas_equalTo(developTimeL.mas_right).offset(15/HScale);
     }];
     [_developRate mas_makeConstraints:^(MASConstraintMaker *make) {
         make.size.mas_equalTo(CGSizeMake(39/HScale, 13/WScale));
@@ -537,9 +545,9 @@ static BOOL isRelaOn = NO;
     }];
     
     [beanTempLabelL mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.size.mas_equalTo(CGSizeMake(24/HScale, 13/WScale));
+        make.size.mas_equalTo(CGSizeMake(50/HScale, 13/WScale));
         make.top.mas_equalTo(self.view.mas_top).offset(13/WScale);
-        make.left.mas_equalTo(developRateL.mas_right).offset(56/HScale);
+        make.left.mas_equalTo(developRateL.mas_right).offset(32/HScale);
     }];
     [_beanTempLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.size.mas_equalTo(CGSizeMake(52/HScale, 13/WScale));
@@ -548,9 +556,9 @@ static BOOL isRelaOn = NO;
     }];
     
     [inTempLabelL mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.size.mas_equalTo(CGSizeMake(36/HScale, 13/WScale));
+        make.size.mas_equalTo(CGSizeMake(60/HScale, 13/WScale));
         make.top.mas_equalTo(self.view.mas_top).offset(13/WScale);
-        make.left.mas_equalTo(beanTempLabelL.mas_right).offset(51/HScale);
+        make.left.mas_equalTo(beanTempLabelL.mas_right).offset(25/HScale);
     }];
     [_inTempLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.size.mas_equalTo(CGSizeMake(43/HScale, 13/WScale));
@@ -559,9 +567,9 @@ static BOOL isRelaOn = NO;
     }];
     
     [outTempLabelL mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.size.mas_equalTo(CGSizeMake(36/HScale, 13/WScale));
+        make.size.mas_equalTo(CGSizeMake(60/HScale, 13/WScale));
         make.top.mas_equalTo(self.view.mas_top).offset(13/WScale);
-        make.left.mas_equalTo(inTempLabelL.mas_right).offset(39/HScale);
+        make.left.mas_equalTo(inTempLabelL.mas_right).offset(15/HScale);
     }];
     [_outTempLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.size.mas_equalTo(CGSizeMake(49/HScale, 13/WScale));
@@ -570,9 +578,9 @@ static BOOL isRelaOn = NO;
     }];
     
     [environTempLabelL mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.size.mas_equalTo(CGSizeMake(36/HScale, 13/WScale));
+        make.size.mas_equalTo(CGSizeMake(60/HScale, 13/WScale));
         make.top.mas_equalTo(self.view.mas_top).offset(13/WScale);
-        make.left.mas_equalTo(outTempLabelL.mas_right).offset(39/HScale);
+        make.left.mas_equalTo(outTempLabelL.mas_right).offset(15/HScale);
     }];
     [_environTempLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.size.mas_equalTo(CGSizeMake(49/HScale, 13/WScale));
@@ -581,29 +589,14 @@ static BOOL isRelaOn = NO;
     }];
     
     [beanTempRateLabelL mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.size.mas_equalTo(CGSizeMake(36/HScale, 13/WScale));
+        make.size.mas_equalTo(CGSizeMake(60/HScale, 13/WScale));
         make.top.mas_equalTo(self.view.mas_top).offset(13/WScale);
-        make.left.mas_equalTo(environTempLabelL.mas_right).offset(39/HScale);
+        make.left.mas_equalTo(environTempLabelL.mas_right).offset(15/HScale);
     }];
     [_beanTempRateLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.size.mas_equalTo(CGSizeMake(69/HScale, 13/WScale));
         make.top.mas_equalTo(beanTempRateLabelL.mas_bottom).offset(8/WScale);
         make.left.mas_equalTo(_environTempLabel.mas_right).offset(26/HScale);
-    }];
-    
-    [_leftPopBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.size.mas_equalTo(CGSizeMake(32/WScale, 32/WScale));
-        if (@available(iOS 11.0,*)) {
-            make.left.equalTo(self.view.mas_safeAreaLayoutGuideLeft);
-        }else{
-            make.left.equalTo(self.view.mas_left);
-        }
-        make.centerY.equalTo(self.view.mas_centerY);
-    }];
-    [_rightPopBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.size.mas_equalTo(CGSizeMake(32/WScale, 32/WScale));
-        make.right.equalTo(self.view.mas_right);
-        make.centerY.equalTo(self.view.mas_centerY);
     }];
     
     //用来点击隐藏曲线，覆盖在温度文字上面

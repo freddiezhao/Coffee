@@ -155,8 +155,9 @@ static float HEIGHT_HEADER = 36.f;
             footView.backgroundColor = [UIColor clearColor];
             UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
             [button setTitle:LocalString(@"重新选择曲线") forState:UIControlStateNormal];
-            button.frame = CGRectMake(0, 0, 156/WScale, 36/HScale);
+            button.frame = CGRectMake(0, 0, 180/WScale, 36/HScale);
             [button.titleLabel setFont:[UIFont systemFontOfSize:16.f]];
+            button.titleLabel.adjustsFontSizeToFitWidth = YES;
             [button setTitleColor:[UIColor colorWithHexString:@"4778CC"] forState:UIControlStateNormal];
             [button addTarget:self action:@selector(selectCurve) forControlEvents:UIControlEventTouchUpInside];
             button.center = footView.center;
@@ -589,16 +590,44 @@ static float HEIGHT_HEADER = 36.f;
                     cell = [[BeanInfoCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_cupEditBeanInfo];
                 }
                 BeanModel *bean = _beanArray[indexPath.row - 1];
-                cell.beanName.text = bean.name;
-                cell.nation.text = bean.nation;
-                cell.area.text = bean.area;
-                cell.altitude.text = [NSString stringWithFormat:@"%.1f",bean.altitude];
-                cell.manor.text = bean.manor;
-                cell.beanSpecies.text = bean.beanSpecies;
-                cell.grade.text = bean.grade;
-                cell.process.text = bean.process;
-                cell.water.text = [NSString stringWithFormat:@"%.1f",bean.water];
-                cell.weight.text = [NSString stringWithFormat:@"%.1f",bean.weight];
+                if (bean.name && ![bean.name isEqualToString:@""]) {
+                    cell.beanName.attributedText = [self getAttributedString:LocalString(@"名称") appendString:bean.name];
+                }else{
+                    cell.beanName.attributedText = [self getAttributedString:LocalString(@"名称") appendString:LocalString(@"未知")];
+                }
+                if (bean.nation && ![bean.nation isEqualToString:@""]) {
+                    cell.nation.attributedText = [self getAttributedString:LocalString(@"国家") appendString:bean.nation];
+                }else{
+                    cell.nation.attributedText = [self getAttributedString:LocalString(@"国家") appendString:LocalString(@"未知")];
+                }
+                if (bean.area && ![bean.area isEqualToString:@""]) {
+                    cell.area.attributedText = [self getAttributedString:LocalString(@"产区") appendString:bean.area];
+                }else{
+                    cell.area.attributedText = [self getAttributedString:LocalString(@"产区") appendString:LocalString(@"未知")];
+                }
+                if (bean.manor && ![bean.manor isEqualToString:@""]) {
+                    cell.manor.attributedText = [self getAttributedString:LocalString(@"庄园") appendString:bean.manor];
+                }else{
+                    cell.manor.attributedText = [self getAttributedString:LocalString(@"庄园") appendString:LocalString(@"未知")];
+                }
+                if (bean.beanSpecies && ![bean.beanSpecies isEqualToString:@""]) {
+                    cell.beanSpecies.attributedText = [self getAttributedString:LocalString(@"豆种") appendString:bean.beanSpecies];
+                }else{
+                    cell.beanSpecies.attributedText = [self getAttributedString:LocalString(@"豆种") appendString:LocalString(@"未知")];
+                }
+                if (bean.grade && ![bean.grade isEqualToString:@""]) {
+                    cell.grade.attributedText = [self getAttributedString:LocalString(@"等级") appendString:bean.grade];
+                }else{
+                    cell.grade.attributedText = [self getAttributedString:LocalString(@"等级") appendString:LocalString(@"未知")];
+                }
+                if (bean.process && ![bean.process isEqualToString:@""]) {
+                    cell.process.attributedText = [self getAttributedString:LocalString(@"处理方式") appendString:bean.process];
+                }else{
+                    cell.process.attributedText = [self getAttributedString:LocalString(@"处理方式") appendString:LocalString(@"未知")];
+                }
+                cell.water.attributedText = [self getAttributedString:LocalString(@"含水量") appendString:[NSString stringWithFormat:@"%.1f",bean.water]];
+                cell.weight.attributedText = [self getAttributedString:LocalString(@"生豆重量") appendString:[NSString stringWithFormat:@"%.1f",bean.weight]];
+                cell.altitude.attributedText = [self getAttributedString:LocalString(@"海拔") appendString:[NSString stringWithFormat:@"%.1f",bean.altitude]];
                 return cell;
             }
         }else{
@@ -618,6 +647,15 @@ static float HEIGHT_HEADER = 36.f;
         }
     }
     
+}
+
+- (NSMutableAttributedString *)getAttributedString:(NSString *)text appendString:(NSString *)appendStr{
+    NSMutableAttributedString *str = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"%@  %@",text,appendStr]];
+    [str addAttribute:NSForegroundColorAttributeName value:[UIColor colorWithHexString:@"999999"] range:NSMakeRange(0,text.length)];
+    [str addAttribute:NSForegroundColorAttributeName value:[UIColor colorWithHexString:@"333333"] range:NSMakeRange(text.length + 2,str.length - text.length - 2)];
+    [str addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:13.f] range:NSMakeRange(0,text.length)];
+    [str addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:13.f] range:NSMakeRange(text.length + 2, str.length - text.length - 2)];
+    return str;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{

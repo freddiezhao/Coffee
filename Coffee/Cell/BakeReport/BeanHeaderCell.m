@@ -46,7 +46,7 @@
         }
         
         if (!_outWaterRate) {
-            _outWaterRate = [[UILabel alloc] initWithFrame:CGRectMake(246/WScale, 40/HScale, 87/WScale, 20/HScale)];
+            _outWaterRate = [[UILabel alloc] initWithFrame:CGRectMake(246/WScale, 40/HScale, ScreenWidth - 246/WScale, 20/HScale)];
             _outWaterRate.textColor = [UIColor colorWithHexString:@"999999"];
             _outWaterRate.font = [UIFont systemFontOfSize:13.0];
             _outWaterRate.textAlignment = NSTextAlignmentLeft;

@@ -13,6 +13,7 @@
 #import "beanCell.h"
 #import "BeanModel.h"
 #import "AddNewBeanController.h"
+#import "BeanViewController_Search.h"
 
 
 NSString *const CellIdentifier_bean_bakeadd = @"CellID_bean_bakeadd";
@@ -251,7 +252,6 @@ static float HEIGHT_HEADER = 36.f;
         _sort_nameBtn = [UIButton buttonWithType:UIButtonTypeCustom];
         _sort_nameBtn.hidden = YES;
         _sort_nameBtn.tag = sortUnselect;
-        [_sort_nameBtn setImage:[UIImage imageNamed:@"ic_rank1"] forState:UIControlStateNormal];
         [_sort_nameBtn setTitle:LocalString(@"名称") forState:UIControlStateNormal];
         [_sort_nameBtn setTitleColor:[UIColor colorWithHexString:@"999999"] forState:UIControlStateNormal];
         [_sort_nameBtn.titleLabel setFont:[UIFont fontWithName:@"PingFangSC-Medium" size:14]];
@@ -465,19 +465,43 @@ sectionForSectionIndexTitle:(NSString *)title
 }
 
 - (void)searchBean{
-    
+    BeanViewController_Search *searchVC = [[BeanViewController_Search alloc] init];
+    searchVC.beanArr = _beanArr;
+    UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:searchVC];
+    nav.modalPresentationStyle = UIModalPresentationOverCurrentContext;
+    nav.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+    searchVC.dismissBlock = ^(BeanModel *bean) {
+        for (BeanModel *model in [NetWork shareNetWork].beanArray) {
+            if ([model.beanUid isEqualToString:bean.beanUid]) {
+                [NSObject showHudTipStr:@"你已经添加该生豆了"];
+                return;
+            }
+        }
+        for (BeanModel *model in self.beanArray) {
+            if ([model.beanUid isEqualToString:bean.beanUid]) {
+                [NSObject showHudTipStr:@"你已经添加该生豆了"];
+                return;
+            }
+        }
+        self.popBlock(bean);
+        [self.navigationController popViewControllerAnimated:YES];
+    };
+    [self.navigationController setDefinesPresentationContext:YES];
+    [self presentViewController:nav animated:YES completion:nil];
 }
 
 - (void)generalSort:(UIButton *)sender{
     _sort_weightBtn.tag = sortUnselect;
     [_sort_weightBtn setImage:[UIImage imageNamed:@"ic_rank1"] forState:UIControlStateNormal];
     _sort_nameBtn.tag = sortUnselect;
-    [_sort_nameBtn setImage:[UIImage imageNamed:@"ic_rank1"] forState:UIControlStateNormal];
     
     if (sender.tag == sortUnselect) {
         sender.tag = sortSelect;
     }
-    [sender setTitleColor:[UIColor colorWithHexString:@"4778CC"] forState:UIControlStateNormal];
+    //设置按钮颜色
+    [_sort_generalBtn setTitleColor:[UIColor colorWithHexString:@"4778CC"] forState:UIControlStateNormal];
+    [_sort_weightBtn setTitleColor:[UIColor colorWithHexString:@"999999"] forState:UIControlStateNormal];
+    [_sort_nameBtn setTitleColor:[UIColor colorWithHexString:@"999999"] forState:UIControlStateNormal];
     [self.beanTable reloadData];
 }
 
@@ -485,18 +509,18 @@ sectionForSectionIndexTitle:(NSString *)title
     _sort_weightBtn.tag = sortUnselect;
     [_sort_weightBtn setImage:[UIImage imageNamed:@"ic_rank1"] forState:UIControlStateNormal];
     _sort_generalBtn.tag = sortUnselect;
+    //设置按钮颜色
     [_sort_generalBtn setTitleColor:[UIColor colorWithHexString:@"999999"] forState:UIControlStateNormal];
-    
+    [_sort_weightBtn setTitleColor:[UIColor colorWithHexString:@"999999"] forState:UIControlStateNormal];
+    [_sort_nameBtn setTitleColor:[UIColor colorWithHexString:@"4778CC"] forState:UIControlStateNormal];
+
     if (sender.tag == sortUnselect) {
         sender.tag = sortUp;
-        [sender setImage:[UIImage imageNamed:@"ic_rank3"] forState:UIControlStateNormal];
         [self setObjects:_beanArr];
     }else if (sender.tag == sortUp){
         sender.tag = sortDown;
-        [sender setImage:[UIImage imageNamed:@"ic_rank3"] forState:UIControlStateNormal];
     }else{
         sender.tag = sortUp;
-        [sender setImage:[UIImage imageNamed:@"ic_rank3"] forState:UIControlStateNormal];
     }
     [self.beanTable reloadData];
 }
@@ -504,8 +528,9 @@ sectionForSectionIndexTitle:(NSString *)title
 - (void)weightSort:(UIButton *)sender{
     _sort_generalBtn.tag = sortUnselect;
     [_sort_generalBtn setTitleColor:[UIColor colorWithHexString:@"999999"] forState:UIControlStateNormal];
+    [_sort_weightBtn setTitleColor:[UIColor colorWithHexString:@"4778CC"] forState:UIControlStateNormal];
+    [_sort_nameBtn setTitleColor:[UIColor colorWithHexString:@"999999"] forState:UIControlStateNormal];
     _sort_nameBtn.tag = sortUnselect;
-    [_sort_nameBtn setImage:[UIImage imageNamed:@"ic_rank1"] forState:UIControlStateNormal];
     if (sender.tag == sortUnselect) {
         [self upSortByWeight:_beanArr];
         sender.tag = sortUp;
@@ -513,7 +538,7 @@ sectionForSectionIndexTitle:(NSString *)title
     }else if (sender.tag == sortUp){
         [self downSortByWeight:_beanArr];
         sender.tag = sortDown;
-        [sender setImage:[UIImage imageNamed:@"ic_rank3"] forState:UIControlStateNormal];
+        [sender setImage:[UIImage imageNamed:@"ic_rank4"] forState:UIControlStateNormal];
     }else{
         [self upSortByWeight:_beanArr];//正序排序
         sender.tag = sortUp;

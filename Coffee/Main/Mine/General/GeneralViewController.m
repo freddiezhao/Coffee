@@ -170,7 +170,7 @@ NSString *const CellIdentifier_GeneralLogout = @"CellID_GeneralLogout";
         }
         if (indexPath.row == 0) {
             cell.leftLabel.text = LocalString(@"时间轴");
-            cell.rightLabel.text = [NSString stringWithFormat:@"%ld分钟",_myData.setting.timeAxis];
+            cell.rightLabel.text = [NSString stringWithFormat:@"%ld%@",_myData.setting.timeAxis,LocalString(@"分钟")];
             return cell;
         }else{
             cell.leftLabel.text = LocalString(@"温度轴");

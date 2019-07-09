@@ -25,7 +25,7 @@
             [self.contentView addSubview:_nameLabel];
             
             [_nameLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-                make.size.mas_equalTo(CGSizeMake(80/WScale, 23/HScale));
+                make.size.mas_equalTo(CGSizeMake(100/WScale, 23/HScale));
                 make.left.equalTo(self.contentView.mas_left).offset(20/WScale);
                 make.top.equalTo(self.contentView.mas_top).offset(15/HScale);
             }];

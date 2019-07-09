@@ -146,6 +146,9 @@
                           [userDefaults setObject:@0 forKey:self.phoneTF.text];
                           [SVProgressHUD dismiss];
                       }];
+                  }else{
+                      MainViewController *mainVC = [[MainViewController alloc] init];
+                      [self presentViewController:mainVC animated:NO completion:nil];
                   }
               }else{
                   [NSObject showHudTipStr:LocalString(@"登录失败，请检查您的密码")];
@@ -348,8 +351,8 @@
     if (!_remeberPWBtn) {
         _remeberPWBtn = [UIButton buttonWithType:UIButtonTypeCustom];
         [_remeberPWBtn setTitle:LocalString(@"记住密码") forState:UIControlStateNormal];
-        [_remeberPWBtn setImage:[UIImage imageNamed:@"ic_select"] forState:UIControlStateNormal];
-        _remeberPWBtn.tag = unselect;
+        [_remeberPWBtn setImage:[UIImage imageNamed:@"ic_selected"] forState:UIControlStateNormal];
+        _remeberPWBtn.tag = select;
         [_remeberPWBtn.imageView sizeThatFits:CGSizeMake(30.f, 30.f)];
         [_remeberPWBtn.titleLabel setFont:[UIFont systemFontOfSize:14.f]];
         _remeberPWBtn.titleLabel.adjustsFontSizeToFitWidth = YES;

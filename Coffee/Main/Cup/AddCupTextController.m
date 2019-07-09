@@ -591,56 +591,44 @@ NSString *const CellIdentifier_cupAddBadScore = @"CellID_cupAddBadScore";
                     cell = [[BeanInfoCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier_cupAddBeanInfo];
                 }
                 BeanModel *bean = _beanArray[indexPath.row - 1];
-                if (bean.name) {
-                    cell.beanName.text = bean.name;
+                if (bean.name && ![bean.name isEqualToString:@""]) {
+                    cell.beanName.attributedText = [self getAttributedString:LocalString(@"名称") appendString:bean.name];
                 }else{
-                    cell.beanName.text = LocalString(@"未知");
+                    cell.beanName.attributedText = [self getAttributedString:LocalString(@"名称") appendString:LocalString(@"未知")];
                 }
-                if (bean.nation) {
-                    cell.nation.text = bean.nation;
+                if (bean.nation && ![bean.nation isEqualToString:@""]) {
+                    cell.nation.attributedText = [self getAttributedString:LocalString(@"国家") appendString:bean.nation];
                 }else{
-                    cell.nation.text = LocalString(@"未知");
+                    cell.nation.attributedText = [self getAttributedString:LocalString(@"国家") appendString:LocalString(@"未知")];
                 }
-                if (bean.area) {
-                    cell.area.text = bean.area;
+                if (bean.area && ![bean.area isEqualToString:@""]) {
+                    cell.area.attributedText = [self getAttributedString:LocalString(@"产区") appendString:bean.area];
                 }else{
-                    cell.area.text = LocalString(@"未知");
+                    cell.area.attributedText = [self getAttributedString:LocalString(@"产区") appendString:LocalString(@"未知")];
                 }
-                if (bean.altitude) {
-                    cell.altitude.text = [NSString stringWithFormat:@"%.1f",bean.altitude];
+                if (bean.manor && ![bean.manor isEqualToString:@""]) {
+                    cell.manor.attributedText = [self getAttributedString:LocalString(@"庄园") appendString:bean.manor];
                 }else{
-                    cell.altitude.text = LocalString(@"未知");
+                    cell.manor.attributedText = [self getAttributedString:LocalString(@"庄园") appendString:LocalString(@"未知")];
                 }
-                if (bean.manor) {
-                    cell.manor.text = bean.manor;
+                if (bean.beanSpecies && ![bean.beanSpecies isEqualToString:@""]) {
+                    cell.beanSpecies.attributedText = [self getAttributedString:LocalString(@"豆种") appendString:bean.beanSpecies];
                 }else{
-                    cell.manor.text = LocalString(@"未知");
+                    cell.beanSpecies.attributedText = [self getAttributedString:LocalString(@"豆种") appendString:LocalString(@"未知")];
                 }
-                if (bean.beanSpecies) {
-                    cell.beanSpecies.text = bean.beanSpecies;
+                if (bean.grade && ![bean.grade isEqualToString:@""]) {
+                    cell.grade.attributedText = [self getAttributedString:LocalString(@"等级") appendString:bean.grade];
                 }else{
-                    cell.beanSpecies.text = LocalString(@"未知");
+                    cell.grade.attributedText = [self getAttributedString:LocalString(@"等级") appendString:LocalString(@"未知")];
                 }
-                if (bean.grade) {
-                    cell.grade.text = bean.grade;
+                if (bean.process && ![bean.process isEqualToString:@""]) {
+                    cell.process.attributedText = [self getAttributedString:LocalString(@"处理方式") appendString:bean.process];
                 }else{
-                    cell.grade.text = LocalString(@"未知");
+                    cell.process.attributedText = [self getAttributedString:LocalString(@"处理方式") appendString:LocalString(@"未知")];
                 }
-                if (bean.process) {
-                    cell.process.text = bean.process;
-                }else{
-                    cell.process.text = LocalString(@"未知");
-                }
-                if (bean.water) {
-                    cell.water.text = [NSString stringWithFormat:@"%.1f",bean.water];
-                }else{
-                    cell.water.text = LocalString(@"未知");
-                }
-                if (bean.weight) {
-                    cell.weight.text = [NSString stringWithFormat:@"%.1f",bean.weight];
-                }else{
-                    cell.weight.text = LocalString(@"未知");
-                }
+                cell.water.attributedText = [self getAttributedString:LocalString(@"含水量") appendString:[NSString stringWithFormat:@"%.1f",bean.water]];
+                cell.weight.attributedText = [self getAttributedString:LocalString(@"生豆重量") appendString:[NSString stringWithFormat:@"%.1f",bean.weight]];
+                cell.altitude.attributedText = [self getAttributedString:LocalString(@"海拔") appendString:[NSString stringWithFormat:@"%.1f",bean.altitude]];
                 return cell;
             }
         }else{
@@ -660,6 +648,15 @@ NSString *const CellIdentifier_cupAddBadScore = @"CellID_cupAddBadScore";
         }
     }
     
+}
+
+- (NSMutableAttributedString *)getAttributedString:(NSString *)text appendString:(NSString *)appendStr{
+    NSMutableAttributedString *str = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"%@  %@",text,appendStr]];
+    [str addAttribute:NSForegroundColorAttributeName value:[UIColor colorWithHexString:@"999999"] range:NSMakeRange(0,text.length)];
+    [str addAttribute:NSForegroundColorAttributeName value:[UIColor colorWithHexString:@"333333"] range:NSMakeRange(text.length + 2,str.length - text.length - 2)];
+    [str addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:13.f] range:NSMakeRange(0,text.length)];
+    [str addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:13.f] range:NSMakeRange(text.length + 2, str.length - text.length - 2)];
+    return str;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{

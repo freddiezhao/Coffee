@@ -27,7 +27,7 @@
             [self.contentView addSubview:_curveLabel];
             
             [_curveLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-                make.size.mas_equalTo(CGSizeMake(100/WScale, 23/HScale));
+                make.size.mas_equalTo(CGSizeMake(180/WScale, 23/HScale));
                 make.centerY.equalTo(self.contentView.mas_centerY);
                 make.left.equalTo(self.contentView.mas_left).offset(15/WScale);
             }];

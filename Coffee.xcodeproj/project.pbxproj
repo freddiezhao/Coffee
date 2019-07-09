@@ -69,6 +69,7 @@
 		BB345C332153A4AA000537DD /* AFImageDownloader.m in Sources */ = {isa = PBXBuildFile; fileRef = BB345C242153A4A9000537DD /* AFImageDownloader.m */; };
 		BB345C362153C7D6000537DD /* NSString+Common.m in Sources */ = {isa = PBXBuildFile; fileRef = BB345C342153C7D6000537DD /* NSString+Common.m */; };
 		BB3811FA20EA1C3C00F0B2B7 /* BakeCurveViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB3811F920EA1C3C00F0B2B7 /* BakeCurveViewController.m */; };
+		BB3AA40522D43638002E1E81 /* BeanViewController_Search.m in Sources */ = {isa = PBXBuildFile; fileRef = BB3AA40422D43638002E1E81 /* BeanViewController_Search.m */; };
 		BB412405223B903F00E69EC7 /* ForgetPasswordController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB412404223B903F00E69EC7 /* ForgetPasswordController.m */; };
 		BB4A4C78214F474E0010A9A1 /* DetailGradeCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BB4A4C77214F474E0010A9A1 /* DetailGradeCell.m */; };
 		BB4A4C7B214F4A0B0010A9A1 /* ArcProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = BB4A4C7A214F4A0B0010A9A1 /* ArcProgressView.m */; };
@@ -501,6 +502,8 @@
 		BB345C352153C7D6000537DD /* NSString+Common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+Common.h"; sourceTree = "<group>"; };
 		BB3811F820EA1C3C00F0B2B7 /* BakeCurveViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BakeCurveViewController.h; sourceTree = "<group>"; };
 		BB3811F920EA1C3C00F0B2B7 /* BakeCurveViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BakeCurveViewController.m; sourceTree = "<group>"; };
+		BB3AA40322D43638002E1E81 /* BeanViewController_Search.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeanViewController_Search.h; sourceTree = "<group>"; };
+		BB3AA40422D43638002E1E81 /* BeanViewController_Search.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeanViewController_Search.m; sourceTree = "<group>"; };
 		BB412403223B903F00E69EC7 /* ForgetPasswordController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ForgetPasswordController.h; sourceTree = "<group>"; };
 		BB412404223B903F00E69EC7 /* ForgetPasswordController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ForgetPasswordController.m; sourceTree = "<group>"; };
 		BB41EAB6215B7E2900A58DFA /* Coffee.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Coffee.entitlements; sourceTree = "<group>"; };
@@ -1831,6 +1834,8 @@
 				BB525F27212D6FCB003484E9 /* AddBeanTableController.m */,
 				BB26A97921339E0C000F225C /* BeanViewController_bakeAdd.h */,
 				BB26A97A21339E0C000F225C /* BeanViewController_bakeAdd.m */,
+				BB3AA40322D43638002E1E81 /* BeanViewController_Search.h */,
+				BB3AA40422D43638002E1E81 /* BeanViewController_Search.m */,
 				BB18D5B321358597006CA5A7 /* CurveController_bakeRela.h */,
 				BB18D5B421358597006CA5A7 /* CurveController_bakeRela.m */,
 			);
@@ -2371,6 +2376,7 @@
 				BB2912152106FB43001B9448 /* SubtitileCell.m in Sources */,
 				BB8AA4C620DFB9CA00610316 /* ESPTouchResult.m in Sources */,
 				BB73BA33212FED92001D9258 /* BuyDateSelController.m in Sources */,
+				BB3AA40522D43638002E1E81 /* BeanViewController_Search.m in Sources */,
 				BB8AA4CB20DFB9CA00610316 /* ESP_CRC8.m in Sources */,
 				BB56101721522FC5008433B1 /* PhoneTFCell.m in Sources */,
 				BB8F7BD120DA513B00BE5CFC /* AppDelegate.m in Sources */,
