@@ -138,7 +138,7 @@
                       [SVProgressHUD setDefaultMaskType:SVProgressHUDMaskTypeBlack];
                       [data startGetInfoSuccess:^{
                           [SVProgressHUD dismiss];
-                          dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                          dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
                               MainViewController *mainVC = [[MainViewController alloc] init];
                               [self presentViewController:mainVC animated:NO completion:nil];
                           });
@@ -351,8 +351,16 @@
     if (!_remeberPWBtn) {
         _remeberPWBtn = [UIButton buttonWithType:UIButtonTypeCustom];
         [_remeberPWBtn setTitle:LocalString(@"记住密码") forState:UIControlStateNormal];
-        [_remeberPWBtn setImage:[UIImage imageNamed:@"ic_selected"] forState:UIControlStateNormal];
-        _remeberPWBtn.tag = select;
+        NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+        NSString *mobile = [userDefaults objectForKey:@"mobile"];
+        if (mobile != NULL) {
+            [_remeberPWBtn setImage:[UIImage imageNamed:@"ic_selected"] forState:UIControlStateNormal];
+            _remeberPWBtn.tag = select;
+        }else{
+            [_remeberPWBtn setImage:[UIImage imageNamed:@"ic_select"] forState:UIControlStateNormal];
+            _remeberPWBtn.tag = unselect;
+        }
+
         [_remeberPWBtn.imageView sizeThatFits:CGSizeMake(30.f, 30.f)];
         [_remeberPWBtn.titleLabel setFont:[UIFont systemFontOfSize:14.f]];
         _remeberPWBtn.titleLabel.adjustsFontSizeToFitWidth = YES;
