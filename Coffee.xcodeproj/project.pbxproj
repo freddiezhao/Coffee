@@ -70,6 +70,8 @@
 		BB345C362153C7D6000537DD /* NSString+Common.m in Sources */ = {isa = PBXBuildFile; fileRef = BB345C342153C7D6000537DD /* NSString+Common.m */; };
 		BB3811FA20EA1C3C00F0B2B7 /* BakeCurveViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB3811F920EA1C3C00F0B2B7 /* BakeCurveViewController.m */; };
 		BB3AA40522D43638002E1E81 /* BeanViewController_Search.m in Sources */ = {isa = PBXBuildFile; fileRef = BB3AA40422D43638002E1E81 /* BeanViewController_Search.m */; };
+		BB3AA40822D4934D002E1E81 /* NSBundle+YULanguage.m in Sources */ = {isa = PBXBuildFile; fileRef = BB3AA40722D4934D002E1E81 /* NSBundle+YULanguage.m */; };
+		BB3AA40B22D495C0002E1E81 /* YULanguageManager.m in Sources */ = {isa = PBXBuildFile; fileRef = BB3AA40A22D495C0002E1E81 /* YULanguageManager.m */; };
 		BB412405223B903F00E69EC7 /* ForgetPasswordController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB412404223B903F00E69EC7 /* ForgetPasswordController.m */; };
 		BB4A4C78214F474E0010A9A1 /* DetailGradeCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BB4A4C77214F474E0010A9A1 /* DetailGradeCell.m */; };
 		BB4A4C7B214F4A0B0010A9A1 /* ArcProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = BB4A4C7A214F4A0B0010A9A1 /* ArcProgressView.m */; };
@@ -504,6 +506,10 @@
 		BB3811F920EA1C3C00F0B2B7 /* BakeCurveViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BakeCurveViewController.m; sourceTree = "<group>"; };
 		BB3AA40322D43638002E1E81 /* BeanViewController_Search.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeanViewController_Search.h; sourceTree = "<group>"; };
 		BB3AA40422D43638002E1E81 /* BeanViewController_Search.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeanViewController_Search.m; sourceTree = "<group>"; };
+		BB3AA40622D4934D002E1E81 /* NSBundle+YULanguage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSBundle+YULanguage.h"; sourceTree = "<group>"; };
+		BB3AA40722D4934D002E1E81 /* NSBundle+YULanguage.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSBundle+YULanguage.m"; sourceTree = "<group>"; };
+		BB3AA40922D495C0002E1E81 /* YULanguageManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YULanguageManager.h; sourceTree = "<group>"; };
+		BB3AA40A22D495C0002E1E81 /* YULanguageManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YULanguageManager.m; sourceTree = "<group>"; };
 		BB412403223B903F00E69EC7 /* ForgetPasswordController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ForgetPasswordController.h; sourceTree = "<group>"; };
 		BB412404223B903F00E69EC7 /* ForgetPasswordController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ForgetPasswordController.m; sourceTree = "<group>"; };
 		BB41EAB6215B7E2900A58DFA /* Coffee.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Coffee.entitlements; sourceTree = "<group>"; };
@@ -1679,6 +1685,10 @@
 				BB1C156420E1E8AD006D7053 /* UIButton+Common.m */,
 				BBE91C8222784F1A00755E9F /* UIImage+Compression.h */,
 				BBE91C8322784F1A00755E9F /* UIImage+Compression.m */,
+				BB3AA40622D4934D002E1E81 /* NSBundle+YULanguage.h */,
+				BB3AA40722D4934D002E1E81 /* NSBundle+YULanguage.m */,
+				BB3AA40922D495C0002E1E81 /* YULanguageManager.h */,
+				BB3AA40A22D495C0002E1E81 /* YULanguageManager.m */,
 			);
 			path = OC_Category;
 			sourceTree = "<group>";
@@ -2296,6 +2306,7 @@
 				BB8AA4CF20DFB9CA00610316 /* ESPDataCode.m in Sources */,
 				BB56101D215267C5008433B1 /* YPickerAlertController.m in Sources */,
 				BB345BFB21534BE6000537DD /* VerifyCodeLoginController.m in Sources */,
+				BB3AA40B22D495C0002E1E81 /* YULanguageManager.m in Sources */,
 				BB28E7402146832B005B884C /* ReportEditController.m in Sources */,
 				BB254E92215D0A8A004A29D3 /* AddCupTextController.m in Sources */,
 				BB345C2E2153A4AA000537DD /* UIImageView+AFNetworking.m in Sources */,
@@ -2379,6 +2390,7 @@
 				BB3AA40522D43638002E1E81 /* BeanViewController_Search.m in Sources */,
 				BB8AA4CB20DFB9CA00610316 /* ESP_CRC8.m in Sources */,
 				BB56101721522FC5008433B1 /* PhoneTFCell.m in Sources */,
+				BB3AA40822D4934D002E1E81 /* NSBundle+YULanguage.m in Sources */,
 				BB8F7BD120DA513B00BE5CFC /* AppDelegate.m in Sources */,
 				BB345C2A2153A4AA000537DD /* AFSecurityPolicy.m in Sources */,
 				BB73BA2A212FE6F2001D9258 /* SortModel.m in Sources */,

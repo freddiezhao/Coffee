@@ -21,6 +21,15 @@
 
 @implementation MainViewController
 
+- (instancetype)init
+{
+    self = [super init];
+    if (self) {
+        self.selectedIndex = 0;
+    }
+    return self;
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     
@@ -43,7 +52,6 @@
     [self setViewControllers:@[NAV1,NAV2,NAV3,NAV4,NAV5]];
     
     [self customizeTabBarForController];
-    self.selectedIndex = 0;
     self.delegate = self;
     
     //self.view = self.view;

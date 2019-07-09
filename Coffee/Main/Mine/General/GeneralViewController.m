@@ -17,6 +17,10 @@
 #import <Charts/Charts-Swift.h>
 #import "LoginViewController.h"
 #import "YTFAlertController.h"
+#import "YULanguageManager.h"
+#import "MainViewController.h"
+#import "MineViewController.h"
+#import "NSBundle+YULanguage.h"
 
 NSString *const CellIdentifier_GeneralSub = @"CellID_GeneralSub";
 NSString *const CellIdentifier_GeneralLR = @"CellID_GeneralLR";
@@ -196,7 +200,11 @@ NSString *const CellIdentifier_GeneralLogout = @"CellID_GeneralLogout";
             cell = [[LlabelRlabelCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier_GeneralLR];
         }
         cell.leftLabel.text = LocalString(@"语言");
-        cell.rightLabel.text = _myData.setting.language;
+        if ([_myData.setting.language isEqualToString:@"中文"] || [_myData.setting.language isEqualToString:@"Chinese"]) {
+            cell.rightLabel.text = LocalString(@"中文");
+        }else{
+            cell.rightLabel.text = LocalString(@"英文");
+        }
         return cell;
     }else if (indexPath.section == 5){
         LlabelRlabelCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier_GeneralLR];
@@ -404,6 +412,28 @@ NSString *const CellIdentifier_GeneralLogout = @"CellID_GeneralLogout";
                     }
                 }else if (indexpath.section == 4){
                     _myData.setting.language = actionTitle;
+                    if ([actionTitle isEqualToString:@"中文"] || [actionTitle isEqualToString:@"Chinese"]) {
+                        [YULanguageManager setUserLanguage:@"zh-Hans"];
+                    }else{
+                        [YULanguageManager setUserLanguage:@"en"];
+                    }
+                    //解决奇怪的动画bug。
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        MainViewController *mainVC = [[MainViewController alloc] init];
+                        [UIApplication sharedApplication].keyWindow.rootViewController = mainVC;
+                        [mainVC setSelectedIndex:4];
+                        UINavigationController *nav = (UINavigationController *)mainVC.selectedViewController;
+                        NSMutableArray *viewControllers = nav.viewControllers.mutableCopy;
+                        //取出我的页面，提前加载，解决返回按钮不变化
+                        MineViewController *me = (MineViewController *)[viewControllers firstObject];
+                        [me loadViewIfNeeded];
+                        //新建设置语言页面
+                        GeneralViewController *generalVC = [[GeneralViewController alloc] init];
+                        generalVC.hidesBottomBarWhenPushed = YES;
+                        [viewControllers addObject:generalVC];
+                        nav.viewControllers = viewControllers;
+                        NSLog(@"已切换到语言 %@", [NSBundle currentLanguage]);
+                    });
                 }
                 [_generalTable reloadData];
                 [self updateSetting];
