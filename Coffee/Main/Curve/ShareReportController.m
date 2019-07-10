@@ -463,7 +463,7 @@ NSString *const CellIdentifier_TempPer30Share = @"CellID_TempPer30Share";
         }
         [_Diff removeAllObjects];
         for (long i = beanRorDiffCount; i < _Bean.count; i = i + beanRorDiffCount) {
-            [_Diff addObject:[NSNumber numberWithDouble:([_Bean[i] doubleValue] - [_Bean[i - beanRorDiffCount] doubleValue]) * (60.f / beanRorDiffCount)]];
+            [_Diff addObject:[NSNumber numberWithDouble:([NSString diffTempUnitStringWithTemp:[_Bean[i] doubleValue]] - [NSString diffTempUnitStringWithTemp:[_Bean[i - beanRorDiffCount] doubleValue]]) * (60.f/beanRorDiffCount)]];
         }
         
         NSLog(@"%lu",(unsigned long)_Bean.count);

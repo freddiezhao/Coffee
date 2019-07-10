@@ -43,7 +43,7 @@
             _deviceName.center = self.center;
             [self.contentView addSubview:_deviceName];
             [_deviceName mas_makeConstraints:^(MASConstraintMaker *make) {
-                make.size.mas_equalTo(CGSizeMake(140 / WScale, 21 / HScale));
+                make.size.mas_equalTo(CGSizeMake(ScreenWidth - 145/WScale, 21 / HScale));
                 make.left.equalTo(self.contentView.mas_left).offset(145 / WScale);
                 make.centerY.equalTo(self.contentView.mas_centerY);
             }];

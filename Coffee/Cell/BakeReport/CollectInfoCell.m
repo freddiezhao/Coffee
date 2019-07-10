@@ -91,7 +91,7 @@ NSString *const CollectHeaderIdentifier_curve = @"CollectHeaderID_curve";
             if (event.eventId == Wind_Fire_Power) {
                 cell.leftLabel.text = LocalString(@"风力/火力");
             }else{
-                cell.leftLabel.text = event.eventText;
+                cell.leftLabel.text = [event getEventText:event.eventId];
             }
             cell.centerLabel.text = [NSString stringWithFormat:@"%ld:%02ld",event.eventTime/60,event.eventTime%60];
             cell.rightLabel.text = [NSString stringWithFormat:@"%.1f%@",[NSString diffTempUnitStringWithTemp:event.eventBeanTemp],[DataBase shareDataBase].setting.tempUnit];

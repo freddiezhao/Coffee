@@ -198,10 +198,11 @@
         tipLabel1.font = [UIFont fontWithName:@"PingFangSC-Regular" size:14];
         tipLabel1.textColor = [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1];
         tipLabel1.textAlignment = NSTextAlignmentCenter;
+        tipLabel1.numberOfLines = 2;
         [self.view addSubview:tipLabel1];
         
         UILabel *tipLabel2 = [[UILabel alloc] init];
-        tipLabel2.text = [NSString stringWithFormat:@"%@%@",LocalString(@"您选择了 "),deviceTypeNameArray[[[NetWork shareNetWork].deviceType integerValue]]];
+        tipLabel2.text = [NSString stringWithFormat:@"%@%@",LocalString(@"您选择了"),deviceTypeNameArray[[[NetWork shareNetWork].deviceType integerValue]]];
         tipLabel2.font = [UIFont fontWithName:@"PingFangSC-Regular" size:14];
         tipLabel2.textColor = [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1];
         tipLabel2.textAlignment = NSTextAlignmentCenter;
@@ -212,10 +213,11 @@
         tipLabel3.font = [UIFont fontWithName:@"PingFangSC-Regular" size:13];
         tipLabel3.textColor = [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1];
         tipLabel3.textAlignment = NSTextAlignmentCenter;
+        tipLabel3.numberOfLines = 2;
         [self.view addSubview:tipLabel3];
         
         [tipLabel1 mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.size.mas_equalTo(CGSizeMake(ScreenWidth, 20 / HScale));
+            make.size.mas_equalTo(CGSizeMake(ScreenWidth, 40 / HScale));
             make.centerX.equalTo(self.view.mas_centerX);
             make.top.equalTo(self.image.mas_bottom).offset(18 / HScale);
         }];
@@ -225,7 +227,7 @@
             make.top.equalTo(tipLabel1.mas_bottom).offset(8 / HScale);
         }];
         [tipLabel3 mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.size.mas_equalTo(CGSizeMake(ScreenWidth, 20 / HScale));
+            make.size.mas_equalTo(CGSizeMake(ScreenWidth, 40 / HScale));
             make.centerX.equalTo(self.view.mas_centerX);
             make.top.equalTo(tipLabel2.mas_bottom).offset(8 / HScale);
         }];
@@ -236,26 +238,23 @@
 - (UIButton *)checkBtn{
     if (!_checkBtn) {
         _checkBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        [_checkBtn setImage:[UIImage imageNamed:@"untick"] forState:UIControlStateNormal];
+        [_checkBtn setImage:[UIImage imageNamed:@"ic_select"] forState:UIControlStateNormal];
+        [_checkBtn.imageView sizeThatFits:CGSizeMake(30.f, 30.f)];
+        [_checkBtn setTitle:LocalString(@"已完成上述操作") forState:UIControlStateNormal];
+        [_checkBtn.titleLabel setFont:[UIFont fontWithName:@"PingFangSC-Regular" size:14]];
+        [_checkBtn setTitleColor:[UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1] forState:UIControlStateNormal];
         [_checkBtn addTarget:self action:@selector(checkDevice) forControlEvents:UIControlEventTouchUpInside];
         _checkBtn.tag = unselect;
         [self.view addSubview:_checkBtn];
         [_checkBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.size.mas_equalTo(CGSizeMake(18 / WScale, 18 / HScale));
-            make.left.equalTo(self.view.mas_left).offset(127 / WScale);
-            make.top.equalTo(self.view.mas_top).offset(335 / HScale);
+            make.size.mas_equalTo(CGSizeMake(250 / WScale, 30.f));
+            make.centerX.equalTo(self.view.mas_centerX);
+            make.top.equalTo(self.view.mas_top).offset(375 / HScale);
         }];
         
-        UILabel *tipLabel = [[UILabel alloc] init];
-        tipLabel.text = LocalString(@"已完成上述操作");
-        tipLabel.font = [UIFont fontWithName:@"PingFangSC-Regular" size:14];
-        tipLabel.textColor = [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1];
-        [self.view addSubview:tipLabel];
-        [tipLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.size.mas_equalTo(CGSizeMake(100 / WScale, 20 / HScale));
-            make.centerY.equalTo(self.checkBtn.mas_centerY);
-            make.left.equalTo(_checkBtn.mas_right).offset(6 / WScale);
-        }];
+        //文字相对于图片的偏移量
+        [_checkBtn setImageEdgeInsets:UIEdgeInsetsMake(0, -5, 0, 0)];
+        [_checkBtn setContentHorizontalAlignment:UIControlContentHorizontalAlignmentCenter];
     }
     return _checkBtn;
 }

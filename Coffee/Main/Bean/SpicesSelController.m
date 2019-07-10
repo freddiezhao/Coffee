@@ -49,7 +49,7 @@ static float HEIGHT_CELL = 50.f;
 
 - (NSMutableArray *)spicesArray{
     if (!_spicesArray) {
-        NSArray *array = @[@"arabica",@"yemen",@"typica",@"java/sumara",@"amarello be botucatu",@"san ramon",@"pluma hidalgo",@"villalobos",@"kona/guatemala",@"kent",@"pache comum",@"bergandal",@"blue mt.",@"maragogype",@"mundo novo",@"catuai",@"pacamara",@"maracatu",@"maracaturra",@"bourdon",@"french mission",@"sl-34",@"mokka",@"sl-28",@"laurina(bourbon pointu)",@"pacas",@"red bourbon",@"caturra",@"yellow bourbon",@"orange bourbon",@"mayaguez",@"villa sarchi",@"mibirizi",@"jackson",@"pink",@"bourbon",@"ethiopia/sudan",@"accessions",@"barduk sudan",@"gesha/abyssinia",@"java(cultivar)",@"rume sudan",@"dilla",@"kaffa",@"deiga/dega",@"ennarea",@"dalle",@"gimma",@"alghe",@"tafari-kela",@"agaro",@"ramdung",@"s.12",@"s.4",@"usda",@"robusta",@"catimors(ateng)",@"tupi",@"iapar59",@"obata",@"lempira",@"catisic",@"icafe 95",@"oro azteca",@"ihcafe 90",@"catrenic",@"colombia",@"castillo@",@"ruiru 11",@"sarchimor",@"liberica",@"s288",@"s795"];
+        NSArray *array = @[LocalString(@"铁皮卡"),LocalString(@"波旁"),LocalString(@"卡图拉"),LocalString(@"象豆"),LocalString(@"新世界"),LocalString(@"卡图埃"),LocalString(@"卡蒂莫"),LocalString(@"卡斯蒂洛"),LocalString(@"帕卡马拉"),LocalString(@"埃塞俄比亚原生种"),LocalString(@"提莫混种"),LocalString(@"瑰夏"),LocalString(@"SL28"),LocalString(@"SL34"),LocalString(@"F1混种"),LocalString(@"卡杜拉"),LocalString(@"卡杜艾"),LocalString(@"阿拉比卡"),LocalString(@"罗布斯塔"),LocalString(@"利比卡")];
         _spicesArray = [NSMutableArray array];
         for (int i = 0; i < array.count; i++) {
             SortModel *model = [[SortModel alloc] init];

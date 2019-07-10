@@ -394,6 +394,7 @@
         tipLabel1.font = [UIFont fontWithName:@"PingFangSC-Regular" size:14];
         tipLabel1.textColor = [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1];
         tipLabel1.textAlignment = NSTextAlignmentCenter;
+        tipLabel1.numberOfLines = 2;
         [self.view addSubview:tipLabel1];
         
         UILabel *tipLabel2 = [[UILabel alloc] init];
@@ -404,7 +405,7 @@
         [self.view addSubview:tipLabel2];
         
         [tipLabel1 mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.size.mas_equalTo(CGSizeMake(ScreenWidth, 20 / HScale));
+            make.size.mas_equalTo(CGSizeMake(ScreenWidth, 40 / HScale));
             make.centerX.equalTo(self.view.mas_centerX);
             make.top.equalTo(self.image.mas_bottom).offset(18 / HScale);
         }];

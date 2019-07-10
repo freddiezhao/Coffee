@@ -27,4 +27,6 @@ typedef NS_ENUM(NSUInteger, EventType) {
 @property (nonatomic, assign) double eventBeanTemp;
 @property (nonatomic, strong) NSString *eventText;
 
+- (NSString *)getEventText:(EventType)type;
+
 @end

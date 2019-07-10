@@ -25,7 +25,17 @@ static NSString *YUUserLanguageKey = @"YUUserLanguageKey";
 }
 
 + (NSString *)userLanguage {
-    return [[NSUserDefaults standardUserDefaults] valueForKey:YUUserLanguageKey];
+    NSString *language = [DataBase shareDataBase].setting.language;
+    if ([[NSUserDefaults standardUserDefaults] valueForKey:YUUserLanguageKey]) {
+        return [[NSUserDefaults standardUserDefaults] valueForKey:YUUserLanguageKey];
+    }
+    if ([language isEqualToString:@"中文"] || [language isEqualToString:@"Chinese"]) {
+        [self setUserLanguage:@"zh-Hans"];
+        return @"zh-Hans";
+    }else{
+        [self setUserLanguage:@"en"];
+        return @"en";
+    }
 }
 
 /**
