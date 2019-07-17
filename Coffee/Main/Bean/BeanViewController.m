@@ -534,6 +534,7 @@ sectionForSectionIndexTitle:(NSString *)title
 
 - (void)generalSort:(UIButton *)sender{
     _beanArr = [[DataBase shareDataBase] queryAllBean];
+    
     _sort_weightBtn.tag = sortUnselect;
     [_sort_weightBtn setImage:[UIImage imageNamed:@"ic_rank1"] forState:UIControlStateNormal];
     _sort_nameBtn.tag = sortUnselect;
@@ -662,6 +663,7 @@ sectionForSectionIndexTitle:(NSString *)title
 #pragma mark - Data Source
 - (void)getAllBean{
     _beanArr = [[DataBase shareDataBase] queryAllBean];
+    _beanArr = [[[_beanArr reverseObjectEnumerator] allObjects] mutableCopy];
     [self afterGetBeanArr];
 }
 

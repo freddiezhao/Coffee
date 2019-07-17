@@ -162,7 +162,7 @@ static BOOL isRelaOn = NO;
         
         _chartView.dragEnabled = YES;
         [_chartView setScaleEnabled:YES];//缩放
-        [_chartView setScaleYEnabled:NO];
+        //[_chartView setScaleYEnabled:NO];
         
         _chartView.drawGridBackgroundEnabled = NO;//网格线
         _chartView.pinchZoomEnabled = YES;
@@ -205,7 +205,7 @@ static BOOL isRelaOn = NO;
         leftAxis.labelFont = [UIFont fontWithName:@"Avenir-Light" size:12];
         leftAxis.axisMaximum = [NSString diffTempUnitStringWithTemp:[DataBase shareDataBase].setting.tempAxis - 0.5];
         leftAxisMax = [NSString diffTempUnitStringWithTemp:[DataBase shareDataBase].setting.tempAxis - 0.5];
-        leftAxis.axisMinimum = 50.0;
+        leftAxis.axisMinimum = [NSString diffTempUnitStringWithTemp:50.f];
         leftAxis.spaceTop = 30.f;
         leftAxis.drawGridLinesEnabled = YES;
         leftAxis.gridLineWidth = 0.6f;
@@ -218,7 +218,7 @@ static BOOL isRelaOn = NO;
         ChartYAxis *rightAxis = _chartView.rightAxis;
         rightAxis.labelFont = [UIFont fontWithName:@"Avenir-Light" size:12];
         rightAxis.labelTextColor = [UIColor colorWithRed:184/255.0 green:190/255.0 blue:204/255.0 alpha:1];
-        rightAxis.axisMaximum = [NSString diffTempUnitStringWithTemp:20.f];;
+        rightAxis.axisMaximum = [NSString diffTempUnitStringWithTemp:30.f];
         rightAxis.axisMinimum = 0;
         rightAxis.drawGridLinesEnabled = NO;
         rightAxis.granularityEnabled = NO;

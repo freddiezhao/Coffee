@@ -419,6 +419,7 @@ sectionForSectionIndexTitle:(NSString *)title
 
 - (void)generalSort:(UIButton *)sender{
     //_cupArr = [[DataBase shareDataBase] queryAllCup];
+    _cupArr = [self sortByDate:_cupArr];
     _sort_gradeBtn.tag = sortUnselect;
     [_sort_gradeBtn setImage:[UIImage imageNamed:@"ic_rank1"] forState:UIControlStateNormal];
     _sort_nameBtn.tag = sortUnselect;
@@ -489,6 +490,13 @@ sectionForSectionIndexTitle:(NSString *)title
 }
 
 #pragma mark - Sort Actions
+- (NSMutableArray *)sortByDate:(NSMutableArray *)arr{
+    [arr sortUsingComparator:^NSComparisonResult(CupModel *obj1, CupModel *obj2) {
+        return [obj2.date compare:obj1.date];
+    }];
+    return arr;
+}
+
 - (void)setObjects:(NSArray *)objects {
     UILocalizedIndexedCollation *collation = [UILocalizedIndexedCollation currentCollation];
     
@@ -548,6 +556,7 @@ sectionForSectionIndexTitle:(NSString *)title
 #pragma mark - Data Source
 - (void)getAllCup{
     _cupArr = [[DataBase shareDataBase] queryAllCup];
+    _cupArr = [self sortByDate:_cupArr];
     for (CupModel *cup in _cupArr) {
         [cup caculateGrade];
     }

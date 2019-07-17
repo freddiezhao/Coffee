@@ -155,6 +155,9 @@ static NSString *curveUid;
 }
 
 + (void)destroyInstance{
+    if (_netWork.mySocket.isConnected) {
+        [_netWork.mySocket disconnect];
+    }
     _netWork = nil;
     oneToken = 0l;
 }

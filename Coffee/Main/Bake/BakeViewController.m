@@ -25,6 +25,7 @@
 @property (nonatomic, strong) UILabel *status;
 @property (nonatomic, strong) UIView *statusView;
 @property (nonatomic, strong) UIImageView *deviceImage;
+@property (nonatomic, strong) UIImageView *deviceWorkImage;
 @property (nonatomic, strong) UIImageView *hongbeiImage;
 @property (nonatomic, strong) UIImageView *rejiImage;
 @property (nonatomic, strong) UIImageView *lengqueImage;
@@ -86,6 +87,7 @@
 
     _status = [self status];
     _deviceImage = [self deviceImage];
+    _deviceWorkImage = [self deviceWorkImage];
     _hongbeiImage = [self hongbeiImage];
     _rejiImage = [self rejiImage];
     _lengqueImage = [self lengqueImage];
@@ -512,6 +514,10 @@
                 _statusView.layer.shadowOffset = CGSizeMake(0,0);
                 _statusView.layer.shadowOpacity = 1;
                 _statusView.layer.shadowRadius = 8;
+                
+                if ([net.connectedDevice.deviceType integerValue] != Coffee_HB_Another) {
+                    _deviceWorkImage.hidden = NO;
+                }
             }else{
                 //电源关闭后所有按钮关闭
                 [_powerBtn setImage:[UIImage imageWithContentsOfFile:[_resourcePath stringByAppendingPathComponent:@"btn_power_off@2x.png"]] forState:UIControlStateNormal];
@@ -536,13 +542,17 @@
                 _statusView.layer.shadowColor = [UIColor colorWithRed:254/255.0 green:71/255.0 blue:52/255.0 alpha:1].CGColor;
                 _statusView.layer.shadowOffset = CGSizeMake(0,0);
                 _statusView.layer.shadowOpacity = 1;
+                
+                _deviceWorkImage.hidden = YES;
             }
         });
     }else if ([keyPath isEqualToString:@"fireStatus"]){
         dispatch_async(dispatch_get_main_queue(), ^{
             if (_myNet.fireStatus) {
                 [_fireBtn setImage:[UIImage imageWithContentsOfFile:[_resourcePath stringByAppendingPathComponent:@"btn_fire_on@2x.png"]] forState:UIControlStateNormal];
-                _rejiImage.hidden = NO;
+                if ([net.connectedDevice.deviceType integerValue] != Coffee_HB_Another) {
+                    _rejiImage.hidden = NO;
+                }
                 
                 _status1.textColor = [UIColor colorWithHexString:@"333333"];
                 
@@ -565,7 +575,9 @@
         dispatch_async(dispatch_get_main_queue(), ^{
             if (_myNet.coolStatus) {
                 [_coldBtn setImage:[UIImage imageWithContentsOfFile:[_resourcePath stringByAppendingPathComponent:@"btn_cold_on@2x.png"]] forState:UIControlStateNormal];
-                _lengqueImage.hidden = NO;
+                if ([net.connectedDevice.deviceType integerValue] != Coffee_HB_Another) {
+                    _lengqueImage.hidden = NO;
+                }
                 
                 _status3.textColor = [UIColor colorWithHexString:@"333333"];
                 
@@ -649,13 +661,15 @@
         [self.view addSubview:_status];
         
         _statusView = [[UIView alloc] init];
-        _statusView.frame = CGRectMake(148/WScale,6.5/HScale,6/WScale,6/WScale);
+        _statusView.frame = CGRectMake(148/WScale,13/HScale,6/WScale,6/WScale);
         _statusView.layer.backgroundColor = [UIColor colorWithRed:254/255.0 green:71/255.0 blue:51/255.0 alpha:1].CGColor;
         _statusView.layer.shadowColor = [UIColor colorWithRed:254/255.0 green:71/255.0 blue:52/255.0 alpha:1].CGColor;
         _statusView.layer.shadowOffset = CGSizeMake(0,0);
         _statusView.layer.shadowOpacity = 1;
         _statusView.layer.cornerRadius = 3/WScale;
         [self.view addSubview:_statusView];
+        
+        
     }
     return _status;
 }
@@ -673,6 +687,16 @@
         _deviceImage.userInteractionEnabled = YES;
     }
     return _deviceImage;
+}
+
+- (UIImageView *)deviceWorkImage{
+    if (!_deviceWorkImage) {
+        _deviceWorkImage = [[UIImageView alloc] initWithFrame:CGRectMake(75/WScale, 18/HScale, 225/WScale, 150/HScale)];
+        _deviceWorkImage.image = [UIImage imageNamed:@"img_signal_light_dianyuan"];
+        [self.view addSubview:_deviceWorkImage];
+        _deviceWorkImage.hidden = YES;
+    }
+    return _deviceWorkImage;
 }
 
 - (UIImageView *)hongbeiImage{

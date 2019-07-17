@@ -623,6 +623,7 @@ NSString *const CellIdentifier_TempPer30 = @"CellID_TempPer30";
         [beanMutaArray replaceObjectAtIndex:i withObject:beanModelNew];
         rawBeanWeight += beanModelOld.weight;
     }
+    self.beanArray = [beanMutaArray copy];
     _reportModel.rawBeanWeight = rawBeanWeight;
 }
 

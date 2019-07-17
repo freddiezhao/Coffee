@@ -183,7 +183,7 @@ NSString *const CellIdentifier_curveInfo = @"CellID_curveInfo_add";
                         
                         if (weight > bean.stock) {
                             dispatch_async(dispatch_get_main_queue(), ^{
-                                [NSObject showHudTipStr:LocalString(@"输入值超过库存量")];
+                                [NSObject showHudTipStrAtWindowMid:LocalString(@"输入值超过库存量,以库存数显示")];
                             });
                             weight = bean.stock;
                             bean.weight = weight;

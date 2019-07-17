@@ -48,9 +48,13 @@
             _nameTF.minimumFontSize = 11.f;
             [_nameTF addTarget:self action:@selector(textField1TextChange:) forControlEvents:UIControlEventEditingChanged];
             
+            UIView *paddingView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 10/WScale, 0)];
+            _nameTF.leftView = paddingView;
+            _nameTF.leftViewMode = UITextFieldViewModeAlways;
+            
             [self.contentView addSubview:_nameTF];
             [_nameTF mas_makeConstraints:^(MASConstraintMaker *make) {
-                make.size.mas_equalTo(CGSizeMake(200/WScale, 21/HScale));
+                make.size.mas_equalTo(CGSizeMake(self.contentView.bounds.size.width - 80, self.contentView.bounds.size.height));
                 make.left.equalTo(self.nameLabel.mas_right).offset(50/WScale);
                 make.centerY.equalTo(self.contentView.mas_centerY);
             }];

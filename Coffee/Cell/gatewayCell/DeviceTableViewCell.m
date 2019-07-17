@@ -28,6 +28,7 @@
             _deviceName.textColor = [UIColor colorWithHexString:@"333333"];
             _deviceName.font = [UIFont fontWithName:@"PingFangSC-Regular" size:15];
             _deviceName.textAlignment = NSTextAlignmentLeft;
+            _deviceName.adjustsFontSizeToFitWidth = YES;
             [self.contentView addSubview:_deviceName];
             [_deviceName mas_makeConstraints:^(MASConstraintMaker *make) {
                 make.size.mas_equalTo(CGSizeMake(150 / WScale, 21 / HScale));

@@ -12,6 +12,7 @@
 @interface NSObject (Common)
 
 + (void)showHudTipStr:(NSString *)tipStr;
++ (void)showHudTipStrAtWindowMid:(NSString *)tipStr;
 + (void)showHudTipStr2:(NSString *)tipStr;
 + (void)showHudTipStr:(NSString *)tipStr withTime:(float)time;
 //+ (MBProgressHUD *)showHUDQueryStr:(NSString *)titleStr;
