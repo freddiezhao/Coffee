@@ -62,7 +62,11 @@
 - (UIDatePicker *)dateSelPicker{
     if (!_dateSelPicker) {
         _dateSelPicker = [[UIDatePicker alloc] init];
-        [_dateSelPicker setLocale:[[NSLocale alloc] initWithLocaleIdentifier:@"zh_Hans_CN"]];
+        if ([[DataBase shareDataBase].setting.language isEqualToString:@"中文"] || [[DataBase shareDataBase].setting.language isEqualToString:@"Chinese"]) {
+            [_dateSelPicker setLocale:[[NSLocale alloc] initWithLocaleIdentifier:@"zh-Hans"]];
+        }else{
+            [_dateSelPicker setLocale:[[NSLocale alloc] initWithLocaleIdentifier:@"en"]];
+        }
         [_dateSelPicker setCalendar:[NSCalendar currentCalendar]];
         [_dateSelPicker setDatePickerMode:UIDatePickerModeDate];
         [_dateSelPicker setMaximumDate:[NSDate date]];

@@ -599,6 +599,21 @@ static BOOL isRelaOn = NO;
         make.left.mas_equalTo(_environTempLabel.mas_right).offset(26/HScale);
     }];
     
+    [_leftPopBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.size.mas_equalTo(CGSizeMake(32/WScale, 32/WScale));
+        if (@available(iOS 11.0,*)) {
+            make.left.equalTo(self.view.mas_safeAreaLayoutGuideLeft);
+        }else{
+            make.left.equalTo(self.view.mas_left);
+        }
+        make.centerY.equalTo(self.view.mas_centerY);
+    }];
+    [_rightPopBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.size.mas_equalTo(CGSizeMake(32/WScale, 32/WScale));
+        make.right.equalTo(self.view.mas_right);
+        make.centerY.equalTo(self.view.mas_centerY);
+    }];
+    
     //用来点击隐藏曲线，覆盖在温度文字上面
     UIButton *beanBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     if (kDevice_Is_iPhoneX) {

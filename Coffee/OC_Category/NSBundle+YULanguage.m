@@ -53,7 +53,7 @@
 }
 
 + (NSString *)currentLanguage {
-    return [YULanguageManager userLanguage] ? : [NSLocale preferredLanguages].firstObject;
+    return [YULanguageManager userLanguage] ? [YULanguageManager userLanguage] : [NSLocale preferredLanguages].firstObject;
 }
 
 + (void)load {

@@ -227,7 +227,7 @@ static float HEIGHT_HEADER = 36.f;
         case 1:
         {
             _cupEditTable.hidden = YES;
-            if (!_cup.curveUid) {
+            if (!_cup.curveUid  || [_cup.curveUid isEqualToString:@""]) {
                 _bakeEditTable.hidden = YES;
                 _noReportView.hidden = NO;
             }else{
@@ -727,6 +727,10 @@ static float HEIGHT_HEADER = 36.f;
         NSLog(@"%lu",In.count);
         NSLog(@"%lu",Environment.count);
         
+        [_yVals_Bean removeAllObjects];
+        [_yVals_Out removeAllObjects];
+        [_yVals_In removeAllObjects];
+        [_yVals_Environment removeAllObjects];
         for (int i = 0; i<Bean.count; i++) {
             [_yVals_Bean addObject:[[ChartDataEntry alloc] initWithX:i y:[Bean[i] doubleValue]]];
         }

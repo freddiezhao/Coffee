@@ -90,7 +90,7 @@
 "结束温度" = "Ending Temp";
 "平均温升" = "Average RoR";
 "时间" = "Time";
-"请填写" = "请填写";
+"请填写" = "Please fill in";
 "烘焙度" = "Degree";
 "退出登录" = "Log out";
 "6-16个字符" = "Enter 6~16 characters";
@@ -387,3 +387,6 @@
 "阿拉比卡" = "Arabica";
 "罗布斯塔" = "Robusta";
 "利比卡" = "Liberica";
+"输入报告名称才能进行保存" = "Enter a report name to save";
+"没有关联曲线" = "No correlation curve";
+"添加咖啡豆以后才能进行烘焙!" = "Adding coffee beans before baking!";

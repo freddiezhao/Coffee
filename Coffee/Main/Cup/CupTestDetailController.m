@@ -39,6 +39,7 @@ NSString *const CellIdentifier_cupBadScore = @"CellID_cupBadScore";
 
 @property (nonatomic, strong) UITableView *cupDetailTable;
 @property (nonatomic, strong) UITableView *bakeDetailTable;
+@property (nonatomic, strong) UIView *noReportView;
 
 //report
 @property (nonatomic, strong) ReportModel *reportModel;
@@ -69,6 +70,7 @@ static float HEIGHT_HEADER = 15.f;
     self.mySegment = [self mySegment];
     self.cupDetailTable = [self cupDetailTable];
     self.bakeDetailTable = [self bakeDetailTable];
+    self.noReportView = [self noReportView];
     _cup = [[DataBase shareDataBase] queryCupWithCupUid:_cup.cupUid];
     [_cup caculateGrade];
     [self.cupDetailTable reloadData];
@@ -167,6 +169,40 @@ static float HEIGHT_HEADER = 15.f;
     }
     return _bakeDetailTable;
 }
+
+- (UIView *)noReportView{
+    if (!_noReportView) {
+        _noReportView = [[UIView alloc] initWithFrame:CGRectMake(0, 44.f/HScale, ScreenWidth, ScreenHeight - 64 - 44.f/HScale)];
+        _noReportView.backgroundColor = [UIColor clearColor];
+        _noReportView.hidden = YES;
+        [self.view addSubview:_noReportView];
+        
+        UIImageView *imageView = [[UIImageView alloc] init];
+        [self.noReportView addSubview:imageView];
+        imageView.image = [UIImage imageNamed:@"img_logo_gray"];
+        [imageView mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.size.mas_equalTo(CGSizeMake(140/WScale, 112/HScale));
+            make.centerX.equalTo(self.view.mas_centerX);
+            make.top.equalTo(_noReportView.mas_top).offset(85/HScale);
+        }];
+        
+        UILabel *label = [[UILabel alloc] init];
+        label.text = LocalString(@"没有关联曲线");
+        label.font = [UIFont systemFontOfSize:14.f];
+        label.textColor = [UIColor colorWithHexString:@"999999"];
+        label.textAlignment = NSTextAlignmentCenter;
+        label.adjustsFontSizeToFitWidth = YES;
+        [_noReportView addSubview:label];
+        
+        [label mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.size.mas_equalTo(CGSizeMake(345/WScale, 50/HScale));
+            make.centerX.equalTo(self.view.mas_centerX);
+            make.top.equalTo(imageView.mas_bottom);
+        }];
+
+    }
+    return _noReportView;
+}
 #pragma mark - UISegment delegate
 -(void)didClickMySegmentAction:(UISegmentedControl *)Seg{
     NSInteger Index = Seg.selectedSegmentIndex;
@@ -176,15 +212,18 @@ static float HEIGHT_HEADER = 15.f;
         {
             _cupDetailTable.hidden = NO;
             _bakeDetailTable.hidden = YES;
+            _noReportView.hidden = YES;
         }
             break;
         case 1:
         {
             _cupDetailTable.hidden = YES;
-            if (_reportModel == nil) {
+            if (!_cup.curveUid || [_cup.curveUid isEqualToString:@""]) {
                 _bakeDetailTable.hidden = YES;
+                _noReportView.hidden = NO;
             }else{
                 _bakeDetailTable.hidden = NO;
+                _noReportView.hidden = YES;
             }
         }
             break;

@@ -66,6 +66,9 @@
 
 #pragma mark - Actions
 - (void)userDefaultsSetting{
+    if (!_isAutoLogin) {
+        return;
+    }
     NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
     NSString *mobile = [userDefaults objectForKey:@"mobile"];
     if (mobile != NULL) {

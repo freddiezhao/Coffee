@@ -28,6 +28,7 @@
     self.window.backgroundColor = [UIColor whiteColor];
     
     LoginViewController *loginVC = [[LoginViewController alloc] init];
+    loginVC.isAutoLogin = YES;
     UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:loginVC];
     self.window.rootViewController = nav;
 //    MainViewController *mainVC = [[MainViewController alloc] init];

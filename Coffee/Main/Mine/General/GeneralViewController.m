@@ -419,6 +419,8 @@ NSString *const CellIdentifier_GeneralLogout = @"CellID_GeneralLogout";
                     }
                     //解决奇怪的动画bug。
                     dispatch_async(dispatch_get_main_queue(), ^{
+                        [NetWork destroyInstance];
+
                         MainViewController *mainVC = [[MainViewController alloc] init];
                         [UIApplication sharedApplication].keyWindow.rootViewController = mainVC;
                         [mainVC setSelectedIndex:4];
@@ -433,6 +435,7 @@ NSString *const CellIdentifier_GeneralLogout = @"CellID_GeneralLogout";
                         [viewControllers addObject:generalVC];
                         nav.viewControllers = viewControllers;
                         NSLog(@"已切换到语言 %@", [NSBundle currentLanguage]);
+                        
                     });
                 }
                 [_generalTable reloadData];

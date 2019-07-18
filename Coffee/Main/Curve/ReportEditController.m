@@ -352,6 +352,11 @@ NSString *const CellIdentifier_EditBakeBean = @"CellID_EditBakeBean";
     [manager.requestSerializer setValue:[DataBase shareDataBase].userId forHTTPHeaderField:@"userId"];
     [manager.requestSerializer setValue:[NSString stringWithFormat:@"bearer %@",[DataBase shareDataBase].token] forHTTPHeaderField:@"Authorization"];
     
+    if ([_reportModel.curveName isEqualToString:@""]) {
+        [NSObject showHudTipStr:LocalString(@"输入报告名称才能进行保存")];
+        return;
+    }
+    
     if (_beanArray.count == 0) {
         [NSObject showHudTipStr:LocalString(@"生豆信息未添加")];
         return;

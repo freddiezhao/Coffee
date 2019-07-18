@@ -57,6 +57,7 @@
             xAxis.valueFormatter = self;
             xAxis.axisRange = self.yVals_Bean.count;
             xAxis.granularity = 60;
+            xAxis.axisMinimum = 0;
             
             ChartYAxis *leftAxis = _chartView.leftAxis;
             leftAxis.labelTextColor = [UIColor colorWithRed:184/255.0 green:190/255.0 blue:204/255.0 alpha:1];
@@ -91,7 +92,13 @@
 - (void)setDataValue
 {
     if (self.yVals_Bean.count > (60 * 3)) {
-        self.chartView.xAxis.axisMaximum = self.yVals_Bean.count + 60;
+        if ((self.yVals_Bean.count / 60) % 2) {
+            //判断分钟数此时是单数还是双数
+            self.chartView.xAxis.axisMaximum = (self.yVals_Bean.count/60+1)*60;
+        }else{
+            self.chartView.xAxis.axisMaximum = (self.yVals_Bean.count/60+2)*60;
+        }
+        self.chartView.xAxis.labelCount = self.chartView.xAxis.axisMaximum / 60 / 2;
     }else{
         self.chartView.xAxis.axisMaximum = 60 * 3;
     }
