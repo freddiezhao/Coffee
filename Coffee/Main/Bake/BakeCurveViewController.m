@@ -368,7 +368,7 @@ static BOOL isRelaOn = NO;
 - (UIButton *)backBtn{
     if (!_backBtn) {
         _backBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        _backBtn.frame = CGRectMake(15/WScale,19/HScale,22/WScale,22/HScale);
+        _backBtn.frame = CGRectMake(15/WScale,19/HScale,50/WScale,50/HScale);
         [_backBtn setImage:[UIImage imageNamed:@"ic_nav_back"] forState:UIControlStateNormal];
         [_backBtn addTarget:self action:@selector(dismissView) forControlEvents:UIControlEventTouchUpInside];
         [self.view addSubview:_backBtn];

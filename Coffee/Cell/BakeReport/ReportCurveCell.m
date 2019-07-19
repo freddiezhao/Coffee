@@ -7,6 +7,7 @@
 //
 
 #import "ReportCurveCell.h"
+#import "Coffee-Swift.h"
 
 
 @implementation ReportCurveCell
@@ -84,6 +85,19 @@
             
             [_chartView animateWithXAxisDuration:1.0];
             
+            // 显示气泡效果
+            BalloonMarker *marker = [[BalloonMarker alloc]
+                                     initWithColor: [UIColor colorWithRed:255/255.0 green:255/255.0 blue:255/255.0 alpha:0.75]
+                                     font: [UIFont systemFontOfSize:15.0]
+                                     textColor: [UIColor colorWithHexString:@"333333"]
+                                     insets: UIEdgeInsetsMake(8.0, 8.0, 20.0, 8.0)
+                                     borderColor:[UIColor colorWithRed:213/255.0 green:218/255.0 blue:224/255.0 alpha:0.5]];
+            marker.minimumSize = CGSizeMake(0, 0);
+            marker.chartView = self.chartView;
+            self.chartView.marker = marker;
+            [self.chartView setDrawMarkers:YES];
+            [_chartView animateWithXAxisDuration:1.0];
+
         }
     }
     return self;
@@ -164,16 +178,19 @@
         set3 = [[LineChartDataSet alloc] initWithValues:_yVals_Bean label:LocalString(@"豆温")];
         set3.axisDependency = AxisDependencyLeft;
         [set3 setColor:[UIColor colorWithRed:71/255.0 green:120/255.0 blue:204/255.0 alpha:1]];
-        [set3 setCircleColor:UIColor.whiteColor];
-        set3.lineWidth = 2.0;
-        set3.circleRadius = 0.0;
+        [set3 setCircleColor:[UIColor colorWithRed:71/255.0 green:120/255.0 blue:204/255.0 alpha:1]];
+        [set3 setCircleHoleColor:[UIColor whiteColor]];
+        set3.lineWidth = 3.0;
+        set3.circleRadius = 4.0;
+        set3.circleHoleRadius = 3.0;
+        set3.highlightLineWidth = 0.0;
         set3.fillAlpha = 65/255.0;
         set3.fillColor = [UIColor colorWithRed:71/255.0 green:120/255.0 blue:204/255.0 alpha:1];
-        set3.drawCircleHoleEnabled = NO;
+        set3.drawCircleHoleEnabled = YES;
         set3.drawValuesEnabled = NO;//是否在拐点处显示数据
         //set1.cubicIntensity = 1;//曲线弧度
-        set3.highlightEnabled = NO;//选中拐点,是否开启高亮效果(显示十字线)
-        
+        set3.highlightEnabled = YES;//选中拐点,是否开启高亮效果(显示十字线)
+
         set4 = [[LineChartDataSet alloc] initWithValues:_yVals_Environment label:LocalString(@"环境温")];
         set4.axisDependency = AxisDependencyLeft;
         [set4 setColor:[UIColor colorWithRed:245/255.0 green:166/255.0 blue:35/255.0 alpha:1]];

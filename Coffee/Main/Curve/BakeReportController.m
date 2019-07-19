@@ -525,8 +525,29 @@ NSString *const CellIdentifier_TempPer30 = @"CellID_TempPer30";
 
 - (void)queryEventInfo{
     _eventArray = [[[DataBase shareDataBase] queryEvent:_curveUid] mutableCopy];
+    
+    NSInteger compensate = 0;//事件时间长度和当前温度数组长度的补偿
+    for (EventModel *event in _eventArray) {
+        if (event.eventId == EndBake) {
+            NSInteger lastIndex = event.eventTime;
+            NSInteger count = _yVals_Bean.count;
+            compensate = lastIndex - count;
+            if (compensate < 0) {
+                compensate = 0;
+            }
+        }
+    }
+    
     for (EventModel *event in _eventArray) {
         NSLog(@"%@",event.eventText);
+        NSInteger count = _yVals_Bean.count;
+        if (event.eventTime >= (count - compensate)) {//超出时减去补偿
+            ChartDataEntry *entry = _yVals_Bean[event.eventTime - compensate - 1];
+            entry.tag = event.eventText;
+        }else{
+            ChartDataEntry *entry = _yVals_Bean[event.eventTime];
+            entry.tag = event.eventText;
+        }
         //NSLog(@"%ld",event.eventId);
     }
     
