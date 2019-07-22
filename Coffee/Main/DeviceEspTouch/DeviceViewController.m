@@ -57,7 +57,7 @@ NSString *const CellIdentifier_device = @"CellID_device";
     
     UIButton *rightButton = [UIButton buttonWithType:UIButtonTypeCustom];
     rightButton.frame = CGRectMake(0, 0, 30, 30);
-    [rightButton setImage:[UIImage imageNamed:@"ic_nav_more_black"] forState:UIControlStateNormal];
+    [rightButton setImage:[UIImage imageNamed:@"ic_nav_add_black"] forState:UIControlStateNormal];
     [rightButton addTarget:self action:@selector(goEsp) forControlEvents:UIControlEventTouchUpInside];
     UIBarButtonItem *rightBarButton = [[UIBarButtonItem alloc] initWithCustomView:rightButton];
     self.navigationItem.rightBarButtonItem = rightBarButton;
@@ -607,6 +607,11 @@ NSString *const CellIdentifier_device = @"CellID_device";
         }
         cell.deviceImage.image = [UIImage imageNamed:[self getCorrespondPicByDeviceType:[dModel.deviceType integerValue]]];
         
+        UILongPressGestureRecognizer *longPressGesture =[[UILongPressGestureRecognizer alloc]initWithTarget:self action:@selector(deviceCellLongPress:)];
+        
+        longPressGesture.minimumPressDuration=1.f;//设置长按 时间
+        [cell addGestureRecognizer:longPressGesture];
+        
     }else if (indexPath.section == 0){
         cell.backgroundColor = [UIColor clearColor];
         //cell.userInteractionEnabled = YES;
@@ -622,18 +627,26 @@ NSString *const CellIdentifier_device = @"CellID_device";
         }
         cell.deviceImage.image = [UIImage imageNamed:[self getCorrespondPicByDeviceType:[net.connectedDevice.deviceType integerValue]]];
         
+        UILongPressGestureRecognizer *longPressGesture =[[UILongPressGestureRecognizer alloc]initWithTarget:self action:@selector(connectedDeviceCellLongPress:)];
+        
+        longPressGesture.minimumPressDuration=1.f;//设置长按 时间
+        [cell addGestureRecognizer:longPressGesture];
+
+        
     }else{
         cell.backgroundColor = [UIColor colorWithRed:247/255.0 green:247/255.0 blue:247/255.0 alpha:1];
         //cell.userInteractionEnabled = YES;
         DeviceModel *device = _deviceArray[indexPath.row];
         cell.deviceName.text = device.deviceName;
         cell.deviceImage.image = [UIImage imageNamed:[self getCorrespondPicByDeviceType:[device.deviceType integerValue]]];
+        
+        UILongPressGestureRecognizer *longPressGesture =[[UILongPressGestureRecognizer alloc]initWithTarget:self action:@selector(deviceCellLongPress:)];
+        
+        longPressGesture.minimumPressDuration=1.f;//设置长按 时间
+        [cell addGestureRecognizer:longPressGesture];
+
     }
     //添加长按手势
-    UILongPressGestureRecognizer *longPressGesture =[[UILongPressGestureRecognizer alloc]initWithTarget:self action:@selector(deviceCellLongPress:)];
-    
-    longPressGesture.minimumPressDuration=1.f;//设置长按 时间
-    [cell addGestureRecognizer:longPressGesture];
 
     return cell;
 }
@@ -642,16 +655,45 @@ NSString *const CellIdentifier_device = @"CellID_device";
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     NetWork *net = [NetWork shareNetWork];
     if (indexPath.section == 1) {
-        
-        NSError *error = nil;
-        DeviceModel *dModel = _onlineDeviceArray[indexPath.row];
-        [net connectToHost:dModel.ipAddress onPort:16888 error:&error];
-
-        if (error) {
-            NSLog(@"tcp连接错误:%@",error);
+        if (!net.connectedDevice) {
+            NSError *error = nil;
+            DeviceModel *dModel = _onlineDeviceArray[indexPath.row];
+            [net connectToHost:dModel.ipAddress onPort:16888 error:&error];
+            
+            if (error) {
+                NSLog(@"tcp连接错误:%@",error);
+            }else{
+                [net setConnectedDevice:dModel];
+                [self.navigationController popViewControllerAnimated:YES];
+            }
         }else{
-            [net setConnectedDevice:dModel];
-            [self.navigationController popViewControllerAnimated:YES];
+            YAlertViewController *alert = [[YAlertViewController alloc] init];
+            alert.lBlock = ^{
+                
+            };
+            alert.rBlock = ^{
+                NSError *error = nil;
+                DeviceModel *dModel = _onlineDeviceArray[indexPath.row];
+                [net connectToHost:dModel.ipAddress onPort:16888 error:&error];
+                
+                if (error) {
+                    NSLog(@"tcp连接错误:%@",error);
+                }else{
+                    [net setConnectedDevice:dModel];
+                    [self.navigationController popViewControllerAnimated:YES];
+                }
+            };
+            alert.modalPresentationStyle = UIModalPresentationOverCurrentContext;
+            [self presentViewController:alert animated:NO completion:^{
+                alert.WScale_alert = WScale;
+                alert.HScale_alert = HScale;
+                [alert showView];
+                alert.titleLabel.text = LocalString(@"提示");
+                alert.messageLabel.text = LocalString(@"当前已经连接一个设备,确认切换设备吗？");
+                [alert.leftBtn setTitle:LocalString(@"取消") forState:UIControlStateNormal];
+                [alert.rightBtn setTitle:LocalString(@"确认") forState:UIControlStateNormal];
+            }];
+
         }
         
     }else if (indexPath.section == 0){
@@ -659,34 +701,6 @@ NSString *const CellIdentifier_device = @"CellID_device";
          *改成返回主页面
          */
         [self.navigationController popViewControllerAnimated:YES];
-//        YAlertViewController *alert = [[YAlertViewController alloc] init];
-//        alert.lBlock = ^{
-//
-//        };
-//        alert.rBlock = ^{
-//            if (!net.mySocket.isDisconnected) {
-//                [net.mySocket disconnect];
-//                [net setConnectedDevice:nil];
-//
-//                [_udpSocket close];
-//                _udpSocket = nil;
-//                [_lock unlock];
-//                [self queryDevices];
-//            }else{
-//                [net setConnectedDevice:nil];
-//                [_devieceTable reloadData];
-//            }
-//        };
-//        alert.modalPresentationStyle = UIModalPresentationOverCurrentContext;
-//        [self presentViewController:alert animated:NO completion:^{
-//            alert.WScale_alert = WScale;
-//            alert.HScale_alert = HScale;
-//            [alert showView];
-//            alert.titleLabel.text = LocalString(@"提示");
-//            alert.messageLabel.text = LocalString(@"确认断开设备连接吗？");
-//            [alert.leftBtn setTitle:LocalString(@"取消") forState:UIControlStateNormal];
-//            [alert.rightBtn setTitle:LocalString(@"确认") forState:UIControlStateNormal];
-//        }];
     }
 }
 
@@ -881,6 +895,42 @@ NSString *const CellIdentifier_device = @"CellID_device";
             [alert.rightBtn setTitle:LocalString(@"确认") forState:UIControlStateNormal];
         }];
 
+    }
+}
+
+- (void)connectedDeviceCellLongPress:(UILongPressGestureRecognizer *)longRecognizer{
+    if (longRecognizer.state==UIGestureRecognizerStateBegan) {
+        //成为第一响应者，需重写该方法
+        [self becomeFirstResponder];
+        NetWork *net = [NetWork shareNetWork];
+        YAlertViewController *alert = [[YAlertViewController alloc] init];
+        alert.lBlock = ^{
+            
+        };
+        alert.rBlock = ^{
+            if (!net.mySocket.isDisconnected) {
+                [net.mySocket disconnect];
+                [net setConnectedDevice:nil];
+                
+                [_udpSocket close];
+                _udpSocket = nil;
+                [_lock unlock];
+                [self queryDevices];
+            }else{
+                [net setConnectedDevice:nil];
+                [_devieceTable reloadData];
+            }
+        };
+        alert.modalPresentationStyle = UIModalPresentationOverCurrentContext;
+        [self presentViewController:alert animated:NO completion:^{
+            alert.WScale_alert = WScale;
+            alert.HScale_alert = HScale;
+            [alert showView];
+            alert.titleLabel.text = LocalString(@"提示");
+            alert.messageLabel.text = LocalString(@"确认断开设备连接吗？");
+            [alert.leftBtn setTitle:LocalString(@"取消") forState:UIControlStateNormal];
+            [alert.rightBtn setTitle:LocalString(@"确认") forState:UIControlStateNormal];
+        }];
     }
 }
 

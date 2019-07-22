@@ -250,8 +250,20 @@ static float HEIGHT_CELL = 50.f;
     [manager.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
     
     NSDictionary *parameters = [[NSDictionary alloc] init];
-    if ([NSString validateMobile:_phone] && _code.length == 6 && _pwText.length >= 6 && [_pwText isEqualToString:_pwConText]){
+    if ([NSString validateMobile:_phone] && _code.length == 6 && _pwText.length >= 6 && _pwText.length <= 16 && [_pwText isEqualToString:_pwConText]){
         parameters = @{@"mobile":_phone,@"password":_pwText,@"code":_code};
+    }else if(![NSString validateMobile:_phone]){
+        [NSObject showHudTipStr:LocalString(@"无效的手机号码")];
+        return;
+    }else if(_code.length != 6){
+        [NSObject showHudTipStr:LocalString(@"无效的验证码")];
+        return;
+    }else if(_pwText.length < 6 || _pwText.length > 16){
+        [NSObject showHudTipStr:LocalString(@"请输入6-16位字符的密码")];
+        return;
+    }else if(![_pwText isEqualToString:_pwConText]){
+        [NSObject showHudTipStr:LocalString(@"两次输入的密码不一致")];
+        return;
     }else{
         [NSObject showHudTipStr:LocalString(@"注册用户失败，请检查您填写的信息")];
         return;

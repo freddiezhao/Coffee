@@ -23,10 +23,11 @@
             _titleLabel.textColor = [UIColor colorWithHexString:@"222222"];
             _titleLabel.textAlignment = NSTextAlignmentLeft;
             _titleLabel.text = LocalString(@"选择参考曲线");
+            _titleLabel.adjustsFontSizeToFitWidth = YES;
             [self.contentView addSubview:_titleLabel];
             
             [_titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-                make.size.mas_equalTo(CGSizeMake(100/WScale, 23/HScale));
+                make.size.mas_equalTo(CGSizeMake(300/WScale, 23/HScale));
                 make.centerY.equalTo(self.contentView.mas_centerY);
                 make.left.equalTo(self.contentView.mas_left).offset(15/WScale);
             }];

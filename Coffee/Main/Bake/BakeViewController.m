@@ -138,6 +138,13 @@
         }else{
             self.navigationItem.title = _myNet.connectedDevice.sn;
         }
+        if (_myNet.deviceTimerStatus == 0) {
+            _statusView2.layer.backgroundColor = [UIColor colorWithRed:255/255.0 green:221/255.0 blue:51/255.0 alpha:1.0].CGColor;
+            _hongbeiImage.hidden = NO;
+        }else{
+            _statusView2.layer.backgroundColor = [UIColor colorWithRed:213/255.0 green:218/255.0 blue:224/255.0 alpha:1].CGColor;
+            _hongbeiImage.hidden = YES;
+        }
         switch ([_myNet.connectedDevice.deviceType integerValue]) {
             case Coffee_HB_M6G:
             case Coffee_HB_M6E:
@@ -177,6 +184,17 @@
         self.navigationItem.title = LocalString(@"烘焙机名称");
         _deviceImage.frame = CGRectMake(117/WScale, 37/HScale, 140/WScale, 112/HScale);
         _deviceImage.image = [UIImage imageNamed:@"img_logo_gray"];
+        _deviceWorkImage.hidden = YES;
+        _hongbeiImage.hidden = YES;
+        _lengqueImage.hidden = YES;
+        _rejiImage.hidden = YES;
+        _statusView1.layer.backgroundColor = [UIColor colorWithRed:213/255.0 green:218/255.0 blue:224/255.0 alpha:1].CGColor;
+        _statusView1.layer.shadowOpacity = 0;
+        _statusView2.layer.backgroundColor = [UIColor colorWithRed:213/255.0 green:218/255.0 blue:224/255.0 alpha:1].CGColor;
+        _statusView2.layer.shadowOpacity = 0;
+        _statusView3.layer.backgroundColor = [UIColor colorWithRed:213/255.0 green:218/255.0 blue:224/255.0 alpha:1].CGColor;
+        _statusView3.layer.shadowOpacity = 0;
+
     }
     if (_beanNameView) {
         _beanNameView = [self beanNameView];
@@ -187,14 +205,6 @@
     _outTempLabel.text = [NSString stringWithFormat:@"%.1f%@",[NSString diffTempUnitStringWithTemp:0.0],[DataBase shareDataBase].setting.tempUnit];
     _environTempLabel.text = [NSString stringWithFormat:@"%.1f%@",[NSString diffTempUnitStringWithTemp:0.0],[DataBase shareDataBase].setting.tempUnit];
     _beanTempUnitLabel.text = [DataBase shareDataBase].setting.tempUnit;
-    
-    if (_myNet.deviceTimerStatus == 0 && _myNet.connectedDevice) {
-        _statusView2.layer.backgroundColor = [UIColor colorWithRed:255/255.0 green:221/255.0 blue:51/255.0 alpha:1.0].CGColor;
-        _hongbeiImage.hidden = NO;
-    }else{
-        _statusView2.layer.backgroundColor = [UIColor colorWithRed:213/255.0 green:218/255.0 blue:224/255.0 alpha:1].CGColor;
-        _hongbeiImage.hidden = YES;
-    }
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(mysocketDidDisconnect) name:@"mysocketDidDisconnect" object:nil];
     
@@ -258,7 +268,8 @@
         sender.tag = select;
         [UIView animateWithDuration:0.2 animations:^{
             CGSize size = _mainView.frame.size;
-            _mainView.frame = CGRectMake(0, (ScreenHeight - 64 - (tabbarHeight + kSafeArea_Bottom) - 400/HScale - 90/HScale), size.width, size.height);//154是控制按钮view高度，刚好把控制按钮隐藏，90是bottonview高度
+//            _mainView.frame = CGRectMake(0, (ScreenHeight - 64 - (tabbarHeight + kSafeArea_Bottom) - 400/HScale - 90/HScale), size.width, size.height);//154是控制按钮view高度，刚好把控制按钮隐藏，90是bottonview高度
+            _mainView.frame = CGRectMake(0, 37.f/HScale, size.width, size.height);//154是控制按钮view高度，刚好把控制按钮隐藏，90是bottonview高度
             [sender setImage:[UIImage imageNamed:@"btn_collapse"] forState:UIControlStateNormal];
         }];
     }else{
@@ -448,7 +459,8 @@
         _showControlViewBtn.tag = select;
         [UIView animateWithDuration:0.2 animations:^{
             CGSize size = _mainView.frame.size;
-            _mainView.frame = CGRectMake(0, (ScreenHeight - 64 - (tabbarHeight + kSafeArea_Bottom) - 400/HScale - 90/HScale), size.width, size.height);//154是控制按钮view高度，刚好把控制按钮隐藏，90是bottonview高度
+//            _mainView.frame = CGRectMake(0, (ScreenHeight - 64 - (tabbarHeight + kSafeArea_Bottom) - 400/HScale - 90/HScale), size.width, size.height);//154是控制按钮view高度，刚好把控制按钮隐藏，90是bottonview高度
+            _mainView.frame = CGRectMake(0, 37.f, size.width, size.height);//154是控制按钮view高度，刚好把控制按钮隐藏，90是bottonview高度
             [_showControlViewBtn setImage:[UIImage imageNamed:@"btn_collapse"] forState:UIControlStateNormal];
         }];
     }else{
@@ -786,7 +798,7 @@
 
 - (UIView *)mainView{
     if (!_mainView) {
-        _mainView = [[UIView alloc] initWithFrame:CGRectMake(0, (ScreenHeight - 64 - (tabbarHeight + kSafeArea_Bottom) - 400/HScale + 154/HScale - 90/HScale), ScreenWidth, 400/HScale)];//154是控制按钮view高度，刚好把控制按钮隐藏，90是bottonview高度
+        _mainView = [[UIView alloc] initWithFrame:CGRectMake(0, (ScreenHeight - 64 - (tabbarHeight + kSafeArea_Bottom) - 400/HScale + 154/HScale - 90/HScale), ScreenWidth, 800/HScale)];//154是控制按钮view高度，刚好把控制按钮隐藏，90是bottonview高度
         _mainView.layer.backgroundColor = [UIColor colorWithRed:255/255.0 green:255/255.0 blue:255/255.0 alpha:1].CGColor;
         _mainView.layer.cornerRadius = 16;
         _mainView.layer.shadowColor = [UIColor colorWithRed:0/255.0 green:0/255.0 blue:0/255.0 alpha:0.03].CGColor;

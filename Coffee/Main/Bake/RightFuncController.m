@@ -220,10 +220,10 @@
 - (void)clickStartBake{
     NetWork *net = [NetWork shareNetWork];
     
-    if (net.beanArray.count <= 0) {
-        [NSObject showHudTipStr:LocalString(@"添加咖啡豆以后才能进行烘焙!")];
-        return;
-    }
+//    if (net.beanArray.count <= 0) {
+//        [NSObject showHudTipStr:LocalString(@"添加咖啡豆以后才能进行烘焙!")];
+//        return;
+//    }
     
     [net.myTimer setFireDate:[NSDate distantFuture]];
     net.deviceTimerStatus = 0;

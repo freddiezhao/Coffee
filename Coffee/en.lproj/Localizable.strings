@@ -111,9 +111,13 @@
 "操作失败" = "Fail";
 "登录失败，请确认验证码" = "Login Fail";
 "注册" = "Sign Up";
-"请输入密码（6位以上字符）" = "Please enter password";
+"请输入密码（6位以上字符）" = "Please enter password（6~16 characters）";
 "请再次输入密码" = "Please enter password again";
-"注册用户失败，请检查您填写的信息" = "Fail";
+"无效的手机号码" = "Invalid mobile number";
+"无效的验证码" = "Invalid verification code";
+"请输入6-16位字符的密码" = "Please enter password（6~16 characters）";
+"两次输入的密码不一致" = "Inconsistent password entered twice";
+"注册用户失败，请检查您填写的信息" = "Regiested Fail,Please Check information";
 "完善资料" = "Complete Material";
 "跳过" = "Skip";
 "请输入昵称(2-16个字符)" = "Enter a nickname";
@@ -295,7 +299,7 @@
 "设置报警温度" = "Alert Temp.";
 "请输入报警温度" = "Please enter alert temperature";
 "选择时间轴(min)" = "Timeline(min)";
-"选择温度轴" = "Select Temp. axis(°C)";
+"选择温度轴" = "Select Temp. axis";
 "升温速率平滑系数" = "Smooth RoR";
 "更新设置失败" = "Fail";
 "添加快速事件" = "";

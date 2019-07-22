@@ -16,11 +16,18 @@
 #import <AliyunOSSiOS/AliyunOSSiOS.h>
 #import "UIButton+WebCache.h"
 #import "UIImage+Compression.h"
+#import <AVFoundation/AVCaptureDevice.h>
+
 
 NSString *const CellIdentifier_Accountll = @"CellID_Accountll";
 NSString *const CellIdentifier_AccountLogout = @"CellID_AccountLogout";
 
+const BOOL isCutImageEnable = YES;
+
 @interface AccountViewController () <UIImagePickerControllerDelegate,UINavigationControllerDelegate>
+
+@property (nonatomic, strong) UIImagePickerController *cameraPicker;
+@property (nonatomic, strong) UIImagePickerController *photoLibraryPicker;
 
 @property (nonatomic, strong) UITableView *accountTableView;
 @property (nonatomic, strong) UIView *headerView;
@@ -114,32 +121,57 @@ static NSString *endpoint = @"oss-cn-hangzhou.aliyuncs.com";
 }
 
 - (void)showSheet:(UIButton *)sender {
+    //先创建好 不然调用的时候 第一次创建很慢 有2秒的延迟
+    if([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+        //判断相机可用
+        [self setUpCameraPickControllerIsEdit:isCutImageEnable];
+    }
+    [self setUpPhotoPickControllerIsEdit:isCutImageEnable];
+
     //显示弹出框列表选择
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:LocalString(@"请选择您的照片")
-                                                                   message:nil
-                                                            preferredStyle:UIAlertControllerStyleActionSheet];
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:LocalString(@"请选择您的照片") message:nil preferredStyle:UIAlertControllerStyleActionSheet];
     
-    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:LocalString(@"取消") style:UIAlertActionStyleCancel
-                                                         handler:^(UIAlertAction * action) {
-                                                             //响应事件
-                                                             NSLog(@"action = %@", action);
-                                                         }];
-    UIAlertAction *cameraAction = [UIAlertAction actionWithTitle:LocalString(@"拍照") style:UIAlertActionStyleDefault
-                                                         handler:^(UIAlertAction * action) {
-                                                             //响应事件
-                                                             NSLog(@"action = %@", action);
-                                                         }];
-    UIAlertAction *albumAction = [UIAlertAction actionWithTitle:LocalString(@"从相册选择") style:UIAlertActionStyleDefault
-                                                        handler:^(UIAlertAction * action) {
-                                                            //响应事件
-                                                            NSLog(@"action = %@", action);
-                                                            UIImagePickerController *ipcVC = [[UIImagePickerController alloc] init];
-                                                            [ipcVC setSourceType:UIImagePickerControllerSourceTypePhotoLibrary];
-                                                            [ipcVC setDelegate:self];
-                                                            [self presentViewController:ipcVC animated:YES completion:^{
-                                                                
-                                                            }];
-                                                        }];
+    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:LocalString(@"取消") style:UIAlertActionStyleCancel handler:^(UIAlertAction * action) {
+        //响应事件
+        NSLog(@"action = %@", action);
+    }];
+    UIAlertAction *cameraAction = [UIAlertAction actionWithTitle:LocalString(@"拍照") style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
+        //响应事件
+        NSLog(@"action = %@", action);
+        [AVCaptureDevice requestAccessForMediaType:AVMediaTypeVideo completionHandler:^(BOOL granted) {
+
+            if (granted) {
+                [self presentViewController:self.cameraPicker animated:YES completion:nil];
+            }
+            else {
+                UIAlertController * noticeAlertController = [UIAlertController alertControllerWithTitle:@"未开启相机权限，请到设置界面开启" message:nil preferredStyle:UIAlertControllerStyleAlert];
+                UIAlertAction * cancelAction = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+                    
+                }];
+                
+                UIAlertAction * okAction = [UIAlertAction actionWithTitle:@"现在就去" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+                    //跳转到设置界面
+                    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString] options:@{} completionHandler:^(BOOL success) {
+                        
+                    }];
+                }];
+                
+                [noticeAlertController addAction:cancelAction];
+                [noticeAlertController addAction:okAction];
+                [self presentViewController:noticeAlertController animated:YES completion:^{
+                    
+                }];
+            }
+        }];
+        
+    }];
+    UIAlertAction *albumAction = [UIAlertAction actionWithTitle:LocalString(@"从相册选择") style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
+        //响应事件
+        NSLog(@"action = %@", action);
+        [self presentViewController:self.photoLibraryPicker animated:YES completion:^{
+            
+        }];
+    }];
     [alert addAction:cameraAction];
     [alert addAction:albumAction];
     [alert addAction:cancelAction];
@@ -306,6 +338,22 @@ static NSString *endpoint = @"oss-cn-hangzhou.aliyuncs.com";
         });
     }
     return _accountTableView;
+}
+
+- (void)setUpCameraPickControllerIsEdit:(BOOL)isEdit {
+    self.cameraPicker = [[UIImagePickerController alloc] init];
+    self.cameraPicker.allowsEditing = isEdit; //拍照选去是否可以截取，和代理中的获取截取后的方法配合使用
+    self.cameraPicker.delegate = self;
+    self.cameraPicker.sourceType = UIImagePickerControllerSourceTypeCamera;
+}
+
+- (void)setUpPhotoPickControllerIsEdit:(BOOL)isEdit {
+    self.photoLibraryPicker = [[UIImagePickerController alloc] init];
+    self.photoLibraryPicker.allowsEditing = isEdit; // 相册选取是否截图
+    self.photoLibraryPicker.delegate = self;
+    //去掉毛玻璃效果 否则在ios11 下 全局设置了UIScrollViewContentInsetAdjustmentNever 导致导航栏遮住了内容视图
+    self.photoLibraryPicker.navigationBar.translucent = NO;
+    self.photoLibraryPicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
 }
 
 #pragma mark - UITableView Delegate
