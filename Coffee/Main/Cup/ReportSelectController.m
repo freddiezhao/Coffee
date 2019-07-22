@@ -375,7 +375,7 @@ static float HEIGHT_HEADER = 36.f;
 #pragma mark - 排序
 - (NSMutableArray *)sortByDate:(NSMutableArray *)arr{
     [arr sortUsingComparator:^NSComparisonResult(ReportModel *obj1, ReportModel *obj2) {
-        return [obj1.date compare:obj2.date];
+        return [obj2.date compare:obj1.date];
     }];
     return arr;
 }

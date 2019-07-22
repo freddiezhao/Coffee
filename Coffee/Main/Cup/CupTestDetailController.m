@@ -689,16 +689,16 @@ static float HEIGHT_HEADER = 15.f;
         NSLog(@"%lu",Environment.count);
         
         for (int i = 0; i<Bean.count; i++) {
-            [_yVals_Bean addObject:[[ChartDataEntry alloc] initWithX:i y:[Bean[i] doubleValue]]];
+            [_yVals_Bean addObject:[[ChartDataEntry alloc] initWithX:i y:[NSString diffTempUnitStringWithTemp:[Bean[i] doubleValue]]]];
         }
         for (int i = 0; i<Out.count; i++) {
-            [_yVals_Out addObject:[[ChartDataEntry alloc] initWithX:i y:[Out[i] doubleValue]]];
+            [_yVals_Out addObject:[[ChartDataEntry alloc] initWithX:i y:[NSString diffTempUnitStringWithTemp:[Out[i] doubleValue]]]];
         }
         for (int i = 0; i<In.count; i++) {
-            [_yVals_In addObject:[[ChartDataEntry alloc] initWithX:i y:[In[i] doubleValue]]];
+            [_yVals_In addObject:[[ChartDataEntry alloc] initWithX:i y:[NSString diffTempUnitStringWithTemp:[In[i] doubleValue]]]];
         }
         for (int i = 0; i<Environment.count; i++) {
-            [_yVals_Environment addObject:[[ChartDataEntry alloc] initWithX:i y:[Environment[i] doubleValue]]];
+            [_yVals_Environment addObject:[[ChartDataEntry alloc] initWithX:i y:[NSString diffTempUnitStringWithTemp:[Environment[i] doubleValue]]]];
         }
         _yVals_Diff = [[NetWork shareNetWork] getBeanTempRorWithArr:[Bean mutableCopy]];
     }

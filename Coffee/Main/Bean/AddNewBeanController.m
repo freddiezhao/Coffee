@@ -238,6 +238,7 @@ static float HEIGHT_HEADER = 36.f;
                 }
                 cell.TFBlock = ^(NSString *text) {
                     _myBean.stock = [text floatValue];
+                    NSLog(@"%f",_myBean.stock);
                 };
                 return cell;
             }
