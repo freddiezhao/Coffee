@@ -244,7 +244,7 @@
         ChartYAxis *leftAxis = _chartView.leftAxis;
         leftAxis.labelTextColor = [UIColor colorWithRed:184/255.0 green:190/255.0 blue:204/255.0 alpha:1];
         leftAxis.labelFont = [UIFont fontWithName:@"Avenir-Light" size:12];
-        leftAxis.axisMaximum = [NSString diffTempUnitStringWithTemp:[DataBase shareDataBase].setting.tempAxis - 0.5];
+        leftAxis.axisMaximum = [NSString diffTempUnitStringWithTemp:150.f];
         leftAxis.spaceTop = 30.f;
         leftAxis.drawGridLinesEnabled = YES;
         leftAxis.gridLineWidth = 0.6f;
@@ -704,8 +704,40 @@
 
 
 #pragma mark - private methods
+- (void)setLeftAxisMaxmium{
+    for (int i = 0; i < _yVals_In.count; i++) {
+        ChartDataEntry *entry = _yVals_In[i];
+        if (entry.y > self.chartView.leftAxis.axisMaximum) {
+            self.chartView.leftAxis.axisMaximum += [NSString diffTempUnitStringWithTemp:50.f];
+        }
+    }
+    for (int i = 0; i < _yVals_Bean.count; i++) {
+        ChartDataEntry *entry = _yVals_Bean[i];
+        if (entry.y > self.chartView.leftAxis.axisMaximum) {
+            self.chartView.leftAxis.axisMaximum += [NSString diffTempUnitStringWithTemp:50.f];
+        }
+    }
+    for (int i = 0; i < _yVals_Out.count; i++) {
+        ChartDataEntry *entry = _yVals_Out[i];
+        if (entry.y > self.chartView.leftAxis.axisMaximum) {
+            self.chartView.leftAxis.axisMaximum += [NSString diffTempUnitStringWithTemp:50.f];
+        }
+    }
+    for (int i = 0; i < _yVals_Environment.count; i++) {
+        ChartDataEntry *entry = _yVals_Environment[i];
+        if (entry.y > self.chartView.leftAxis.axisMaximum) {
+            self.chartView.leftAxis.axisMaximum += [NSString diffTempUnitStringWithTemp:50.f];
+        }
+    }
+    if (self.chartView.leftAxis.axisMaximum > [NSString diffTempUnitStringWithTemp:400.f]) {
+        self.chartView.leftAxis.axisMaximum = [NSString diffTempUnitStringWithTemp:400.f];
+    }
+}
+
 - (void)setDataValue
 {
+    [self setLeftAxisMaxmium];
+    
     LineChartDataSet *set1 = nil, *set2 = nil, *set3 = nil, *set4 = nil, *set5 = nil;
     
     if (_chartView.data.dataSetCount > 0)

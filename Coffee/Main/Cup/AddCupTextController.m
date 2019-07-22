@@ -45,7 +45,6 @@ NSString *const CellIdentifier_cupAddBadScore = @"CellID_cupAddBadScore";
 @property (nonatomic, strong) NSMutableArray *yVals_Environment;
 @property (nonatomic, strong) NSMutableArray *yVals_Diff;
 
-@property (nonatomic, strong) CupModel *cup;
 
 @end
 
@@ -69,7 +68,9 @@ NSString *const CellIdentifier_cupAddBadScore = @"CellID_cupAddBadScore";
     self.bakeAddTable = [self bakeAddTable];
     self.noReportView = [self noReportView];
     
-    _cup = [[CupModel alloc] init];
+    if (!_cup) {
+        _cup = [[CupModel alloc] init];
+    }
     [self queryReportInfo];
 }
 

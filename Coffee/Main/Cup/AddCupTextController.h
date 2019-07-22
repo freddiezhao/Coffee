@@ -13,6 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface AddCupTextController : UIViewController
 
+@property (nonatomic, strong) CupModel *cup;
 
 @end
 

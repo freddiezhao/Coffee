@@ -200,10 +200,10 @@ NSString *const CellIdentifier_GeneralLogout = @"CellID_GeneralLogout";
             cell = [[LlabelRlabelCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier_GeneralLR];
         }
         cell.leftLabel.text = LocalString(@"语言");
-        if ([_myData.setting.language isEqualToString:@"中文"] || [_myData.setting.language isEqualToString:@"Chinese"]) {
+        if ([_myData.setting.language isEqualToString:@"中文"]) {
             cell.rightLabel.text = LocalString(@"中文");
         }else{
-            cell.rightLabel.text = LocalString(@"英文");
+            cell.rightLabel.text = LocalString(@"English");
         }
         return cell;
     }else if (indexPath.section == 5){
@@ -243,7 +243,7 @@ NSString *const CellIdentifier_GeneralLogout = @"CellID_GeneralLogout";
         }
     }
     if (indexPath.section == 4) {
-        [self showSheetWithTitle:LocalString(@"请选择语言") actions:@[LocalString(@"中文"),LocalString(@"英文")] indexpath:indexPath];
+        [self showSheetWithTitle:LocalString(@"请选择语言") actions:@[LocalString(@"中文"),LocalString(@"English")] indexpath:indexPath];
     }
     if (indexPath.section == 5) {
         if ([[NetWork shareNetWork].mySocket isDisconnected]) {
@@ -412,7 +412,7 @@ NSString *const CellIdentifier_GeneralLogout = @"CellID_GeneralLogout";
                     }
                 }else if (indexpath.section == 4){
                     _myData.setting.language = actionTitle;
-                    if ([actionTitle isEqualToString:@"中文"] || [actionTitle isEqualToString:@"Chinese"]) {
+                    if ([actionTitle isEqualToString:@"中文"]) {
                         [YULanguageManager setUserLanguage:@"zh-Hans"];
                     }else{
                         [YULanguageManager setUserLanguage:@"en"];
@@ -445,9 +445,12 @@ NSString *const CellIdentifier_GeneralLogout = @"CellID_GeneralLogout";
         [alertAction setValue:[UIColor colorWithHexString:@"333333"] forKey:@"_titleTextColor"];
         if ([title isEqualToString:LocalString(@"请选择烘焙色度参考标准")]) {
             if ([actionTitle isEqualToString:[DataBase shareDataBase].setting.bakeChromaReferStandard]) {
+                //目前只有agron可以用
                 [alertAction setValue:[UIColor colorWithHexString:@"333333"] forKey:@"_titleTextColor"];
+                alertAction.enabled = YES;
             }else{
                 [alertAction setValue:[UIColor colorWithHexString:@"999999"] forKey:@"_titleTextColor"];
+                alertAction.enabled = NO;
             }
         }
         [alert addAction:alertAction];

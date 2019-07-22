@@ -63,7 +63,7 @@
             ChartYAxis *leftAxis = _chartView.leftAxis;
             leftAxis.labelTextColor = [UIColor colorWithRed:184/255.0 green:190/255.0 blue:204/255.0 alpha:1];
             leftAxis.labelFont = [UIFont fontWithName:@"Avenir-Light" size:12];
-            leftAxis.axisMaximum = [NSString diffTempUnitStringWithTemp:[DataBase shareDataBase].setting.tempAxis - 0.5];
+            leftAxis.axisMaximum = [NSString diffTempUnitStringWithTemp:150.f];
             //leftAxisMax = 140 - 0.5;
             leftAxis.axisMinimum = [NSString diffTempUnitStringWithTemp:50.f];
             leftAxis.spaceTop = 30.f;
@@ -74,6 +74,7 @@
             leftAxis.drawZeroLineEnabled = NO;
             leftAxis.granularityEnabled = YES;
             leftAxis.granularity = 50.f;
+            [self setLeftAxisMaxmium];
             
             ChartYAxis *rightAxis = _chartView.rightAxis;
             rightAxis.labelFont = [UIFont fontWithName:@"Avenir-Light" size:12];
@@ -103,8 +104,39 @@
     return self;
 }
 
+- (void)setLeftAxisMaxmium{
+    for (int i = 0; i < _yVals_In.count; i++) {
+        ChartDataEntry *entry = _yVals_In[i];
+        if (entry.y > self.chartView.leftAxis.axisMaximum) {
+            self.chartView.leftAxis.axisMaximum += [NSString diffTempUnitStringWithTemp:50.f];
+        }
+    }
+    for (int i = 0; i < _yVals_Bean.count; i++) {
+        ChartDataEntry *entry = _yVals_Bean[i];
+        if (entry.y > self.chartView.leftAxis.axisMaximum) {
+            self.chartView.leftAxis.axisMaximum += [NSString diffTempUnitStringWithTemp:50.f];
+        }
+    }
+    for (int i = 0; i < _yVals_Out.count; i++) {
+        ChartDataEntry *entry = _yVals_Out[i];
+        if (entry.y > self.chartView.leftAxis.axisMaximum) {
+            self.chartView.leftAxis.axisMaximum += [NSString diffTempUnitStringWithTemp:50.f];
+        }
+    }
+    for (int i = 0; i < _yVals_Environment.count; i++) {
+        ChartDataEntry *entry = _yVals_Environment[i];
+        if (entry.y > self.chartView.leftAxis.axisMaximum) {
+            self.chartView.leftAxis.axisMaximum += [NSString diffTempUnitStringWithTemp:50.f];
+        }
+    }
+    if (self.chartView.leftAxis.axisMaximum > [NSString diffTempUnitStringWithTemp:400.f]) {
+        self.chartView.leftAxis.axisMaximum = [NSString diffTempUnitStringWithTemp:400.f];
+    }
+}
+
 - (void)setDataValue
 {
+    [self setLeftAxisMaxmium];
     if (self.yVals_Bean.count > (60 * 3)) {
         if ((self.yVals_Bean.count / 60) % 2) {
             //判断分钟数此时是单数还是双数
@@ -136,6 +168,8 @@
         
         set5 = (LineChartDataSet *)_chartView.data.dataSets[4];
         set5.values = _yVals_Diff;
+        
+        
         
 //        if (_yVals_Out.count > 150) {
 //            _chartView.xAxis.axisRange = 15;

@@ -6,8 +6,8 @@
   Copyright © 2019 杭州轨物科技有限公司. All rights reserved.
 */
 
-"中文" = "Chinese";
-"英文" = "English";
+"中文" = "中文";
+"English" = "English";
 "烘焙" = "ROAST";
 "曲线" = "PROFILE";
 "生豆" = "BEANS";

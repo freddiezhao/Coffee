@@ -62,7 +62,7 @@
 - (UIDatePicker *)dateSelPicker{
     if (!_dateSelPicker) {
         _dateSelPicker = [[UIDatePicker alloc] init];
-        if ([[DataBase shareDataBase].setting.language isEqualToString:@"中文"] || [[DataBase shareDataBase].setting.language isEqualToString:@"Chinese"]) {
+        if ([[DataBase shareDataBase].setting.language isEqualToString:@"中文"]) {
             [_dateSelPicker setLocale:[[NSLocale alloc] initWithLocaleIdentifier:@"zh-Hans"]];
         }else{
             [_dateSelPicker setLocale:[[NSLocale alloc] initWithLocaleIdentifier:@"en"]];

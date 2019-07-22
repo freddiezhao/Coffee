@@ -15,6 +15,7 @@
 #import "AddCupTextController.h"
 #import "FMDB.h"
 #import "SearchCupController.h"
+#import "ReportSelectController.h"
 
 NSString *const CellIdentifier_cup = @"CellID_cup";
 
@@ -397,8 +398,19 @@ sectionForSectionIndexTitle:(NSString *)title
 
 #pragma mark - Actions
 - (void)addCupTest{
+    NSMutableArray *viewControllers = self.navigationController.viewControllers.mutableCopy;
     AddCupTextController *addVC = [[AddCupTextController alloc] init];
-    [self.navigationController pushViewController:addVC animated:YES];
+    addVC.hidesBottomBarWhenPushed = YES;
+    [viewControllers addObject:addVC];
+    ReportSelectController *selectVC =[[ReportSelectController alloc] init];
+    selectVC.hidesBottomBarWhenPushed = YES;
+    selectVC.selBlock = ^(NSString *curveUid) {
+        addVC.cup = [[CupModel alloc] init];
+        addVC.cup.curveUid = curveUid;
+    };
+    [self.rdv_tabBarController setTabBarHidden:YES animated:YES];
+    [viewControllers addObject:selectVC];
+    self.navigationController.viewControllers = viewControllers;
 }
 
 - (void)searchCup{

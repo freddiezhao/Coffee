@@ -27,6 +27,8 @@ NSString *const CellIdentifier_CupSelectCurve = @"CellID_CupSelectCurve";
 @property (nonatomic, strong) UITableView *currentTable;
 @property (nonatomic, strong) NSMutableArray *currentReportArr;
 
+@property (nonatomic, strong) UIButton *skipButton;
+
 @end
 
 @implementation ReportSelectController
@@ -46,6 +48,7 @@ static float HEIGHT_HEADER = 36.f;
     _titleData = [self titleData];
     _mySegment = [self mySegment];
     _currentTable = [self currentTable];
+    self.skipButton = [self skipButton];
 }
 
 - (void)viewWillAppear:(BOOL)animated{
@@ -143,6 +146,28 @@ static float HEIGHT_HEADER = 36.f;
         });
     }
     return _currentTable;
+}
+
+- (UIButton *)skipButton{
+    if (!_skipButton) {
+        _skipButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        [_skipButton setTitle:LocalString(@"跳过") forState:UIControlStateNormal];
+        [_skipButton.titleLabel setFont:[UIFont systemFontOfSize:16.f]];
+        [_skipButton setTitleColor:[UIColor colorWithHexString:@"FFFFFF"] forState:UIControlStateNormal];
+        _skipButton.titleLabel.adjustsFontSizeToFitWidth = YES;
+        [_skipButton setBackgroundColor:[UIColor colorWithRed:71/255.0 green:120/255.0 blue:204/255.0 alpha:1]];
+        [_skipButton addTarget:self action:@selector(skipCurveCheck) forControlEvents:UIControlEventTouchUpInside];
+        [self.view addSubview:_skipButton];
+        
+        _skipButton.layer.cornerRadius = 25.f/HScale;
+        
+        [_skipButton mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.size.mas_equalTo(CGSizeMake(110/WScale, 44/HScale));
+            make.centerX.equalTo(self.view.mas_centerX);
+            make.bottom.equalTo(self.view.mas_bottom).offset(-16/HScale);
+        }];
+    }
+    return _skipButton;
 }
 
 #pragma mark - UITableView
@@ -342,6 +367,10 @@ static float HEIGHT_HEADER = 36.f;
 
 - (void)refreshTable{
     //_currentReportArr = [self getAllReport:nil];
+}
+
+- (void)skipCurveCheck{
+    [self.navigationController popViewControllerAnimated:YES];
 }
 #pragma mark - 排序
 - (NSMutableArray *)sortByDate:(NSMutableArray *)arr{

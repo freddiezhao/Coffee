@@ -166,7 +166,7 @@
 }
 
 - (void)textFieldTextChange:(UITextField *)textField{
-    if ([NSString validateMobile:_phoneTF.text] && _passwordTF.text.length >= 6){
+    if ([NSString validateMobile:_phoneTF.text] && _passwordTF.text.length >= 6 && _passwordTF.text.length <= 16){
         [_loginBtn setBackgroundColor:[UIColor colorWithRed:71/255.0 green:120/255.0 blue:204/255.0 alpha:1]];
         _loginBtn.enabled = YES;
     }else{
