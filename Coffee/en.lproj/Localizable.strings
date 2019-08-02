@@ -10,6 +10,7 @@
 "English" = "English";
 "烘焙" = "ROAST";
 "曲线" = "PROFILE";
+"烘焙报告" = "PROFILE";
 "生豆" = "BEANS";
 "杯测" = "CUPPING";
 "我的" = "MY";
@@ -394,3 +395,4 @@
 "输入报告名称才能进行保存" = "Enter a report name to save";
 "没有关联曲线" = "No correlation curve";
 "添加咖啡豆以后才能进行烘焙!" = "Adding coffee beans before baking!";
+"Proin luctus semper lobortis. Nunc efficitur ipsum a nisl euismod porttitor. Phasellus ac imperdiet odio. Proin commodo mattis justo vel gravida. In sollicitudin hendrerit elit eu dapibus. Phasellus ut tortor a dui viverra posuere id id lorem. Nulla et eros efficitur, pharetra felis quis, mollis felis. " = "Proin luctus semper lobortis. Nunc efficitur ipsum a nisl euismod porttitor. Phasellus ac imperdiet odio. Proin commodo mattis justo vel gravida. In sollicitudin hendrerit elit eu dapibus. Phasellus ut tortor a dui viverra posuere id id lorem. Nulla et eros efficitur, pharetra felis quis, mollis felis. ";

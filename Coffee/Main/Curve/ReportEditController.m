@@ -353,8 +353,10 @@ NSString *const CellIdentifier_EditBakeBean = @"CellID_EditBakeBean";
     [manager.requestSerializer setValue:[NSString stringWithFormat:@"bearer %@",[DataBase shareDataBase].token] forHTTPHeaderField:@"Authorization"];
     
     if ([_reportModel.curveName isEqualToString:@""]) {
-        [NSObject showHudTipStr:LocalString(@"输入报告名称才能进行保存")];
-        return;
+        NSDate *date = [NSDate date];
+        NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+        [formatter setDateFormat:@"yyyyMMddHHmm"];
+        _reportModel.curveName = [NSString stringWithFormat:@"%@%@",LocalString(@"烘焙报告"),[formatter stringFromDate:date]];
     }
     
     if (_beanArray.count == 0) {

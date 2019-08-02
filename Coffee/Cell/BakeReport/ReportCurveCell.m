@@ -65,7 +65,7 @@
             leftAxis.labelFont = [UIFont fontWithName:@"Avenir-Light" size:12];
             leftAxis.axisMaximum = [NSString diffTempUnitStringWithTemp:150.f];
             //leftAxisMax = 140 - 0.5;
-            leftAxis.axisMinimum = [NSString diffTempUnitStringWithTemp:50.f];
+            leftAxis.axisMinimum = [NSString diffTempUnitStringWithTemp:0.f];
             leftAxis.spaceTop = 30.f;
             leftAxis.drawGridLinesEnabled = YES;
             leftAxis.gridLineWidth = 0.6f;

@@ -47,20 +47,15 @@
 
 - (UITextView *)info{
     if (!_info) {
-        _info = [[UITextView alloc] init];
+        _info = [[UITextView alloc] initWithFrame:CGRectMake(0, 162/HScale, ScreenWidth, ScreenHeight - 162 - getRectNavAndStatusHight)];
         _info.text = LocalString(@"Proin luctus semper lobortis. Nunc efficitur ipsum a nisl euismod porttitor. Phasellus ac imperdiet odio. Proin commodo mattis justo vel gravida. In sollicitudin hendrerit elit eu dapibus. Phasellus ut tortor a dui viverra posuere id id lorem. Nulla et eros efficitur, pharetra felis quis, mollis felis. ");
-        _info.font = [UIFont fontWithName:@"PingFangSC-Regular" size:15.f];
+        _info.font = [UIFont fontWithName:@"PingFangSC-Regular" size:14.f];
         _info.textColor = [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1];
         _info.textAlignment = NSTextAlignmentLeft;
-        _info.scrollEnabled = NO;
+        _info.scrollEnabled = YES;
         _info.autoresizingMask = UIViewAutoresizingFlexibleHeight;
         _info.editable = NO;
         [self.view addSubview:_info];
-        [_info mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.size.mas_equalTo(CGSizeMake(345/WScale, 170/HScale));
-            make.centerX.equalTo(self.view.mas_centerX);
-            make.top.equalTo(self.logo.mas_bottom).offset(25/HScale);
-        }];
     }
     return _info;
 }

@@ -436,7 +436,7 @@
                 if (i == (cupArr.count - 1)) {
                     dispatch_async(dispatch_get_main_queue(), ^{
                         //[SVProgressHUD dismiss];
-                        [NSObject showHudTipStr:LocalString(@"数据同步完成")];
+                        //[NSObject showHudTipStr:LocalString(@"数据同步完成")];
                         if (success) {
                             success();
                         }

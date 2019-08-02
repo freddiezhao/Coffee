@@ -252,7 +252,7 @@
         //leftAxis.gridLineDashLengths = @[@5.f,@5.f];//虚线
         leftAxis.drawZeroLineEnabled = NO;
         leftAxis.granularityEnabled = YES;
-        leftAxis.axisMinimum = [NSString diffTempUnitStringWithTemp:50.f];
+        leftAxis.axisMinimum = [NSString diffTempUnitStringWithTemp:0.f];
         leftAxis.granularity = 50.f;
 
         ChartYAxis *rightAxis = _chartView.rightAxis;
