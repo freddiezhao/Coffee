@@ -119,7 +119,7 @@ NSString *const CellIdentifier_GeneralLogout = @"CellID_GeneralLogout";
         return 1;
         //return 3;曲线颜色好像不需要了
     }else if (section == 4){
-        return 1;
+        return 0;//把语言隐藏了，不让设置，要重新添加并增加切换功能设置为1并在NSBundle+YULanguage.m里面修改
     }else if (section == 5){
         return 1;
     }else if (section == 6){
