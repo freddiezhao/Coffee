@@ -29,7 +29,7 @@ static NSString *YUUserLanguageKey = @"YUUserLanguageKey";
 //    if ([[NSUserDefaults standardUserDefaults] valueForKey:YUUserLanguageKey]) {
 //        return [[NSUserDefaults standardUserDefaults] valueForKey:YUUserLanguageKey];
 //    }
-    if ([language isEqualToString:@"中文"]) {
+    if ([language isEqualToString:@"简体中文"]) {
         [self setUserLanguage:@"zh-Hans"];
         return @"zh-Hans";
     }else{

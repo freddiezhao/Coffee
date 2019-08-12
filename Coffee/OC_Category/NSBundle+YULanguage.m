@@ -18,8 +18,7 @@
 @implementation YUBundle
 
 - (NSString *)localizedStringForKey:(NSString *)key value:(NSString *)value table:(NSString *)tableName {
-    return [super localizedStringForKey:key value:value table:tableName];
-    //现在取消app内切换语言功能
+    //return [super localizedStringForKey:key value:value table:tableName];//取消app内切换语言功能
     if ([YUBundle yu_mainBundle]) {
         return [[YUBundle yu_mainBundle] localizedStringForKey:key value:value table:tableName];
     } else {

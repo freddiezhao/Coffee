@@ -71,7 +71,7 @@ static DataBase *_dataBase = nil;
         _setting.tempAxis = 300;
         _setting.tempCurveSmooth = 6;//现在已经不用了，先留着
         _setting.tempRateSmooth = 6;
-        _setting.language = LocalString(@"中文");
+        _setting.language = LocalString(@"简体中文");
     }
     return _setting;
 }

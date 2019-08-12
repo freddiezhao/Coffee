@@ -119,7 +119,7 @@ NSString *const CellIdentifier_GeneralLogout = @"CellID_GeneralLogout";
         return 1;
         //return 3;曲线颜色好像不需要了
     }else if (section == 4){
-        return 0;//把语言隐藏了，不让设置，要重新添加并增加切换功能设置为1并在NSBundle+YULanguage.m里面修改
+        return 1;//设置为0就把语言隐藏了，不让设置，要重新添加并增加切换功能设置为1并在NSBundle+YULanguage.m里面修改
     }else if (section == 5){
         return 1;
     }else if (section == 6){
@@ -200,8 +200,8 @@ NSString *const CellIdentifier_GeneralLogout = @"CellID_GeneralLogout";
             cell = [[LlabelRlabelCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier_GeneralLR];
         }
         cell.leftLabel.text = LocalString(@"语言");
-        if ([_myData.setting.language isEqualToString:@"中文"]) {
-            cell.rightLabel.text = LocalString(@"中文");
+        if ([_myData.setting.language isEqualToString:@"简体中文"]) {
+            cell.rightLabel.text = LocalString(@"简体中文");
         }else{
             cell.rightLabel.text = LocalString(@"English");
         }
@@ -243,7 +243,7 @@ NSString *const CellIdentifier_GeneralLogout = @"CellID_GeneralLogout";
         }
     }
     if (indexPath.section == 4) {
-        [self showSheetWithTitle:LocalString(@"请选择语言") actions:@[LocalString(@"中文"),LocalString(@"English")] indexpath:indexPath];
+        [self showSheetWithTitle:LocalString(@"请选择语言") actions:@[LocalString(@"简体中文"),LocalString(@"English")] indexpath:indexPath];
     }
     if (indexPath.section == 5) {
         if ([[NetWork shareNetWork].mySocket isDisconnected]) {
@@ -412,7 +412,7 @@ NSString *const CellIdentifier_GeneralLogout = @"CellID_GeneralLogout";
                     }
                 }else if (indexpath.section == 4){
                     _myData.setting.language = actionTitle;
-                    if ([actionTitle isEqualToString:@"中文"]) {
+                    if ([actionTitle isEqualToString:@"简体中文"]) {
                         [YULanguageManager setUserLanguage:@"zh-Hans"];
                     }else{
                         [YULanguageManager setUserLanguage:@"en"];
