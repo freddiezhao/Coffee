@@ -478,6 +478,10 @@
         self.navigationItem.title = LocalString(@"烘焙机名称");
         self.deviceImage.frame = CGRectMake(117/WScale, 37/HScale, 140/WScale, 112/HScale);
         self.deviceImage.image = [UIImage imageNamed:@"img_logo_gray"];
+        self.rejiImage.hidden = YES;
+        self.lengqueImage.hidden = YES;
+        self.hongbeiImage.hidden = YES;
+        self.deviceWorkImage.hidden = YES;
     });
 }
 #pragma mark - kvo

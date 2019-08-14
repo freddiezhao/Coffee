@@ -98,7 +98,6 @@ static BOOL isRelaOn = NO;
 
 - (void)viewWillDisappear:(BOOL)animated{
     [super viewWillDisappear:animated];
-    [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:@"clearCurve" object:nil];
 }
 
@@ -371,7 +370,17 @@ static BOOL isRelaOn = NO;
         _backBtn.frame = CGRectMake(15/WScale,19/HScale,50/WScale,50/HScale);
         [_backBtn setImage:[UIImage imageNamed:@"ic_nav_back"] forState:UIControlStateNormal];
         [_backBtn addTarget:self action:@selector(dismissView) forControlEvents:UIControlEventTouchUpInside];
+        _backBtn.contentMode = UIViewContentModeScaleAspectFit;
         [self.view addSubview:_backBtn];
+        [_backBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.size.mas_equalTo(CGSizeMake(50/HScale, 50/WScale));
+            make.top.mas_equalTo(self.view.mas_top).offset(5/WScale);
+            if (kDevice_Is_iPhoneX) {
+                make.right.mas_equalTo(self.bakeTime.mas_left).offset(-10/HScale);
+            }else{
+                make.right.mas_equalTo(self.bakeTime.mas_left);
+            }
+        }];
 
     }
     return _backBtn;
